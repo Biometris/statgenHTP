@@ -23,8 +23,7 @@ basefunction <- function(infile) {
   dat.modif$Check[dat.modif$Geno %in% c("col","ely","evo1","ler")] <- dat.modif$Geno[dat.modif$Geno %in% c("col","ely","evo1","ler")]
   dat.modif$Check[!dat.modif$Geno %in% c("col","ely","evo1","ler")] <- "_pop"
   dat.modif$Genobis <- dat.modif$Geno
-  dat.modif$Genobis[dat.modif$Check!="_pop"] <- NA
-
+  dat.modif$Genobis[dat.modif$Check != "_pop"] <- NA
 
   ###################################################################################
   ######## Settings and output formatting
@@ -60,7 +59,7 @@ basefunction <- function(infile) {
   # Create an indicator for each plot (according to the row and column position)
   dat.modif$pos <- paste0("c",dat.modif$Col,"r",dat.modif$Row, sep = "")
   # I removed a plant that has very few measurements
-  dat.modif <- dat.modif[dat.modif$pos!="c1r54",]
+  dat.modif <- dat.modif[dat.modif$pos != "c1r54",]
   dat.modif <- droplevels(dat.modif)
 
   # Objects to save results for Approach 1
@@ -87,16 +86,12 @@ basefunction <- function(infile) {
     cat(times.fact[ti],'\n')
 
     ### subset of dataset:
-    dat.ti <- dat.modif[dat.modif$timepoints==times.fact[ti],]
+    dat.ti <- dat.modif[dat.modif$timepoints == times.fact[ti],]
     dat.ti <- droplevels(dat.ti)
 
     ### number of segments for SpATS:
     nseg = c(nlevels(dat.ti$Col),
              nlevels(dat.ti$Row))
-
-    ### Col and row (needed to obtain the BLUPs)
-    Col_levels <- paste("Col", levels(dat.ti$Col), sep = "")
-    Row_levels <- paste("Row", levels(dat.ti$Row), sep = "")
 
     # Fit the model using check
     # fit.SpATS2 <- SpATS::SpATS(response = trait,
@@ -106,7 +101,7 @@ basefunction <- function(infile) {
     #                                                      nseg = nseg,
     #                                                      nest.div=c(2,2)),
     #                           genotype = "Genobis",
-    #                           genotype.as.random = TRUE,
+    #                           genotype.as.random = genotype.as.random,
     #                           data = dat.ti,
     #                           control = list(maxit = 50,
     #                                          tolerance = 1e-03,
@@ -120,7 +115,7 @@ basefunction <- function(infile) {
                                                          nseg = nseg,
                                                          nest.div=c(2,2)),
                               genotype = "Geno",
-                              genotype.as.random = TRUE,
+                              genotype.as.random = genotype.as.random,
                               # geno.decomp = "TrtPop",
                               data = dat.ti,
                               control = list(maxit = 50,
@@ -128,102 +123,15 @@ basefunction <- function(infile) {
                                              monitoring = 0))
 
 
-    ##########################################################################################
-    # Approach 1: obtain the genotypic predictions
-    ##########################################################################################
-
-    ##############################
-    # Genotype predictions
-    ##############################
-    # Genotype prediction (including the effect of TrtPop, as well as the intercept)
-    p_geno <- predict(fit.SpATS, which = c("Geno")) # ,"Check"
-
-    # Include time point
-    pred_g  <-  dplyr::mutate(p_geno, Time = times.num[ti])
-
-    # Select the needed variables for subsequent analyses
-    pred_g  <- dplyr::select(pred_g, Time, Geno, predicted.values, standard.errors)
+    pred_a1 <- method1(fit.SpATS)
 
     # Add results
-    Geno_pred = rbind(Geno_pred, pred_g)
-
-    ##############################
-    # Col predictions
-    ##############################
-    # Col prediction (including intercept)
-    p_Col <- predict(fit.SpATS, which = "Col")
-
-    # Include time point
-    pred_c <- dplyr::mutate(p_Col, Time = times.num[ti])
-
-    # Select the needed variables for subsequent analyses
-    pred_c <- dplyr::select(pred_c, Time, Col, predicted.values, standard.errors)
-
-    # Add results
-    Col_pred = rbind(Col_pred, pred_c)
-
-    ##############################
-    # Row predictions
-    ##############################
-    # Row prediction (including intercept)
-    p_Row <- predict(fit.SpATS, which = "Row")
-
-    # Include time point
-    pred_r <- dplyr::mutate(p_Row, Time = times.num[ti])
-
-    # Select the needed variables for subsequent analyses
-    pred_r <- dplyr::select(pred_r, Time, Row, predicted.values, standard.errors)
-
-    # Add results
-    Row_pred = rbind(Row_pred, pred_r)
-
-    ##############################
-    # Genotype BLUPs
-    ##############################
-    # BLUPs
-    BLUPs_geno <- fit.SpATS$coeff[fit.SpATS$terms$geno$geno_names]
-
-    # Standard error
-    se_BLUPs_geno <- sqrt(diag(fit.SpATS$vcov$C11_inv[fit.SpATS$terms$geno$geno_names,
-                                                      fit.SpATS$terms$geno$geno_names]))
-
-    # Create data.frame the needed variables for subsequent analyses
-    df_geno <- data.frame(TrtGeno = names(BLUPs_geno),
-                          predicted.values = BLUPs_geno,
-                          standard.errors = se_BLUPs_geno,
-                          Time = times.num[ti])
-
-    # Add results
-    Geno_BLUPs = rbind(Geno_BLUPs, df_geno)
-
-    ##############################
-    # Col BLUPs
-    ##############################
-    # BLUPs
-    BLUPs_Col <- fit.SpATS$coeff[Col_levels]
-    # Standard error
-    se_BLUPs_Col <- sqrt(diag(fit.SpATS$vcov$C22_inv[Col_levels,Col_levels]))
-    # Create data.frame the needed variables for subsequent analyses
-    df_Col <- data.frame(Col = names(BLUPs_Col),
-                         predicted.values = BLUPs_Col,
-                         standard.errors = se_BLUPs_Col,
-                         Time = times.num[ti])
-    # Add results
-    Col_BLUPs <- rbind(Col_BLUPs, df_Col)
-
-
-    ##############################
-    # Row BLUPs
-    ##############################
-    # BLUPs
-    BLUPs_Row <- fit.SpATS$coeff[Row_levels]
-    se_BLUPs_Row <- sqrt(diag(fit.SpATS$vcov$C22_inv[Row_levels,Row_levels]))
-    df_Row <- data.frame(Row = names(BLUPs_Row),
-                         predicted.values = BLUPs_Row,
-                         standard.errors = se_BLUPs_Row,
-                         Time = times.num[ti])
-    Row_BLUPs <- rbind(Row_BLUPs, df_Row)
-
+    Geno_pred = rbind(Geno_pred, pred_a1$predGeno)
+    Col_pred = rbind(Col_pred, pred_a1$predCol)
+    Row_pred = rbind(Row_pred, pred_a1$predRow)
+    Geno_BLUPs = rbind(Geno_BLUPs, pred_a1$BLUPsGeno)
+    Col_BLUPs <- rbind(Col_BLUPs, pred_a1$BLUPsCol)
+    Row_BLUPs <- rbind(Row_BLUPs, pred_a1$BLUPsRow)
 
     ##############################
     # Heritabilities
@@ -250,31 +158,7 @@ basefunction <- function(infile) {
     sigma2_col[ti] <- fit.SpATS$var.comp["Col"]
     sigma2_row[ti] <- fit.SpATS$var.comp["Row"]
 
-    ##########################################################################################
-    # Approach 2: correct for spatial effects and other unnecesary factors
-    ##########################################################################################
-
-    # Include in the prediction the factors (variables) whose effect we are interested in removing
-    p_a2 <- predict(fit.SpATS, which = c("Colnum","Rownum","Col","Row","Sowing_Block","Image_pos"))
-
-    # Order the data and prediction according to the previous covariates
-    data.ord <-  dat.ti[order(dat.ti$Colnum, dat.ti$Rownum),]
-    p_a2 <- p_a2[order( p_a2$Colnum, p_a2$Rownum),] #p_a2$Genotype,
-
-    # Add to the predictions some needed information
-    p_a2$Genotype <- data.ord[,"Geno"]
-    p_a2$pos <- data.ord[,"pos"]
-
-    # Obtain the corrected trait
-    p_a2$new_trait <- data.ord[,trait] - p_a2$predicted.values + fit.SpATS$coeff["Intercept"]
-
-    # Include time point
-    pred_a2 <- dplyr::mutate(p_a2, Time = times.num[ti])
-
-    # Select the needed variables for subsequent analyses
-    pred_a2 <- dplyr::select(pred_a2, new_trait, Genotype, Time, Sowing_Block, Image_pos,
-                              Colnum, Rownum, Col, Row, pos) #Treatment,
-
+    pred_a2 <- method2(fit.SpATS)
     # Add results
     data_corr_spat <- rbind(data_corr_spat, pred_a2)
 
@@ -356,7 +240,7 @@ basefunction <- function(infile) {
 
 
   pdf("Phenovator_Rene_corrected_trait_app2_geno_pred_app1_modRep.pdf")
-  aa <- lattice::xyplot(new_trait ~ timepoint|Genotype,
+  aa <- lattice::xyplot(newTrait ~ timepoint|Genotype,
                data = data_corr_spat,
                groups = data_corr_spat$pos,
                type = c("l"),
@@ -453,7 +337,7 @@ basefunction <- function(infile) {
          xlab="Time", ylab = "Trait",
          main = "Phenovator platform - Rene \n Raw data",
          layout = c(4,2))
-  lattice::xyplot(new_trait ~ timepoint|Genotype,
+  lattice::xyplot(newTrait ~ timepoint|Genotype,
          data = data_corr_spat.subset,
          groups = data_corr_spat.subset$pos,
          type = c("l"),
@@ -485,7 +369,7 @@ basefunction <- function(infile) {
   # NOTE: in this case xyplot connect the lines even when there are missing data. Thus, this information is lost.
 
   pdf("Phenovator_Rene_corrected_trait_app2_geno_pred_app1_selected_geno_modRep.pdf", height = 8, width = 12)
-  aa <- lattice::xyplot(new_trait ~ timepoint|Genotype,
+  aa <- lattice::xyplot(newTrait ~ timepoint|Genotype,
                data = data_corr_spat.subset,
                groups = data_corr_spat.subset$pos,
                type = c("l"),

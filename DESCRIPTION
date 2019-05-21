@@ -13,10 +13,8 @@ Encoding: UTF-8
 LazyData: true
 Imports: 
     SpATS,
-    ggplot2,
     data.table,
     latticeExtra,
-    dplyr,
     lattice,
     lubridate,
     plyr
