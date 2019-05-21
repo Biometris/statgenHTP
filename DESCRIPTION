@@ -16,6 +16,5 @@ Imports:
     data.table,
     latticeExtra,
     lattice,
-    lubridate,
-    plyr
+    lubridate
 RoxygenNote: 6.1.1

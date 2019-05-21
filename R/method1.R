@@ -1,3 +1,4 @@
+#' @importFrom SpATS predict.SpATS
 method1 <- function(fit.SpATS) {
   ##############################################################################
   # Approach 1: obtain the genotypic predictions
@@ -7,31 +8,31 @@ method1 <- function(fit.SpATS) {
   # Genotype predictions
   ##############################
   # Genotype prediction (including the effect of TrtPop, as well as the intercept)
-  predGeno <- predict(fit.SpATS, which = c("Geno")) # ,"Check"
+  predGeno <- predict(fit.SpATS, which = "genotype") # ,"Check"
   ## Include time point
-  predGeno[["Time"]] <- fit.SpATS$data[["Time"]][1]
+  predGeno[["time"]] <- fit.SpATS$data[["time"]][1]
   # Select the needed variables for subsequent analyses
-  predGeno <- predGeno[c("Time", "Geno", "predicted.values", "standard.errors")]
+  predGeno <- predGeno[c("time", "genotype", "predicted.values", "standard.errors")]
 
   ##############################
   # Col predictions
   ##############################
   # Col prediction (including intercept)
-  predCol <- predict(fit.SpATS, which = "Col")
+  predCol <- predict(fit.SpATS, which = "colId")
   ## Include time point
-  predCol[["Time"]] <- fit.SpATS$data[["Time"]][1]
+  predCol[["time"]] <- fit.SpATS$data[["time"]][1]
   # Select the needed variables for subsequent analyses
-  predCol <- predCol[c("Time", "Col", "predicted.values", "standard.errors")]
+  predCol <- predCol[c("time", "colId", "predicted.values", "standard.errors")]
 
   ##############################
   # Row predictions
   ##############################
   # Row prediction (including intercept)
-  predRow <- predict(fit.SpATS, which = "Row")
+  predRow <- predict(fit.SpATS, which = "rowId")
   ## Include time point
-  predRow[["Time"]] <- fit.SpATS$data[["Time"]][1]
+  predRow[["time"]] <- fit.SpATS$data[["time"]][1]
   # Select the needed variables for subsequent analyses
-  predRow <- predRow[c("Time", "Row", "predicted.values", "standard.errors")]
+  predRow <- predRow[c("time", "rowId", "predicted.values", "standard.errors")]
 
   ##############################
   # Genotype BLUPs
@@ -43,40 +44,37 @@ method1 <- function(fit.SpATS) {
   seBLUPsGeno <- sqrt(diag(fit.SpATS$vcov$C11_inv[genotypes, genotypes]))
 
   # Create data.frame the needed variables for subsequent analyses
-  BLUPsGeno <- data.frame(TrtGeno = names(BLUPsGeno),
-                          predicted.values = BLUPsGeno,
+  BLUPsGeno <- data.frame(genotype = genotypes, predicted.values = BLUPsGeno,
                           standard.errors = seBLUPsGeno,
-                          Time = fit.SpATS$data[["Time"]][1])
+                          time = fit.SpATS$data[["time"]][1])
 
   ##############################
   # Col BLUPs
   ##############################
 
-  columns <- paste0("Col", levels(fit.SpATS$data[["Col"]]))
+  columns <- paste0("colId", levels(fit.SpATS$data[["colId"]]))
   # BLUPs
   BLUPsCol <- fit.SpATS$coeff[columns]
   # Standard error
   seBLUPsCol <- sqrt(diag(fit.SpATS$vcov$C22_inv[columns, columns]))
   # Create data.frame the needed variables for subsequent analyses
-  BLUPsCol <- data.frame(Col = names(BLUPsCol),
-                         predicted.values = BLUPsCol,
+  BLUPsCol <- data.frame(colId = columns, predicted.values = BLUPsCol,
                          standard.errors = seBLUPsCol,
-                         Time = fit.SpATS$data[["Time"]][1])
+                         time = fit.SpATS$data[["time"]][1])
 
   ##############################
   # Row BLUPs
   ##############################
   # BLUPs
-  rows <- paste0("Row", levels(fit.SpATS$data[["Row"]]))
+  rows <- paste0("rowId", levels(fit.SpATS$data[["rowId"]]))
   # BLUPs
   BLUPsRow <- fit.SpATS$coeff[rows]
   # Standard error
   seBLUPsRow <- sqrt(diag(fit.SpATS$vcov$C22_inv[rows, rows]))
   # Create data.frame the needed variables for subsequent analyses
-  BLUPsRow <- data.frame(Row = names(BLUPsRow),
-                         predicted.values = BLUPsRow,
+  BLUPsRow <- data.frame(rowId = rows, predicted.values = BLUPsRow,
                          standard.errors = seBLUPsRow,
-                         Time = fit.SpATS$data[["Time"]][1])
+                         time = fit.SpATS$data[["time"]][1])
 
   return(list(predGeno = predGeno, predCol = predCol, predRow = predRow,
               BLUPsGeno = BLUPsGeno, BLUPsCol = BLUPsCol, BLUPsRow = BLUPsRow))
