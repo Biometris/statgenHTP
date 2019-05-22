@@ -27,9 +27,33 @@ inDat <- inDat[inDat$pos != "c1r54",]
 inDat <- droplevels(inDat)
 
 inTD <- createTD(dat = inDat, genotype = "Genotype",
-                 timePoint = "timepoints",  plotId = "ID", rowNum = "y",
+                 timePoint = "timepoints", plotId = "ID", rowNum = "y",
                  colNum = "x")
 
+basefunction(inTD[1:2], trait = "pheno",
+             covariates = c("Sowing_Block", "Image_pos"),
+             out1 = "BLUPs_PAM_modRep.csv",
+             out2 = "Corrected_PAM_modRep.csv")
 
-inTD2 <- inTD[1:2]
-basefunction(inTD2)
+## Second example
+inDat2 <- data.table::fread("../rawdata/Data_modif_ZA17_anonymous.csv",
+                           data.table = FALSE)
+
+# Create an indicator for each plot (according to the row and column position)
+inDat2$pos <- paste0("c", inDat2$Line, "r", inDat2$Position)
+# Create factors
+inDat2$Treatment = as.factor(inDat2$Scenario)
+inDat2$Population = as.factor(inDat2$population)
+### This part is the columns that should be created to run SpATS with
+#  a factor that split the genotypic variance
+# here there is the combination of genotypic panel and water treatment
+inDat2$TrtGeno <- interaction(inDat2$Treatment, inDat2$geno, sep = "_")
+inDat2$TrtPop = interaction(inDat2$Treatment, inDat2$Population, sep = "_")
+
+inTD2 <- createTD(dat = inDat2, genotype = "TrtGeno",
+                  timePoint = "time1", time = "Date", plotId = "XY",
+                  rowNum = "Position", colNum = "Line")
+basefunction(inTD2[1:2], trait = "LA_Estimated", covariates = "TrtPop",
+             geno.decomp = "TrtPop",
+             out1 = "BLUPs_ZA17_LeafArea.csv",
+             out2 = "Corrected_ZA17_LeafArea.csv")

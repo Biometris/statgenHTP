@@ -2,6 +2,7 @@
 createTD <- function(dat,
                      genotype,
                      timePoint,
+                     time = timePoint,
                      plotId = NULL,
                      rowNum = NULL,
                      colNum = NULL,
@@ -29,7 +30,7 @@ createTD <- function(dat,
     }
   }
   ## Create list of reserved column names for renaming columns.
-  renameCols <- c("genotype", "timePoint", "plotId", "rowId", "colId",
+  renameCols <- c("genotype", "timePoint", "time", "plotId", "rowId", "colId",
                   "rowNum", "colNum", "checkId")
   ## First rename duplicate colums and add duplicated columns to dat
   renameFrom <- as.character(sapply(X = renameCols, FUN = function(x) {
@@ -56,10 +57,8 @@ createTD <- function(dat,
   colnames(dat) <- cols
   ## Convert timepoint to nice format.
   dat[["timePoint"]] <- lubridate::ymd_hms(dat[["timePoint"]])
-  ## Add time
-  dat[["time"]] <- as.factor(dat[["timePoint"]])
   ## Convert columns to factor if neccessary.
-  factorCols <-  c("genotype", "plotId", "rowId", "colId", "checkId")
+  factorCols <-  c("genotype", "plotId", "rowId", "colId", "checkId", "time")
   for (factorCol in factorCols) {
     if (hasName(dat, factorCol)) {
       dat[[factorCol]] <- as.factor(dat[[factorCol]])

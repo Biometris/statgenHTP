@@ -8,7 +8,8 @@ method1 <- function(fit.SpATS) {
   # Genotype predictions
   ##############################
   # Genotype prediction (including the effect of TrtPop, as well as the intercept)
-  predGeno <- predict(fit.SpATS, which = "genotype") # ,"Check"
+  predGeno <- predict(fit.SpATS,
+                      which = c("genotype", fit.SpATS$model$geno$geno.decomp)) # ,"Check"
   ## Include time point
   predGeno[["time"]] <- fit.SpATS$data[["time"]][1]
   # Select the needed variables for subsequent analyses

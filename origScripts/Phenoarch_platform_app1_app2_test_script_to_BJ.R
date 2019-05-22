@@ -21,7 +21,7 @@ library(data.table)
 folder <- "~/Documents/PostDoc/EPPN2020/Platform/M3P/Phenoarch/ZA17/"
 setwd(folder)
 
-dat.modif <- read.table(paste0(folder,"Data_modif_ZA17_anonymous.csv"),sep=',',h=T)
+dat.modif <- read.table("../rawdata/Data_modif_ZA17_anonymous.csv",sep=',',h=T)
 dat.modif$ID <- dat.modif$XY
 dat.modif$timepoint <- lubridate::ymd_hms(dat.modif$time1)
 
@@ -41,7 +41,7 @@ dat.modif$timepoint <- lubridate::ymd_hms(dat.modif$time1)
 	dat.modif$Genotype = as.factor(dat.modif$geno)
 	dat.modif$Treatment = as.factor(dat.modif$Scenario)
 	dat.modif$Population = as.factor(dat.modif$population)
-	
+
 	### This part is the columns that should be created to run SpATS with
 	#  a factor that split the genotypic variance
 	# here there is the combination of genotypic panel and water treatment
@@ -51,13 +51,13 @@ dat.modif$timepoint <- lubridate::ymd_hms(dat.modif$time1)
 	# Create num
 	dat.modif$Colnum = as.numeric(dat.modif$Line)
 	dat.modif$Rownum = as.numeric(dat.modif$Position)
-	
-	# Transform the timepont to a numeric variable 
-	dat.modif$Time <- as.numeric(plyr::mapvalues(dat.modif$Date , 
-	                                       from = levels(factor(dat.modif$Date )), 
+
+	# Transform the timepont to a numeric variable
+	dat.modif$Time <- as.numeric(plyr::mapvalues(dat.modif$Date ,
+	                                       from = levels(factor(dat.modif$Date )),
 	                                       to = 1:length(levels(factor(dat.modif$Date )))))
-	
-	
+
+
 	# Time points (factor codification)
 	times.fact <- levels(factor(dat.modif$Date))
 
@@ -73,30 +73,31 @@ dat.modif$timepoint <- lubridate::ymd_hms(dat.modif$time1)
 
 	ed_row <- ed_col <- ed_surface <- sigma2 <- sigma2_row <- sigma2_col  <- vector(length = length(times.fact))
 
-	# Since we are using the geno.decomp argument, and we have 4 "populations" 
+	# Since we are using the geno.decomp argument, and we have 4 "populations"
 	# (combination of treatment and population), we have four different heritabilities.
-	h2 <- sigma2_geno <- matrix(0, ncol = 4, nrow = length(times.fact)) 
+	h2 <- sigma2_geno <- matrix(0, ncol = 4, nrow = length(times.fact))
 	colnames(h2) <- paste0("TrtPop",levels(dat.modif$TrtPop))
-	
+
 # Object to save results for Approach 2
 	data_corr_spat <- NULL
 
 ################################################################################
 ######## Loop on timepoint to run SpATS
 
-for (ti in 1:length(times.fact)) {
+#for (ti in 1:length(times.fact)) {
+for (ti in 1:2) {
 	# ti = 18
 	cat(times.fact[ti],'\n')
-  
+
 	### subset of dataset:
 		dat.ti <- dat.modif[dat.modif$Date==times.fact[ti],]
 		dat.ti <- droplevels(dat.ti)
-	  
+
 	### number of segments for SpATS:
 		nseg = c(nlevels(dat.ti$Col),
            	nlevels(dat.ti$Row))
 
-	### Col and row (needed to obtain the BLUPs) 
+	### Col and row (needed to obtain the BLUPs)
 	Col_levels <- paste("Col", levels(dat.ti$Col), sep = "")
 	Row_levels <- paste("Row", levels(dat.ti$Row), sep = "")
 
@@ -114,9 +115,9 @@ for (ti in 1:length(times.fact)) {
                               control = list(maxit = 50,
                                              tolerance = 1e-03,
                                              monitoring = 0))
-	
+
 	# plot(fit.SpATS)
-	##########################################################################################                                           
+	##########################################################################################
 	# Approach 1: obtain the genotypic predictions
 	##########################################################################################
 		##############################
@@ -124,20 +125,20 @@ for (ti in 1:length(times.fact)) {
 		##############################
 		# Genotype prediction (including the effect of TrtPop, as well as the intercept)
 		p_geno <- predict(fit.SpATS, which = c("TrtGeno","TrtPop"))
-  	
-		# Include time point 
+
+		# Include time point
 		pred_g  <-  mutate(p_geno, Time = times.num[ti])
 
-		# Select the needed variables for subsequent analyses 
+		# Select the needed variables for subsequent analyses
 		pred_g  <- select(pred_g, Time, TrtGeno, predicted.values, standard.errors)
-  	
+
 		# Add results
 		Geno_pred = rbind(Geno_pred, pred_g)
 
 		##############################
 		# Col predictions
 		##############################
- 		# Col prediction (including intercept) 
+ 		# Col prediction (including intercept)
 	  	p_Col <- predict(fit.SpATS, which = "Col")
 
 	  	# Include time point
@@ -152,10 +153,10 @@ for (ti in 1:length(times.fact)) {
   		##############################
 		# Row predictions
 		##############################
-		# Row prediction (including intercept) 
+		# Row prediction (including intercept)
 	  	p_Row <- predict(fit.SpATS, which = "Row")
 
-	  	# Include time point 
+	  	# Include time point
   		pred_r <- dplyr:::mutate(p_Row, Time = times.num[ti])
 
   		# Select the needed variables for subsequent analyses
@@ -204,10 +205,10 @@ for (ti in 1:length(times.fact)) {
 		df_Row <- data.frame(Row = names(BLUPs_Row), predicted.values = BLUPs_Row, standard.errors = se_BLUPs_Row, Time = times.num[ti])
 		Row_BLUPs <- rbind(Row_BLUPs, df_Row)
 
-		
+
 		##############################
 		# Heritabilities
-		##############################	
+		##############################
 		h2.aux <- getHeritability(fit.SpATS)
 
 		### not optimised loop, sorry...
@@ -221,7 +222,7 @@ for (ti in 1:length(times.fact)) {
 
  		##############################
 		# Other information
-		##############################	
+		##############################
 		sigma2[ti] <- fit.SpATS$psi[1]
 		ed_col[ti] <- fit.SpATS$eff.dim["Col"]
 		ed_row[ti] <- fit.SpATS$eff.dim["Row"]
@@ -249,7 +250,7 @@ for (ti in 1:length(times.fact)) {
 	# Obtain the corrected trait
 		p_a2$new_trait <- data.ord[,trait] - p_a2$predicted.values + fit.SpATS$coeff["Intercept"]
 
-	# Include time point 
+	# Include time point
 		pred_a2 <- dplyr:::mutate(p_a2, Time = times.num[ti])
 
 	# Select the needed variables for subsequent analyses
@@ -260,22 +261,22 @@ for (ti in 1:length(times.fact)) {
 
 }
 
-write.table(data_corr_spat,paste0(folder,"New_Cote_et_Pspline/Corrected_ZA17_LeafArea.csv"),sep=',',row.names=F)
-write.table(Geno_pred,paste0(folder,"New_Cote_et_Pspline/BULPs_ZA17_LeafArea.csv"),sep=',',row.names=F)
-	
-	
+write.table(data_corr_spat,"../outputOrigScript/Corrected_ZA17_LeafArea.csv",sep=",",row.names=F)
+write.table(Geno_pred,"../outputOrigScript/BULPs_ZA17_LeafArea.csv",sep=",",row.names=F)
+
+
 #############################################################
 # Some results (all genotypes)
 #############################################################
 	# Raw data
 		# NOTE: in this case xyplot connect the lines even when there are missing data. Thus, this information is lost.
 		pdf("New_Cote_et_Pspline/Phenoarch_ZA17_LeafArea_raw_data.pdf")
-		xyplot(get(trait) ~ Time|TrtGeno,  
-		       data = dat.modif, 
+		xyplot(get(trait) ~ Time|TrtGeno,
+		       data = dat.modif,
 		       groups = dat.modif$pos,
 		       type = c("l"),
-		       xlab="Time", ylab = "Trait", 
-		       main = "Phenoarch ZA17 - Leaf Area \n Raw data", 
+		       xlab="Time", ylab = "Trait",
+		       main = "Phenoarch ZA17 - Leaf Area \n Raw data",
 		       layout = c(5,5))
 		dev.off()
 
@@ -296,54 +297,54 @@ write.table(Geno_pred,paste0(folder,"New_Cote_et_Pspline/BULPs_ZA17_LeafArea.csv
 				dat.modif_na[dat.modif_na$pos == i, "Colnum"] <- 	na.omit(unique(dat.modif_na[dat.modif_na$pos == i, "Colnum"]))
 				dat.modif_na[dat.modif_na$pos == i, "Rownum"] <- 	na.omit(unique(dat.modif_na[dat.modif_na$pos == i, "Rownum"]))
 				dat.modif_na[dat.modif_na$pos == i, "Col"] <- 	na.omit(unique(dat.modif_na[dat.modif_na$pos == i, "Col"]))
-				dat.modif_na[dat.modif_na$pos == i, "Row"] <- 	na.omit(unique(dat.modif_na[dat.modif_na$pos == i, "Row"]))	
+				dat.modif_na[dat.modif_na$pos == i, "Row"] <- 	na.omit(unique(dat.modif_na[dat.modif_na$pos == i, "Row"]))
 			}
 
 			write.table(dat.modif_na,"New_Cote_et_Pspline/dat_modif_na_LeafArea.csv",sep=",",row.names=F)
-			
+
 			pdf("New_Cote_et_Pspline/Phenoarch_ZA17_LeafArea_raw_data_na.pdf")
-			xyplot(get(trait) ~ Time|TrtGeno,  
-			       data = dat.modif_na, 
+			xyplot(get(trait) ~ Time|TrtGeno,
+			       data = dat.modif_na,
 			       groups = dat.modif_na$pos,
 			       type = c("l"),
-			       xlab="Time", ylab = "Trait", 
-			       main = "Phenoarch ZA17 - Leaf Area \n Raw data", 
+			       xlab="Time", ylab = "Trait",
+			       main = "Phenoarch ZA17 - Leaf Area \n Raw data",
 			       layout = c(5,5))
 			dev.off()
-			
+
 	###
 	### Raw data + genotypic predictions (Approach 1)
 	###
-			
+
 		pdf("New_Cote_et_Pspline/Phenoarch_ZA17_LeafArea_raw_data_geno_pred_app1.pdf")
-		aa <- xyplot(get(trait) ~ Time|TrtGeno,  
-		             data = dat.modif, 
+		aa <- xyplot(get(trait) ~ Time|TrtGeno,
+		             data = dat.modif,
 		             groups = dat.modif$pos,
 								type = c("l"),
-								xlab="Time", ylab = "Trait", 
-								main = "Phenoarch ZA17 - Leaf Area \n Raw data + Genotypic predictions (App 1)", 
+								xlab="Time", ylab = "Trait",
+								main = "Phenoarch ZA17 - Leaf Area \n Raw data + Genotypic predictions (App 1)",
 								layout = c(5,5))
-		bb <- xyplot(predicted.values ~ Time|TrtGeno, 
+		bb <- xyplot(predicted.values ~ Time|TrtGeno,
 		             data = Geno_pred,
-									xlab="", ylab = "", main = "", 
-									type = c("l"), col = "black", lwd = 2, 
+									xlab="", ylab = "", main = "",
+									type = c("l"), col = "black", lwd = 2,
 									layout = c(5,5))
 		aa + as.layer(bb)
 	 dev.off()
-	 
-	 ###	
+
+	 ###
 	 ### Corrected trait (Approach 2) + + genotypic predictions (Approach 1)
 	 ###
-	 
+
 		pdf("New_Cote_et_Pspline/Phenoarch_platform_corrected_trait_app2_geno_pred_app1.pdf")
-		aa <- xyplot(new_trait ~ Time|TrtGeno,  
-		             data = data_corr_spat, 
+		aa <- xyplot(new_trait ~ Time|TrtGeno,
+		             data = data_corr_spat,
 		             groups = data_corr_spat$pos,
 							type = c("l"),
-							xlab="Time", ylab = "Corrected trait", 
-							main = "Phenoarch platform \n Corrected trait (App 2) + Genotypic predictions (App 1)", 
+							xlab="Time", ylab = "Corrected trait",
+							main = "Phenoarch platform \n Corrected trait (App 2) + Genotypic predictions (App 1)",
 							layout = c(5,5))
-		bb <- xyplot(predicted.values ~ Time|TrtGeno,  
+		bb <- xyplot(predicted.values ~ Time|TrtGeno,
 		             data = Geno_pred,
 							xlab="", ylab = "", main = "",
 							type = c("l"), col = "black", lwd = 2,
@@ -370,49 +371,49 @@ write.table(Geno_pred,paste0(folder,"New_Cote_et_Pspline/BULPs_ZA17_LeafArea.csv
 		par(mfrow = c(2,2))
 		plot(times.num, ed_surface, cex.axis=1.5, xlab="Time", ylab = "ED", main = "ED spatial surface", cex.lab=1.5, type = "l")
 		points(times.num, ed_surface)
-		
+
 		plot(times.num, ed_row, cex.axis=1.5, xlab="Time", ylab = "ED", main = "ED row RE", cex.lab=1.5, type = "l")
 		points(times.num, ed_row)
-		
+
 		plot(times.num, ed_col, cex.axis=1.5, xlab="Time", ylab = "ED", main = "ED column RE", cex.lab=1.5, type = "l")
 		points(times.num, ed_col)
 		dev.off()
-		
+
 		# Variances (Approach 1)
 		pdf("New_Cote_et_Pspline/Phenoarch_ZA17_LeafArea_var_app1.pdf")
 		par(mfrow = c(2,2))
 		plot(times.num, sigma2, cex.axis=1.5, xlab="Time", ylab = expression(sigma^2), main = "Residual variance", cex.lab=1.5, type = "l")
 		points(times.num, sigma2)
-		
+
 		plot(times.num, sigma2_col, cex.axis=1.5,  xlab="Time", ylab = expression(sigma^2), main = "Column RE variance", cex.lab=1.5, type = "l")
 		points(times.num, sigma2_col)
-		
+
 		plot(times.num, sigma2_row, cex.axis=1.5, xlab="Time", ylab = expression(sigma^2), main = "Row RE variance", cex.lab=1.5, type = "l")
 		points(times.num, sigma2_row)
 		dev.off()
-		
+
 		# Row and Column (BLUPs and predictions)
-		pdf("New_Cote_et_Pspline/Phenoarch_ZA17_LeafArea_RowCol_pred_BLUPs.pdf",6,6)			
+		pdf("New_Cote_et_Pspline/Phenoarch_ZA17_LeafArea_RowCol_pred_BLUPs.pdf",6,6)
 		# Column
 		xyplot(predicted.values ~ Time,  data = Col_pred, groups = Col_pred$Col,
-		       xlab="Time", ylab = "Column random factor prediction", 
+		       xlab="Time", ylab = "Column random factor prediction",
 		       main = "Phenoarch ZA17 - LeafArea \n Column predictions", type = c("g", "p", "o"))
-		
+
 		xyplot(predicted.values ~ Time,  data = Col_BLUPs, groups = Col_BLUPs$Col,
-		       xlab="Time", ylab = "Column random factor BLUPs", 
+		       xlab="Time", ylab = "Column random factor BLUPs",
 		       main = "Phenoarch ZA17 - LeafArea \n Column BLUPs", type = c("g", "p", "o"))
-		
+
 		# Row
 		xyplot(predicted.values ~ Time,  data = Row_pred, groups = Row_pred$Row,
 		       xlab="Time", ylab = "Row random factor prediction",
 		       main = "Phenoarch ZA17 - LeafArea \n Row predictions", type = c("g", "p", "o"))
-		
+
 		xyplot(predicted.values ~ Time,  data = Row_BLUPs, groups = Row_BLUPs$Row,
-		       xlab="Time", ylab = "Row random factor BLUPs", 
+		       xlab="Time", ylab = "Row random factor BLUPs",
 		       main = "Phenoarch ZA17 - LeafArea \n Row BLUPs", type = c("g", "p", "o"))
 		dev.off()
-		
-		
+
+
 #############################################################
 # Some results (some genotypes)
 #############################################################
@@ -479,8 +480,8 @@ write.table(Geno_pred,paste0(folder,"New_Cote_et_Pspline/BULPs_ZA17_LeafArea.csv
 				data_corr_spat_na[data_corr_spat_na$pos == i, "Colnum"] <- 	na.omit(unique(data_corr_spat_na[data_corr_spat_na$pos == i, "Colnum"]))
 				data_corr_spat_na[data_corr_spat_na$pos == i, "Rownum"] <- 	na.omit(unique(data_corr_spat_na[data_corr_spat_na$pos == i, "Rownum"]))
 				data_corr_spat_na[data_corr_spat_na$pos == i, "Col"] <- 	na.omit(unique(data_corr_spat_na[data_corr_spat_na$pos == i, "Col"]))
-				data_corr_spat_na[data_corr_spat_na$pos == i, "Row"] <- 	na.omit(unique(data_corr_spat_na[data_corr_spat_na$pos == i, "Row"]))	
-			} 
+				data_corr_spat_na[data_corr_spat_na$pos == i, "Row"] <- 	na.omit(unique(data_corr_spat_na[data_corr_spat_na$pos == i, "Row"]))
+			}
 
 			data_corr_spat_na.subset <- data_corr_spat_na[data_corr_spat_na$TrtGeno %in% sel.geno,]
 			data_corr_spat_na.subset$TrtGeno <- droplevels(data_corr_spat_na.subset$TrtGeno)

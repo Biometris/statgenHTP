@@ -3,71 +3,17 @@
 
 #' @import data.table
 #' @export
-basefunction <- function(TD) {
-  ##############################################################################
-  ######## Settings and output formatting
+basefunction <- function(TD,
+                         trait,
+                         covariates = NULL,
+                         geno.decomp = NULL,
+                         out1,
+                         out2) {
 
-  # In these analyses, the genotype is always included as random
-  # I have to check with Coté if we can also include it as fixed
-  genotype.as.random <- TRUE
-
-  # Trait to analyse
-  trait <- "pheno"
-
-  # # Objects to save results for Approach 1
-  # Geno_pred <- Col_pred <- Row_pred <- NULL			# Predictions (may contain the intercept as well as other factors)
-  # Geno_BLUPs <- Col_BLUPs <- Row_BLUPs <- NULL		# BLUPs (only the estimated coefficients - they do not contain the intercept or other factors)
-  #
-  # ed_row <- ed_col <- ed_surface <- sigma2 <- sigma2_row <- sigma2_col  <- vector(length = length(times.fact))
-  #
-  # # When we are using the geno.decomp argument,
-  # # we have several levels of "populations" (combination of treatment and population),
-  # # so we'll have four different heritabilities = several columns.
-  # h2 <- sigma2_geno <- matrix(0, ncol = 1, nrow = length(times.fact))
-  # # colnames(h2) <- paste0("TrtPop",levels(dat.modif$TrtPop))
-  #
-  # # Object to save results for Approach 2
-  # data_corr_spat <- NULL
-
-  ################################################################################
-  ######## Loop on timepoint to run SpATS
-
-  # for (ti in 1:length(times.fact)) {
-
-  fitMods <- lapply(X = seq_along(TD), function(i) {
-    message(names(TD)[i])
-
-    ### number of segments for SpATS:
-    nseg = c(nlevels(TD[[i]][["colId"]]), nlevels(TD[[i]][["rowId"]]))
-
-    # Fit the model using check
-    # fit.SpATS2 <- SpATS::SpATS(response = trait,
-    #                           fixed = ~ Sowing_Block + Image_pos + Check ,
-    #                           random = ~ Col + Row ,
-    #                           spatial = ~ SpATS::PSANOVA(colNum, rowNum,
-    #                                                      nseg = nseg,
-    #                                                      nest.div=c(2,2)),
-    #                           genotype = "Genobis",
-    #                           genotype.as.random = genotype.as.random,
-    #                           data = dat.ti,
-    #                           control = list(maxit = 50,
-    #                                          tolerance = 1e-03,
-    #                                          monitoring = 0))
-
-    # Fit the model without the check effect
-    SpATS::SpATS(response = trait, fixed = ~ Sowing_Block + Image_pos,
-                 random = ~ colId + rowId,
-                 spatial = ~ SpATS::PSANOVA(colNum, rowNum, nseg = nseg,
-                                            nest.div = c(2, 2)),
-                 genotype = "genotype", genotype.as.random = genotype.as.random,
-                 # geno.decomp = "TrtPop",
-                 data = droplevels(TD[[i]]),
-                 control = list(maxit = 50, tolerance = 1e-03, monitoring = 0))
-
-  })
-
+  fitMods <- fitModels(TD = TD, trait = trait, covariates = covariates,
+                       geno.decomp = geno.decomp)
+  ## APPROACH 1
   pred_a1 <- lapply(X = fitMods, FUN = method1)
-
   # Add results
   genoPred <- Reduce(f = rbind, x = lapply(X = pred_a1, FUN = `[[`, "predGeno"))
   colPred <- Reduce(f = rbind, x = lapply(X = pred_a1, FUN = `[[`, "predCol"))
@@ -76,31 +22,42 @@ basefunction <- function(TD) {
   colBLUPs <- Reduce(f = rbind, x = lapply(X = pred_a1, FUN = `[[`, "BLUPsCol"))
   rowBLUPs <- Reduce(f = rbind, x = lapply(X = pred_a1, FUN = `[[`, "BLUPsRow"))
 
-  # ##############################
-  # # Heritabilities
-  # ##############################
-  # h2.aux <- SpATS::getHeritability(fit.SpATS)
-  # h2[ti,] <- h2.aux
-  #
-  # # if the geno.decomp is used:
-  # # if(length(h2.aux) == 4) {
-  # #  	h2[ti,] <- h2.aux
-  # # } else {
-  # #   aux <- rep(NA, 4)
-  # #   aux[match(names(h2.aux), colnames(h2))] <- h2.aux
-  # # 	h2[ti,] <- aux
-  # # }
-  #
-  # ##############################
-  # # Other information
-  # ##############################
-  # sigma2[ti] <- fit.SpATS$psi[1]
-  # ed_col[ti] <- fit.SpATS$eff.dim["Col"]
-  # ed_row[ti] <- fit.SpATS$eff.dim["Row"]
-  # ed_surface[ti] <- sum(fit.SpATS$eff.dim[c("f(colNum)", "f(rowNum)", "f(colNum):rowNum", "colNum:f(rowNum)","f(colNum):f(rowNum)")])
-  # sigma2_col[ti] <- fit.SpATS$var.comp["Col"]
-  # sigma2_row[ti] <- fit.SpATS$var.comp["Row"]
+  ##############################
+  # Heritabilities
+  ##############################
+  h2 <- sapply(X = fitMods, FUN = SpATS::getHeritability)
 
+  # # When we are using the geno.decomp argument,
+  # # we have several levels of "populations" (combination of treatment and population),
+  # # so we'll have four different heritabilities = several columns.
+  # h2 <- sigma2_geno <- matrix(0, ncol = 1, nrow = length(times.fact))
+  # # colnames(h2) <- paste0("TrtPop",levels(dat.modif$TrtPop))
+
+
+
+  # if the geno.decomp is used:
+  # if(length(h2.aux) == 4) {
+  #  	h2[ti,] <- h2.aux
+  # } else {
+  #   aux <- rep(NA, 4)
+  #   aux[match(names(h2.aux), colnames(h2))] <- h2.aux
+  # 	h2[ti,] <- aux
+  # }
+
+  ##############################
+  # Other information
+  ##############################
+  sigma2 <- sapply(X = fitMods, FUN = function(x) x$psi[1])
+  edCol <- sapply(X = fitMods, FUN = function(x) x$eff.dim["colId"])
+  edRow <- sapply(X = fitMods, FUN = function(x) x$eff.dim["rowId"])
+  edSurface <- sapply(X = fitMods, FUN = function(x) {
+    sum(x$eff.dim[c("f(colNum)", "f(rowNum)", "f(colNum):rowNum",
+                            "colNum:f(rowNum)","f(colNum):f(rowNum)")])
+    })
+  sigma2Col <- sapply(X = fitMods, FUN = function(x) x$var.comp["colId"])
+  sigma2Row <- sapply(X = fitMods, FUN = function(x) x$var.comp["rowId"])
+
+  ## APPROACH2
   pred_a2 <- lapply(X = fitMods, FUN = method2)
   # Add results
   dataCorrSpat <- Reduce(f = rbind, x = pred_a2)
@@ -328,7 +285,7 @@ basefunction <- function(TD) {
   # aa + latticeExtra::as.layer(bb)
   # dev.off()
 
-  write.csv(dataCorrSpat, file = "Corrected_PAM_modRep.csv", row.names = FALSE)
-  write.table(genoPred, file = "BLUPs_PAM_modRep.csv", row.names = FALSE)
+  write.csv(dataCorrSpat, file = out2, row.names = FALSE)
+  write.csv(genoPred, file = out1, row.names = FALSE)
 
 }
