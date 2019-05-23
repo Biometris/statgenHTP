@@ -8,7 +8,8 @@ createTD <- function(dat,
                      colNum = NULL,
                      rowId = rowNum,
                      colId = colNum,
-                     checkId = NULL) {
+                     addCheck = FALSE,
+                     checkGenotypes = NULL) {
   ## Save name of original dat for naming output.
   datName <- deparse(substitute(dat))
   if (length(datName) > 1) {
@@ -22,8 +23,7 @@ createTD <- function(dat,
   ## tibbles and possibly other data structures in the future.
   dat <- as.data.frame(dat)
   cols <- colnames(dat)
-  for (param in c(genotype, timePoint, plotId,
-                  rowId, colId, rowNum, colNum, checkId)) {
+  for (param in c(genotype, timePoint, plotId, rowId, colId, rowNum, colNum)) {
     if (!is.null(param) && (!is.character(param) || length(param) > 1 ||
                             !hasName(dat, param))) {
       stop(paste(deparse(param), "has to be NULL or a column in dat.\n"))
@@ -31,7 +31,7 @@ createTD <- function(dat,
   }
   ## Create list of reserved column names for renaming columns.
   renameCols <- c("genotype", "timePoint", "time", "plotId", "rowId", "colId",
-                  "rowNum", "colNum", "checkId")
+                  "rowNum", "colNum")
   ## First rename duplicate colums and add duplicated columns to dat
   renameFrom <- as.character(sapply(X = renameCols, FUN = function(x) {
     get(x)
@@ -57,8 +57,15 @@ createTD <- function(dat,
   colnames(dat) <- cols
   ## Convert timepoint to nice format.
   dat[["timePoint"]] <- lubridate::ymd_hms(dat[["timePoint"]])
+  ## Add check genotype.
+  if (addCheck) {
+    dat[["check"]] <- ifelse(dat[["genotype"]] %in% checkGenotypes,
+                             dat[["genotype"]], "noCheck")
+    dat[["genoCheck"]] <- dat[["genotype"]]
+    dat[["genoCheck"]][dat[["check"]] != "noCheck"] <- NA
+  }
   ## Convert columns to factor if neccessary.
-  factorCols <-  c("genotype", "plotId", "rowId", "colId", "checkId", "time")
+  factorCols <-  c("genotype", "rowId", "colId", "check", "genoCheck", "time")
   for (factorCol in factorCols) {
     if (hasName(dat, factorCol)) {
       dat[[factorCol]] <- as.factor(dat[[factorCol]])
@@ -69,6 +76,15 @@ createTD <- function(dat,
   for (numCol in numCols) {
     if (hasName(dat, numCol) && !is.numeric(dat[cols == numCol])) {
       dat[cols == numCol] <- as.numeric(dat[, cols == numCol])
+    }
+  }
+  ## Check plotId for uniqueness.
+  if (is.null(plotId)) {
+    warning("No unique plot identifier supplied.\n")
+  } else {
+    if (max(by(data = dat[["plotId"]], INDICES = dat[["time"]],
+               FUN = anyDuplicated) > 0)) {
+      warning("plotId should be unique per time point.\n")
     }
   }
   listData <- split(x = dat, f = dat$time)

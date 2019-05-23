@@ -8,14 +8,6 @@ inDat <- data.table::fread("../rawdata/Original_PAM_reshape.csv",
 # (in principle the column "Sowing_Position" was also a unique ID but I wanted to see the position)
 inDat$ID <- interaction(inDat[["x"]], inDat[["y"]], sep = "_")
 inDat <- inDat[!is.na(inDat$pheno), ]
-# modification to be able to include the check in the model
-# I forgot to mention that: quite often in the platform experiments,
-# there is a highly replicated genotype (or 2, 3 ,4) that we can use in the model
-# but we need to format the dataset
-inDat$Check <- ifelse(inDat$Genotype %in% c("col", "ely", "evo1", "ler"),
-                      inDat$Genotype, "_pop")
-inDat$Genobis <- inDat$Genotype
-inDat$Genobis[inDat$Check != "_pop"] <- NA
 # Create an indicator for each plot (according to the row and column position)
 inDat$pos <- paste0("c", inDat$x, "r", inDat$y)
 # Create factors
@@ -28,7 +20,8 @@ inDat <- droplevels(inDat)
 
 inTD <- createTD(dat = inDat, genotype = "Genotype",
                  timePoint = "timepoints", plotId = "ID", rowNum = "y",
-                 colNum = "x")
+                 colNum = "x", addCheck = TRUE,
+                 checkGenotypes = c("col", "ely", "evo1", "ler"))
 
 basefunction(inTD[1:2], trait = "pheno",
              covariates = c("Sowing_Block", "Image_pos"),
