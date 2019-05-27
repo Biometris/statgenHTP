@@ -7,11 +7,12 @@ basefunction <- function(TD,
                          trait,
                          covariates = NULL,
                          geno.decomp = NULL,
+                         useCheck = FALSE,
                          out1,
                          out2) {
 
   fitMods <- fitModels(TD = TD, trait = trait, covariates = covariates,
-                       geno.decomp = geno.decomp)
+                       geno.decomp = geno.decomp, useCheck = useCheck)
   ## APPROACH 1
   pred_a1 <- lapply(X = fitMods, FUN = method1)
   # Add results

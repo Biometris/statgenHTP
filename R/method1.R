@@ -4,17 +4,34 @@ method1 <- function(fit.SpATS) {
   # Approach 1: obtain the genotypic predictions
   ##############################################################################
 
+  ## Get name of genotype column used.
+  genoCol <- fit.SpATS$model$geno$genotype
+  ## Check if check was used when fitting model.
+  useCheck <- grepl(pattern = "check", x = deparse(fit.SpATS$model$fixed))
+  checkCol <- if (useCheck) "check" else NULL
   ##############################
   # Genotype predictions
   ##############################
-  # Genotype prediction (including the effect of TrtPop, as well as the intercept)
+  ## Genotype prediction (including the effect of TrtPop, as well as the intercept)
   predGeno <- predict(fit.SpATS,
-                      which = c("genotype", fit.SpATS$model$geno$geno.decomp)) # ,"Check"
-  ## Include time point
+                      which = c(genoCol, fit.SpATS$model$geno$geno.decomp))
+  ## Repeat for the check genotypes.
+  if (useCheck) {
+    ## Predict check genotypes.
+    predCheck <- predict(fit.SpATS, which = checkCol)
+    ## Rename check to genotype for merging with genotype predictions.
+    predCheck[["genotype"]] <- predCheck[[checkCol]]
+    ## Remove noCheck
+    predCheck <- predCheck[predCheck[["genotype"]] != "noCheck", ]
+    ## Rename genoCol to genotype for merging with check predictions.
+    predGeno[["genotype"]] <- predGeno[[genoCol]]
+    predGeno <- rbind(predGeno, predCheck)
+  }
+  ## Include time point.
   predGeno[["time"]] <- fit.SpATS$data[["time"]][1]
-  # Select the needed variables for subsequent analyses
+  ## Rename genoCol to genotype.
+  ## Select the variables needed for subsequent analyses.
   predGeno <- predGeno[c("time", "genotype", "predicted.values", "standard.errors")]
-
   ##############################
   # Col predictions
   ##############################
@@ -24,7 +41,6 @@ method1 <- function(fit.SpATS) {
   predCol[["time"]] <- fit.SpATS$data[["time"]][1]
   # Select the needed variables for subsequent analyses
   predCol <- predCol[c("time", "colId", "predicted.values", "standard.errors")]
-
   ##############################
   # Row predictions
   ##############################
@@ -34,7 +50,6 @@ method1 <- function(fit.SpATS) {
   predRow[["time"]] <- fit.SpATS$data[["time"]][1]
   # Select the needed variables for subsequent analyses
   predRow <- predRow[c("time", "rowId", "predicted.values", "standard.errors")]
-
   ##############################
   # Genotype BLUPs
   ##############################
@@ -48,11 +63,9 @@ method1 <- function(fit.SpATS) {
   BLUPsGeno <- data.frame(genotype = genotypes, predicted.values = BLUPsGeno,
                           standard.errors = seBLUPsGeno,
                           time = fit.SpATS$data[["time"]][1])
-
   ##############################
   # Col BLUPs
   ##############################
-
   columns <- paste0("colId", levels(fit.SpATS$data[["colId"]]))
   # BLUPs
   BLUPsCol <- fit.SpATS$coeff[columns]
@@ -62,7 +75,6 @@ method1 <- function(fit.SpATS) {
   BLUPsCol <- data.frame(colId = columns, predicted.values = BLUPsCol,
                          standard.errors = seBLUPsCol,
                          time = fit.SpATS$data[["time"]][1])
-
   ##############################
   # Row BLUPs
   ##############################
@@ -76,7 +88,6 @@ method1 <- function(fit.SpATS) {
   BLUPsRow <- data.frame(rowId = rows, predicted.values = BLUPsRow,
                          standard.errors = seBLUPsRow,
                          time = fit.SpATS$data[["time"]][1])
-
   return(list(predGeno = predGeno, predCol = predCol, predRow = predRow,
               BLUPsGeno = BLUPsGeno, BLUPsCol = BLUPsCol, BLUPsRow = BLUPsRow))
 }

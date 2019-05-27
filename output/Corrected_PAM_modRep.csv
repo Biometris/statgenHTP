@@ -1,4 +1,4 @@
-"newTrait","genotype","time","Sowing_Block","Image_pos","colNum","rowNum","colId","rowId","pos","timePoint"
+"newTrait","genotype","time","Sowing_Block","Image_pos","colNum","rowNum","colId","rowId","plotId","timePoint"
 0.665166866137383,"2385",1,"1","4a",1,1,"1","1","c1r1",2018-05-31 16:37:00
 0.651652075832187,"1060",1,"1","4b",11,1,"11","1","c11r1",2018-05-31 16:37:00
 0.674108838775869,"ler",1,"1","4c",12,1,"12","1","c12r1",2018-05-31 16:37:00
