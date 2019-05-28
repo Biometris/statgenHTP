@@ -8,7 +8,8 @@ createFitMod <- function(models) {
 
 plot.fitMod <- function(x,
                         ...,
-                        plotType = c("layout", "box", "cor", "raw"),
+                        plotType = c("rawPred", "corrPred", "herit", "effDim",
+                                     "rowPred", "colPred"),
                         timePoints = names(x),
                         traits = NULL,
                         output = TRUE) {
@@ -16,6 +17,15 @@ plot.fitMod <- function(x,
   if (!is.character(timePoints) || !all(hasName(x = x, name = timePoints))) {
     stop(paste0("All timePoints should be in ", deparse(substitute(x)), ".\n"))
   }
-  plotType <- match.arg(plotType)
+  plotType <- match.arg(plotType, several.ok = TRUE)
   dotArgs <- list(...)
+  if ("corrPred" %in% plotType) {
+    preds <- getBLUPs(x)
+    preds[["time"]] <- lubridate::ymd_hms(preds[["time"]])
+    corrected <- getCorrected(x)
+    xyFacetPlot(baseDat = corrected, overlayDat = preds, yVal = "newTrait",
+                yValOverlay = "predicted.values",
+                title = "Genomic predictions",
+                yLab = traits)
+  }
 }
