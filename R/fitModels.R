@@ -1,3 +1,4 @@
+#' @export
 fitModels <- function(TD,
                       trait,
                       covariates = NULL,
@@ -15,10 +16,9 @@ fitModels <- function(TD,
   }
   ##############################################################################
   ######## Loop on timepoint to run SpATS
-
-  fitMods <- lapply(X = seq_along(TD), function(i) {
-    message(names(TD)[i])
-    modDat <- droplevels(TD[[i]])
+  fitMods <- lapply(X = TD, function(timePoint) {
+    message(timePoint[["timePoint"]][1])
+    modDat <- droplevels(timePoint)
     ## number of segments for SpATS:
     nseg = c(nlevels(modDat[["colId"]]), nlevels(modDat[["rowId"]]))
     ## Fit the model.
@@ -32,5 +32,5 @@ fitModels <- function(TD,
                  control = list(maxit = 50, tolerance = 1e-03, monitoring = 0))
 
   })
-  return(fitMods)
+  return(createFitMod(fitMods))
 }

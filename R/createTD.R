@@ -489,7 +489,6 @@ plot.TD <- function(x,
                        "Plot skipped.\n"), call. = FALSE)
         break
       }
-      timeClass <- class(plotDat[["timePoint"]])
       plotDat <- reshape2::melt(data = reshape2::dcast(data = plotDat,
                                                        formula = genotype + plotId ~ timePoint,
                                                        value.var = trait,

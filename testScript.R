@@ -30,14 +30,22 @@ plot(inTD, plotType = "cor", traits = "pheno")
 plot(inTD, plotType = "box", traits = "pheno",
      timePoints = c("2018-05-31 16:37:00", "2018-06-01 09:07:00"),
      colorBy = "Sowing_Block")
+
+pdf("Phenovator_Rene_raw_data_na.pdf")
 plot(inTD, plotType = "raw", traits = "pheno")
+dev.off()
 
-basefunction(inTD[1:2], trait = "pheno",
-             covariates = c("Sowing_Block", "Image_pos"),
-             out1 = "BLUPs_PAM_modRep.csv",
-             out2 = "Corrected_PAM_modRep.csv")
+fitMods <- fitModels(TD = inTD, trait = "pheno",
+                     covariates = c("Sowing_Block", "Image_pos"))
 
-basefunction(inTD[1:2], trait = "pheno",
+BLUPs <- getBLUPs(fitMods, outFile = "BLUPs_PAM_modRep.csv")
+spatCorr <- getCorrected(fitMods, outFile = "Corrected_PAM_modRep.csv")
+sigma2 <- getSigma2(fitMods)
+h2 <- getHerit(fitMods)
+
+
+
+basefunction(inTD, trait = "pheno",
              covariates = c("Sowing_Block", "Image_pos"),
              useCheck = TRUE,
              out1 = "BLUPs_PAM_modRep_Check.csv",
@@ -46,10 +54,6 @@ basefunction(inTD[1:2], trait = "pheno",
 
 plotDat <- Reduce(rbind, inTD)
 
-pdf("Phenovator_Rene_raw_data.pdf")
-  xyFacetPlot(baseDat = plotDat, yVal = "pheno",
-              title = "Phenovator platform - Raw data")
-dev.off()
 
 
 
