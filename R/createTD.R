@@ -167,7 +167,7 @@ createTD <- function(dat,
 #' @export
 plot.TD <- function(x,
                     ...,
-                    plotType = c("layout", "box", "cor"),
+                    plotType = c("layout", "box", "cor", "raw"),
                     timePoints = names(x),
                     traits = NULL,
                     output = TRUE) {
@@ -467,6 +467,40 @@ plot.TD <- function(x,
       if (output) {
         plot(pTr)
       }
+    }
+  } else if (plotType == "raw") {
+    if (is.null(traits) || !is.character(traits)) {
+      stop("traits should be a character vector.\n")
+    }
+    p <- setNames(vector(mode = "list", length = length(traits)), traits)
+    for (trait in traits) {
+      ## Create a single data.frame from x with only columns timePoint and trait.
+      ## timePoints where trait is not measured/available are removed by setting
+      ## them to NULL.
+      plotDat <- Reduce(f = rbind, x = lapply(X = x, FUN = function(timePoint) {
+        if (!hasName(x = timePoint, name = trait)) {
+          NULL
+        } else {
+          timePoint[c("genotype", "timePoint", "plotId", trait)]
+        }
+      }))
+      if (is.null(plotDat)) {
+        warning(paste0(trait, " isn't a column in any of the timePoints.\n",
+                       "Plot skipped.\n"), call. = FALSE)
+        break
+      }
+      timeClass <- class(plotDat[["timePoint"]])
+      plotDat <- reshape2::melt(data = reshape2::dcast(data = plotDat,
+                                                       formula = genotype + plotId ~ timePoint,
+                                                       value.var = trait,
+                                                       fun.aggregate = mean),
+                                id.vars = c("genotype", "plotId"),
+                                variable.name = "timePoint",
+                                value.name = trait)
+      plotDat[["timePoint"]] <- lubridate::ymd_hms(plotDat[["timePoint"]])
+      xyFacetPlot(baseDat = plotDat, yVal = trait,
+                  title = "Phenovator platform - Raw data", yLab = trait,
+                  output = output)
     }
   }
   invisible(p)

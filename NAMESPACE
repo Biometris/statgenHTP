@@ -3,6 +3,5 @@
 S3method(plot,TD)
 export(basefunction)
 export(createTD)
-export(xyFacetPlot)
 import(data.table)
 importFrom(SpATS,predict.SpATS)

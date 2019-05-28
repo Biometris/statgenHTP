@@ -4,7 +4,7 @@
 \alias{plot.TD}
 \title{Plot function for class TD}
 \usage{
-\method{plot}{TD}(x, ..., plotType = c("layout", "box", "cor"),
+\method{plot}{TD}(x, ..., plotType = c("layout", "box", "cor", "raw"),
   timePoints = names(x), traits = NULL, output = TRUE)
 }
 \arguments{
@@ -35,8 +35,8 @@ different plots is given in the sections below.
 \section{Layout Plot}{
 
 Plots the layout of the selected timePoints (all available timePoints by default).
-This plot can only be made for timePoints that contain both row (\code{rowCoord})
-and column (\code{colCoord}) information. If either one of those is missing
+This plot can only be made for timePoints that contain both row (\code{rowNum})
+and column (\code{colNum}) information. If either one of those is missing
 the timePoint is skipped with a warning. If blocks (\code{subBlock}) are
 available for a timePoint these are indicated in different colors per block,
 otherwise all plots are colored in grey. If replicates (\code{repId}) are
