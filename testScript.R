@@ -23,6 +23,13 @@ inTD <- createTD(dat = inDat, genotype = "Genotype",
                  colNum = "x", addCheck = TRUE,
                  checkGenotypes = c("col", "ely", "evo1", "ler"))
 
+plot(inTD, plotType = "layout",
+     timePoints = c("2018-05-31 16:37:00", "2018-06-01 09:07:00"))
+plot(inTD, plotType = "cor", traits = "pheno")
+plot(inTD, plotType = "box", traits = "pheno",
+     timePoints = c("2018-05-31 16:37:00", "2018-06-01 09:07:00"),
+     colorBy = "Sowing_Block")
+
 basefunction(inTD[1:2], trait = "pheno",
              covariates = c("Sowing_Block", "Image_pos"),
              out1 = "BLUPs_PAM_modRep.csv",
@@ -33,6 +40,19 @@ basefunction(inTD[1:2], trait = "pheno",
              useCheck = TRUE,
              out1 = "BLUPs_PAM_modRep_Check.csv",
              out2 = "Corrected_PAM_modRep_Check.csv")
+
+
+plotDat <- Reduce(rbind, inTD)
+
+pdf("Phenovator_Rene_raw_data.pdf")
+  xyFacetPlot(baseDat = plotDat, yVal = "pheno",
+              title = "Phenovator platform - Raw data")
+dev.off()
+
+
+
+
+
 
 
 ## Second example

@@ -78,7 +78,6 @@ method1 <- function(fit.SpATS) {
   ##############################
   # Row BLUPs
   ##############################
-  # BLUPs
   rows <- paste0("rowId", levels(fit.SpATS$data[["rowId"]]))
   # BLUPs
   BLUPsRow <- fit.SpATS$coeff[rows]

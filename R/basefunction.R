@@ -286,7 +286,8 @@ basefunction <- function(TD,
   # aa + latticeExtra::as.layer(bb)
   # dev.off()
 
-  write.csv(dataCorrSpat, file = out2, row.names = FALSE)
   write.csv(genoPred, file = out1, row.names = FALSE)
+  write.csv(dataCorrSpat, file = out2, row.names = FALSE)
 
+  return(list(genoPred = genoPred, dataCorrSpat = dataCorrSpat))
 }
