@@ -2,7 +2,6 @@
 createTD <- function(dat,
                      genotype,
                      timePoint,
-                     time = timePoint,
                      plotId = NULL,
                      rowNum = NULL,
                      colNum = NULL,
@@ -30,7 +29,7 @@ createTD <- function(dat,
     }
   }
   ## Create list of reserved column names for renaming columns.
-  renameCols <- c("genotype", "timePoint", "time", "plotId", "rowId", "colId",
+  renameCols <- c("genotype", "timePoint", "plotId", "rowId", "colId",
                   "rowNum", "colNum")
   ## First rename duplicate colums and add duplicated columns to dat
   renameFrom <- as.character(sapply(X = renameCols, FUN = function(x) {
@@ -56,7 +55,7 @@ createTD <- function(dat,
   }
   colnames(dat) <- cols
   ## Convert timepoint to nice format.
-  dat[["timePoint"]] <- lubridate::ymd_hms(dat[["timePoint"]])
+  dat[["timePoint"]] <- lubridate::as_datetime(dat[["timePoint"]])
   ## Add check genotype.
   if (addCheck) {
     dat[["check"]] <- ifelse(dat[["genotype"]] %in% checkGenotypes,
@@ -65,7 +64,8 @@ createTD <- function(dat,
     dat[["genoCheck"]][dat[["check"]] != "noCheck"] <- NA
   }
   ## Convert columns to factor if neccessary.
-  factorCols <-  c("genotype", "rowId", "colId", "check", "genoCheck", "time")
+  factorCols <-  c("genotype", "rowId", "colId", "plotId", "check",
+                   "genoCheck")
   for (factorCol in factorCols) {
     if (hasName(dat, factorCol)) {
       dat[[factorCol]] <- as.factor(dat[[factorCol]])
@@ -82,12 +82,12 @@ createTD <- function(dat,
   if (is.null(plotId)) {
     warning("No unique plot identifier supplied.\n")
   } else {
-    if (max(by(data = dat[["plotId"]], INDICES = dat[["time"]],
+    if (max(by(data = dat[["plotId"]], INDICES = dat[["timePoint"]],
                FUN = anyDuplicated) > 0)) {
       warning("plotId should be unique per time point.\n")
     }
   }
-  listData <- split(x = dat, f = dat$time)
+  listData <- split(x = dat, f = dat[["timePoint"]])
   ## Set meta for all timePoints in dat.
   for (tr in names(listData)) {
     ## Add a list of columns that have been renamed as attribute to TD.
@@ -414,7 +414,8 @@ plot.TD <- function(x,
       ## If TD already contains BLUEs/BLUPs taking means doesn't do anything
       ## but it is needed for raw data where there can be replicates.
       plotTab <- tapply(plotDat[[trait]],
-                        INDEX = list(plotDat$genotype, plotDat$timePoint),
+                        INDEX = list(plotDat[["genotype"]],
+                                     plotDat[["timePoint"]]),
                         FUN = mean, na.rm = TRUE)
       ## Create a correlation matrix.
       corMat <- cor(plotTab, use = "pairwise.complete.obs")
@@ -496,7 +497,9 @@ plot.TD <- function(x,
                                 id.vars = c("genotype", "plotId"),
                                 variable.name = "timePoint",
                                 value.name = trait)
-      plotDat[["timePoint"]] <- lubridate::ymd_hms(plotDat[["timePoint"]])
+      ## melt loses date format for timePoint needed to avoid a messy scale
+      ## in the final plot so resetting it here.
+      plotDat[["timePoint"]] <- lubridate::as_datetime(plotDat[["timePoint"]])
       xyFacetPlot(baseDat = plotDat, yVal = trait,
                   title = "Phenovator platform - Raw data", yLab = trait,
                   output = output)

@@ -31,7 +31,7 @@ plot(inTD, plotType = "box", traits = "pheno",
      timePoints = c("2018-05-31 16:37:00", "2018-06-01 09:07:00"),
      colorBy = "Sowing_Block")
 
-pdf("Phenovator_Rene_raw_data_na.pdf")
+pdf("Phenovator_Rene_raw_data_na.pdf", height = 8, width = 12)
 plot(inTD, plotType = "raw", traits = "pheno")
 dev.off()
 
@@ -40,25 +40,14 @@ fitMods <- fitModels(TD = inTD, trait = "pheno",
 
 BLUPs <- getBLUPs(fitMods, outFile = "BLUPs_PAM_modRep.csv")
 spatCorr <- getCorrected(fitMods, outFile = "Corrected_PAM_modRep.csv")
-sigma2 <- getSigma2(fitMods)
+variance <- getVar(fitMods)
 h2 <- getHerit(fitMods)
 
-
-
-basefunction(inTD, trait = "pheno",
-             covariates = c("Sowing_Block", "Image_pos"),
-             useCheck = TRUE,
-             out1 = "BLUPs_PAM_modRep_Check.csv",
-             out2 = "Corrected_PAM_modRep_Check.csv")
-
-
-plotDat <- Reduce(rbind, inTD)
-
-
-
-
-
-
+plot(fitMods, plotType = "corrPred")
+plot(fitMods, plotType = "rawPred", traits = "pheno")
+plot(fitMods, plotType = "herit")
+plot(fitMods, plotType = "variance")
+plot(fitMods, plotType = "effDim")
 
 
 ## Second example
@@ -76,9 +65,17 @@ inDat2$Population = as.factor(inDat2$population)
 inDat2$TrtGeno <- interaction(inDat2$Treatment, inDat2$geno, sep = "_")
 inDat2$TrtPop = interaction(inDat2$Treatment, inDat2$Population, sep = "_")
 
-inTD2 <- createTD(dat = inDat2, genotype = "TrtGeno",
-                  timePoint = "time1", time = "Date", plotId = "pos",
-                  rowNum = "Position", colNum = "Line")
+inTD2 <- createTD(dat = inDat2, genotype = "TrtGeno", timePoint = "Date",
+                  plotId = "pos", rowNum = "Position", colNum = "Line")
+
+plot(inTD2, plotType = "layout", timePoints = "2017-04-13")
+plot(inTD2, plotType = "cor", traits = "LA_Estimated")
+plot(inTD2, plotType = "box", traits = "LA_Estimated",
+     timePoints = names(inTD2[1:3]))
+pdf("Phenovator_ZA17_raw_data_na.pdf", height = 8, width = 12)
+plot(inTD2, plotType = "raw", traits = "LA_Estimated")
+dev.off()
+
 basefunction(inTD2[1:2], trait = "LA_Estimated", covariates = "TrtPop",
              geno.decomp = "TrtPop",
              out1 = "BLUPs_ZA17_LeafArea.csv",

@@ -20,7 +20,7 @@ method2 <- function(fit.SpATS) {
   pred <- predict(fit.SpATS, which = predVars)
   ## Merge genotype, pos, time and timepoint to data
   pred <- merge(pred, fit.SpATS$data[c("rowNum", "colNum", "genotype",
-                                       "plotId", "time", "timePoint", trait,
+                                       "plotId", "timePoint", trait,
                                        genoDec)],
                 by = c("rowNum", "colNum"))
   ## Obtain the corrected trait.
@@ -31,8 +31,7 @@ method2 <- function(fit.SpATS) {
     pred[["genotype"]] <- pred[["genotype.y"]]
   }
   if (!is.null(genoDec)) pred[[genoDec]] <- pred[[paste0(genoDec, ".y")]]
-  pred[["time"]] <- as.numeric(pred[["time"]])
-  pred <- pred[c("newTrait", "genotype", "time", genoDec, predVars, "plotId",
+  pred <- pred[c("newTrait", "genotype", genoDec, predVars, "plotId",
                  "timePoint")]
   ## return results.
   return(pred)
