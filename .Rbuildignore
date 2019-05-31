@@ -5,5 +5,9 @@ output
 outputOrigScript
 origScripts
 testScript.R
-
+.gitlab-ci.yml
+.gitlab-ci.R
+^README\.Rmd$
+^.apt$
+^ci
 
