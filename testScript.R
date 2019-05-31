@@ -45,6 +45,7 @@ plot(fitMods, plotType = "rawPred")
 plot(fitMods, plotType = "herit")
 plot(fitMods, plotType = "variance")
 plot(fitMods, plotType = "effDim")
+plot(fitMods, plotType = "timeLapse", outFile = "spatialtrends.gif")
 
 ## Second example
 inDat2 <- data.table::fread("../data-raw/Data_modif_ZA17_anonymous.csv",
@@ -77,5 +78,5 @@ plot(fitMods2, plotType = "rawPred")
 plot(fitMods2, plotType = "herit")
 plot(fitMods2, plotType = "variance")
 plot(fitMods2, plotType = "effDim")
-
+plot(fitMods2, plotType = "timeLapse", outFile = "spatialtrends2.gif")
 

@@ -17,5 +17,6 @@ Imports:
     lubridate,
     reshape2,
     scales,
-    SpATS
+    SpATS,
+    animation
 RoxygenNote: 6.1.1

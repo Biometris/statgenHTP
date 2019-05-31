@@ -10,7 +10,8 @@ createFitMod <- function(models) {
 plot.fitMod <- function(x,
                         ...,
                         plotType = c("rawPred", "corrPred", "herit", "effDim",
-                                     "variance", "rowPred", "colPred"),
+                                     "variance", "rowPred", "colPred",
+                                     "timeLapse"),
                         timePoints = names(x),
                         title = NULL) {
   ## Checks.
@@ -37,8 +38,8 @@ plot.fitMod <- function(x,
     if (is.null(title)) title <- "Heritabilities"
     herit <- getHerit(x)
     herit <- reshape2::melt(herit, measure.vars = setdiff(colnames(herit),
-                                                           "timePoint"),
-                             variable.name = "herit", value.name = "h2")
+                                                          "timePoint"),
+                            variable.name = "herit", value.name = "h2")
     ggplot2::ggplot(herit,
                     ggplot2::aes_string(x = "timePoint", y = "h2",
                                         group = "herit", color = "herit")) +
@@ -50,7 +51,7 @@ plot.fitMod <- function(x,
     effDim <- getEffDims(x)
     effDim <- reshape2::melt(effDim, measure.vars = c("effDimSurface",
                                                       "effDimCol", "effDimRow"),
-                   variable.name = "effDim", value.name = "ED")
+                             variable.name = "effDim", value.name = "ED")
     ggplot2::ggplot(effDim,
                     ggplot2::aes_string(x = "timePoint", y = "ED",
                                         group = "effDim", color = "effDim")) +
@@ -72,5 +73,114 @@ plot.fitMod <- function(x,
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) +
       ggplot2::labs(title = title, color = "variance",
                     y = expression(sigma ^ 2))
+  } else if (plotType == "timeLapse") {
+    outFile <- dotArgs$outFile
+    timeLapsePlot(x, outFile = outFile)
   }
 }
+
+#' Helper function for creating field plots.
+#'
+#' @noRd
+#' @keywords internal
+fieldPlot <- function(plotDat,
+                      fillVar,
+                      title,
+                      colors,
+                      zlim = range(plotDat[fillVar]),
+                      xTicks = ggplot2::waiver(),
+                      ...) {
+  p <- ggplot2::ggplot(data = plotDat,
+                       ggplot2::aes_string(x = "colNum", y = "rowNum",
+                                           fill = fillVar)) +
+    ggplot2::geom_raster(na.rm = TRUE) +
+    ## Remove empty space between ticks and actual plot.
+    ggplot2::scale_x_continuous(expand = c(0, 0), breaks = xTicks) +
+    ggplot2::scale_y_continuous(expand = c(0, 0)) +
+    ## Adjust plot colors.
+    ggplot2::scale_fill_gradientn(limits = zlim, colors = colors) +
+    ## No background. Center and resize title. Resize axis labels.
+    ## Remove legend title and resize legend entries.
+    ggplot2::theme(panel.background = ggplot2::element_blank(),
+                   plot.title = ggplot2::element_text(hjust = 0.5, size = 10),
+                   axis.title = ggplot2::element_text(size = 9),
+                   legend.title = ggplot2::element_blank(),
+                   legend.text =
+                     ggplot2::element_text(size = 8,
+                                           margin = ggplot2::margin(l = 5))) +
+    ggplot2::ggtitle(title)
+  return(p)
+}
+
+#' Helper function for creating time lapse plots.
+#'
+#' @noRd
+#' @keywords internal
+timeLapsePlot <- function(fitMods,
+                          outFile = "spatialTrends.gif") {
+  animation::saveGIF({
+    ## Get trait from fitted models.
+    trait <- fitMod[[1]]$model$response
+    ## First get plot data for all fields so a single zLim can be extracted
+    ## for all plots.
+    plotSpatDats <- lapply(X = fitMods, FUN = function(fitMod) {
+      ## Get data from fitted model
+      plotDat <- fitMod$data
+      ## Get min and max values for rows and columns.
+      yMin <- min(plotDat$rowNum)
+      yMax <- max(plotDat$rowNum)
+      xMin <- min(plotDat$colNum)
+      xMax <- max(plotDat$colNum)
+      ## Execute this part first since it needs plotData without missings
+      ## removed.
+      ## Code mimickes code from SpATS package but is adapted to create a
+      ## data.frame useable by ggplot.
+      plotDat <- plotDat[order(plotDat$colNum, plotDat$rowNum), ]
+      nCol <- xMax - xMin + 1
+      nRow <- yMax - yMin + 1
+      p1 <- 100 %/% nCol + 1
+      p2 <- 100 %/% nRow + 1
+      ## Get spatial trend from SpATS object.
+      spatTr <- SpATS::obtain.spatialtrend(fitMod,
+                                           grid = c(nCol * p1, nRow * p2))
+      ## spatial trend contains values for all data points, so NA in original
+      ## data need to be removed. The kronecker multiplication is needed to
+      ## convert the normal row col pattern to the smaller grid extending the
+      ## missing values.
+      ## First a matrix M is created containing information for all
+      ## columns/rows in the field even if they are completely empty.
+      M <- matrix(nrow = nRow, ncol = nCol,
+                  dimnames = list(yMin:yMax, xMin:xMax))
+      for (i in 1:nrow(plotDat)) {
+        M[as.character(plotDat[i, "rowNum"]),
+          as.character(plotDat[i, "colNum"])] <-
+          ifelse(is.na(plotDat[i, trait]), NA, 1)
+      }
+      spatTrDat <- kronecker(M, matrix(data = 1, ncol = p1, nrow = p2)) *
+        spatTr$fit
+      ## Melt to get the data in ggplot shape. Rows and columns in the
+      ## spatial trend coming from SpATS are swapped so therefore use t()
+      plotDatSpat <- reshape2::melt(t(spatTrDat),
+                                    varnames = c("colNum", "rowNum"))
+      ## Add true values for columns and rows for plotting.
+      plotDatSpat$colNum <- spatTr$col.p
+      plotDatSpat$rowNum <- rep(x = spatTr$row.p, each = p1 * nCol)
+      ## Remove missings from data.
+      plotDatSpat <- ggplot2::remove_missing(plotDatSpat, na.rm = TRUE)
+      return(plotDatSpat)
+    })
+    ## Extract all zVals to use identical limits for spatial pattern
+    ## This enables proper comparison of plots over timePoints.
+    zVals <- unlist(sapply(X = plotSpatDats, `[[`, "value"))
+    zLim <- c(min(zVals), max(zVals))
+    for (i in seq_along(plotSpatDats)) {
+      p <- fieldPlot(plotDat = plotSpatDats[[i]], fillVar = "value",
+                     title = paste(trait, names(plotSpatDats)[i]),
+                     colors = topo.colors(100), zlim = zLim)
+      plot(p)
+    }
+  }, movie.name = outFile, autobrowse = FALSE)
+}
+
+
+
