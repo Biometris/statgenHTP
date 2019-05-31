@@ -1,7 +1,7 @@
 folder <- "C:/Projects/R packages/statgenhtp/"
 setwd(paste0(folder, "output/"))
 
-inDat <- data.table::fread("../rawdata/Original_PAM_reshape.csv",
+inDat <- data.table::fread("../data-raw/Original_PAM_reshape.csv",
                                data.table = FALSE)
 
 # creating a unique ID per plant using the row and col coordinate
@@ -10,9 +10,6 @@ inDat$ID <- interaction(inDat[["x"]], inDat[["y"]], sep = "_")
 inDat <- inDat[!is.na(inDat$pheno), ]
 # Create an indicator for each plot (according to the row and column position)
 inDat$pos <- paste0("c", inDat$x, "r", inDat$y)
-# Create factors
-inDat$Image_pos = as.factor(inDat$Image_pos)
-inDat$Sowing_Block = as.factor(inDat$Sowing_Block)
 
 # I removed a plant that has very few measurements
 inDat <- inDat[inDat$pos != "c1r54",]
@@ -38,33 +35,25 @@ dev.off()
 fitMods <- fitModels(TD = inTD, trait = "pheno",
                      covariates = c("Sowing_Block", "Image_pos"))
 
-BLUPs <- getBLUPs(fitMods, outFile = "BLUPs_PAM_modRep.csv")
+genoPreds <- getGenoPred(fitMods, outFile = "BLUPs_PAM_modRep.csv")
 spatCorr <- getCorrected(fitMods, outFile = "Corrected_PAM_modRep.csv")
 variance <- getVar(fitMods)
 h2 <- getHerit(fitMods)
 
 plot(fitMods, plotType = "corrPred")
-plot(fitMods, plotType = "rawPred", traits = "pheno")
+plot(fitMods, plotType = "rawPred")
 plot(fitMods, plotType = "herit")
 plot(fitMods, plotType = "variance")
 plot(fitMods, plotType = "effDim")
 
 ## Second example
-inDat2 <- data.table::fread("../rawdata/Data_modif_ZA17_anonymous.csv",
+inDat2 <- data.table::fread("../data-raw/Data_modif_ZA17_anonymous.csv",
                            data.table = FALSE)
 
 # Create an indicator for each plot (according to the row and column position)
 inDat2$pos <- paste0("c", inDat2$Line, "r", inDat2$Position)
-# Create factors
-inDat2$Treatment = as.factor(inDat2$Scenario)
-inDat2$Population = as.factor(inDat2$population)
-### This part is the columns that should be created to run SpATS with
-#  a factor that split the genotypic variance
-# here there is the combination of genotypic panel and water treatment
-inDat2$TrtGeno <- interaction(inDat2$Treatment, inDat2$geno, sep = "_")
-inDat2$TrtPop = interaction(inDat2$Treatment, inDat2$Population, sep = "_")
 
-inTD2 <- createTD(dat = inDat2, genotype = "TrtGeno", timePoint = "Date",
+inTD2 <- createTD(dat = inDat2, genotype = "geno", timePoint = "Date",
                   plotId = "pos", rowNum = "Position", colNum = "Line")
 
 plot(inTD2, plotType = "layout", timePoints = "2017-04-13")
@@ -76,15 +65,15 @@ plot(inTD2, plotType = "raw", traits = "LA_Estimated")
 dev.off()
 
 fitMods2 <- fitModels(TD = inTD2, trait = "LA_Estimated",
-                      geno.decomp = "TrtPop", covariates = "TrtPop")
+                      geno.decomp = "Scenario", covariates = "population")
 
-BLUPs <- getBLUPs(fitMods2, outFile = "BLUPs_ZA17_LeafArea.csv")
-spatCorr <- getCorrected(fitMods2, outFile = "Corrected_ZA17_LeafArea.csv")
-variance <- getVar(fitMods2)
-h2 <- getHerit(fitMods2)
+genoPreds2 <- getGenoPred(fitMods2, outFile = "BLUPs_ZA17_LeafArea.csv")
+spatCorr2 <- getCorrected(fitMods2, outFile = "Corrected_ZA17_LeafArea.csv")
+variance2 <- getVar(fitMods2)
+h22 <- getHerit(fitMods2)
 
 plot(fitMods2, plotType = "corrPred")
-plot(fitMods2, plotType = "rawPred", traits = "LA_Estimated")
+plot(fitMods2, plotType = "rawPred")
 plot(fitMods2, plotType = "herit")
 plot(fitMods2, plotType = "variance")
 plot(fitMods2, plotType = "effDim")

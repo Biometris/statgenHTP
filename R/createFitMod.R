@@ -6,13 +6,13 @@ createFitMod <- function(models) {
   return(fitMod)
 }
 
+#' @export
 plot.fitMod <- function(x,
                         ...,
                         plotType = c("rawPred", "corrPred", "herit", "effDim",
                                      "variance", "rowPred", "colPred"),
                         timePoints = names(x),
-                        traits = NULL,
-                        output = TRUE) {
+                        title = NULL) {
   ## Checks.
   if (!is.character(timePoints) || !all(hasName(x = x, name = timePoints))) {
     stop(paste0("All timePoints should be in ", deparse(substitute(x)), ".\n"))
@@ -20,20 +20,21 @@ plot.fitMod <- function(x,
   plotType <- match.arg(plotType)
   dotArgs <- list(...)
   if (plotType == "rawPred") {
-    preds <- getBLUPs(x)
+    if (is.null(title)) title <- "Genomic predictions + raw data"
+    trait <- x[[1]]$model$response
+    preds <- getGenoPred(x)
     raw <- Reduce(f = rbind, x = lapply(x, `[[`, "data"))
-    xyFacetPlot(baseDat = raw, overlayDat = preds, yVal = traits,
-                yValOverlay = "predicted.values",
-                title = "Genomic predictions + raw data",
-                yLab = traits)
+    xyFacetPlot(baseDat = raw, overlayDat = preds, yVal = trait,
+                yValOverlay = "predicted.values", title = title, yLab = trait)
   } else if (plotType == "corrPred") {
-    preds <- getBLUPs(x)
+    if (is.null(title)) title <- "Genomic predictions + spatial corrected data"
+    trait <- x[[1]]$model$response
+    preds <- getGenoPred(x)
     corrected <- getCorrected(x)
     xyFacetPlot(baseDat = corrected, overlayDat = preds, yVal = "newTrait",
-                yValOverlay = "predicted.values",
-                title = "Genomic predictions + spatial corrected data",
-                yLab = traits)
+                yValOverlay = "predicted.values", title = title, yLab = trait)
   } else if (plotType == "herit") {
+    if (is.null(title)) title <- "Heritabilities"
     herit <- getHerit(x)
     herit <- reshape2::melt(herit, measure.vars = setdiff(colnames(herit),
                                                            "timePoint"),
@@ -43,8 +44,9 @@ plot.fitMod <- function(x,
                                         group = "herit", color = "herit")) +
       ggplot2::geom_line(na.rm = TRUE) +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) +
-      ggplot2::labs(title = "Heritabilities")
+      ggplot2::labs(title = title)
   } else if (plotType == "effDim") {
+    if (is.null(title)) title <- "Effective dimensions"
     effDim <- getEffDims(x)
     effDim <- reshape2::melt(effDim, measure.vars = c("effDimSurface",
                                                       "effDimCol", "effDimRow"),
@@ -55,9 +57,9 @@ plot.fitMod <- function(x,
       ggplot2::geom_line() +
       ggplot2::scale_color_discrete(labels = c("Surface", "Columns", "Rows")) +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) +
-      ggplot2::labs(title = "Effective dimensions",
-                    color = "Effective dimension")
+      ggplot2::labs(title = title, color = "Effective dimension")
   } else if (plotType == "variance") {
+    if (is.null(title)) title <- "Variances"
     variance <- getVar(x)
     variance <- reshape2::melt(variance, measure.vars = c("varRes", "varCol",
                                                           "varRow"),
@@ -68,7 +70,7 @@ plot.fitMod <- function(x,
       ggplot2::geom_line() +
       ggplot2::scale_color_discrete(labels = c("Residual", "Columns", "Rows")) +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) +
-      ggplot2::labs(title = "Variances", color = "variance",
+      ggplot2::labs(title = title, color = "variance",
                     y = expression(sigma ^ 2))
   }
 }

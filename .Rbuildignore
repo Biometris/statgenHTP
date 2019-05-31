@@ -1,0 +1,9 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+data-raw
+output
+outputOrigScript
+origScripts
+testScript.R
+
+

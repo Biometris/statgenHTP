@@ -1,19 +1,74 @@
 #' @export
-getBLUPs <- function(fitMod,
+getGenoPred <- function(fitMod,
                      outFile = NULL) {
-  BLUPsTP <- lapply(X = fitMod, FUN = method1)
-  BLUPs <- Reduce(f = rbind, x = lapply(X = BLUPsTP, FUN = `[[`, "predGeno"))
+  genoPred <- lapply(X = fitMod, FUN = predictGeno)
+  genoPred <- Reduce(f = rbind, x = genoPred)
   if (!is.null(outFile)) {
-    write.csv(BLUPs, file = outFile, row.names = FALSE)
+    write.csv(genoPred, file = outFile, row.names = FALSE)
   }
-  return(BLUPs)
+  return(genoPred)
+}
+
+#' @export
+getColPred <- function(fitMod,
+                       outFile = NULL) {
+  colPred <- lapply(X = fitMod, FUN = predictCol)
+  colPred <- Reduce(f = rbind, x = colPred)
+  if (!is.null(outFile)) {
+    write.csv(colPred, file = outFile, row.names = FALSE)
+  }
+  return(colPred)
+}
+
+#' @export
+getRowPred <- function(fitMod,
+                        outFile = NULL) {
+  rowPred <- lapply(X = fitMod, FUN = predictRow)
+  rowPred <- Reduce(f = rbind, x = rowPred)
+  if (!is.null(outFile)) {
+    write.csv(rowPred, file = outFile, row.names = FALSE)
+  }
+  return(rowPred)
+}
+
+#' @export
+getBLUPsGeno <- function(fitMod,
+                         outFile = NULL) {
+  BLUPsGeno <- lapply(X = fitMod, FUN = BLUPsGeno)
+  BLUPsGeno <- Reduce(f = rbind, x = BLUPsGeno)
+  if (!is.null(outFile)) {
+    write.csv(BLUPsGeno, file = outFile, row.names = FALSE)
+  }
+  return(BLUPsGeno)
+}
+
+#' @export
+getBLUPsCol <- function(fitMod,
+                         outFile = NULL) {
+  BLUPsCol <- lapply(X = fitMod, FUN = BLUPsCol)
+  BLUPsCol <- Reduce(f = rbind, x = BLUPsCol)
+  if (!is.null(outFile)) {
+    write.csv(BLUPsCol, file = outFile, row.names = FALSE)
+  }
+  return(BLUPsCol)
+}
+
+#' @export
+getBLUPsRow <- function(fitMod,
+                         outFile = NULL) {
+  BLUPsRow <- lapply(X = fitMod, FUN = BLUPsRow)
+  BLUPsRow <- Reduce(f = rbind, x = BLUPsRow)
+  if (!is.null(outFile)) {
+    write.csv(BLUPsRow, file = outFile, row.names = FALSE)
+  }
+  return(BLUPsRow)
 }
 
 #' @export
 getCorrected <- function(fitMod,
                          outFile = NULL) {
-  spatCorrTP <- lapply(X = fitMod, FUN = method2)
-  spatCorr <- dataCorrSpat <- Reduce(f = rbind, x = spatCorrTP)
+  spatCorrTP <- lapply(X = fitMod, FUN = correctSpatial)
+  spatCorr <- Reduce(f = rbind, x = spatCorrTP)
   if (!is.null(outFile)) {
     write.csv(spatCorr, file = outFile, row.names = FALSE)
   }
@@ -38,10 +93,10 @@ getVar <- function(fitMod,
 #' @export
 getHerit <- function(fitMod,
                      outFile = NULL) {
-  h2 <- sapply(X = fitMod, FUN = SpATS::getHeritability)
+  h2 <- lapply(X = fitMod, FUN = SpATS::getHeritability)
   genoDec <- fitMod[[1]]$model$geno$geno.decomp
   h2Out <- data.frame(timePoint = lubridate::as_datetime(names(h2)),
-                   row.names = NULL)
+                      row.names = NULL)
   if (!is.null(genoDec)) {
     totDat <- Reduce(f = rbind, x = lapply(fitMod, `[[`, "data"))
     h2Mat <- matrix(nrow = length(h2), ncol = nlevels(totDat[[genoDec]]),
@@ -52,7 +107,7 @@ getHerit <- function(fitMod,
     }
     h2Out <- cbind(h2Out, h2Mat)
   } else {
-    h2Out <- cbind(h2Out, h2)
+    h2Out <- cbind(h2Out, data.frame(h2 = unlist(h2), row.names = NULL))
   }
   if (!is.null(outFile)) {
     write.csv(h2, file = outFile, row.names = FALSE)
@@ -79,6 +134,16 @@ getEffDims <- function(fitMod,
   return(effDim)
 }
 
+
+
+
+# # Add results
+# genoPred <- Reduce(f = rbind, x = lapply(X = pred_a1, FUN = `[[`, "predGeno"))
+# colPred <- Reduce(f = rbind, x = lapply(X = pred_a1, FUN = `[[`, "predCol"))
+# rowPred <- Reduce(f = rbind, x = lapply(X = pred_a1, FUN = `[[`, "predRow"))
+# genoBLUPs <- Reduce(f = rbind, x = lapply(X = pred_a1, FUN = `[[`, "BLUPsGeno"))
+# colBLUPs <- Reduce(f = rbind, x = lapply(X = pred_a1, FUN = `[[`, "BLUPsCol"))
+# rowBLUPs <- Reduce(f = rbind, x = lapply(X = pred_a1, FUN = `[[`, "BLUPsRow"))
 
 
 

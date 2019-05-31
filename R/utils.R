@@ -54,6 +54,7 @@ calcPlotBorders <- function(trDat,
   return(list(horW = horW, vertW = vertW))
 }
 
+#' @noRd
 #' @keywords internal
 xyFacetPlot <- function(baseDat,
                         overlayDat = NULL,
