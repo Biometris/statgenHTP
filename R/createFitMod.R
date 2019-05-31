@@ -35,8 +35,13 @@ plot.fitMod <- function(x,
                 yLab = traits)
   } else if (plotType == "herit") {
     herit <- getHerit(x)
-    ggplot2::ggplot(herit, ggplot2::aes_string(x = "timePoint", y = "h2")) +
-      ggplot2::geom_line() +
+    herit <- reshape2::melt(herit, measure.vars = setdiff(colnames(herit),
+                                                           "timePoint"),
+                             variable.name = "herit", value.name = "h2")
+    ggplot2::ggplot(herit,
+                    ggplot2::aes_string(x = "timePoint", y = "h2",
+                                        group = "herit", color = "herit")) +
+      ggplot2::geom_line(na.rm = TRUE) +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) +
       ggplot2::labs(title = "Heritabilities")
   } else if (plotType == "effDim") {
