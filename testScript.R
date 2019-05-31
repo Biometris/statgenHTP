@@ -49,7 +49,6 @@ plot(fitMods, plotType = "herit")
 plot(fitMods, plotType = "variance")
 plot(fitMods, plotType = "effDim")
 
-
 ## Second example
 inDat2 <- data.table::fread("../rawdata/Data_modif_ZA17_anonymous.csv",
                            data.table = FALSE)
@@ -76,7 +75,18 @@ pdf("Phenovator_ZA17_raw_data_na.pdf", height = 8, width = 12)
 plot(inTD2, plotType = "raw", traits = "LA_Estimated")
 dev.off()
 
-basefunction(inTD2[1:2], trait = "LA_Estimated", covariates = "TrtPop",
-             geno.decomp = "TrtPop",
-             out1 = "BLUPs_ZA17_LeafArea.csv",
-             out2 = "Corrected_ZA17_LeafArea.csv")
+fitMods2 <- fitModels(TD = inTD2, trait = "LA_Estimated",
+                      geno.decomp = "TrtPop", covariates = "TrtPop")
+
+BLUPs <- getBLUPs(fitMods2, outFile = "BLUPs_ZA17_LeafArea.csv")
+spatCorr <- getCorrected(fitMods2, outFile = "Corrected_ZA17_LeafArea.csv")
+variance <- getVar(fitMods2)
+h2 <- getHerit(fitMods2)
+
+plot(fitMods2, plotType = "corrPred")
+plot(fitMods2, plotType = "rawPred", traits = "LA_Estimated")
+plot(fitMods2, plotType = "herit")
+plot(fitMods2, plotType = "variance")
+plot(fitMods2, plotType = "effDim")
+
+

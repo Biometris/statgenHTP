@@ -24,8 +24,8 @@ getCorrected <- function(fitMod,
 getVar <- function(fitMod,
                    outFile = NULL) {
   varRes <- sapply(X = fitMod, FUN = function(x) x$psi[1])
-  varCol <- sapply(X = fitMods, FUN = function(x) x$var.comp["colId"])
-  varRow <- sapply(X = fitMods, FUN = function(x) x$var.comp["rowId"])
+  varCol <- sapply(X = fitMod, FUN = function(x) x$var.comp["colId"])
+  varRow <- sapply(X = fitMod, FUN = function(x) x$var.comp["rowId"])
   variance <- data.frame(timePoint = lubridate::as_datetime(names(varRes)),
                          varRes = varRes, varCol = varCol, varRow = varRow,
                          row.names = NULL)
@@ -39,12 +39,25 @@ getVar <- function(fitMod,
 getHerit <- function(fitMod,
                      outFile = NULL) {
   h2 <- sapply(X = fitMod, FUN = SpATS::getHeritability)
-  h2 <- data.frame(timePoint = lubridate::as_datetime(names(h2)),
-                   h2 = h2, row.names = NULL)
+  genoDec <- fitMod[[1]]$model$geno$geno.decomp
+  h2Out <- data.frame(timePoint = lubridate::as_datetime(names(h2)),
+                   row.names = NULL)
+  if (!is.null(genoDec)) {
+    totDat <- Reduce(f = rbind, x = lapply(fitMod, `[[`, "data"))
+    h2Mat <- matrix(nrow = length(h2), ncol = nlevels(totDat[[genoDec]]),
+                    dimnames = list(NULL, levels(totDat[[genoDec]])))
+    for (i in seq_along(h2)) {
+      h2Mat[i, match(names(h2[[i]]),
+                     paste0(genoDec, colnames(h2Mat)))] <- h2[[i]]
+    }
+    h2Out <- cbind(h2Out, h2Mat)
+  } else {
+    h2Out <- cbind(h2Out, h2)
+  }
   if (!is.null(outFile)) {
     write.csv(h2, file = outFile, row.names = FALSE)
   }
-  return(h2)
+  return(h2Out)
 }
 
 #' @export
