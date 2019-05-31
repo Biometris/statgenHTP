@@ -18,6 +18,8 @@ before_script:
   - apt-get update && apt-get install -y --no-install-recommends qpdf ghostscript > /dev/null
   ## install pandoc - needed for checking readme.
   - apt-get update && apt-get install -y pandoc > /dev/null
+  ## install ImageMagick++ for timelapse.
+  - apt-get update && apt-get install -y libmagick++-dev
   ## cache R packages.
   - mkdir -p $R_LIBS_USER
   - echo 'R_LIBS_USER='$R_LIBS_USER > .Renviron
