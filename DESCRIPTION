@@ -20,3 +20,5 @@ Imports:
     SpATS,
     animation
 RoxygenNote: 6.1.1
+Suggests: 
+    covr

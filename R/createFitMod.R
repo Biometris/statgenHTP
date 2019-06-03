@@ -120,7 +120,7 @@ timeLapsePlot <- function(fitMods,
                           outFile = "spatialTrends.gif") {
   animation::saveGIF({
     ## Get trait from fitted models.
-    trait <- fitMod[[1]]$model$response
+    trait <- fitMods[[1]]$model$response
     ## First get plot data for all fields so a single zLim can be extracted
     ## for all plots.
     plotSpatDats <- lapply(X = fitMods, FUN = function(fitMod) {
