@@ -32,6 +32,9 @@ pdf("Phenovator_Rene_raw_data_na.pdf", height = 8, width = 12)
 plot(inTD, plotType = "raw", traits = "pheno")
 dev.off()
 
+plot(inTD, plotType = "raw", traits = "pheno",
+     genotypes = c("col", "ely", "evo1", "ler"))
+
 fitMods <- fitModels(TD = inTD, trait = "pheno",
                      covariates = c("Sowing_Block", "Image_pos"))
 

@@ -56,6 +56,26 @@ calcPlotBorders <- function(trDat,
 
 #' @noRd
 #' @keywords internal
+addMissVals <- function(dat,
+                        trait) {
+  ## Create lhs formula for dcast using all columns in dat except
+  ## timePoint (rhs) and trait (value var).
+  castCols <- setdiff(colnames(dat), c("timePoint", trait))
+  castForm <- formula(paste(paste(castCols, collapse = "+"), "~ timePoint"))
+  ## Melt and reshape with default settings adds missing combinations to the
+  ## data table.
+  datOut <- reshape2::melt(data = reshape2::dcast(data = dat,
+                                                  formula = castForm,
+                                                  value.var = trait),
+                           id.vars = castCols, variable.name = "timePoint",
+                           value.name = trait)
+  ## Melt loses date format for timePoint so resetting it here.
+  datOut[["timePoint"]] <- lubridate::as_datetime(datOut[["timePoint"]])
+  return(datOut)
+}
+
+#' @noRd
+#' @keywords internal
 xyFacetPlot <- function(baseDat,
                         overlayDat = NULL,
                         xVal = "timePoint",

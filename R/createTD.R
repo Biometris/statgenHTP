@@ -170,6 +170,7 @@ plot.TD <- function(x,
                     plotType = c("layout", "box", "cor", "raw"),
                     timePoints = names(x),
                     traits = NULL,
+                    genotypes = NULL,
                     output = TRUE) {
   ## Checks.
   if (!is.character(timePoints) || !all(hasName(x = x, name = timePoints))) {
@@ -490,16 +491,14 @@ plot.TD <- function(x,
                        "Plot skipped.\n"), call. = FALSE)
         break
       }
-      plotDat <- reshape2::melt(data = reshape2::dcast(data = plotDat,
-                                                       formula = genotype + plotId ~ timePoint,
-                                                       value.var = trait,
-                                                       fun.aggregate = mean),
-                                id.vars = c("genotype", "plotId"),
-                                variable.name = "timePoint",
-                                value.name = trait)
-      ## melt loses date format for timePoint needed to avoid a messy scale
-      ## in the final plot so resetting it here.
-      plotDat[["timePoint"]] <- lubridate::as_datetime(plotDat[["timePoint"]])
+      ## Restrict genotypes.
+      if (!is.null(genotypes)) {
+        plotDat <- plotDat[plotDat[["genotype"]] %in% genotypes, ]
+        plotDat <- droplevels(plotDat)
+      }
+      ## Add combinations missing in data to plotDat
+      plotDat <- addMissVals(dat = plotDat, trait = trait)
+      ## Create actual plots.
       xyFacetPlot(baseDat = plotDat, yVal = trait,
                   title = "Phenovator platform - Raw data", yLab = trait,
                   output = output)
