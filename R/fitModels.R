@@ -40,8 +40,7 @@ fitModels <- function(TD,
   } else {
     fixedForm <- if (useCheck) formula("~ check") else NULL
   }
-  ##############################################################################
-  ######## Loop on timepoint to run SpATS
+  ## Loop on timepoint to run SpATS.
   fitMods <- lapply(X = TD, function(timePoint) {
     message(timePoint[["timePoint"]][1])
     ## Only keep columns needed for analysis.
@@ -49,7 +48,7 @@ fitModels <- function(TD,
                  "colId", "rowId", "colNum", "rowNum", covariates, trait)
     modDat <- timePoint[colnames(timePoint) %in% modCols]
     modDat <- droplevels(modDat)
-    ## number of segments for SpATS:
+    ## number of segments for SpATS.
     nseg = c(nlevels(modDat[["colId"]]), nlevels(modDat[["rowId"]]))
     ## Fit the model.
     SpATS::SpATS(response = trait, fixed = fixedForm,
@@ -60,7 +59,6 @@ fitModels <- function(TD,
                  genotype.as.random = genotype.as.random,
                  geno.decomp = geno.decomp, data = modDat,
                  control = list(maxit = 50, tolerance = 1e-03, monitoring = 0))
-
   })
   return(createFitMod(fitMods))
 }

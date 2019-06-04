@@ -133,19 +133,3 @@ getEffDims <- function(fitMod,
   }
   return(effDim)
 }
-
-
-
-
-# # Add results
-# genoPred <- Reduce(f = rbind, x = lapply(X = pred_a1, FUN = `[[`, "predGeno"))
-# colPred <- Reduce(f = rbind, x = lapply(X = pred_a1, FUN = `[[`, "predCol"))
-# rowPred <- Reduce(f = rbind, x = lapply(X = pred_a1, FUN = `[[`, "predRow"))
-# genoBLUPs <- Reduce(f = rbind, x = lapply(X = pred_a1, FUN = `[[`, "BLUPsGeno"))
-# colBLUPs <- Reduce(f = rbind, x = lapply(X = pred_a1, FUN = `[[`, "BLUPsCol"))
-# rowBLUPs <- Reduce(f = rbind, x = lapply(X = pred_a1, FUN = `[[`, "BLUPsRow"))
-
-
-
-
-

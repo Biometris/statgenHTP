@@ -5,7 +5,8 @@
 \title{Plot function for class TD}
 \usage{
 \method{plot}{TD}(x, ..., plotType = c("layout", "box", "cor", "raw"),
-  timePoints = names(x), traits = NULL, output = TRUE)
+  timePoints = names(x), traits = NULL, genotypes = NULL,
+  output = TRUE)
 }
 \arguments{
 \item{x}{An object of class TD.}
@@ -16,14 +17,17 @@ section.}
 \item{plotType}{A single character string indicating which plot should be
 made. See the sections below for a detailed explanation of the plots.}
 
-\item{timePoints}{A character vector indicating the timePoints to be plotted when
-plotting field layouts. Only used if \code{plotType} = "layout" or "box".}
+\item{timePoints}{A character vector indicating the timePoints to be plotted.
+Only used if \code{plotType} = "layout" or "box".}
 
 \item{traits}{A character vector indicating the traits to be plotted in
 a boxplot. Only used if \code{plotType} = "box" or "cor".}
 
+\item{genotypes}{A character vector indicating the genotypes to be plotted.
+Only used if \code{plotType} = "raw".}
+
 \item{output}{Should the plot be output to the current device? If
-\code{FALSE} only a list of ggplot objects is invisibly returnfed.}
+\code{FALSE} only a list of ggplot objects is invisibly returned.}
 }
 \description{
 Plotting function for objects of class TD. Plots either the layout of the

@@ -155,12 +155,14 @@ createTD <- function(dat,
 #' section.
 #' @param plotType A single character string indicating which plot should be
 #' made. See the sections below for a detailed explanation of the plots.
-#' @param timePoints A character vector indicating the timePoints to be plotted when
-#' plotting field layouts. Only used if \code{plotType} = "layout" or "box".
+#' @param timePoints A character vector indicating the timePoints to be plotted.
+#' Only used if \code{plotType} = "layout" or "box".
 #' @param traits A character vector indicating the traits to be plotted in
 #' a boxplot. Only used if \code{plotType} = "box" or "cor".
+#' @param genotypes A character vector indicating the genotypes to be plotted.
+#' Only used if \code{plotType} = "raw".
 #' @param output Should the plot be output to the current device? If
-#' \code{FALSE} only a list of ggplot objects is invisibly returnfed.
+#' \code{FALSE} only a list of ggplot objects is invisibly returned.
 #'
 #' @family functions for TD objects
 #'
