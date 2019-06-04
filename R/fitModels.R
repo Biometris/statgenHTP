@@ -1,5 +1,5 @@
 #' @export
-fitModels <- function(TD,
+fitModels <- function(TP,
                       trait,
                       covariates = NULL,
                       geno.decomp = NULL,
@@ -9,7 +9,7 @@ fitModels <- function(TD,
   genotype.as.random <- TRUE
   ## All covariates should be factors.
   for (covar in covariates) {
-    TD <- lapply(X = TD, FUN = function(timePoint) {
+    TP <- lapply(X = TP, FUN = function(timePoint) {
       if (!is.factor(timePoint[[covar]])) {
         timePoint[[covar]] <- as.factor(timePoint[[covar]])
       }
@@ -20,7 +20,7 @@ fitModels <- function(TD,
   ## an interaction of genotype and covariates with the geno.decomp variable.
   ## Add these new variables to the data.
   if (!is.null(geno.decomp)) {
-    TD <- lapply(X = TD, FUN = function(timePoint) {
+    TP <- lapply(X = TP, FUN = function(timePoint) {
       timePoint[["genotype"]] <- interaction(timePoint[[geno.decomp]],
                                          timePoint[["genotype"]], sep = "_")
       for (covar in covariates) {
@@ -41,7 +41,7 @@ fitModels <- function(TD,
     fixedForm <- if (useCheck) formula("~ check") else NULL
   }
   ## Loop on timepoint to run SpATS.
-  fitMods <- lapply(X = TD, function(timePoint) {
+  fitMods <- lapply(X = TP, function(timePoint) {
     message(timePoint[["timePoint"]][1])
     ## Only keep columns needed for analysis.
     modCols <- c("timePoint", "plotId", "genotype", "genoCheck", "check",

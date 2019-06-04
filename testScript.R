@@ -15,27 +15,27 @@ inDat$pos <- paste0("c", inDat$x, "r", inDat$y)
 inDat <- inDat[inDat$pos != "c1r54",]
 inDat <- droplevels(inDat)
 
-inTD <- createTD(dat = inDat, genotype = "Genotype",
+inTP <- createTimePoints(dat = inDat, genotype = "Genotype",
                  timePoint = "timepoints", plotId = "pos", rowNum = "y",
                  colNum = "x", addCheck = TRUE,
                  checkGenotypes = c("col", "ely", "evo1", "ler"))
 
-plot(inTD, plotType = "layout",
+plot(inTP, plotType = "layout",
      timePoints = c("2018-05-31 16:37:00", "2018-06-01 09:07:00"),
      highlight = c("col", "ely", "evo1", "ler"))
-plot(inTD, plotType = "cor", traits = "pheno")
-plot(inTD, plotType = "box", traits = "pheno",
+plot(inTP, plotType = "cor", traits = "pheno")
+plot(inTP, plotType = "box", traits = "pheno",
      timePoints = c("2018-05-31 16:37:00", "2018-06-01 09:07:00"),
      colorBy = "Sowing_Block")
 
 pdf("Phenovator_Rene_raw_data_na.pdf", height = 8, width = 12)
-plot(inTD, plotType = "raw", traits = "pheno")
+plot(inTP, plotType = "raw", traits = "pheno")
 dev.off()
 
-plot(inTD, plotType = "raw", traits = "pheno",
+plot(inTP, plotType = "raw", traits = "pheno",
      genotypes = c("col", "ely", "evo1", "ler"))
 
-fitMods <- fitModels(TD = inTD, trait = "pheno",
+fitMods <- fitModels(TP = inTP, trait = "pheno",
                      covariates = c("Sowing_Block", "Image_pos"))
 
 genoPreds <- getGenoPred(fitMods, outFile = "BLUPs_PAM_modRep.csv")
@@ -57,18 +57,18 @@ inDat2 <- data.table::fread("../data-raw/Data_modif_ZA17_anonymous.csv",
 # Create an indicator for each plot (according to the row and column position)
 inDat2$pos <- paste0("c", inDat2$Line, "r", inDat2$Position)
 
-inTD2 <- createTD(dat = inDat2, genotype = "geno", timePoint = "Date",
+inTP2 <- createTimePoints(dat = inDat2, genotype = "geno", timePoint = "Date",
                   plotId = "pos", rowNum = "Position", colNum = "Line")
 
-plot(inTD2, plotType = "layout", timePoints = "2017-04-13")
-plot(inTD2, plotType = "cor", traits = "LA_Estimated")
-plot(inTD2, plotType = "box", traits = "LA_Estimated",
-     timePoints = names(inTD2[1:3]))
+plot(inTP2, plotType = "layout", timePoints = "2017-04-13")
+plot(inTP2, plotType = "cor", traits = "LA_Estimated")
+plot(inTP2, plotType = "box", traits = "LA_Estimated",
+     timePoints = names(inTP2[1:3]))
 pdf("Phenovator_ZA17_raw_data_na.pdf", height = 8, width = 12)
-plot(inTD2, plotType = "raw", traits = "LA_Estimated")
+plot(inTP2, plotType = "raw", traits = "LA_Estimated")
 dev.off()
 
-fitMods2 <- fitModels(TD = inTD2, trait = "LA_Estimated",
+fitMods2 <- fitModels(TP = inTP2, trait = "LA_Estimated",
                       geno.decomp = "Scenario", covariates = "population")
 
 genoPreds2 <- getGenoPred(fitMods2, outFile = "BLUPs_ZA17_LeafArea.csv")

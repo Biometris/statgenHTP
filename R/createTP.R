@@ -1,5 +1,5 @@
 #' @export
-createTD <- function(dat,
+createTimePoints <- function(dat,
                      genotype,
                      timePoint,
                      plotId = NULL,
@@ -35,7 +35,7 @@ createTD <- function(dat,
   renameFrom <- as.character(sapply(X = renameCols, FUN = function(x) {
     get(x)
   }))
-  ## Create a data.frame with renamed cols to add to TD as an attribute.
+  ## Create a data.frame with renamed cols to add to TP as an attribute.
   renamed <- data.frame(orig = renameFrom[renameFrom != "NULL"],
                         new = renameCols[renameFrom != "NULL"],
                         stringsAsFactors = FALSE)
@@ -90,19 +90,19 @@ createTD <- function(dat,
   listData <- split(x = dat, f = dat[["timePoint"]])
   ## Set meta for all timePoints in dat.
   for (tr in names(listData)) {
-    ## Add a list of columns that have been renamed as attribute to TD.
+    ## Add a list of columns that have been renamed as attribute to TP.
     attr(x = listData[[tr]], which = "renamedCols") <-
       if (nrow(renamed) > 0) renamed else NULL
   }
-  TD <- structure(listData,
-                  class = c("TD", "list"))
-  return(TD)
+  TP <- structure(listData,
+                  class = c("TP", "list"))
+  return(TP)
 }
 
-#' Plot function for class TD
+#' Plot function for class TP
 #'
-#' Plotting function for objects of class TD. Plots either the layout of the
-#' different timePoints within the TD object or locates the timePoints on a map. Also a
+#' Plotting function for objects of class TP. Plots either the layout of the
+#' different timePoints within the TP object or locates the timePoints on a map. Also a
 #' boxplot can be made for selected traits and timePoints and a plot of correlations
 #' between timePoints. A detailed description and optional extra parameters of the
 #' different plots is given in the sections below.
@@ -132,10 +132,10 @@ createTD <- function(dat,
 #' Creates a boxplot per selected trait grouped by timePoint. Extra parameter
 #' options:
 #' \describe{
-#' \item{groupBy}{A character string indicating a column in \code{TD} by which
+#' \item{groupBy}{A character string indicating a column in \code{TP} by which
 #' the boxes in the plot should be grouped. By default the boxes are grouped
 #' per timePoint.}
-#' \item{colorBy}{A character string indicating a column in \code{TD} by which
+#' \item{colorBy}{A character string indicating a column in \code{TP} by which
 #' the boxes are colored. Coloring will be done within the groups indicated by
 #' the \code{groupBy} parameter.}
 #' \item{orderBy}{A character string indicating the way the boxes should be
@@ -150,7 +150,7 @@ createTD <- function(dat,
 #' computing correlations. The order of the timePoints in the heatmap is determined
 #' by clustering them.
 #'
-#' @param x An object of class TD.
+#' @param x An object of class TP.
 #' @param ... Extra plot options. Described per plotType in their respective
 #' section.
 #' @param plotType A single character string indicating which plot should be
@@ -164,10 +164,10 @@ createTD <- function(dat,
 #' @param output Should the plot be output to the current device? If
 #' \code{FALSE} only a list of ggplot objects is invisibly returned.
 #'
-#' @family functions for TD objects
+#' @family functions for TP objects
 #'
 #' @export
-plot.TD <- function(x,
+plot.TP <- function(x,
                     ...,
                     plotType = c("layout", "box", "cor", "raw"),
                     timePoints = names(x),
@@ -319,7 +319,7 @@ plot.TD <- function(x,
     if (!is.null(groupBy) && !all(sapply(X = x, FUN = function(timePoint) {
       hasName(x = timePoint, name = groupBy)
     }))) {
-      stop("groupBy should be a column in TD.\n")
+      stop("groupBy should be a column in TP.\n")
     }
     colorBy <- dotArgs$colorBy
     if (!is.null(colorBy) && (!is.character(colorBy) || length(colorBy) > 1)) {
@@ -328,7 +328,7 @@ plot.TD <- function(x,
     if (!is.null(colorBy) && !all(sapply(X = x, FUN = function(timePoint) {
       hasName(x = timePoint, name = colorBy)
     }))) {
-      stop("colorBy should be a column in TD.\n")
+      stop("colorBy should be a column in TP.\n")
     }
     orderBy <- dotArgs$orderBy
     if (!is.null(orderBy)) {
@@ -414,7 +414,7 @@ plot.TD <- function(x,
         break
       }
       ## Create table with values trait per genotype per timePoint.
-      ## If TD already contains BLUEs/BLUPs taking means doesn't do anything
+      ## If TP already contains BLUEs/BLUPs taking means doesn't do anything
       ## but it is needed for raw data where there can be replicates.
       plotTab <- tapply(plotDat[[trait]],
                         INDEX = list(plotDat[["genotype"]],
