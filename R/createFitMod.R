@@ -13,6 +13,7 @@ plot.fitMod <- function(x,
                                      "variance", "rowPred", "colPred",
                                      "timeLapse"),
                         timePoints = names(x),
+                        genotypes = NULL,
                         title = NULL) {
   ## Checks.
   if (!is.character(timePoints) || !all(hasName(x = x, name = timePoints))) {
@@ -22,21 +23,43 @@ plot.fitMod <- function(x,
   dotArgs <- list(...)
   if (plotType == "rawPred") {
     if (is.null(title)) title <- "Genomic predictions + raw data"
+    ## Get trait from model.
     trait <- x[[1]]$model$response
+    ## Get genomic predictions.
     preds <- getGenoPred(x)
+    ## Construct full raw data from models.
     raw <- Reduce(f = rbind, x = lapply(x, `[[`, "data"))
+    ## Restrict genotypes.
+    if (!is.null(genotypes)) {
+      preds <- preds[preds[["genotype"]] %in% genotypes, ]
+      preds <- droplevels(preds)
+      raw <- raw[raw[["genotype"]] %in% genotypes, ]
+      raw <- droplevels(raw)
+    }
     xyFacetPlot(baseDat = raw, overlayDat = preds, yVal = trait,
                 yValOverlay = "predicted.values", title = title, yLab = trait)
   } else if (plotType == "corrPred") {
     if (is.null(title)) title <- "Genomic predictions + spatial corrected data"
+    ## Get trait from model.
     trait <- x[[1]]$model$response
+    ## Get genomic predictions.
     preds <- getGenoPred(x)
+    ## Get spatial corrected values.
     corrected <- getCorrected(x)
+    ## Restrict genotypes.
+    if (!is.null(genotypes)) {
+      preds <- preds[preds[["genotype"]] %in% genotypes, ]
+      preds <- droplevels(preds)
+      corrected <- corrected[corrected[["genotype"]] %in% genotypes, ]
+      corrected <- droplevels(corrected)
+    }
     xyFacetPlot(baseDat = corrected, overlayDat = preds, yVal = "newTrait",
                 yValOverlay = "predicted.values", title = title, yLab = trait)
   } else if (plotType == "herit") {
     if (is.null(title)) title <- "Heritabilities"
+    ## Get heritabilities.
     herit <- getHerit(x)
+    ## Convert to long format needed by ggplot.
     herit <- reshape2::melt(herit, measure.vars = setdiff(colnames(herit),
                                                           "timePoint"),
                             variable.name = "herit", value.name = "h2")
@@ -48,7 +71,9 @@ plot.fitMod <- function(x,
       ggplot2::labs(title = title)
   } else if (plotType == "effDim") {
     if (is.null(title)) title <- "Effective dimensions"
+    ## Get effective dimensions.
     effDim <- getEffDims(x)
+    ## Convert to long format needed by ggplot.
     effDim <- reshape2::melt(effDim, measure.vars = c("effDimSurface",
                                                       "effDimCol", "effDimRow"),
                              variable.name = "effDim", value.name = "ED")
@@ -61,7 +86,9 @@ plot.fitMod <- function(x,
       ggplot2::labs(title = title, color = "Effective dimension")
   } else if (plotType == "variance") {
     if (is.null(title)) title <- "Variances"
+    ## Get variances.
     variance <- getVar(x)
+    ## Convert to long format needed by ggplot.
     variance <- reshape2::melt(variance, measure.vars = c("varRes", "varCol",
                                                           "varRow"),
                                variable.name = "var")
@@ -173,6 +200,7 @@ timeLapsePlot <- function(fitMods,
     ## This enables proper comparison of plots over timePoints.
     zVals <- unlist(sapply(X = plotSpatDats, `[[`, "value"))
     zLim <- c(min(zVals), max(zVals))
+    ## Create a plot of the spatial trend per time point.
     for (i in seq_along(plotSpatDats)) {
       p <- fieldPlot(plotDat = plotSpatDats[[i]], fillVar = "value",
                      title = paste(trait, names(plotSpatDats)[i]),
