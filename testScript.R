@@ -1,4 +1,4 @@
-folder <- "C:/Projects/R packages/statgenhtp/"
+folder <- "."
 setwd(paste0(folder, "output/"))
 
 inDat <- data.table::fread("../data-raw/Original_PAM_reshape.csv",
@@ -16,9 +16,10 @@ inDat <- inDat[inDat$pos != "c1r54",]
 inDat <- droplevels(inDat)
 
 inTP <- createTimePoints(dat = inDat, genotype = "Genotype",
-                 timePoint = "timepoints", plotId = "pos", rowNum = "y",
-                 colNum = "x", addCheck = TRUE,
-                 checkGenotypes = c("col", "ely", "evo1", "ler"))
+                         timePoint = "timepoints", repId = "Sowing_Block",
+                         plotId = "pos", rowNum = "y", colNum = "x",
+                         addCheck = TRUE,
+                         checkGenotypes = c("col", "ely", "evo1", "ler"))
 
 plot(inTP, plotType = "layout",
      timePoints = c("2018-05-31 16:37:00", "2018-06-01 09:07:00"),

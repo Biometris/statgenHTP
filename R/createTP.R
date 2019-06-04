@@ -1,14 +1,15 @@
 #' @export
 createTimePoints <- function(dat,
-                     genotype,
-                     timePoint,
-                     plotId = NULL,
-                     rowNum = NULL,
-                     colNum = NULL,
-                     rowId = rowNum,
-                     colId = colNum,
-                     addCheck = FALSE,
-                     checkGenotypes = NULL) {
+                             genotype,
+                             timePoint,
+                             plotId = NULL,
+                             repId = NULL,
+                             rowNum = NULL,
+                             colNum = NULL,
+                             rowId = rowNum,
+                             colId = colNum,
+                             addCheck = FALSE,
+                             checkGenotypes = NULL) {
   ## Save name of original dat for naming output.
   datName <- deparse(substitute(dat))
   if (length(datName) > 1) {
@@ -22,14 +23,15 @@ createTimePoints <- function(dat,
   ## tibbles and possibly other data structures in the future.
   dat <- as.data.frame(dat)
   cols <- colnames(dat)
-  for (param in c(genotype, timePoint, plotId, rowId, colId, rowNum, colNum)) {
+  for (param in c(genotype, timePoint, plotId, repId, rowId, colId,
+                  rowNum, colNum)) {
     if (!is.null(param) && (!is.character(param) || length(param) > 1 ||
                             !hasName(dat, param))) {
       stop(paste(deparse(param), "has to be NULL or a column in dat.\n"))
     }
   }
   ## Create list of reserved column names for renaming columns.
-  renameCols <- c("genotype", "timePoint", "plotId", "rowId", "colId",
+  renameCols <- c("genotype", "timePoint", "plotId", "repId", "rowId", "colId",
                   "rowNum", "colNum")
   ## First rename duplicate colums and add duplicated columns to dat
   renameFrom <- as.character(sapply(X = renameCols, FUN = function(x) {
@@ -64,7 +66,7 @@ createTimePoints <- function(dat,
     dat[["genoCheck"]][dat[["check"]] != "noCheck"] <- NA
   }
   ## Convert columns to factor if neccessary.
-  factorCols <-  c("genotype", "rowId", "colId", "plotId", "check",
+  factorCols <-  c("genotype", "plotId", "repId", "rowId", "colId", "check",
                    "genoCheck")
   for (factorCol in factorCols) {
     if (hasName(dat, factorCol)) {
@@ -346,15 +348,15 @@ plot.TP <- function(x,
       xVar <- if (is.null(groupBy)) "timePoint" else groupBy
       plotDat <- Reduce(f = rbind, x = lapply(X = x[timePoints],
                                               function(timePoint) {
-        if (!hasName(x = timePoint, name = trait)) {
-          NULL
-        } else {
-          if (!hasName(x = timePoint, name = "timePoint")) {
-            timePoint[["timePoint"]] <- names(x)
-          }
-          timePoint[c(trait, "genotype", xVar, if (!is.null(colorBy)) colorBy)]
-        }
-      }))
+                                                if (!hasName(x = timePoint, name = trait)) {
+                                                  NULL
+                                                } else {
+                                                  if (!hasName(x = timePoint, name = "timePoint")) {
+                                                    timePoint[["timePoint"]] <- names(x)
+                                                  }
+                                                  timePoint[c(trait, "genotype", xVar, if (!is.null(colorBy)) colorBy)]
+                                                }
+                                              }))
       if (is.null(plotDat)) {
         warning(paste0(trait, " isn't a column in any of the timePoints.\n",
                        "Plot skipped.\n"), call. = FALSE)
@@ -498,7 +500,7 @@ plot.TP <- function(x,
         plotDat <- plotDat[plotDat[["genotype"]] %in% genotypes, ]
         plotDat <- droplevels(plotDat)
       }
-      ## Add combinations missing in data to plotDat
+      ## Add combinations missing in data to plotDat.
       plotDat <- addMissVals(dat = plotDat, trait = trait)
       ## Create actual plots.
       xyFacetPlot(baseDat = plotDat, yVal = trait,

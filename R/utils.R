@@ -8,10 +8,10 @@
 #' @keywords internal
 calcPlotBorders <- function(trDat,
                             bordVar) {
-  yMin <- min(trDat$rowCoord)
-  yMax <- max(trDat$rowCoord)
-  xMin <- min(trDat$colCoord)
-  xMax <- max(trDat$colCoord)
+  yMin <- min(trDat$rowNum)
+  yMax <- max(trDat$rowNum)
+  xMin <- min(trDat$colNum)
+  xMax <- max(trDat$colNum)
   ## Create matrix containing replicates.
   ## First create an empty matrix containing all row/column values
   ## between min and max to assure complete missing rows/columns
@@ -19,8 +19,8 @@ calcPlotBorders <- function(trDat,
   M <- matrix(nrow = yMax - yMin + 1, ncol = xMax - xMin + 1,
               dimnames = list(yMin:yMax, xMin:xMax))
   for (i in 1:nrow(trDat)) {
-    M[as.character(trDat[i, "rowCoord"]),
-      as.character(trDat[i, "colCoord"])] <- trDat[i, bordVar]
+    M[as.character(trDat[i, "rowNum"]),
+      as.character(trDat[i, "colNum"])] <- trDat[i, bordVar]
   }
   ## Create an imputed version of M for plotting borders around NA values.
   MImp <- M

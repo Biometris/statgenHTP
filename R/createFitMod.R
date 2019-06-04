@@ -36,6 +36,8 @@ plot.fitMod <- function(x,
       raw <- raw[raw[["genotype"]] %in% genotypes, ]
       raw <- droplevels(raw)
     }
+    ## Add combinations missing in data to raw.
+    raw <- addMissVals(dat = raw, trait = trait)
     xyFacetPlot(baseDat = raw, overlayDat = preds, yVal = trait,
                 yValOverlay = "predicted.values", title = title, yLab = trait)
   } else if (plotType == "corrPred") {
@@ -53,6 +55,8 @@ plot.fitMod <- function(x,
       corrected <- corrected[corrected[["genotype"]] %in% genotypes, ]
       corrected <- droplevels(corrected)
     }
+    ## Add combinations missing in data to corrected.
+    corrected <- addMissVals(dat = corrected, trait = trait)
     xyFacetPlot(baseDat = corrected, overlayDat = preds, yVal = "newTrait",
                 yValOverlay = "predicted.values", title = title, yLab = trait)
   } else if (plotType == "herit") {
