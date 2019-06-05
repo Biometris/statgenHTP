@@ -56,7 +56,7 @@ plot.fitMod <- function(x,
       corrected <- droplevels(corrected)
     }
     ## Add combinations missing in data to corrected.
-    corrected <- addMissVals(dat = corrected, trait = trait)
+    corrected <- addMissVals(dat = corrected, trait = "newTrait")
     xyFacetPlot(baseDat = corrected, overlayDat = preds, yVal = "newTrait",
                 yValOverlay = "predicted.values", title = title, yLab = trait)
   } else if (plotType == "herit") {

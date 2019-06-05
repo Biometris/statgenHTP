@@ -1,19 +1,17 @@
-folder <- "."
-setwd(paste0(folder, "output/"))
+setwd(paste0("./output/"))
 
 inDat <- data.table::fread("../data-raw/Original_PAM_reshape.csv",
-                               data.table = FALSE)
+                           data.table = FALSE)
 
 # creating a unique ID per plant using the row and col coordinate
 # (in principle the column "Sowing_Position" was also a unique ID but I wanted to see the position)
 inDat$ID <- interaction(inDat[["x"]], inDat[["y"]], sep = "_")
 inDat <- inDat[!is.na(inDat$pheno), ]
 # Create an indicator for each plot (according to the row and column position)
-inDat$pos <- paste0("c", inDat$x, "r", inDat$y)
+inDat$pos <- paste0("c", inDat[["x"]], "r", inDat[["y"]])
 
 # I removed a plant that has very few measurements
 inDat <- inDat[inDat$pos != "c1r54",]
-inDat <- droplevels(inDat)
 
 inTP <- createTimePoints(dat = inDat, genotype = "Genotype",
                          timePoint = "timepoints", repId = "Sowing_Block",
@@ -36,7 +34,7 @@ dev.off()
 plot(inTP, plotType = "raw", traits = "pheno",
      genotypes = c("col", "ely", "evo1", "ler"))
 
-fitMods <- fitModels(TP = inTP, trait = "pheno",
+fitMods <- fitModels(TP = inTP[1:3], trait = "pheno",
                      covariates = c("repId", "Image_pos"))
 
 genoPreds <- getGenoPred(fitMods, outFile = "BLUPs_PAM_modRep.csv")
@@ -53,13 +51,12 @@ plot(fitMods, plotType = "timeLapse", outFile = "spatialtrends.gif")
 
 ## Second example
 inDat2 <- data.table::fread("../data-raw/Data_modif_ZA17_anonymous.csv",
-                           data.table = FALSE)
-
+                            data.table = FALSE)
 # Create an indicator for each plot (according to the row and column position)
 inDat2$pos <- paste0("c", inDat2$Line, "r", inDat2$Position)
 
 inTP2 <- createTimePoints(dat = inDat2, genotype = "geno", timePoint = "Date",
-                  plotId = "pos", rowNum = "Position", colNum = "Line")
+                          plotId = "pos", rowNum = "Position", colNum = "Line")
 
 plot(inTP2, plotType = "layout", timePoints = "2017-04-13")
 plot(inTP2, plotType = "cor", traits = "LA_Estimated")
@@ -69,8 +66,11 @@ pdf("Phenovator_ZA17_raw_data_na.pdf", height = 8, width = 12)
 plot(inTP2, plotType = "raw", traits = "LA_Estimated", geno.decomp = "Scenario")
 dev.off()
 
-fitMods2 <- fitModels(TP = inTP2, trait = "LA_Estimated",
-                      geno.decomp = "Scenario", covariates = "population")
+fitMods2 <- fitModels(TP = inTP2[1:3], trait = "LA_Estimated",
+                      geno.decomp = c("Scenario", "population"))
+## This crashes:
+fitMods2b <- fitModels(TP = inTP2[1:3], trait = "LA_Estimated",
+                       geno.decomp = "Scenario", covariates = "population")
 
 genoPreds2 <- getGenoPred(fitMods2, outFile = "BLUPs_ZA17_LeafArea.csv")
 spatCorr2 <- getCorrected(fitMods2, outFile = "Corrected_ZA17_LeafArea.csv")

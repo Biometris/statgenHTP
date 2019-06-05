@@ -527,3 +527,16 @@ plot.TP <- function(x,
   }
   invisible(p)
 }
+
+#' Function for extracting for objects of class TP that keeps class.
+#'
+#' @export
+`[.TP` <- function(x, i, ...) {
+  r <- NextMethod("[")
+  attr(r, "class") <- attr(x, "class")
+  return(r)
+}
+
+
+
+
