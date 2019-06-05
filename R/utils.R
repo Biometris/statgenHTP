@@ -111,3 +111,15 @@ xyFacetPlot <- function(baseDat,
                                           page = i))
   }
 }
+
+#' @noRd
+#' @keywords internal
+checkFile <- function(outFile) {
+  if (!is.character(outFile) || length(outFile) > 1 ||
+      tools::file_ext(outFile) != "csv") {
+    stop("outFile should be a single character string ending in .csv.\n")
+  }
+  if (file.access(dirname(outFile), 2)) {
+    stop("no permission to write to ", outFile, ".\n")
+  }
+}
