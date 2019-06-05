@@ -6,7 +6,7 @@
 \usage{
 \method{plot}{TP}(x, ..., plotType = c("layout", "box", "cor", "raw"),
   timePoints = names(x), traits = NULL, genotypes = NULL,
-  output = TRUE)
+  geno.decomp = NULL, output = TRUE)
 }
 \arguments{
 \item{x}{An object of class TP.}
@@ -25,6 +25,9 @@ a boxplot. Only used if \code{plotType} = "box" or "cor".}
 
 \item{genotypes}{A character vector indicating the genotypes to be plotted.
 Only used if \code{plotType} = "raw".}
+
+\item{geno.decomp}{A character vector indicating the grouping of the
+genotypes to be plotted. Only used if \code{plotType} = "raw".}
 
 \item{output}{Should the plot be output to the current device? If
 \code{FALSE} only a list of ggplot objects is invisibly returned.}

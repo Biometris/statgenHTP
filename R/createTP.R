@@ -163,6 +163,8 @@ createTimePoints <- function(dat,
 #' a boxplot. Only used if \code{plotType} = "box" or "cor".
 #' @param genotypes A character vector indicating the genotypes to be plotted.
 #' Only used if \code{plotType} = "raw".
+#' @param geno.decomp A character vector indicating the grouping of the
+#' genotypes to be plotted. Only used if \code{plotType} = "raw".
 #' @param output Should the plot be output to the current device? If
 #' \code{FALSE} only a list of ggplot objects is invisibly returned.
 #'
@@ -175,6 +177,7 @@ plot.TP <- function(x,
                     timePoints = names(x),
                     traits = NULL,
                     genotypes = NULL,
+                    geno.decomp = NULL,
                     output = TRUE) {
   ## Checks.
   if (!is.character(timePoints) || !all(hasName(x = x, name = timePoints))) {
@@ -346,17 +349,20 @@ plot.TP <- function(x,
       ## timePoints where trait is not measured/available are removed by setting
       ## them to NULL.
       xVar <- if (is.null(groupBy)) "timePoint" else groupBy
-      plotDat <- Reduce(f = rbind, x = lapply(X = x[timePoints],
-                                              function(timePoint) {
-                                                if (!hasName(x = timePoint, name = trait)) {
-                                                  NULL
-                                                } else {
-                                                  if (!hasName(x = timePoint, name = "timePoint")) {
-                                                    timePoint[["timePoint"]] <- names(x)
-                                                  }
-                                                  timePoint[c(trait, "genotype", xVar, if (!is.null(colorBy)) colorBy)]
-                                                }
-                                              }))
+      plotDat <- Reduce(f = rbind,
+                        x = lapply(X = x[timePoints],
+                                   function(timePoint) {
+                                     if (!hasName(x = timePoint, name = trait)) {
+                                       NULL
+                                     } else {
+                                       if (!hasName(x = timePoint,
+                                                    name = "timePoint")) {
+                                         timePoint[["timePoint"]] <- names(x)
+                                       }
+                                       timePoint[c(trait, "genotype", xVar,
+                                                   if (!is.null(colorBy)) colorBy)]
+                                     }
+                                   }))
       if (is.null(plotDat)) {
         warning(paste0(trait, " isn't a column in any of the timePoints.\n",
                        "Plot skipped.\n"), call. = FALSE)
@@ -376,6 +382,7 @@ plot.TP <- function(x,
         plotDat[xVar] <- factor(plotDat[[xVar]])
       }
       ## Create boxplot.
+      ## Back ticks around variable names are needed to handle spaces in names.
       pTr <- ggplot2::ggplot(plotDat,
                              ggplot2::aes_string(x = paste0("`", xVar, "`"),
                                                  y = paste0("`", trait, "`"),
@@ -478,16 +485,21 @@ plot.TP <- function(x,
     if (is.null(traits) || !is.character(traits)) {
       stop("traits should be a character vector.\n")
     }
+    if (!is.null(geno.decomp) && !all(sapply(X = x, FUN = function(timePoint) {
+      hasName(x = timePoint, name = geno.decomp)
+    }))) {
+      stop("geno.decomp should be a column in TP.\n")
+    }
     p <- setNames(vector(mode = "list", length = length(traits)), traits)
     for (trait in traits) {
-      ## Create a single data.frame from x with only columns timePoint and trait.
-      ## timePoints where trait is not measured/available are removed by setting
-      ## them to NULL.
+      ## Create a single data.frame from x with only columns timePoint and
+      ## trait. timePoints where trait is not measured/available are removed
+      ## by setting them to NULL.
       plotDat <- Reduce(f = rbind, x = lapply(X = x, FUN = function(timePoint) {
         if (!hasName(x = timePoint, name = trait)) {
           NULL
         } else {
-          timePoint[c("genotype", "timePoint", "plotId", trait)]
+          timePoint[c("genotype", "timePoint", "plotId", trait, geno.decomp)]
         }
       }))
       if (is.null(plotDat)) {
@@ -499,6 +511,11 @@ plot.TP <- function(x,
       if (!is.null(genotypes)) {
         plotDat <- plotDat[plotDat[["genotype"]] %in% genotypes, ]
         plotDat <- droplevels(plotDat)
+      }
+      ## Add interaction with geno.decomp to genotypes.
+      if (!is.null(geno.decomp)) {
+        plotDat[["genotype"]] <- interaction(plotDat[[geno.decomp]],
+                                             plotDat[["genotype"]], sep = "_")
       }
       ## Add combinations missing in data to plotDat.
       plotDat <- addMissVals(dat = plotDat, trait = trait)

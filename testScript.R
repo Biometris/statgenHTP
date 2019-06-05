@@ -27,7 +27,7 @@ plot(inTP, plotType = "layout",
 plot(inTP, plotType = "cor", traits = "pheno")
 plot(inTP, plotType = "box", traits = "pheno",
      timePoints = c("2018-05-31 16:37:00", "2018-06-01 09:07:00"),
-     colorBy = "Sowing_Block")
+     colorBy = "repId")
 
 pdf("Phenovator_Rene_raw_data_na.pdf", height = 8, width = 12)
 plot(inTP, plotType = "raw", traits = "pheno")
@@ -37,7 +37,7 @@ plot(inTP, plotType = "raw", traits = "pheno",
      genotypes = c("col", "ely", "evo1", "ler"))
 
 fitMods <- fitModels(TP = inTP, trait = "pheno",
-                     covariates = c("Sowing_Block", "Image_pos"))
+                     covariates = c("repId", "Image_pos"))
 
 genoPreds <- getGenoPred(fitMods, outFile = "BLUPs_PAM_modRep.csv")
 spatCorr <- getCorrected(fitMods, outFile = "Corrected_PAM_modRep.csv")
@@ -66,7 +66,7 @@ plot(inTP2, plotType = "cor", traits = "LA_Estimated")
 plot(inTP2, plotType = "box", traits = "LA_Estimated",
      timePoints = names(inTP2[1:3]))
 pdf("Phenovator_ZA17_raw_data_na.pdf", height = 8, width = 12)
-plot(inTP2, plotType = "raw", traits = "LA_Estimated")
+plot(inTP2, plotType = "raw", traits = "LA_Estimated", geno.decomp = "Scenario")
 dev.off()
 
 fitMods2 <- fitModels(TP = inTP2, trait = "LA_Estimated",
