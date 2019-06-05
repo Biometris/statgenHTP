@@ -1,3 +1,19 @@
+#' Fit spatial models per time point
+#'
+#' Fit spatial models per time point in an object of class TP.
+#'
+#' @param TP An object of class TP.
+#' @param trait A character string indicating the trait used as response
+#' variable in the model.
+#' @param covariates A character vector indicating the variables used as
+#' fixed effects in the model.
+#' @param geno.decomp A character vector indicating the variables used to
+#' group the genotypes in the model.
+#' @param useCheck Should check genotypes be used as an extra factor in the
+#' model?
+#'
+#' @return An object of class fitMod, a list of fitted spatial models.
+#'
 #' @export
 fitModels <- function(TP,
                       trait,
@@ -9,12 +25,12 @@ fitModels <- function(TP,
     stop("TP should be an object of class TP.\n")
   }
   if (!all(sapply(X = TP, FUN = hasName, name = trait))) {
-    stop(trait, " should be a column for all timePoints.\n")
+    stop(trait, " should be a column in TP for all timePoints.\n")
   }
   if (!is.null(covariates)) {
     for (covar in covariates) {
       if (!all(sapply(X = TP, FUN = hasName, name = covar))) {
-        stop(covar, " should be a column for all timePoints.\n")
+        stop(covar, " should be a column in TP for all timePoints.\n")
       }
     }
   }
@@ -23,6 +39,11 @@ fitModels <- function(TP,
       if (!all(sapply(X = TP, FUN = hasName, name = gd))) {
         stop(gd, " should be a column for all timePoints.\n")
       }
+    }
+  }
+  if (useCheck) {
+    if (!all(sapply(X = TP, FUN = hasName, name = "check"))) {
+      stop("check should be a column in TP for all timePoints.\n")
     }
   }
   ## If geno.decomp is used genotype and covariates have to be replaced by

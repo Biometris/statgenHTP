@@ -1,6 +1,16 @@
+#' Extract genomic predictions
+#'
+#' Extract genomic predictions from an object of class fitMod.
+#'
+#' @param fitMod An object of class fitMod.
+#' @param outFile A character string indicting the .csv file to which the
+#' results should be written. If \code{NULL} no file is written.
+#'
+#' @return A data.frame with genomic predictions per time point.
+#'
 #' @export
 getGenoPred <- function(fitMod,
-                     outFile = NULL) {
+                        outFile = NULL) {
   genoPred <- lapply(X = fitMod, FUN = predictGeno)
   genoPred <- Reduce(f = rbind, x = genoPred)
   if (!is.null(outFile)) {
@@ -9,6 +19,14 @@ getGenoPred <- function(fitMod,
   return(genoPred)
 }
 
+#' Extract column predictions
+#'
+#' Extract column predictions from an object of class fitMod.
+#'
+#' @inheritParams getGenoPred
+#'
+#' @return A data.frame with column predictions per time point.
+#'
 #' @export
 getColPred <- function(fitMod,
                        outFile = NULL) {
@@ -20,9 +38,17 @@ getColPred <- function(fitMod,
   return(colPred)
 }
 
+#' Extract row predictions
+#'
+#' Extract row predictions from an object of class fitMod.
+#'
+#' @inheritParams getGenoPred
+#'
+#' @return A data.frame with row predictions per time point.
+#'
 #' @export
 getRowPred <- function(fitMod,
-                        outFile = NULL) {
+                       outFile = NULL) {
   rowPred <- lapply(X = fitMod, FUN = predictRow)
   rowPred <- Reduce(f = rbind, x = rowPred)
   if (!is.null(outFile)) {
@@ -31,6 +57,14 @@ getRowPred <- function(fitMod,
   return(rowPred)
 }
 
+#' Extract genotypic BLUPs
+#'
+#' Extract genotypic BLUPs from an object of class fitMod.
+#'
+#' @inheritParams getGenoPred
+#'
+#' @return A data.frame with genotypic BLUPs per time point.
+#'
 #' @export
 getBLUPsGeno <- function(fitMod,
                          outFile = NULL) {
@@ -42,9 +76,17 @@ getBLUPsGeno <- function(fitMod,
   return(BLUPsGeno)
 }
 
+#' Extract column BLUPs
+#'
+#' Extract column BLUPs from an object of class fitMod.
+#'
+#' @inheritParams getGenoPred
+#'
+#' @return A data.frame with column BLUPs per time point.
+#'
 #' @export
 getBLUPsCol <- function(fitMod,
-                         outFile = NULL) {
+                        outFile = NULL) {
   BLUPsCol <- lapply(X = fitMod, FUN = BLUPsCol)
   BLUPsCol <- Reduce(f = rbind, x = BLUPsCol)
   if (!is.null(outFile)) {
@@ -53,9 +95,17 @@ getBLUPsCol <- function(fitMod,
   return(BLUPsCol)
 }
 
+#' Extract row BLUPs
+#'
+#' Extract row BLUPs from an object of class fitMod.
+#'
+#' @inheritParams getGenoPred
+#'
+#' @return A data.frame with row BLUPs per time point.
+#'
 #' @export
 getBLUPsRow <- function(fitMod,
-                         outFile = NULL) {
+                        outFile = NULL) {
   BLUPsRow <- lapply(X = fitMod, FUN = BLUPsRow)
   BLUPsRow <- Reduce(f = rbind, x = BLUPsRow)
   if (!is.null(outFile)) {
@@ -64,6 +114,14 @@ getBLUPsRow <- function(fitMod,
   return(BLUPsRow)
 }
 
+#' Extract spatially corrected values
+#'
+#' Extract spatially corrected values from an object of class fitMod.
+#'
+#' @inheritParams getGenoPred
+#'
+#' @return A data.frame with spatially corrected values per time point.
+#'
 #' @export
 getCorrected <- function(fitMod,
                          outFile = NULL) {
@@ -75,6 +133,14 @@ getCorrected <- function(fitMod,
   return(spatCorr)
 }
 
+#' Extract variances
+#'
+#' Extract variances from an object of class fitMod.
+#'
+#' @inheritParams getGenoPred
+#'
+#' @return A data.frame with variances per time point.
+#'
 #' @export
 getVar <- function(fitMod,
                    outFile = NULL) {
@@ -90,6 +156,14 @@ getVar <- function(fitMod,
   return(variance)
 }
 
+#' Extract heritabilities
+#'
+#' Extract heritabilities from an object of class fitMod.
+#'
+#' @inheritParams getGenoPred
+#'
+#' @return A data.frame with heritabilities per time point.
+#'
 #' @export
 getHerit <- function(fitMod,
                      outFile = NULL) {
@@ -115,6 +189,14 @@ getHerit <- function(fitMod,
   return(h2Out)
 }
 
+#' Extract effective dimensions
+#'
+#' Extract effective dimensions from an object of class fitMod.
+#'
+#' @inheritParams getGenoPred
+#'
+#' @return A data.frame with effective dimensions per time point.
+#'
 #' @export
 getEffDims <- function(fitMod,
                        outFile = NULL) {

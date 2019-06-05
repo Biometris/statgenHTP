@@ -1,3 +1,32 @@
+#' Create an object of class TP
+#'
+#' Create an object of class TP
+#'
+#' @param dat A data.frame.
+#' @param genotype A character string indicating the column in dat containing
+#' the genotypes.
+#' @param timePoint A character string indicating the column in dat containing
+#' the time points.
+#' @param plotId A character string indicating the column in dat containing
+#' the plotId. This has to be a unique identifier per plot.
+#' @param repId A character string indicating the column in dat containing
+#' the replicates.
+#' @param rowNum A character string indicating the column in dat containing
+#' the row number of the plot.
+#' @param colNum A character string indicating the column in dat containing
+#' the column number of the plot.
+#' @param rowId A character string indicating the column in dat containing
+#' the row number of the plot.
+#' @param colId A character string indicating the column in dat containing
+#' the column number of the plot.
+#' @param addCheck Should a column check be added to the output. If \code{TRUE}
+#' checkGenotypes cannot be \code{NULL}.
+#' @param checkGenotypes A character vector containing the genotypes used as
+#' checks in the experiment.
+#'
+#' @return An object of class TP. A list with per time point in the input a
+#' data.frame containing the data for that time point.
+#'
 #' @export
 createTimePoints <- function(dat,
                              genotype,
@@ -105,7 +134,8 @@ createTimePoints <- function(dat,
 #'
 #' Plotting function for objects of class TP. Plots either the layout of the
 #' different timePoints within the TP object or locates the timePoints on a map. Also a
-#' boxplot can be made for selected traits and timePoints and a plot of correlations
+#' boxplot can be made for selected traits and timePoints and a plot of
+#' correlations
 #' between timePoints. A detailed description and optional extra parameters of the
 #' different plots is given in the sections below.
 #'
@@ -529,6 +559,10 @@ plot.TP <- function(x,
 }
 
 #' Function for extracting for objects of class TP that keeps class.
+#'
+#' @param x An object of class TP.
+#' @param i An index specifying the element to extract of replace.
+#' @param ... Ignored.
 #'
 #' @export
 `[.TP` <- function(x, i, ...) {
