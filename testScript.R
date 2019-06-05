@@ -66,9 +66,9 @@ pdf("Phenovator_ZA17_raw_data_na.pdf", height = 8, width = 12)
 plot(inTP2, plotType = "raw", traits = "LA_Estimated", geno.decomp = "Scenario")
 dev.off()
 
-fitMods2 <- fitModels(TP = inTP2, trait = "LA_Estimated",
+fitMods2 <- fitModels(TP = inTP2[1:1], trait = "LA_Estimated",
                       geno.decomp = c("Scenario", "population"))
-fitMods2b <- fitModels(TP = inTP2, trait = "LA_Estimated",
+fitMods2b <- fitModels(TP = inTP2[1:1], trait = "LA_Estimated",
                       geno.decomp = c("Scenario", "population"),
                       engine = "asreml")
 

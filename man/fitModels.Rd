@@ -5,7 +5,7 @@
 \title{Fit spatial models per time point}
 \usage{
 fitModels(TP, trait, covariates = NULL, geno.decomp = NULL,
-  useCheck = FALSE)
+  useCheck = FALSE, engine = c("SpATS", "asreml"))
 }
 \arguments{
 \item{TP}{An object of class TP.}
