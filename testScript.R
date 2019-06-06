@@ -66,13 +66,18 @@ pdf("Phenovator_ZA17_raw_data_na.pdf", height = 8, width = 12)
 plot(inTP2, plotType = "raw", traits = "LA_Estimated", geno.decomp = "Scenario")
 dev.off()
 
-fitMods2 <- fitModels(TP = inTP2[1:3], trait = "LA_Estimated",
+fitMods2 <- fitModels(TP = inTP2, trait = "LA_Estimated",
                       geno.decomp = c("Scenario", "population"))
+fitMods2b <- fitModels(TP = inTP2, trait = "LA_Estimated",
+                      geno.decomp = c("Scenario", "population"),
+                      engine = "asreml")
+
 ## This crashes:
 fitMods2b <- fitModels(TP = inTP2[1:3], trait = "LA_Estimated",
                        geno.decomp = "Scenario", covariates = "population")
 
 genoPreds2 <- getGenoPred(fitMods2, outFile = "BLUPs_ZA17_LeafArea.csv")
+genoBLUPs2 <- getBLUPsGeno(fitMods2)
 spatCorr2 <- getCorrected(fitMods2, outFile = "Corrected_ZA17_LeafArea.csv")
 variance2 <- getVar(fitMods2)
 h22 <- getHerit(fitMods2)

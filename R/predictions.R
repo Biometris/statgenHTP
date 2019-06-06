@@ -65,7 +65,8 @@ BLUPsGeno <- function(fitMod) {
   ## Create data.frame with variables needed for subsequent analyses.
   BLUPsGeno <- data.frame(genotype = genotypes, predicted.values = BLUPsGeno,
                           standard.errors = seBLUPsGeno,
-                          timePoint = fitMod$data[["timePoint"]][1])
+                          timePoint = fitMod$data[["timePoint"]][1],
+                          row.names = NULL)
   return(BLUPsGeno)
 }
 
@@ -79,7 +80,8 @@ BLUPsCol <- function(fitMod) {
   ## Create data.frame variables needed for subsequent analyses.
   BLUPsCol <- data.frame(colId = columns, predicted.values = BLUPsCol,
                          standard.errors = seBLUPsCol,
-                         timePoint = fitMod$data[["timePoint"]][1])
+                         timePoint = fitMod$data[["timePoint"]][1],
+                         row.names = NULL)
   return(BLUPsCol)
 }
 
@@ -93,7 +95,8 @@ BLUPsRow <- function(fitMod) {
   ## Create data.frame variables needed for subsequent analyses.
   BLUPsRow <- data.frame(colId = rows, predicted.values = BLUPsRow,
                          standard.errors = seBLUPsRow,
-                         timePoint = fitMod$data[["timePoint"]][1])
+                         timePoint = fitMod$data[["timePoint"]][1],
+                         row.names = NULL)
   return(BLUPsRow)
 }
 
