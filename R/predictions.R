@@ -6,7 +6,6 @@ predictGeno <- function(fitMod) {
     genoCol <- fitMod$model$geno$genotype
     ## Check if check was used when fitting model.
     useCheck <- grepl(pattern = "check", x = deparse(fitMod$model$fixed))
-    checkCol <- if (useCheck) "check" else NULL
     ## Genotype prediction (including the effect of geno.decomp as well as
     ## the intercept).
     predGeno <- predict(fitMod,
@@ -14,9 +13,9 @@ predictGeno <- function(fitMod) {
     ## Repeat for the check genotypes.
     if (useCheck) {
       ## Predict check genotypes.
-      predCheck <- predict(fitMod, which = checkCol)
+      predCheck <- predict(fitMod, which = "check")
       ## Rename check to genotype for merging with genotype predictions.
-      predCheck[["genotype"]] <- predCheck[[checkCol]]
+      predCheck[["genotype"]] <- predCheck[["check"]]
       ## Remove noCheck
       predCheck <- predCheck[predCheck[["genotype"]] != "noCheck", ]
       ## Rename genoCol to genotype for merging with check predictions.
@@ -33,6 +32,18 @@ predictGeno <- function(fitMod) {
     ## Genotype prediction (including the effect of geno.decomp as well as
     ## the intercept).
     predGeno <- predictAsreml(fitMod, classify = genoCol, vcov = FALSE)$pvals
+    ## Repeat for the check genotypes.
+    if (useCheck) {
+      ## Predict check genotypes.
+      predCheck <- predict(fitMod, classify = "check", vcov = FALSE)$pvals
+      ## Rename check to genotype for merging with genotype predictions.
+      predCheck[["genotype"]] <- predCheck[["check"]]
+      ## Remove noCheck
+      predCheck <- predCheck[predCheck[["genotype"]] != "noCheck", ]
+      ## Rename genoCol to genotype for merging with check predictions.
+      predGeno[["genotype"]] <- predGeno[[genoCol]]
+      predGeno <- rbind(predGeno[-1], predCheck[-1])
+    }
     ## Rename columns to match those from SpATS predictions.
     colnames(predGeno)[colnames(predGeno) == "predicted.value"] <-
       "predicted.values"
