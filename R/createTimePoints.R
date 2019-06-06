@@ -411,6 +411,10 @@ plot.TP <- function(x,
         ## Always convert timepoint to factor.
         plotDat[xVar] <- factor(plotDat[[xVar]])
       }
+      ## Colorby is ignored in plot if it is not a factor.
+      if (!is.null(colorBy) && !is.factor(plotDat[colorBy])) {
+        plotDat[colorBy] <- factor(plotDat[[colorBy]])
+      }
       ## Create boxplot.
       ## Back ticks around variable names are needed to handle spaces in names.
       pTr <- ggplot2::ggplot(plotDat,
