@@ -117,7 +117,7 @@ fitModels <- function(TP,
     ## fixed in asreml needs response variable on lhs of formula.
     fixedForm <- update(fixedForm, paste(trait, "~ ."))
     ## Construct formula for random part of the model.
-    randForm <- formula(paste("~", if (is.null(geno.decomp)) genoCol else
+    randForm <- formula(paste("~ colId + ", if (is.null(geno.decomp)) genoCol else
       paste0("at(", geno.decomp, "):genotype")))
     ## Loop on timepoint to run asreml.
     fitMods <- lapply(X = TP, function(timePoint) {

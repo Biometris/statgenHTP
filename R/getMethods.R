@@ -39,13 +39,23 @@ getColPred <- function(fitMod,
   if (!inherits(fitMod, "fitMod")) {
     stop(fitMod, " should be an object of class fitMod.\n")
   }
-  colPred <- lapply(X = fitMod, FUN = predictCol)
-  colPred <- Reduce(f = rbind, x = colPred)
-  if (!is.null(outFile)) {
-    checkFile(outFile)
-    write.csv(colPred, file = outFile, row.names = FALSE)
+  ## Column prediction can always be done for SpATS and
+  ## for asreml if colId was used as random factor.
+  if (inherits(fitMod[[1]], "SpATS") ||
+      (inherits(fitMod[[1]], "asreml") &&
+       any(grepl(pattern = "colId", x = attr(x = fitMod[[1]]$formulae$random,
+                                             which = "term.labels"))))) {
+    colPred <- lapply(X = fitMod, FUN = predictCol)
+    colPred <- Reduce(f = rbind, x = colPred)
+    if (!is.null(outFile)) {
+      checkFile(outFile)
+      write.csv(colPred, file = outFile, row.names = FALSE)
+    }
+    return(colPred)
+  } else {
+    stop("Models in ", deparse(substitute(fitMod)), " should either be fitted",
+         " using SpATS or using asreml with option spatial set to TRUE.\n")
   }
-  return(colPred)
 }
 
 #' Extract row predictions
@@ -63,13 +73,23 @@ getRowPred <- function(fitMod,
   if (!inherits(fitMod, "fitMod")) {
     stop(fitMod, " should be an object of class fitMod.\n")
   }
-  rowPred <- lapply(X = fitMod, FUN = predictRow)
-  rowPred <- Reduce(f = rbind, x = rowPred)
-  if (!is.null(outFile)) {
-    checkFile(outFile)
-    write.csv(rowPred, file = outFile, row.names = FALSE)
+  ## Row prediction can always be done for SpATS and
+  ## for asreml if rowId was used as random factor.
+  if (inherits(fitMod[[1]], "SpATS") ||
+      (inherits(fitMod[[1]], "asreml") &&
+       any(grepl(pattern = "rowId", x = attr(x = fitMod[[1]]$formulae$random,
+                                             which = "term.labels"))))) {
+    rowPred <- lapply(X = fitMod, FUN = predictRow)
+    rowPred <- Reduce(f = rbind, x = rowPred)
+    if (!is.null(outFile)) {
+      checkFile(outFile)
+      write.csv(rowPred, file = outFile, row.names = FALSE)
+    }
+    return(rowPred)
+  } else {
+    stop("Models in ", deparse(substitute(fitMod)), " should either be fitted",
+         " using SpATS or using asreml with option spatial set to TRUE.\n")
   }
-  return(rowPred)
 }
 
 #' Extract genotypic BLUPs
