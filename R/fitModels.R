@@ -89,6 +89,8 @@ fitModels <- function(TP,
   } else {
     fixedForm <- if (useCheck) formula("~ check") else NULL
   }
+  ## Get column containing genotype.
+  genoCol <- if (useCheck) "genoCheck" else "genotype"
   if (engine == "SpATS") {
     ## Loop on timepoint to run SpATS.
     fitMods <- lapply(X = TP, function(timePoint) {
@@ -106,42 +108,27 @@ fitModels <- function(TP,
                    random = ~ colId + rowId,
                    spatial = ~ SpATS::PSANOVA(colNum, rowNum, nseg = nseg,
                                               nest.div = c(2, 2)),
-                   genotype = if (useCheck) "genoCheck" else "genotype",
-                   genotype.as.random = TRUE, geno.decomp = geno.decomp,
-                   data = modDat,
+                   genotype = genoCol, genotype.as.random = TRUE,
+                   geno.decomp = geno.decomp, data = modDat,
                    control = list(maxit = 50, tolerance = 1e-03,
                                   monitoring = 0))
     })
   } else if (engine == "asreml") {
+    ## fixed in asreml needs response variable on lhs of formula.
+    fixedForm <- update(fixedForm, paste(trait, "~ ."))
+    ## Construct formula for random part of the model.
+    randForm <- formula(paste("~", if (is.null(geno.decomp)) genoCol else
+      paste0("at(", geno.decomp, "):genotype")))
     ## Loop on timepoint to run asreml.
     fitMods <- lapply(X = TP, function(timePoint) {
       message(timePoint[["timePoint"]][1])
       ## Only keep columns needed for analysis.
       modDat <- droplevels(timePoint)
-      ## Add empty observations.
-      TDTab <- as.data.frame(table(modDat$colId, modDat$rowId))
-      TDTab <- TDTab[TDTab$Freq == 0, , drop = FALSE]
-      if (nrow(TDTab) > 0) {
-        extObs <- setNames(as.data.frame(matrix(nrow = nrow(TDTab),
-                                                ncol = ncol(modDat))),
-                           colnames(modDat))
-        extObs$trial <- modDat$trial[1]
-        extObs[, c("colId", "rowId")] <- TDTab[, c("Var1", "Var2")]
-        extObs[, c("colNum", "rowNum")] <-
-          c(as.numeric(levels(TDTab[, "Var1"]))[TDTab[, "Var1"]],
-            as.numeric(levels(TDTab[, "Var2"]))[TDTab[, "Var2"]])
-        modDat <- rbind(modDat, extObs)
-      }
-      ## TP needs to be sorted by row and column to prevent asreml from crashing.
-      modDat <- modDat[order(modDat$rowId, modDat$colId), ]
       ## Run model.
-      ## na.method for x set to include to deal with missing rows/columns.
-      asreml::asreml(fixed = formula(paste(trait, "~ ", geno.decomp)),
-                     random = formula(paste("~ rowId + colId + at(",
-                                            geno.decomp, "):genotype")),
-                     residual = ~ar1(rowId):ar1(colId),
-                     data = modDat, trace = FALSE, maxiter = 200,
-                     na.action = asreml::na.method(x = "include"))
+      asreml::asreml(fixed = update(fixedForm, paste(trait, "~ .")),
+                     random = randForm, data = modDat, trace = FALSE,
+                     na.action = asreml::na.method(x = "include"),
+                     maxiter = 200)
     })
   }
   return(createFitMod(fitMods))
