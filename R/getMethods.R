@@ -183,9 +183,15 @@ getVar <- function(fitMod,
   if (!inherits(fitMod, "fitMod")) {
     stop(fitMod, " should be an object of class fitMod.\n")
   }
-  varRes <- sapply(X = fitMod, FUN = function(x) x$psi[1])
-  varCol <- sapply(X = fitMod, FUN = function(x) x$var.comp["colId"])
-  varRow <- sapply(X = fitMod, FUN = function(x) x$var.comp["rowId"])
+  if (inherits(fitMod[[1]], "SpATS")) {
+    varRes <- sapply(X = fitMod, FUN = function(x) x$psi[1])
+    varCol <- sapply(X = fitMod, FUN = function(x) x$var.comp["colId"])
+    varRow <- sapply(X = fitMod, FUN = function(x) x$var.comp["rowId"])
+  } else if (inherits(fitMod[[1]], "asreml")) {
+    varRes <- sapply(X = fitMod, FUN = function(x) x$sigma2)
+    varCol <- sapply(X = fitMod, FUN = function(x) x$vparameters["colId"])
+    varRow <- sapply(X = fitMod, FUN = function(x) x$vparameters["rowId"])
+  }
   variance <- data.frame(timePoint = lubridate::as_datetime(names(varRes)),
                          varRes = varRes, varCol = varCol, varRow = varRow,
                          row.names = NULL)
@@ -248,6 +254,9 @@ getEffDims <- function(fitMod,
   ## Checks.
   if (!inherits(fitMod, "fitMod")) {
     stop(fitMod, " should be an object of class fitMod.\n")
+  }
+  if (!inherits(fitMod[[1]], "SpATS")) {
+    stop("Models in ", fitMod, " should be fitted using SpATS.\n")
   }
   effDimSurface <- sapply(X = fitMod, FUN = function(x) {
     sum(x$eff.dim[c("f(colNum)", "f(rowNum)", "f(colNum):rowNum",
