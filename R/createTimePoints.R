@@ -125,7 +125,12 @@ createTimePoints <- function(dat,
     attr(x = listData[[tr]], which = "renamedCols") <-
       if (nrow(renamed) > 0) renamed else NULL
   }
+  ## Create a data.frame with coding of time points for reference.
+  timePoints <- data.frame(timeNumber = 1:length(listData),
+                           timePoint = names(listData),
+                           stringsAsFactors = FALSE)
   TP <- structure(listData,
+                  timePoints = timePoints,
                   class = c("TP", "list"))
   return(TP)
 }
