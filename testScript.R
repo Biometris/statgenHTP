@@ -36,8 +36,11 @@ plot(inTP, plotType = "raw", traits = "pheno",
 
 fitMods <- fitModels(TP = inTP[1:3], trait = "pheno",
                      covariates = c("repId", "Image_pos"))
+fitMods1b <- fitModels(TP = inTP[1:3], trait = "pheno",
+                       covariates = c("repId", "Image_pos"), engine = "asreml")
 
 genoPreds <- getGenoPred(fitMods, outFile = "BLUPs_PAM_modRep.csv")
+genoPreds1b <- getGenoPred(fitMods1b)
 spatCorr <- getCorrected(fitMods, outFile = "Corrected_PAM_modRep.csv")
 variance <- getVar(fitMods)
 h2 <- getHerit(fitMods)
@@ -69,15 +72,19 @@ dev.off()
 fitMods2 <- fitModels(TP = inTP2[1:1], trait = "LA_Estimated",
                       geno.decomp = c("Scenario", "population"))
 fitMods2b <- fitModels(TP = inTP2[1:1], trait = "LA_Estimated",
-                      geno.decomp = c("Scenario", "population"),
-                      engine = "asreml")
+                       geno.decomp = c("Scenario", "population"),
+                       engine = "asreml")
 
 ## This crashes:
-fitMods2b <- fitModels(TP = inTP2[1:3], trait = "LA_Estimated",
+fitMods2c <- fitModels(TP = inTP2[1:3], trait = "LA_Estimated",
                        geno.decomp = "Scenario", covariates = "population")
 
 genoPreds2 <- getGenoPred(fitMods2, outFile = "BLUPs_ZA17_LeafArea.csv")
+<<<<<<< HEAD
 genoBLUPs2 <- getBLUPsGeno(fitMods2)
+=======
+genoPreds2b <- getGenoPred(fitMods2b)
+>>>>>>> fffa8f8... Added prediction for asreml to predGeno (#6)
 spatCorr2 <- getCorrected(fitMods2, outFile = "Corrected_ZA17_LeafArea.csv")
 variance2 <- getVar(fitMods2)
 h22 <- getHerit(fitMods2)

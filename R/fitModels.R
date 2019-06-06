@@ -125,10 +125,15 @@ fitModels <- function(TP,
       ## Only keep columns needed for analysis.
       modDat <- droplevels(timePoint)
       ## Run model.
-      asreml::asreml(fixed = update(fixedForm, paste(trait, "~ .")),
-                     random = randForm, data = modDat, trace = FALSE,
-                     na.action = asreml::na.method(x = "include"),
-                     maxiter = 200)
+      asrFit <- asreml::asreml(fixed = update(fixedForm, paste(trait, "~ .")),
+                               random = randForm, data = modDat, trace = FALSE,
+                               na.action = asreml::na.method(x = "include"),
+                               maxiter = 200)
+      ## evaluate call terms in mr and mfTrait so predict can be run.
+      asrFit$call$fixed <- eval(asrFit$call$fixed)
+      asrFit$call$random <- eval(asrFit$call$random)
+      asrFit$call$data <- substitute(modDat)
+      return(asrFit)
     })
   }
   return(createFitMod(fitMods))
