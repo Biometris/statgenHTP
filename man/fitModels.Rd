@@ -5,7 +5,7 @@
 \title{Fit spatial models per time point}
 \usage{
 fitModels(TP, trait, covariates = NULL, geno.decomp = NULL,
-  useCheck = FALSE, engine = c("SpATS", "asreml"))
+  useCheck = FALSE, engine = c("SpATS", "asreml"), spatial = FALSE)
 }
 \arguments{
 \item{TP}{An object of class TP.}
@@ -21,6 +21,11 @@ group the genotypes in the model.}
 
 \item{useCheck}{Should check genotypes be used as an extra factor in the
 model?}
+
+\item{engine}{A character string indicating the engine used to fit the
+models.}
+
+\item{spatial}{Should a spatial model be fitted for asreml?}
 }
 \value{
 An object of class fitMod, a list of fitted spatial models.

@@ -4,7 +4,7 @@
 #'
 #' @docType package
 #' @name statgenHTP
-#' @importFrom utils hasName write.csv
+#' @importFrom utils hasName write.csv capture.output
 #' @importFrom graphics plot
 #' @importFrom grDevices topo.colors
 #' @import stats

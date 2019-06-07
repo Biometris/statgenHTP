@@ -11,7 +11,7 @@ Description: What the package does (one paragraph).
 License: GPL
 Encoding: UTF-8
 LazyData: true
-Imports: 
+Imports:
     ggforce,
     ggplot2,
     lubridate,
@@ -19,6 +19,7 @@ Imports:
     scales,
     SpATS,
     animation
-RoxygenNote: 6.1.1
 Suggests: 
+    asreml (>= 4.0),
     covr
+RoxygenNote: 6.1.1

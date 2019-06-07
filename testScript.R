@@ -35,15 +35,23 @@ plot(inTP, plotType = "raw", traits = "pheno",
      genotypes = c("col", "ely", "evo1", "ler"))
 
 fitMods <- fitModels(TP = inTP[1:3], trait = "pheno",
-                     covariates = c("repId", "Image_pos"))
+                     covariates = c("repId", "Image_pos"), useCheck = TRUE)
 fitMods1b <- fitModels(TP = inTP[1:3], trait = "pheno",
                        covariates = c("repId", "Image_pos"), engine = "asreml")
 
+fitMods1c <- fitModels(TP = inTP[1:3], trait = "pheno",
+                       covariates = c("repId", "Image_pos"), engine = "asreml",
+                       useCheck = TRUE)
+
 genoPreds <- getGenoPred(fitMods, outFile = "BLUPs_PAM_modRep.csv")
+colPreds <- getColPred(fitMods)
 genoPreds1b <- getGenoPred(fitMods1b)
+genoPreds1c <- getGenoPred(fitMods1c)
+colPreds1c <- getColPred(fitMods1c)
 spatCorr <- getCorrected(fitMods, outFile = "Corrected_PAM_modRep.csv")
 variance <- getVar(fitMods)
 h2 <- getHerit(fitMods)
+genoBLUPS <- getBLUPsGeno(fitMods)
 
 plot(fitMods, plotType = "corrPred")
 plot(fitMods, plotType = "rawPred")
@@ -69,22 +77,27 @@ pdf("Phenovator_ZA17_raw_data_na.pdf", height = 8, width = 12)
 plot(inTP2, plotType = "raw", traits = "LA_Estimated", geno.decomp = "Scenario")
 dev.off()
 
-fitMods2 <- fitModels(TP = inTP2[1:1], trait = "LA_Estimated",
+fitMods2 <- fitModels(TP = inTP2[10:10], trait = "LA_Estimated",
                       geno.decomp = c("Scenario", "population"))
-fitMods2b <- fitModels(TP = inTP2[1:1], trait = "LA_Estimated",
+fitMods2b <- fitModels(TP = inTP2[10:10], trait = "LA_Estimated",
                        geno.decomp = c("Scenario", "population"),
                        engine = "asreml")
+fitMods2c <- fitModels(TP = inTP2[10:10], trait = "LA_Estimated",
+                       geno.decomp = c("Scenario", "population"),
+                       engine = "asreml", spatial = TRUE)
+
 
 ## This crashes:
-fitMods2c <- fitModels(TP = inTP2[1:3], trait = "LA_Estimated",
+fitMods2crash <- fitModels(TP = inTP2[1:3], trait = "LA_Estimated",
                        geno.decomp = "Scenario", covariates = "population")
 
 genoPreds2 <- getGenoPred(fitMods2, outFile = "BLUPs_ZA17_LeafArea.csv")
-<<<<<<< HEAD
-genoBLUPs2 <- getBLUPsGeno(fitMods2)
-=======
 genoPreds2b <- getGenoPred(fitMods2b)
->>>>>>> fffa8f8... Added prediction for asreml to predGeno (#6)
+genoPreds2c <- getGenoPred(fitMods2c)
+
+genoBLUPs2 <- getBLUPsGeno(fitMods2)
+rowPreds2c <- getRowPred(fitMods2c)
+
 spatCorr2 <- getCorrected(fitMods2, outFile = "Corrected_ZA17_LeafArea.csv")
 variance2 <- getVar(fitMods2)
 h22 <- getHerit(fitMods2)

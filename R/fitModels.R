@@ -11,6 +11,9 @@
 #' group the genotypes in the model.
 #' @param useCheck Should check genotypes be used as an extra factor in the
 #' model?
+#' @param engine A character string indicating the engine used to fit the
+#' models.
+#' @param spatial Should a spatial model be fitted for asreml?
 #'
 #' @return An object of class fitMod, a list of fitted spatial models.
 #'
@@ -20,7 +23,8 @@ fitModels <- function(TP,
                       covariates = NULL,
                       geno.decomp = NULL,
                       useCheck = FALSE,
-                      engine = c("SpATS", "asreml")) {
+                      engine = c("SpATS", "asreml"),
+                      spatial = FALSE) {
   ## Checks.
   if (!inherits(TP, "TP")) {
     stop("TP should be an object of class TP.\n")
@@ -117,7 +121,7 @@ fitModels <- function(TP,
     ## fixed in asreml needs response variable on lhs of formula.
     fixedForm <- update(fixedForm, paste(trait, "~ ."))
     ## Construct formula for random part of the model.
-    randForm <- formula(paste("~ colId + ", if (is.null(geno.decomp)) genoCol else
+    randForm <- formula(paste("~ ", if (is.null(geno.decomp)) genoCol else
       paste0("at(", geno.decomp, "):genotype")))
     ## Loop on timepoint to run asreml.
     fitMods <- lapply(X = TP, function(timePoint) {
@@ -125,19 +129,176 @@ fitModels <- function(TP,
       ## Only keep columns needed for analysis.
       modDat <- droplevels(timePoint)
       ## Run model.
-      asrFit <- asreml::asreml(fixed = update(fixedForm, paste(trait, "~ .")),
-                               random = randForm, data = modDat, trace = FALSE,
-                               na.action = asreml::na.method(x = "include"),
-                               maxiter = 200)
-      ## evaluate call terms in mr and mfTrait so predict can be run.
-      asrFit$call$fixed <- eval(asrFit$call$fixed)
-      asrFit$call$random <- eval(asrFit$call$random)
-      asrFit$call$data <- substitute(modDat)
+      if (!spatial) {
+        asrFit <- asreml::asreml(fixed = update(fixedForm, paste(trait, "~ .")),
+                                 random = randForm, data = modDat,
+                                 trace = FALSE, maxiter = 200,
+                                 na.action = asreml::na.method(x = "include"))
+        ## evaluate call terms in mr and mfTrait so predict can be run.
+        asrFit$call$fixed <- eval(asrFit$call$fixed)
+        asrFit$call$random <- eval(asrFit$call$random)
+        asrFit$call$data <- substitute(modDat)
+      } else {
+        asrFitSpat <- bestSpatMod(modDat = modDat, traits = trait,
+                                  fixedForm = fixedForm, randomForm = randForm)
+        asrFit <- asrFitSpat[["fitMods"]][[trait]]
+        attr(x = asrFit, which = "sumTab") <- asrFitSpat[["sumTab"]]
+      }
       return(asrFit)
     })
   }
   return(createFitMod(fitMods))
 }
 
-
+#' Helper function for calculating best spatial model using asreml.
+#' @noRd
+#' @keywords internal
+bestSpatMod <- function(modDat,
+                        traits,
+                        regular = FALSE,
+                        criterion = "AIC",
+                        fixedForm,
+                        randomForm,
+                        ...) {
+  dotArgs <- list(...)
+  ## Increase max number of iterations for asreml.
+  maxIter <- 200
+  ## Add empty observations.
+  TPTab <- as.data.frame(table(modDat[["colId"]], modDat[["rowId"]]))
+  TPTab <- TPTab[TPTab$Freq == 0, , drop = FALSE]
+  if (nrow(TPTab) > 0) {
+    extObs <- setNames(as.data.frame(matrix(nrow = nrow(TPTab),
+                                            ncol = ncol(modDat))),
+                       colnames(modDat))
+    extObs[["timePoint"]] <- modDat[["timePoint"]][1]
+    extObs[, c("colId", "rowId")] <- TPTab[, c("Var1", "Var2")]
+    extObs[, c("colNum", "rowNum")] <-
+      c(as.numeric(levels(TPTab[, "Var1"]))[TPTab[, "Var1"]],
+        as.numeric(levels(TPTab[, "Var2"]))[TPTab[, "Var2"]])
+    modDat <- rbind(modDat, extObs)
+  }
+  ## TP needs to be sorted by row and column to prevent asreml from crashing.
+  modDat <- modDat[order(modDat[["rowId"]], modDat[["colId"]]), ]
+  ## Define random terms of models to try.
+  randTerm <- c("NULL", rep(x = c("NULL", "units"), each = 3))
+  if (regular) {
+    ## Define spatial terms of models to try.
+    spatCh <- c("none", rep(x = c("exp(x)id", "id(x)exp",
+                                  "isotropic exponential"), times = 2))
+    spatTerm <- c(NA, paste("~", rep(x = c("exp(rowNum):colNum",
+                                           "rowNum:exp(colNum)",
+                                           "iexp(rowNum,colNum)"),
+                                     times = 2)))
+  } else {
+    spatCh <- c("none", rep(x = c("AR1(x)id", "id(x)AR1", "AR1(x)AR1"),
+                            times = 2))
+    spatTerm <- c(NA, paste("~",
+                            rep(x = c("ar1(rowId):colId", "rowId:ar1(colId)",
+                                      "ar1(rowId):ar1(colId)"), times = 2)))
+  }
+  ## Create empty base lists.
+  fitMods <- spatial <- sumTab <- setNames(vector(mode = "list",
+                                             length = length(traits)),
+                                      traits)
+  btCols <- c("spatial", "random", "AIC", "BIC", "row", "col", "error",
+              "correlated error", "converge")
+  for (trait in traits) {
+    ## Reset criterion to Inf.
+    criterionBest <- Inf
+    ## Create data.frame for storing summary for current trait.
+    modSum <- as.data.frame(matrix(nrow = length(spatCh), ncol = length(btCols),
+                                   dimnames = list(NULL, btCols)))
+    ## Fit model with genotype random for all different random/spatial terms.
+    for (i in seq_along(randTerm)) {
+      ## Add extra random term to random part.
+      randForm <- update(randomForm, paste("~ . + rowId + colId +", randTerm[i]))
+      asrArgs <- c(list(fixed = fixedForm, random = randForm, aom = TRUE,
+                         data = modDat, maxiter = maxIter, trace = FALSE,
+                         na.action = asreml::na.method(x = "include")),
+                    dotArgs)
+      if (!is.na(spatTerm[i])) {
+        asrArgs[["residual"]] <- formula(spatTerm[i])
+      }
+      capture.output(fitMod <- tryCatchExt(do.call(what = asreml::asreml,
+                                                    args = asrArgs)),
+                     file = tempfile())
+      if (!is.null(fitMod$warning)) {
+        fitMod <- chkLastIter(fitMod)
+        fitMod <- wrnToErr(fitMod)
+      }
+      if (length(fitMod$warning) != 0) {
+        warning(paste0("Warning in asreml for model ", spatCh[i],
+                       " genotype random, trait ", trait, " in timePoint ",
+                       modDat[["timePoint"]][1], ":\n", fitMod$warning,
+                       "\n"), call. = FALSE)
+      }
+      if (is.null(fitMod$error)) {
+        fitMod <- fitMod$value
+      } else {
+        warning(paste0("Error in asreml for model ", spatCh[i],
+                       " genotype random, trait ", trait, " in timePoint ",
+                       modDat[["timePoint"]][1], ":\n", fitMod$error,
+                       "\n"), call. = FALSE)
+        fitMod <- NULL
+      }
+      ## Fill model summary table.
+      modSum[i, "spatial"] <- spatCh[i]
+      modSum[i, "random"] <- randTerm[i]
+      modSum[i, "converge"] <- isTRUE(!is.null(fitMod) & fitMod$converge)
+      if (!is.null(fitMod)) {
+        summ <- summary(fitMod)$varcomp["component"]
+        modSum[i, "AIC"] <- -2 * fitMod$loglik + 2 * nrow(summ)
+        modSum[i, "BIC"] <- -2 * fitMod$loglik +
+          log(length(fitted(fitMod))) * nrow(summ)
+        ## Row and column output differs for regular/non-regular.
+        ## Always max. one of the possibilities is in summary so rowVal and
+        ## colVal are always a single value.
+        rowVal <- summ[rownames(summ) %in%
+                         c("rowId:colId!rowId!cor", "rowNum:colNum!rowNum!pow",
+                           "iexp(rowNum,colNum)!pow"), ]
+        modSum[i, "row"] <- ifelse(length(rowVal) == 0, NA, rowVal)
+        colVal <- summ[rownames(summ) %in%
+                         c("rowId:colId!colId!cor", "rowNum:colNum!colNum!pow",
+                           "iexp(rowNum,colNum)!pow"), ]
+        modSum[i, "col"] <- ifelse(length(colVal) == 0, NA, colVal)
+        modSum[i, "error"] <-
+          ifelse(randTerm[i] == "units", summ[rownames(summ) == "units", ],
+                 summ[rownames(summ) %in% c("units!R", "rowId:colId!R",
+                                            "rowNum:colNum!R",
+                                            "iexp(rowNum,colNum)!R"), ])
+        if (randTerm[i] == "units") {
+          modSum[i, "correlated error"] <-
+            summ[rownames(summ) %in% c("rowId:colId!R", "rowNum:colNum!R",
+                                       "iexp(rowNum,colNum)!R"), ]
+        }
+        ## If current model is better than best so far based on chosen criterion
+        ## define best model as current model.
+        if (fitMod$converge) {
+          if (criterion == "AIC") {
+            criterionCur <- modSum[i, "AIC"]
+          } else {
+            criterionCur <- modSum[i, "BIC"]
+          }
+        }
+        if (criterionCur < criterionBest) {
+          bestModTr <- fitMod
+          ## Evaluate call terms in bestModTr so predict can be run.
+          ## Needs to be called in every iteration to prevent final result
+          ## from always having the values of the last iteration.
+          bestModTr$call$fixed <- eval(bestModTr$call$fixed)
+          bestModTr$call$random <- eval(bestModTr$call$random)
+          bestModTr$call$residual <- eval(bestModTr$call$residual)
+          bestModTr$call$data <- substitute(modDat)
+          criterionBest <- criterionCur
+          bestMod <- i
+        }
+      }
+    }
+    fitMods[[trait]] <- bestModTr
+    spatial[[trait]] <- spatCh[bestMod]
+    attr(x = modSum, which = "chosen") <- bestMod
+    sumTab[[trait]] <- modSum
+  } # End for traits.
+  return(list(fitMods = fitMods, spatial = spatial, sumTab = sumTab))
+}
 

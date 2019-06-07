@@ -17,12 +17,14 @@ before_script:
   - apt-get update && apt-get install -y libxml2-dev libssl-dev libcurl4-openssl-dev zlib1g-dev libglu1-mesa-dev libfreetype6-dev > /dev/null
   - apt-get update && apt-get install -y --no-install-recommends qpdf ghostscript > /dev/null
   ## install pandoc - needed for checking readme.
-  - apt-get update && apt-get install -y pandoc > /dev/null
+  - apt-get update && apt-get install -y pandoc pandoc-citeproc > /dev/null
   ## install ImageMagick++ for timelapse.
   - apt-get update && apt-get install -y libmagick++-dev > /dev/null
   ## cache R packages.
   - mkdir -p $R_LIBS_USER
   - echo 'R_LIBS_USER='$R_LIBS_USER > .Renviron
+  ## Set _R_CHECK_FORCE_SUGGESTS_ to FALSE so R check doesn't crash over asreml.
+  - echo '_R_CHECK_FORCE_SUGGESTS_="false"' >> .Renviron
 
 R-release:
   stage: build
