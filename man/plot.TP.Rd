@@ -17,8 +17,8 @@ section.}
 \item{plotType}{A single character string indicating which plot should be
 made. See the sections below for a detailed explanation of the plots.}
 
-\item{timePoints}{A character vector indicating the timePoints to be plotted.
-Only used if \code{plotType} = "layout" or "box".}
+\item{timePoints}{A character or numeric vector indicating the timePoints
+to be plotted. Only used if \code{plotType} = "layout" or "box".}
 
 \item{traits}{A character vector indicating the traits to be plotted in
 a boxplot. Only used if \code{plotType} = "box" or "cor".}

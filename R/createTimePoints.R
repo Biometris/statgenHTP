@@ -192,8 +192,8 @@ createTimePoints <- function(dat,
 #' section.
 #' @param plotType A single character string indicating which plot should be
 #' made. See the sections below for a detailed explanation of the plots.
-#' @param timePoints A character vector indicating the timePoints to be plotted.
-#' Only used if \code{plotType} = "layout" or "box".
+#' @param timePoints A character or numeric vector indicating the timePoints
+#' to be plotted. Only used if \code{plotType} = "layout" or "box".
 #' @param traits A character vector indicating the traits to be plotted in
 #' a boxplot. Only used if \code{plotType} = "box" or "cor".
 #' @param genotypes A character vector indicating the genotypes to be plotted.
@@ -215,9 +215,7 @@ plot.TP <- function(x,
                     geno.decomp = NULL,
                     output = TRUE) {
   ## Checks.
-  if (!is.character(timePoints) || !all(hasName(x = x, name = timePoints))) {
-    stop(paste0("All timePoints should be in ", deparse(substitute(x)), ".\n"))
-  }
+  timePoints <- chkTimePoints(x, timePoints)
   plotType <- match.arg(plotType)
   dotArgs <- list(...)
   if (plotType == "layout") {
@@ -449,7 +447,8 @@ plot.TP <- function(x,
       ## Create a single data.frame from x with only columns timePoint and trait.
       ## timePoints where trait is not measured/available are removed by setting
       ## them to NULL.
-      plotDat <- Reduce(f = rbind, x = lapply(X = x, FUN = function(timePoint) {
+      plotDat <- Reduce(f = rbind, x = lapply(X = x[timePoints],
+                                              FUN = function(timePoint) {
         if (!hasName(x = timePoint, name = trait)) {
           NULL
         } else {
@@ -534,7 +533,8 @@ plot.TP <- function(x,
       ## Create a single data.frame from x with only columns timePoint and
       ## trait. timePoints where trait is not measured/available are removed
       ## by setting them to NULL.
-      plotDat <- Reduce(f = rbind, x = lapply(X = x, FUN = function(timePoint) {
+      plotDat <- Reduce(f = rbind, x = lapply(X = x[timePoints],
+                                              FUN = function(timePoint) {
         if (!hasName(x = timePoint, name = trait)) {
           NULL
         } else {
