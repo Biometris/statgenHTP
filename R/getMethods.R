@@ -18,7 +18,7 @@ getGenoPred <- function(fitMod,
   genoPred <- lapply(X = fitMod, FUN = predictGeno)
   genoPred <- Reduce(f = rbind, x = genoPred)
   if (!is.null(outFile)) {
-    checkFile(outFile)
+    chkFile(outFile)
     write.csv(genoPred, file = outFile, row.names = FALSE)
   }
   return(genoPred)
@@ -48,7 +48,7 @@ getColPred <- function(fitMod,
     colPred <- lapply(X = fitMod, FUN = predictCol)
     colPred <- Reduce(f = rbind, x = colPred)
     if (!is.null(outFile)) {
-      checkFile(outFile)
+      chkFile(outFile)
       write.csv(colPred, file = outFile, row.names = FALSE)
     }
     return(colPred)
@@ -82,7 +82,7 @@ getRowPred <- function(fitMod,
     rowPred <- lapply(X = fitMod, FUN = predictRow)
     rowPred <- Reduce(f = rbind, x = rowPred)
     if (!is.null(outFile)) {
-      checkFile(outFile)
+      chkFile(outFile)
       write.csv(rowPred, file = outFile, row.names = FALSE)
     }
     return(rowPred)
@@ -110,7 +110,7 @@ getBLUPsGeno <- function(fitMod,
   BLUPsGeno <- lapply(X = fitMod, FUN = BLUPsGeno)
   BLUPsGeno <- Reduce(f = rbind, x = BLUPsGeno)
   if (!is.null(outFile)) {
-    checkFile(outFile)
+    chkFile(outFile)
     write.csv(BLUPsGeno, file = outFile, row.names = FALSE)
   }
   return(BLUPsGeno)
@@ -134,7 +134,7 @@ getBLUPsCol <- function(fitMod,
   BLUPsCol <- lapply(X = fitMod, FUN = BLUPsCol)
   BLUPsCol <- Reduce(f = rbind, x = BLUPsCol)
   if (!is.null(outFile)) {
-    checkFile(outFile)
+    chkFile(outFile)
     write.csv(BLUPsCol, file = outFile, row.names = FALSE)
   }
   return(BLUPsCol)
@@ -158,7 +158,7 @@ getBLUPsRow <- function(fitMod,
   BLUPsRow <- lapply(X = fitMod, FUN = BLUPsRow)
   BLUPsRow <- Reduce(f = rbind, x = BLUPsRow)
   if (!is.null(outFile)) {
-    checkFile(outFile)
+    chkFile(outFile)
     write.csv(BLUPsRow, file = outFile, row.names = FALSE)
   }
   return(BLUPsRow)
@@ -182,7 +182,7 @@ getCorrected <- function(fitMod,
   spatCorrTP <- lapply(X = fitMod, FUN = correctSpatial)
   spatCorr <- Reduce(f = rbind, x = spatCorrTP)
   if (!is.null(outFile)) {
-    checkFile(outFile)
+    chkFile(outFile)
     write.csv(spatCorr, file = outFile, row.names = FALSE)
   }
   return(spatCorr)
@@ -216,7 +216,7 @@ getVar <- function(fitMod,
                          varRes = varRes, varCol = varCol, varRow = varRow,
                          row.names = NULL)
   if (!is.null(outFile)) {
-    checkFile(outFile)
+    chkFile(outFile)
     write.csv(variance, file = outFile, row.names = FALSE)
   }
   return(variance)
@@ -254,7 +254,7 @@ getHerit <- function(fitMod,
     h2Out <- cbind(h2Out, data.frame(h2 = unlist(h2), row.names = NULL))
   }
   if (!is.null(outFile)) {
-    checkFile(outFile)
+    chkFile(outFile)
     write.csv(h2Out, file = outFile, row.names = FALSE)
   }
   return(h2Out)
@@ -289,7 +289,7 @@ getEffDims <- function(fitMod,
                        effDimCol = effDimCol, effDimRow = effDimRow,
                        row.names = NULL)
   if (!is.null(outFile)) {
-    checkFile(outFile)
+    chkFile(outFile)
     write.csv(effDim, file = outFile, row.names = FALSE)
   }
   return(effDim)

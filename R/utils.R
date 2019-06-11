@@ -242,7 +242,7 @@ xyFacetPlot <- function(baseDat,
 
 #' @noRd
 #' @keywords internal
-checkFile <- function(outFile) {
+chkFile <- function(outFile) {
   if (!is.character(outFile) || length(outFile) > 1 ||
       tools::file_ext(outFile) != "csv") {
     stop("outFile should be a single character string ending in .csv.\n")
@@ -251,3 +251,40 @@ checkFile <- function(outFile) {
     stop("no permission to write to ", outFile, ".\n")
   }
 }
+
+#' Helper function for checking timepoints
+#'
+#' Helper function that checks if the timePoints provided are in the object
+#' (this can be an object of class TP or fitMod). If the timePoints provided are
+#' in a numeric format they are converted to their corresponding character
+#' values.
+#'
+#' @param x An R object.
+#' @param timePoints a character or numeric vector containing timePoints.
+#'
+#' @return A character vector containing timePoints.
+#'
+#' @noRd
+#' @keywords internal
+chkTimePoints <- function(x,
+                          timePoints) {
+  if (!inherits(x, "TP") && !inherits(x, "fitMod")) {
+    stop(deparse(substitute(x)), " should be an object of class TP or fitMod.\n")
+  }
+  timePointsX <- attr(x, which = "timePoints")
+  if (is.character(timePoints)) {
+    if (!all(timePoints %in% timePointsX[["timePoint"]])) {
+      stop("All timePoints should be in ", deparse(substitute(x)), ".\n")
+    }
+  } else if (is.numeric(timePoints)) {
+    if (!all(timePoints %in% timePointsX[["timeNumber"]])) {
+      stop("All timePoints should be in ", deparse(substitute(x)), ".\n")
+    }
+    timePoints <- timePointsX[timePoints, "timePoint"]
+  } else {
+    stop("timePoints should be a character or numeric vector.\n")
+  }
+  return(timePoints)
+}
+
+
