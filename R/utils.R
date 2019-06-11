@@ -280,7 +280,8 @@ chkTimePoints <- function(x,
     if (!all(timePoints %in% timePointsX[["timeNumber"]])) {
       stop("All timePoints should be in ", deparse(substitute(x)), ".\n")
     }
-    timePoints <- timePointsX[timePoints, "timePoint"]
+    timePoints <- timePointsX[timePointsX[["timeNumber"]] %in% timePoints,
+                              "timePoint"]
   } else {
     stop("timePoints should be a character or numeric vector.\n")
   }

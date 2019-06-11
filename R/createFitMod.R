@@ -18,19 +18,19 @@ plot.fitMod <- function(x,
                         genotypes = NULL,
                         title = NULL) {
   ## Checks.
-  if (!is.character(timePoints) || !all(hasName(x = x, name = timePoints))) {
-    stop(paste0("All timePoints should be in ", deparse(substitute(x)), ".\n"))
-  }
+  timePoints <- chkTimePoints(x, timePoints)
   plotType <- match.arg(plotType)
   dotArgs <- list(...)
+  ## Restrict x to selected time points.
+  fitMods <- x[timePoints]
   if (plotType == "rawPred") {
     if (is.null(title)) title <- "Genomic predictions + raw data"
     ## Get trait from model.
-    trait <- x[[1]]$model$response
+    trait <- fitMods[[1]]$model$response
     ## Get genomic predictions.
-    preds <- getGenoPred(x)
+    preds <- getGenoPred(fitMods)
     ## Construct full raw data from models.
-    raw <- Reduce(f = rbind, x = lapply(x, `[[`, "data"))
+    raw <- Reduce(f = rbind, x = lapply(fitMods, `[[`, "data"))
     ## Restrict genotypes.
     if (!is.null(genotypes)) {
       preds <- preds[preds[["genotype"]] %in% genotypes, ]
@@ -45,11 +45,11 @@ plot.fitMod <- function(x,
   } else if (plotType == "corrPred") {
     if (is.null(title)) title <- "Genomic predictions + spatial corrected data"
     ## Get trait from model.
-    trait <- x[[1]]$model$response
+    trait <- fitMods[[1]]$model$response
     ## Get genomic predictions.
-    preds <- getGenoPred(x)
+    preds <- getGenoPred(fitMods)
     ## Get spatial corrected values.
-    corrected <- getCorrected(x)
+    corrected <- getCorrected(fitMods)
     ## Restrict genotypes.
     if (!is.null(genotypes)) {
       preds <- preds[preds[["genotype"]] %in% genotypes, ]
@@ -64,7 +64,7 @@ plot.fitMod <- function(x,
   } else if (plotType == "herit") {
     if (is.null(title)) title <- "Heritabilities"
     ## Get heritabilities.
-    herit <- getHerit(x)
+    herit <- getHerit(fitMods)
     ## Convert to long format needed by ggplot.
     herit <- reshape2::melt(herit, measure.vars = setdiff(colnames(herit),
                                                           "timePoint"),
@@ -78,7 +78,7 @@ plot.fitMod <- function(x,
   } else if (plotType == "effDim") {
     if (is.null(title)) title <- "Effective dimensions"
     ## Get effective dimensions.
-    effDim <- getEffDims(x)
+    effDim <- getEffDims(fitMods)
     ## Convert to long format needed by ggplot.
     effDim <- reshape2::melt(effDim, measure.vars = c("effDimSurface",
                                                       "effDimCol", "effDimRow"),
@@ -93,7 +93,7 @@ plot.fitMod <- function(x,
   } else if (plotType == "variance") {
     if (is.null(title)) title <- "Variances"
     ## Get variances.
-    variance <- getVar(x)
+    variance <- getVar(fitMods)
     ## Convert to long format needed by ggplot.
     variance <- reshape2::melt(variance, measure.vars = c("varRes", "varCol",
                                                           "varRow"),
@@ -108,7 +108,7 @@ plot.fitMod <- function(x,
                     y = expression(sigma ^ 2))
   } else if (plotType == "timeLapse") {
     outFile <- dotArgs$outFile
-    timeLapsePlot(x, outFile = outFile)
+    timeLapsePlot(fitMods, outFile = outFile)
   }
 }
 
@@ -216,5 +216,26 @@ timeLapsePlot <- function(fitMods,
   }, movie.name = outFile, autobrowse = FALSE)
 }
 
-
+#' Function for extracting for objects of class fitMod that keeps class.
+#'
+#' @param x An object of class fitMod.
+#' @param i An index specifying the element to extract of replace.
+#' @param ... Ignored.
+#'
+#' @export
+`[.fitMod` <- function(x, i, ...) {
+  timePoints <- chkTimePoints(x, i)
+  timePointsX <- attr(x, which = "timePoints")
+  timePointsR <- timePointsX[timePointsX[["timePoint"]] %in% timePoints, ]
+  if (nrow(timePointsR) > 0) {
+    class(x) <- "list"
+    r <- x[timePointsR[["timePoint"]]]
+    attr(r, "timePoints") <- timePointsR
+    attr(r, "class") <- c("fitMod", "list")
+    attr(r, "timestamp") <- attr(x, "timestamp")
+  } else {
+    r <- NULL
+  }
+  return(r)
+}
 

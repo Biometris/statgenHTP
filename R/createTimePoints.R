@@ -575,15 +575,18 @@ plot.TP <- function(x,
 #'
 #' @export
 `[.TP` <- function(x, i, ...) {
-  r <- NextMethod("[")
+  timePoints <- chkTimePoints(x, i)
   timePointsX <- attr(x, which = "timePoints")
-  if (is.numeric(i)) {
-    timePointsR <- timePointsX[timePointsX[["timeNumber"]] %in% i, ]
-  } else if (is.character(i)) {
-    timePointsR <- timePointsX[timePointsX[["timePoint"]] %in% i, ]
+  timePointsR <- timePointsX[timePointsX[["timePoint"]] %in% timePoints, ]
+  if (nrow(timePointsR) > 0) {
+    class(x) <- "list"
+    r <- x[timePointsR[["timePoint"]]]
+    attr(r, "timePoints") <- timePointsR
+    attr(r, "class") <- c("TP", "list")
+    attr(r, "timestamp") <- attr(x, "timestamp")
+  } else {
+    r <- NULL
   }
-  attr(r, "class") <- attr(x, "class")
-  attr(r, "timePoints") <- timePointsR
   return(r)
 }
 
