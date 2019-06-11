@@ -1,6 +1,8 @@
 #' @keywords internal
-createFitMod <- function(models) {
+createFitMod <- function(models,
+                         timePoints) {
   fitMod <- structure(models,
+                      timePoints = timePoints,
                       class = c("fitMod", "list"),
                       timestamp = Sys.time())
   return(fitMod)

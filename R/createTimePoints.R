@@ -583,7 +583,7 @@ plot.TP <- function(x,
     timePointsR <- timePointsX[timePointsX[["timePoint"]] %in% i, ]
   }
   attr(r, "class") <- attr(x, "class")
-  attr(r, 'timePoints') <- timePointsR
+  attr(r, "timePoints") <- timePointsR
   return(r)
 }
 
