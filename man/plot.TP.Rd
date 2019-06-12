@@ -6,7 +6,8 @@
 \usage{
 \method{plot}{TP}(x, ..., plotType = c("layout", "box", "cor", "raw"),
   timePoints = names(x), traits = NULL, genotypes = NULL,
-  geno.decomp = NULL, output = TRUE)
+  geno.decomp = NULL, output = TRUE, outFile = NULL,
+  outFileOpts = NULL)
 }
 \arguments{
 \item{x}{An object of class TP.}
@@ -18,7 +19,7 @@ section.}
 made. See the sections below for a detailed explanation of the plots.}
 
 \item{timePoints}{A character or numeric vector indicating the timePoints
-to be plotted. Only used if \code{plotType} = "layout" or "box".}
+to be plotted.}
 
 \item{traits}{A character vector indicating the traits to be plotted in
 a boxplot. Only used if \code{plotType} = "box" or "cor".}
@@ -30,7 +31,14 @@ Only used if \code{plotType} = "raw".}
 genotypes to be plotted. Only used if \code{plotType} = "raw".}
 
 \item{output}{Should the plot be output to the current device? If
-\code{FALSE} only a list of ggplot objects is invisibly returned.}
+\code{FALSE} only a list of ggplot objects is invisibly returned. Ignored if
+\code{outFile} is specified.}
+
+\item{outFile}{A character string indicting the .pdf file to which the
+plots should be written. If \code{NULL} no file is written.}
+
+\item{outFileOpts}{A named list of extra options for the pdf outfile, e.g.
+width and height. See \code{\link[grDevices]{pdf}} for all possible options.}
 }
 \description{
 Plotting function for objects of class TP. Plots either the layout of the

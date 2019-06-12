@@ -134,25 +134,25 @@ predictAsreml <- function(model,
 #'
 #' @noRd
 #' @keywords internal
-calcPlotBorders <- function(trDat,
+calcPlotBorders <- function(tpDat,
                             bordVar) {
-  yMin <- min(trDat$rowNum)
-  yMax <- max(trDat$rowNum)
-  xMin <- min(trDat$colNum)
-  xMax <- max(trDat$colNum)
+  yMin <- min(tpDat$rowNum)
+  yMax <- max(tpDat$rowNum)
+  xMin <- min(tpDat$colNum)
+  xMax <- max(tpDat$colNum)
   ## Create matrix containing replicates.
   ## First create an empty matrix containing all row/column values
   ## between min and max to assure complete missing rows/columns
   ## are added.
   M <- matrix(nrow = yMax - yMin + 1, ncol = xMax - xMin + 1,
               dimnames = list(yMin:yMax, xMin:xMax))
-  for (i in 1:nrow(trDat)) {
-    M[as.character(trDat[i, "rowNum"]),
-      as.character(trDat[i, "colNum"])] <- trDat[i, bordVar]
+  for (i in 1:nrow(tpDat)) {
+    M[as.character(tpDat[i, "rowNum"]),
+      as.character(tpDat[i, "colNum"])] <- tpDat[i, bordVar]
   }
   ## Create an imputed version of M for plotting borders around NA values.
   MImp <- M
-  MImp[is.na(MImp)] <- nlevels(trDat[[bordVar]]) + 1
+  MImp[is.na(MImp)] <- nlevels(tpDat[[bordVar]]) + 1
   has.breaks <- function(x) {
     ncol(x) == 2 & nrow(x) > 0
   }
@@ -242,13 +242,15 @@ xyFacetPlot <- function(baseDat,
 
 #' @noRd
 #' @keywords internal
-chkFile <- function(outFile) {
+chkFile <- function(outFile,
+                    fileType = "csv") {
   if (!is.character(outFile) || length(outFile) > 1 ||
-      tools::file_ext(outFile) != "csv") {
-    stop("outFile should be a single character string ending in .csv.\n")
+      tools::file_ext(outFile) != fileType) {
+    stop("outFile should be a single character string ending in .",
+         fileType, ".\n")
   }
   if (file.access(dirname(outFile), 2)) {
-    stop("no permission to write to ", outFile, ".\n")
+    stop("No permission to write to ", outFile, ".\n")
   }
 }
 

@@ -193,7 +193,7 @@ createTimePoints <- function(dat,
 #' @param plotType A single character string indicating which plot should be
 #' made. See the sections below for a detailed explanation of the plots.
 #' @param timePoints A character or numeric vector indicating the timePoints
-#' to be plotted. Only used if \code{plotType} = "layout" or "box".
+#' to be plotted.
 #' @param traits A character vector indicating the traits to be plotted in
 #' a boxplot. Only used if \code{plotType} = "box" or "cor".
 #' @param genotypes A character vector indicating the genotypes to be plotted.
@@ -201,7 +201,12 @@ createTimePoints <- function(dat,
 #' @param geno.decomp A character vector indicating the grouping of the
 #' genotypes to be plotted. Only used if \code{plotType} = "raw".
 #' @param output Should the plot be output to the current device? If
-#' \code{FALSE} only a list of ggplot objects is invisibly returned.
+#' \code{FALSE} only a list of ggplot objects is invisibly returned. Ignored if
+#' \code{outFile} is specified.
+#' @param outFile A character string indicting the .pdf file to which the
+#' plots should be written. If \code{NULL} no file is written.
+#' @param outFileOpts A named list of extra options for the pdf outfile, e.g.
+#' width and height. See \code{\link[grDevices]{pdf}} for all possible options.
 #'
 #' @family functions for TP objects
 #'
@@ -213,11 +218,19 @@ plot.TP <- function(x,
                     traits = NULL,
                     genotypes = NULL,
                     geno.decomp = NULL,
-                    output = TRUE) {
+                    output = TRUE,
+                    outFile = NULL,
+                    outFileOpts = NULL) {
   ## Checks.
   timePoints <- chkTimePoints(x, timePoints)
   plotType <- match.arg(plotType)
   dotArgs <- list(...)
+  if (!is.null(outFile)) {
+    chkFile(outFile, fileType = "pdf")
+    output <- TRUE
+    outFileOpts <- c(list(file = outFile), outFileOpts)
+    do.call(pdf, args = outFileOpts)
+  }
   if (plotType == "layout") {
     showGeno <- isTRUE(dotArgs$showGeno)
     highlight <- dotArgs$highlight
@@ -227,45 +240,44 @@ plot.TP <- function(x,
     }
     p <- setNames(vector(mode = "list", length = length(timePoints)), timePoints)
     for (timePoint in timePoints) {
-      trDat <- x[[timePoint]]
-      if (!"rowNum" %in% colnames(trDat)) {
+      tpDat <- x[[timePoint]]
+      if (!hasName(tpDat, "rowNum")) {
         warning(paste0("rowNum should be a column in ", timePoint, ".\n",
                        "Plot skipped.\n"), call. = FALSE)
         break
       }
-      if (!"colNum" %in% colnames(trDat)) {
+      if (!hasName(tpDat, "colNum")) {
         warning(paste0("colNum should be a column in ", timePoint, ".\n",
                        "Plot skipped.\n"), call. = FALSE)
         break
       }
       if (length(highlight) > 0) {
-        trDat$highlight. <- ifelse(trDat$genotype %in% highlight,
-                                   as.character(trDat$genotype), NA)
+        tpDat$highlight. <- ifelse(tpDat$genotype %in% highlight,
+                                   as.character(tpDat$genotype), NA)
       }
-      trLoc <- attr(trDat, "trLocation")
-      ylen <- attr(trDat, "trPlLength")
-      xlen <- attr(trDat, "trPlWidth")
+      ylen <- attr(tpDat, "trPlLength")
+      xlen <- attr(tpDat, "trPlWidth")
       ## Compute aspect for proper depiction of field size. If no information
       ## is available plots are assumed to be square.
       if (is.null(ylen) || is.null(xlen)) {
-        aspect <- length(unique(trDat$colNum)) /
-          length(unique(trDat$rowNum))
+        aspect <- length(unique(tpDat$colNum)) /
+          length(unique(tpDat$rowNum))
       } else {
         aspect <- ylen / xlen
       }
-      plotRep <- hasName(x = trDat, name = "repId")
-      plotSubBlock <- hasName(x = trDat, name = "subBlock")
+      plotRep <- hasName(x = tpDat, name = "repId")
+      plotSubBlock <- hasName(x = tpDat, name = "subBlock")
       ## Create data for lines between replicates.
       if (plotRep) {
-        repBord <- calcPlotBorders(trDat = trDat, bordVar = "repId")
+        repBord <- calcPlotBorders(tpDat = tpDat, bordVar = "repId")
       }
       ## Create base plot.
-      pTr <- ggplot2::ggplot(data = trDat,
+      pTp <- ggplot2::ggplot(data = tpDat,
                              ggplot2::aes_string(x = "colNum",
                                                  y = "rowNum")) +
         ggplot2::coord_fixed(ratio = aspect,
-                             xlim = range(trDat$colNum) + c(-0.5, 0.5),
-                             ylim = range(trDat$rowNum) + c(-0.5, 0.5),
+                             xlim = range(tpDat$colNum) + c(-0.5, 0.5),
+                             ylim = range(tpDat$rowNum) + c(-0.5, 0.5),
                              clip = "off") +
         ggplot2::theme(panel.background = ggplot2::element_blank(),
                        plot.title = ggplot2::element_text(hjust = 0.5)) +
@@ -274,28 +286,28 @@ plot.TP <- function(x,
                                     expand = c(0, 0)) +
         ggplot2::scale_y_continuous(breaks = scales::pretty_breaks(),
                                     expand = c(0, 0)) +
-        ggplot2::ggtitle(trLoc)
-      if (sum(!is.na(trDat$highlight.)) > 0) {
+        ggplot2::ggtitle(timePoint)
+      if (sum(!is.na(tpDat$highlight.)) > 0) {
         ## Genotypes to be highlighted get a color.
         ## Everything else the NA color.
-        pTr <- pTr + ggplot2::geom_tile(
+        pTp <- pTp + ggplot2::geom_tile(
           ggplot2::aes_string(fill = "highlight."), color = "grey75") +
           ggplot2::labs(fill = "Highlighted") +
           ## Remove NA from scale.
           ggplot2::scale_fill_discrete(na.translate = FALSE)
       } else if (plotSubBlock && colorSubBlock) {
         ## Color tiles by subblock.
-        pTr <- pTr + ggplot2::geom_tile(
+        pTp <- pTp + ggplot2::geom_tile(
           ggplot2::aes_string(fill = "subBlock"), color = "grey75") +
           ggplot2::guides(fill = ggplot2::guide_legend(ncol = 3))
       } else {
         ## No subblocks and no hightlights so just a single fill color.
-        pTr <- pTr + ggplot2::geom_tile(fill = "white", color = "grey75")
+        pTp <- pTp + ggplot2::geom_tile(fill = "white", color = "grey75")
       }
       ## Create data for lines between subBlocks.
       if (plotSubBlock) {
-        subBlockBord <- calcPlotBorders(trDat = trDat, bordVar = "subBlock")
-        pTr <- pTr +
+        subBlockBord <- calcPlotBorders(tpDat = tpDat, bordVar = "subBlock")
+        pTp <- pTp +
           ## Add verical lines as segment.
           ## adding/subtracting 0.5 assures plotting at the borders of
           ## the tiles.
@@ -311,12 +323,12 @@ plot.TP <- function(x,
       }
       if (showGeno) {
         ## Add names of genotypes to the center of the tiles.
-        pTr <- pTr + ggplot2::geom_text(ggplot2::aes_string(label = "genotype"),
+        pTp <- pTp + ggplot2::geom_text(ggplot2::aes_string(label = "genotype"),
                                         size = 2, check_overlap = TRUE)
       }
       if (plotRep) {
         ## Add lines for replicates.
-        pTr <- pTr +
+        pTp <- pTp +
           ## Add verical lines as segment.
           ## adding/subtracting 0.5 assures plotting at the borders of
           ## the tiles.
@@ -332,7 +344,7 @@ plot.TP <- function(x,
       }
       if (plotSubBlock || plotRep) {
         shwVals <- c(plotRep, plotSubBlock)
-        pTr <- pTr +
+        pTp <- pTp +
           ## Add a legend entry for replicates and subBlocks.
           ggplot2::scale_linetype_manual(c("replicates", "subBlocks")[shwVals],
                                          values = c("replicates" = "solid",
@@ -341,9 +353,9 @@ plot.TP <- function(x,
           ggplot2::guides(linetype = ggplot2::guide_legend(override.aes =
                                                              list(size = c(1, 0.4)[shwVals])))
       }
-      p[[timePoint]] <- pTr
+      p[[timePoint]] <- pTp
       if (output) {
-        plot(pTr)
+        plot(pTp)
       }
     }
   } else if (plotType == "box") {
@@ -420,7 +432,7 @@ plot.TP <- function(x,
       }
       ## Create boxplot.
       ## Back ticks around variable names are needed to handle spaces in names.
-      pTr <- ggplot2::ggplot(plotDat,
+      pTp <- ggplot2::ggplot(plotDat,
                              ggplot2::aes_string(x = paste0("`", xVar, "`"),
                                                  y = paste0("`", trait, "`"),
                                                  fill = if (is.null(colorBy)) NULL else
@@ -430,9 +442,9 @@ plot.TP <- function(x,
                                                            vjust = 0.5,
                                                            hjust = 1)) +
         ggplot2::labs(x = xVar, y = trait)
-      p[[trait]] <- pTr
+      p[[trait]] <- pTp
       if (output) {
-        plot(pTr)
+        plot(pTp)
       }
     }
   } else if (plotType == "cor") {
@@ -489,7 +501,7 @@ plot.TP <- function(x,
       meltedCorMat <- meltedCorMat[as.numeric(meltedCorMat$Var1) >
                                      as.numeric(meltedCorMat$Var2), ]
       ## Create plot.
-      pTr <- ggplot2::ggplot(data = meltedCorMat,
+      pTp <- ggplot2::ggplot(data = meltedCorMat,
                              ggplot2::aes_string(x = "Var1", y = "Var2",
                                                  fill = "value")) +
         ggplot2::geom_tile(color = "grey50") +
@@ -514,9 +526,9 @@ plot.TP <- function(x,
         ggplot2::guides(size = FALSE) +
         ## Fix coordinates to get a square sized plot.
         ggplot2::coord_fixed()
-      p[[trait]] <- pTr
+      p[[trait]] <- pTp
       if (output) {
-        plot(pTr)
+        plot(pTp)
       }
     }
   } else if (plotType == "raw") {
@@ -563,6 +575,9 @@ plot.TP <- function(x,
                   title = "Phenovator platform - Raw data", yLab = trait,
                   output = output)
     }
+  }
+  if (!is.null(outFile)) {
+    dev.off()
   }
   invisible(p)
 }
