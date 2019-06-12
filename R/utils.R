@@ -234,10 +234,16 @@ xyFacetPlot <- function(baseDat,
                                 data = overlayDat, color = "black", size = 1,
                                 show.legend = FALSE, na.rm = TRUE)
   }
-  for (i in 1:ceiling(nlevels(baseDat[[facetVal]]) / 25)) {
-    plot(p + ggforce::facet_wrap_paginate(facets = facetVal, nrow = 5, ncol = 5,
-                                          page = i))
+  nPag <- ceiling(nlevels(baseDat[[facetVal]]) / 25)
+  pPag <- vector(mode = "list", length = nPag)
+  for (i in 1:nPag) {
+    pPag[[i]] <- p + ggforce::facet_wrap_paginate(facets = facetVal, nrow = 5,
+                                                  ncol = 5, page = i)
+    if (output) {
+      plot(pPag[[i]])
+    }
   }
+  invisible(pPag)
 }
 
 #' @noRd

@@ -8,6 +8,21 @@ createFitMod <- function(models,
   return(fitMod)
 }
 
+#' Plot function for class fitMod
+#'
+#' Plotting function for objects of class fitMod.
+#'
+#' @inheritParams plot.TP
+#'
+#' @param x An object of class fitMod.
+#' @param genotypes A character vector indicating the genotypes to be plotted.
+#' Only used if \code{plotType} = "rawPred" or "corrPred".
+#' @param title A character string used as title for the plot.
+#' @param outFile A character string indicting the .pdf file to which the
+#' plots should be written. If \code{NULL} no file is written.
+#' @param outFileOpts A named list of extra options for the pdf outfile, e.g.
+#' width and height. See \code{\link[grDevices]{pdf}} for all possible options.
+#'
 #' @export
 plot.fitMod <- function(x,
                         ...,
@@ -16,13 +31,22 @@ plot.fitMod <- function(x,
                                      "timeLapse"),
                         timePoints = names(x),
                         genotypes = NULL,
-                        title = NULL) {
+                        title = NULL,
+                        output = TRUE,
+                        outFile = NULL,
+                        outFileOpts = NULL) {
   ## Checks.
   timePoints <- chkTimePoints(x, timePoints)
   plotType <- match.arg(plotType)
   dotArgs <- list(...)
   ## Restrict x to selected time points.
   fitMods <- x[timePoints]
+  if (!is.null(outFile) && plotType != "timeLapse") {
+    chkFile(outFile, fileType = "pdf")
+    output <- TRUE
+    outFileOpts <- c(list(file = outFile), outFileOpts)
+    do.call(pdf, args = outFileOpts)
+  }
   if (plotType == "rawPred") {
     if (is.null(title)) title <- "Genomic predictions + raw data"
     ## Get trait from model.
@@ -40,8 +64,9 @@ plot.fitMod <- function(x,
     }
     ## Add combinations missing in data to raw.
     raw <- addMissVals(dat = raw, trait = trait)
-    xyFacetPlot(baseDat = raw, overlayDat = preds, yVal = trait,
-                yValOverlay = "predicted.values", title = title, yLab = trait)
+    p <- xyFacetPlot(baseDat = raw, overlayDat = preds, yVal = trait,
+                     yValOverlay = "predicted.values", title = title,
+                     yLab = trait, output = output)
   } else if (plotType == "corrPred") {
     if (is.null(title)) title <- "Genomic predictions + spatial corrected data"
     ## Get trait from model.
@@ -59,8 +84,9 @@ plot.fitMod <- function(x,
     }
     ## Add combinations missing in data to corrected.
     corrected <- addMissVals(dat = corrected, trait = "newTrait")
-    xyFacetPlot(baseDat = corrected, overlayDat = preds, yVal = "newTrait",
-                yValOverlay = "predicted.values", title = title, yLab = trait)
+    p <- xyFacetPlot(baseDat = corrected, overlayDat = preds, yVal = "newTrait",
+                     yValOverlay = "predicted.values", title = title,
+                     yLab = trait, output = output)
   } else if (plotType == "herit") {
     if (is.null(title)) title <- "Heritabilities"
     ## Get heritabilities.
@@ -69,12 +95,15 @@ plot.fitMod <- function(x,
     herit <- reshape2::melt(herit, measure.vars = setdiff(colnames(herit),
                                                           "timePoint"),
                             variable.name = "herit", value.name = "h2")
-    ggplot2::ggplot(herit,
-                    ggplot2::aes_string(x = "timePoint", y = "h2",
-                                        group = "herit", color = "herit")) +
+    p <- ggplot2::ggplot(herit,
+                         ggplot2::aes_string(x = "timePoint", y = "h2",
+                                             group = "herit", color = "herit")) +
       ggplot2::geom_line(na.rm = TRUE) +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) +
       ggplot2::labs(title = title)
+    if (output) {
+      plot(p)
+    }
   } else if (plotType == "effDim") {
     if (is.null(title)) title <- "Effective dimensions"
     ## Get effective dimensions.
@@ -83,13 +112,16 @@ plot.fitMod <- function(x,
     effDim <- reshape2::melt(effDim, measure.vars = c("effDimSurface",
                                                       "effDimCol", "effDimRow"),
                              variable.name = "effDim", value.name = "ED")
-    ggplot2::ggplot(effDim,
-                    ggplot2::aes_string(x = "timePoint", y = "ED",
-                                        group = "effDim", color = "effDim")) +
+    p <- ggplot2::ggplot(effDim,
+                         ggplot2::aes_string(x = "timePoint", y = "ED",
+                                             group = "effDim", color = "effDim")) +
       ggplot2::geom_line() +
       ggplot2::scale_color_discrete(labels = c("Surface", "Columns", "Rows")) +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) +
       ggplot2::labs(title = title, color = "Effective dimension")
+    if (output) {
+      plot(p)
+    }
   } else if (plotType == "variance") {
     if (is.null(title)) title <- "Variances"
     ## Get variances.
@@ -98,18 +130,25 @@ plot.fitMod <- function(x,
     variance <- reshape2::melt(variance, measure.vars = c("varRes", "varCol",
                                                           "varRow"),
                                variable.name = "var")
-    ggplot2::ggplot(variance,
-                    ggplot2::aes_string(x = "timePoint", y = "value",
-                                        group = "var", color = "var")) +
+    p <- ggplot2::ggplot(variance,
+                         ggplot2::aes_string(x = "timePoint", y = "value",
+                                             group = "var", color = "var")) +
       ggplot2::geom_line() +
       ggplot2::scale_color_discrete(labels = c("Residual", "Columns", "Rows")) +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) +
       ggplot2::labs(title = title, color = "variance",
                     y = expression(sigma ^ 2))
+    if (output) {
+      plot(p)
+    }
   } else if (plotType == "timeLapse") {
-    outFile <- dotArgs$outFile
+    chkFile(outFile, fileType = "gif")
     timeLapsePlot(fitMods, outFile = outFile)
   }
+  if (!is.null(outFile) && plotType != "timeLapse") {
+    dev.off()
+  }
+  invisible(p)
 }
 
 #' Helper function for creating field plots.
