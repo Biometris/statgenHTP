@@ -1,6 +1,51 @@
 #' Fit spatial models per time point
 #'
-#' Fit spatial models per time point in an object of class TP.
+#' Perform REML analysis given a specific experimental design using either
+#' SpATS or asreml. SpATS is used as a default method. See details for the exact
+#' models fitted.
+#'
+#' The actual model fitted depends on the function parameters secified. The
+#' basic model is the following:\cr
+#' trait = \strong{genotype} + e\cr
+#' In case \code{useCheck = TRUE}, instead of genotype genoCheck is used and
+#' and check is used as an extra fixed effect. So then the model becomes:\cr
+#' trait = \emph{check} + \strong{genoCheck} + e\cr
+#' Variables in \code{covariates} are fitted as extra fixed effects.\cr\cr
+#' When \code{SpATS} is used for modeling, an extra spatial term is included
+#' in the model. This term is constructed using the function
+#' \code{\link[SpATS]{PSANOVA}} from the SpATS package as\cr
+#' \code{PSANOVA(colCoord, rowCoord, nseg = nSeg, nest.div = 2)}
+#' where\cr \code{nSeg = (number of columns, number of rows)}. nseg and
+#' nest.div can be modified using the \code{control} parameter.\cr\cr
+#' When \code{asreml} is used for modeling and \code{spatial = TRUE}
+#' six models are fitted with different random terms and covariance structure.
+#' The best model is determined based on a goodness-of-fit criterion, either
+#' AIC or BIC. This can be set using the control parameter \code{criterion},
+#' default is AIC.
+#' The fitted random terms depend on the structure of the data. If the design
+#' has a regular structure, i.e. all replicates appear the same amount of times
+#' in the design, the following combinations of random and spatial terms are
+#' fitted
+#' \itemize{
+#' \item{random = NULL, spatial = exp(rowCoord):colCoord}
+#' \item{random = NULL, spatial = rowCoord:exp(colCoord)}
+#' \item{random = NULL, spatial = iexp(rowCoord,colCoord)}
+#' \item{random = repId:rowId, spatial = exp(rowCoord):colCoord}
+#' \item{random = repId:colId, spatial = rowCoord:exp(colCoord)}
+#' \item{random = repId:rowId + repId:colId, spatial = iexp(rowCoord,colCoord)}
+#' }
+#' If the design is not regular the following combinations of random and spatial
+#' terms are fitted
+#' \itemize{
+#' \item{random = NULL, spatial = ar1(rowId):colId}
+#' \item{random = NULL, spatial = rowId:ar1(colId)}
+#' \item{random = NULL, spatial = ar1(rowId):ar1(colId)}
+#' \item{random = repId:rowId, spatial = ar1(rowId):colId}
+#' \item{random = repId:colId, spatial = rowId:ar1(colId)}
+#' \item{random = repId:rowId + repId:colId, spatial = ar1(rowId):ar1(colId)}
+#' }
+#' If there are no replicates in the model, repId is left out from the random
+#' parts above.
 #'
 #' @param TP An object of class TP.
 #' @param trait A character string indicating the trait used as response
@@ -16,6 +61,16 @@
 #' @param spatial Should a spatial model be fitted for asreml?
 #'
 #' @return An object of class fitMod, a list of fitted spatial models.
+#'
+#' @references
+#' Maria Xose Rodriguez-Alvarez, Martin P. Boer, Fred A. van Eeuwijk, Paul H.C.
+#' Eilers (2017). Correcting for spatial heterogeneity in plant breeding
+#' experiments with P-splines. Spatial Statistics
+#' \url{https://doi.org/10.1016/j.spasta.2017.10.003}
+#' @references
+#' Douglas Bates, Martin Maechler, Ben Bolker, Steve Walker (2015). Fitting
+#' Linear Mixed-Effects Models Using lme4. Journal of Statistical Software,
+#' 67(1), 1-48. \url{https://www.jstatsoft.org/article/view/v067i01/0}.
 #'
 #' @export
 fitModels <- function(TP,

@@ -22,10 +22,24 @@ inTP <- createTimePoints(dat = inDat, genotype = "Genotype",
 plot(inTP, plotType = "layout",
      timePoints = c("2018-05-31 16:37:00", "2018-06-01 09:07:00"),
      highlight = c("col", "ely", "evo1", "ler"))
-plot(inTP, plotType = "cor", traits = "pheno")
+plot(inTP, plotType = "cor", traits = "pheno",
+     timePoints = c("2018-05-31 16:37:00", "2018-06-01 09:07:00"))
 plot(inTP, plotType = "box", traits = "pheno",
      timePoints = c("2018-05-31 16:37:00", "2018-06-01 09:07:00"),
      colorBy = "repId")
+plot(inTP, plotType = "raw", traits = "pheno",
+     timePoints = c("2018-05-31 16:37:00", "2018-06-01 09:07:00"),
+     genotypes = c("col", "ely", "evo1", "ler"))
+
+plot(inTP, plotType = "layout",
+     timePoints = c(1,3),
+     highlight = c("col", "ely", "evo1", "ler"), outFile = "test.pdf")
+plot(inTP, plotType = "cor", traits = "pheno",  timePoints = c(4,23))
+plot(inTP, plotType = "box", traits = "pheno", timePoints = c(5,6,7),
+     colorBy = "repId")
+plot(inTP, plotType = "raw", traits = "pheno",
+     timePoints = c(8,4,2), genotypes = c("col", "ely", "evo1", "ler"),
+     outFile = "test.pdf")
 
 pdf("Phenovator_Rene_raw_data_na.pdf", height = 8, width = 12)
 plot(inTP, plotType = "raw", traits = "pheno")
@@ -34,7 +48,7 @@ dev.off()
 plot(inTP, plotType = "raw", traits = "pheno",
      genotypes = c("col", "ely", "evo1", "ler"))
 
-fitMods <- fitModels(TP = inTP[1:3], trait = "pheno",
+fitMods <- fitModels(TP = inTP, trait = "pheno",
                      covariates = c("repId", "Image_pos"), useCheck = TRUE)
 fitMods1b <- fitModels(TP = inTP[1:3], trait = "pheno",
                        covariates = c("repId", "Image_pos"), engine = "asreml")
@@ -53,10 +67,11 @@ variance <- getVar(fitMods)
 h2 <- getHerit(fitMods)
 genoBLUPS <- getBLUPsGeno(fitMods)
 
-plot(fitMods, plotType = "corrPred")
+plot(fitMods, plotType = "corrPred",
+     genotypes = c("col", "ely", "evo1", "ler"), outFile = "test.pdf")
 plot(fitMods, plotType = "rawPred")
-plot(fitMods, plotType = "herit")
-plot(fitMods, plotType = "variance")
+plot(fitMods, plotType = "herit", timePoints = c(1,5))
+plot(fitMods, plotType = "variance", outFile = "test.pdf")
 plot(fitMods, plotType = "effDim")
 plot(fitMods, plotType = "timeLapse", outFile = "spatialtrends.gif")
 

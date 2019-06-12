@@ -5,9 +5,8 @@
 \title{Plot function for class TP}
 \usage{
 \method{plot}{TP}(x, ..., plotType = c("layout", "box", "cor", "raw"),
-  timePoints = names(x), traits = NULL, genotypes = NULL,
-  geno.decomp = NULL, output = TRUE, outFile = NULL,
-  outFileOpts = NULL)
+  timePoints = names(x), traits = NULL, output = TRUE,
+  outFile = NULL, outFileOpts = NULL)
 }
 \arguments{
 \item{x}{An object of class TP.}
@@ -24,61 +23,54 @@ to be plotted.}
 \item{traits}{A character vector indicating the traits to be plotted in
 a boxplot. Only used if \code{plotType} = "box" or "cor".}
 
-\item{genotypes}{A character vector indicating the genotypes to be plotted.
-Only used if \code{plotType} = "raw".}
-
-\item{geno.decomp}{A character vector indicating the grouping of the
-genotypes to be plotted. Only used if \code{plotType} = "raw".}
-
 \item{output}{Should the plot be output to the current device? If
 \code{FALSE} only a list of ggplot objects is invisibly returned. Ignored if
 \code{outFile} is specified.}
 
-\item{outFile}{A character string indicting the .pdf file to which the
+\item{outFile}{A character string indicating the .pdf file to which the
 plots should be written. If \code{NULL} no file is written.}
 
 \item{outFileOpts}{A named list of extra options for the pdf outfile, e.g.
 width and height. See \code{\link[grDevices]{pdf}} for all possible options.}
 }
+\value{
+Depending on the plottype either a ggplot object or a list of ggplot
+objects is invisibly returned.
+}
 \description{
-Plotting function for objects of class TP. Plots either the layout of the
-different timePoints within the TP object or locates the timePoints on a map. Also a
-boxplot can be made for selected traits and timePoints and a plot of
-correlations
-between timePoints. A detailed description and optional extra parameters of the
+Plotting function for objects of class TP. Plots the layout of the platform
+for different time points within the TP object. Also a boxplot can be made
+for selected traits and time points and a plot of correlations
+between time points. Finally the raw data can be displayed per displayed per
+genotype. A detailed description and optional extra parameters of the
 different plots is given in the sections below.
 }
 \section{Layout Plot}{
 
-Plots the layout of the selected timePoints (all available timePoints by default).
-This plot can only be made for timePoints that contain both row (\code{rowNum})
-and column (\code{colNum}) information. If either one of those is missing
-the timePoint is skipped with a warning. If blocks (\code{subBlock}) are
-available for a timePoint these are indicated in different colors per block,
-otherwise all plots are colored in grey. If replicates (\code{repId}) are
-available a black line is plotted between diffent replicates. Missing plots
-are indicated in white. This can either be single plots in a timePoint or
-complete missing columns or rows.\cr
+Plots the layout of the platform for selected time points (all available time
+points by  default). This plot can only be made for time points that contain
+both row (\code{rowNum}) and column (\code{colNum}) information. If either
+one of those is missing the timePoint is skipped with a warning.
+If replicates (\code{repId}) are available, a black line is plotted between
+diffent replicates. Missing plots are indicated in white. This can either be
+single plots in a time point or complete missing columns or rows.\cr
 Extra parameter options:
 \describe{
 \item{showGeno}{Should individual genotypes be indicated in the plot?
 Defaults to \code{FALSE}}
 \item{highlight}{A character vector of genotypes to be highlighted in the
 plot.}
-\item{colorSubBlock}{Should subBlocks be colored with a different color per
-subBlock? Defaults to \code{FALSE}. \code{colorSubBlock} is ignored when
-highlight is used to highlight genotypes.}
 }
 }
 
 \section{Box Plot}{
 
-Creates a boxplot per selected trait grouped by timePoint. Extra parameter
+Creates a boxplot per selected trait grouped by time point. Extra parameter
 options:
 \describe{
 \item{groupBy}{A character string indicating a column in \code{TP} by which
 the boxes in the plot should be grouped. By default the boxes are grouped
-per timePoint.}
+per time point.}
 \item{colorBy}{A character string indicating a column in \code{TP} by which
 the boxes are colored. Coloring will be done within the groups indicated by
 the \code{groupBy} parameter.}
@@ -91,10 +83,20 @@ descending mean. Default boxes are ordered alphabetically.}
 
 \section{Correlation Plot}{
 
-Draws a heatmap of correlations between timePoints per selected trait. If
-genotypes are replicated within timePoints genotypic means are taken before
-computing correlations. The order of the timePoints in the heatmap is determined
-by clustering them.
+Draws a heatmap of correlations between time points per selected trait.
 }
 
+\section{Raw data plot}{
+ Extra parameter
+options:
+\describe{
+\item{genotypes}{A character vector indicating the genotypes to be plotted.}
+\item{geno.decomp}{A character vector indicating the grouping of the
+genotypes to be plotted.}
+}
+}
+
+\seealso{
+Other functions for TP objects: \code{\link{createTimePoints}}
+}
 \concept{functions for TP objects}

@@ -9,7 +9,7 @@ getBLUPsGeno(fitMod, outFile = NULL)
 \arguments{
 \item{fitMod}{An object of class fitMod.}
 
-\item{outFile}{A character string indicting the .csv file to which the
+\item{outFile}{A character string indicating the .csv file to which the
 results should be written. If \code{NULL} no file is written.}
 }
 \value{

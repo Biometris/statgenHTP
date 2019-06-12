@@ -30,11 +30,15 @@ Only used if \code{plotType} = "rawPred" or "corrPred".}
 \code{FALSE} only a list of ggplot objects is invisibly returned. Ignored if
 \code{outFile} is specified.}
 
-\item{outFile}{A character string indicting the .pdf file to which the
+\item{outFile}{A character string indicating the .pdf file to which the
 plots should be written. If \code{NULL} no file is written.}
 
 \item{outFileOpts}{A named list of extra options for the pdf outfile, e.g.
 width and height. See \code{\link[grDevices]{pdf}} for all possible options.}
+}
+\value{
+Depending on the plottype either a ggplot object or a list of ggplot
+objects is invisibly returned.
 }
 \description{
 Plotting function for objects of class fitMod.

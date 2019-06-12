@@ -3,7 +3,7 @@
 #' Extract genomic predictions from an object of class fitMod.
 #'
 #' @param fitMod An object of class fitMod.
-#' @param outFile A character string indicting the .csv file to which the
+#' @param outFile A character string indicating the .csv file to which the
 #' results should be written. If \code{NULL} no file is written.
 #'
 #' @return A data.frame with genomic predictions per time point.

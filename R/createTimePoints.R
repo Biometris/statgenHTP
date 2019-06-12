@@ -1,6 +1,30 @@
 #' Create an object of class TP
 #'
-#' Create an object of class TP
+#' Convert a data.frame to an object of class TP (Time Points).
+#' The function converts a data.frame to an object of class TP in the following
+#' steps:
+#' \itemize{
+#' \item{Check input data}
+#' \item{Rename columns to default column names - default column names:
+#' genotype, timePoint, plotId, repId, rowNum, colNum, rowId, colId}
+#' \item{Convert column types to default column types - rowNum and colNum
+#' are converted to numeric columns, all other renamed columns to factor
+#' columns. Columns other than the default columns, e.g. traits or other
+#' covariates will be included in the output unchanged.}
+#' \item{If \code{addCheck} = \code{TRUE}, add a column check with a value
+#' "noCheck" for the genotypes that are not in \code{checkGenotypes} and
+#' the name of the genotype for the \code{checkGenotypes}. Also a column
+#' genoCheck is added with the names of the genotypes that are not in
+#' \code{checkGenotypes} and \code{NA} for the \code{checkGenotypes}. These
+#' columns are necessary for fitting models on data that includes check
+#' genotypes.}
+#' \item{Split input data by time point - each time point in the input data will
+#' become a list item in the output.}
+#' \item{Add a list of time points as attribute \code{timePoints} to the
+#' output.}
+#' }
+#' Note that \code{plotId} needs to be a unique identifier for a plot. It cannot
+#' occur more than once per time point.
 #'
 #' @param dat A data.frame.
 #' @param genotype A character string indicating the column in dat containing
@@ -27,11 +51,13 @@
 #' @return An object of class TP. A list with per time point in the input a
 #' data.frame containing the data for that time point.
 #'
+#' @family functions for TP objects
+#'
 #' @export
 createTimePoints <- function(dat,
                              genotype,
                              timePoint,
-                             plotId = NULL,
+                             plotId,
                              repId = NULL,
                              rowNum = NULL,
                              colNum = NULL,
@@ -137,41 +163,36 @@ createTimePoints <- function(dat,
 
 #' Plot function for class TP
 #'
-#' Plotting function for objects of class TP. Plots either the layout of the
-#' different timePoints within the TP object or locates the timePoints on a map. Also a
-#' boxplot can be made for selected traits and timePoints and a plot of
-#' correlations
-#' between timePoints. A detailed description and optional extra parameters of the
+#' Plotting function for objects of class TP. Plots the layout of the platform
+#' for different time points within the TP object. Also a boxplot can be made
+#' for selected traits and time points and a plot of correlations
+#' between time points. Finally the raw data can be displayed per displayed per
+#' genotype. A detailed description and optional extra parameters of the
 #' different plots is given in the sections below.
 #'
 #' @section Layout Plot:
-#' Plots the layout of the selected timePoints (all available timePoints by default).
-#' This plot can only be made for timePoints that contain both row (\code{rowNum})
-#' and column (\code{colNum}) information. If either one of those is missing
-#' the timePoint is skipped with a warning. If blocks (\code{subBlock}) are
-#' available for a timePoint these are indicated in different colors per block,
-#' otherwise all plots are colored in grey. If replicates (\code{repId}) are
-#' available a black line is plotted between diffent replicates. Missing plots
-#' are indicated in white. This can either be single plots in a timePoint or
-#' complete missing columns or rows.\cr
+#' Plots the layout of the platform for selected time points (all available time
+#' points by  default). This plot can only be made for time points that contain
+#' both row (\code{rowNum}) and column (\code{colNum}) information. If either
+#' one of those is missing the timePoint is skipped with a warning.
+#' If replicates (\code{repId}) are available, a black line is plotted between
+#' diffent replicates. Missing plots are indicated in white. This can either be
+#' single plots in a time point or complete missing columns or rows.\cr
 #' Extra parameter options:
 #' \describe{
 #' \item{showGeno}{Should individual genotypes be indicated in the plot?
 #' Defaults to \code{FALSE}}
 #' \item{highlight}{A character vector of genotypes to be highlighted in the
 #' plot.}
-#' \item{colorSubBlock}{Should subBlocks be colored with a different color per
-#' subBlock? Defaults to \code{FALSE}. \code{colorSubBlock} is ignored when
-#' highlight is used to highlight genotypes.}
 #' }
 #'
 #' @section Box Plot:
-#' Creates a boxplot per selected trait grouped by timePoint. Extra parameter
+#' Creates a boxplot per selected trait grouped by time point. Extra parameter
 #' options:
 #' \describe{
 #' \item{groupBy}{A character string indicating a column in \code{TP} by which
 #' the boxes in the plot should be grouped. By default the boxes are grouped
-#' per timePoint.}
+#' per time point.}
 #' \item{colorBy}{A character string indicating a column in \code{TP} by which
 #' the boxes are colored. Coloring will be done within the groups indicated by
 #' the \code{groupBy} parameter.}
@@ -182,10 +203,15 @@ createTimePoints <- function(dat,
 #' }
 #'
 #' @section Correlation Plot:
-#' Draws a heatmap of correlations between timePoints per selected trait. If
-#' genotypes are replicated within timePoints genotypic means are taken before
-#' computing correlations. The order of the timePoints in the heatmap is determined
-#' by clustering them.
+#' Draws a heatmap of correlations between time points per selected trait.
+#'
+#' @section Raw data plot: Extra parameter
+#' options:
+#'\describe{
+#' \item{genotypes}{A character vector indicating the genotypes to be plotted.}
+#' \item{geno.decomp}{A character vector indicating the grouping of the
+#' genotypes to be plotted.}
+#' }
 #'
 #' @param x An object of class TP.
 #' @param ... Extra plot options. Described per plotType in their respective
@@ -196,17 +222,16 @@ createTimePoints <- function(dat,
 #' to be plotted.
 #' @param traits A character vector indicating the traits to be plotted in
 #' a boxplot. Only used if \code{plotType} = "box" or "cor".
-#' @param genotypes A character vector indicating the genotypes to be plotted.
-#' Only used if \code{plotType} = "raw".
-#' @param geno.decomp A character vector indicating the grouping of the
-#' genotypes to be plotted. Only used if \code{plotType} = "raw".
 #' @param output Should the plot be output to the current device? If
 #' \code{FALSE} only a list of ggplot objects is invisibly returned. Ignored if
 #' \code{outFile} is specified.
-#' @param outFile A character string indicting the .pdf file to which the
+#' @param outFile A character string indicating the .pdf file to which the
 #' plots should be written. If \code{NULL} no file is written.
 #' @param outFileOpts A named list of extra options for the pdf outfile, e.g.
 #' width and height. See \code{\link[grDevices]{pdf}} for all possible options.
+#'
+#' @return Depending on the plottype either a ggplot object or a list of ggplot
+#' objects is invisibly returned.
 #'
 #' @family functions for TP objects
 #'
@@ -216,8 +241,6 @@ plot.TP <- function(x,
                     plotType = c("layout", "box", "cor", "raw"),
                     timePoints = names(x),
                     traits = NULL,
-                    genotypes = NULL,
-                    geno.decomp = NULL,
                     output = TRUE,
                     outFile = NULL,
                     outFileOpts = NULL) {
@@ -234,7 +257,6 @@ plot.TP <- function(x,
   if (plotType == "layout") {
     showGeno <- isTRUE(dotArgs$showGeno)
     highlight <- dotArgs$highlight
-    colorSubBlock <- isTRUE(dotArgs$colorSubBlock)
     if (!is.null(highlight) && !is.character(highlight)) {
       stop("highlight should be a character vector.\n")
     }
@@ -266,7 +288,6 @@ plot.TP <- function(x,
         aspect <- ylen / xlen
       }
       plotRep <- hasName(x = tpDat, name = "repId")
-      plotSubBlock <- hasName(x = tpDat, name = "subBlock")
       ## Create data for lines between replicates.
       if (plotRep) {
         repBord <- calcPlotBorders(tpDat = tpDat, bordVar = "repId")
@@ -295,31 +316,9 @@ plot.TP <- function(x,
           ggplot2::labs(fill = "Highlighted") +
           ## Remove NA from scale.
           ggplot2::scale_fill_discrete(na.translate = FALSE)
-      } else if (plotSubBlock && colorSubBlock) {
-        ## Color tiles by subblock.
-        pTp <- pTp + ggplot2::geom_tile(
-          ggplot2::aes_string(fill = "subBlock"), color = "grey75") +
-          ggplot2::guides(fill = ggplot2::guide_legend(ncol = 3))
       } else {
-        ## No subblocks and no hightlights so just a single fill color.
+        ## No hightlights so just a single fill color.
         pTp <- pTp + ggplot2::geom_tile(fill = "white", color = "grey75")
-      }
-      ## Create data for lines between subBlocks.
-      if (plotSubBlock) {
-        subBlockBord <- calcPlotBorders(tpDat = tpDat, bordVar = "subBlock")
-        pTp <- pTp +
-          ## Add verical lines as segment.
-          ## adding/subtracting 0.5 assures plotting at the borders of
-          ## the tiles.
-          ggplot2::geom_segment(
-            ggplot2::aes_string(x = "x - 0.5", xend = "x - 0.5",
-                                y = "y - 0.5", yend = "y + 0.5",
-                                linetype = "'subBlocks'"),
-            data = subBlockBord$vertW, size = 0.4) +
-          ggplot2::geom_segment(
-            ggplot2::aes_string(x = "x - 0.5", xend = "x + 0.5",
-                                y = "y - 0.5", yend = "y - 0.5"),
-            data = subBlockBord$horW, size = 0.4)
       }
       if (showGeno) {
         ## Add names of genotypes to the center of the tiles.
@@ -342,16 +341,14 @@ plot.TP <- function(x,
                                 y = "y - 0.5", yend = "y - 0.5"),
             data = repBord$horW, size = 1)
       }
-      if (plotSubBlock || plotRep) {
-        shwVals <- c(plotRep, plotSubBlock)
+      if (plotRep) {
         pTp <- pTp +
           ## Add a legend entry for replicates and subBlocks.
-          ggplot2::scale_linetype_manual(c("replicates", "subBlocks")[shwVals],
-                                         values = c("replicates" = "solid",
-                                                    "subBlocks" = "solid")[shwVals],
+          ggplot2::scale_linetype_manual("replicates",
+                                         values = c("replicates" = "solid"),
                                          name = ggplot2::element_blank()) +
           ggplot2::guides(linetype = ggplot2::guide_legend(override.aes =
-                                                             list(size = c(1, 0.4)[shwVals])))
+                                                             list(size = 1)))
       }
       p[[timePoint]] <- pTp
       if (output) {
@@ -464,7 +461,7 @@ plot.TP <- function(x,
         if (!hasName(x = timePoint, name = trait)) {
           NULL
         } else {
-          timePoint[c("genotype", "timePoint", trait)]
+          timePoint[c("plotId", "timePoint", trait)]
         }
       }))
       if (is.null(plotDat)) {
@@ -472,13 +469,10 @@ plot.TP <- function(x,
                        "Plot skipped.\n"), call. = FALSE)
         break
       }
-      ## Create table with values trait per genotype per timePoint.
-      ## If TP already contains BLUEs/BLUPs taking means doesn't do anything
-      ## but it is needed for raw data where there can be replicates.
+      ## Create table with the value of trait per plotId per timePoint.
       plotTab <- tapply(plotDat[[trait]],
-                        INDEX = list(plotDat[["genotype"]],
-                                     plotDat[["timePoint"]]),
-                        FUN = mean, na.rm = TRUE)
+                        INDEX = list(plotDat[["plotId"]],
+                                     plotDat[["timePoint"]]), FUN = I)
       ## Create a correlation matrix.
       corMat <- cor(plotTab, use = "pairwise.complete.obs")
       ## Remove rows and columns with only NA.
@@ -535,6 +529,8 @@ plot.TP <- function(x,
     if (is.null(traits) || !is.character(traits)) {
       stop("traits should be a character vector.\n")
     }
+    genotypes <- dotArgs$genotypes
+    geno.decomp <- dotArgs$geno.decomp
     if (!is.null(geno.decomp) && !all(sapply(X = x, FUN = function(timePoint) {
       hasName(x = timePoint, name = geno.decomp)
     }))) {

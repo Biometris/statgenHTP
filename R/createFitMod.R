@@ -18,10 +18,13 @@ createFitMod <- function(models,
 #' @param genotypes A character vector indicating the genotypes to be plotted.
 #' Only used if \code{plotType} = "rawPred" or "corrPred".
 #' @param title A character string used as title for the plot.
-#' @param outFile A character string indicting the .pdf file to which the
+#' @param outFile A character string indicating the .pdf file to which the
 #' plots should be written. If \code{NULL} no file is written.
 #' @param outFileOpts A named list of extra options for the pdf outfile, e.g.
 #' width and height. See \code{\link[grDevices]{pdf}} for all possible options.
+#'
+#' @return Depending on the plottype either a ggplot object or a list of ggplot
+#' objects is invisibly returned.
 #'
 #' @export
 plot.fitMod <- function(x,

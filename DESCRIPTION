@@ -2,15 +2,22 @@ Package: statgenHTP
 Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
-           role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+    c(person(given = "Emilie",
+             family = "Millet",
+             role = c("aut", "cre"),
+             email = "emilie.millet@wur.nl",
+             comment = c(ORCID = "YOUR-ORCID-ID")),
+      person(given = "Bart-Jan",
+             family = "van Rossum",
+             role = "aut",
+             email = "bart-jan.vanrossum@wur.nl",
+             comment = c(ORCID = "YOUR-ORCID-ID")))
 Description: What the package does (one paragraph).
 License: GPL
 Encoding: UTF-8
 LazyData: true
+Depends: 
+    R (>= 3.4)
 Imports:
     ggforce,
     ggplot2,
