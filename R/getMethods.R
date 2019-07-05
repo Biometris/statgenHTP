@@ -1,12 +1,12 @@
-#' Extract genomic predictions
+#' Extract genotypic predictions
 #'
-#' Extract genomic predictions from an object of class fitMod.
+#' Extract predictions of the genotypic value from an object of class fitMod.
 #'
 #' @param fitMod An object of class fitMod.
 #' @param outFile A character string indicating the .csv file to which the
 #' results should be written. If \code{NULL} no file is written.
 #'
-#' @return A data.frame with genomic predictions per time point.
+#' @return A data.frame with genotypic predictions per time point.
 #'
 #' @export
 getGenoPred <- function(fitMod,
@@ -26,7 +26,7 @@ getGenoPred <- function(fitMod,
 
 #' Extract column predictions
 #'
-#' Extract column predictions from an object of class fitMod.
+#' Extract predictions of the column values from an object of class fitMod.
 #'
 #' @inheritParams getGenoPred
 #'
@@ -60,7 +60,7 @@ getColPred <- function(fitMod,
 
 #' Extract row predictions
 #'
-#' Extract row predictions from an object of class fitMod.
+#' Extract predictions of the row values from an object of class fitMod.
 #'
 #' @inheritParams getGenoPred
 #'
@@ -94,7 +94,7 @@ getRowPred <- function(fitMod,
 
 #' Extract genotypic BLUPs
 #'
-#' Extract genotypic BLUPs from an object of class fitMod.
+#' Extract genotypic Best Linear Unbiased Predictors (BLUPs) from an object of class fitMod.
 #'
 #' @inheritParams getGenoPred
 #'
@@ -164,9 +164,12 @@ getBLUPsRow <- function(fitMod,
   return(BLUPsRow)
 }
 
-#' Extract spatially corrected values
+#' Extract corrected phenotypic values
 #'
-#' Extract spatially corrected values from an object of class fitMod.
+#' Extract corrected phenotype from an object of class fitMod. After fitting a spatial model
+#' at each time point, the raw phenotypic data is corrected by subtracting the (estimated)
+#' sources of (environmental, design effect) which are of no interest (nuisances).
+#' This allows keeping the data resolution at the plot/lant level.
 #'
 #' @inheritParams getGenoPred
 #'
