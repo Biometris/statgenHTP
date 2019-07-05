@@ -50,16 +50,41 @@ plot.fitMod <- function(x,
     outFileOpts <- c(list(file = outFile), outFileOpts)
     do.call(pdf, args = outFileOpts)
   }
+
   if (plotType == "rawPred") {
-    if (is.null(title)) title <- "Genomic predictions + raw data"
+    if (is.null(title)) title <- "Genotypic predictions + raw data"
     ## Get trait from model.
     trait <- fitMods[[1]]$model$response
-    ## Get genomic predictions.
+    ## Get engine from model (to get the geno.decomp and the data).
+    if (any(grep("SpATS", fitMods[[1]]$call))) {
+      engine <- "spats"
+    } else {
+      engine <- "asreml"       }
+    ## Get geno.decomp from model.
+    if(engine == "spats") { geno.decomp <- fitMods[[1]]$model$geno$geno.decomp }
+    if(engine == "asreml") { geno.decomp <- fitMods[[1]]$factor.names[1] }
+    ## Get genotypic predictions.
     preds <- getGenoPred(fitMods)
     ## Construct full raw data from models.
-    raw <- Reduce(f = rbind, x = lapply(fitMods, `[[`, "data"))
+    if(engine == "spats")  { raw <- Reduce(f = rbind, x = lapply(fitMods, `[[`, "data")) }
+    if(engine == "asreml") { raw <- Reduce(f = rbind, x = lapply(fitMods, `[[`, c("call","data"))) }
     ## Restrict genotypes.
-    if (!is.null(genotypes)) {
+    if (!is.null(genotypes)&is.null(geno.decomp)) {
+      preds <- preds[preds[["genotype"]] %in% genotypes, ]
+      preds <- droplevels(preds)
+      raw <- raw[raw[["genotype"]] %in% genotypes, ]
+      raw <- droplevels(raw)
+    }
+    ## Restrict genotypes with geno.decomp.
+    if (!is.null(genotypes)&!is.null(geno.decomp)) {
+      if ( engine == "spats" ) {
+        genotypes <- droplevels(unique(fitMods[[1]]$data$genotype
+                                       [fitMods[[1]]$data$genotype.original
+                                                             %in% genotypes]))       }
+       if ( engine == "asreml" ) {
+         genotypes <- droplevels(unique(fitMods[[1]]$call$data$genotype
+                                        [fitMods[[1]]$call$data$genotype.original
+                                                              %in% genotypes]))      }
       preds <- preds[preds[["genotype"]] %in% genotypes, ]
       preds <- droplevels(preds)
       raw <- raw[raw[["genotype"]] %in% genotypes, ]
@@ -70,16 +95,40 @@ plot.fitMod <- function(x,
     p <- xyFacetPlot(baseDat = raw, overlayDat = preds, yVal = trait,
                      yValOverlay = "predicted.values", title = title,
                      yLab = trait, output = output)
+
   } else if (plotType == "corrPred") {
-    if (is.null(title)) title <- "Genomic predictions + spatial corrected data"
+    if (is.null(title)) title <- "Genotypic predictions + spatial corrected data"
     ## Get trait from model.
     trait <- fitMods[[1]]$model$response
-    ## Get genomic predictions.
+    ## Get engine from model (to get the geno.decomp).
+    if (any(grep("SpATS", fitMods[[1]]$call))) {
+      engine <- "spats"
+    } else {
+      engine <- "asreml"       }
+    ## Get geno.decomp from model.
+    if(engine == "spats") { geno.decomp <- fitMods[[1]]$model$geno$geno.decomp }
+    if(engine == "asreml") { geno.decomp <- fitMods[[1]]$factor.names[1] }
+    ## Get genotypic predictions.
     preds <- getGenoPred(fitMods)
     ## Get spatial corrected values.
     corrected <- getCorrected(fitMods)
     ## Restrict genotypes.
-    if (!is.null(genotypes)) {
+    if (!is.null(genotypes)&is.null(geno.decomp)) {
+      preds <- preds[preds[["genotype"]] %in% genotypes, ]
+      preds <- droplevels(preds)
+      corrected <- corrected[corrected[["genotype"]] %in% genotypes, ]
+      corrected <- droplevels(corrected)
+    }
+    ## Restrict genotypes with geno.decomp.
+    if (!is.null(genotypes)&!is.null(geno.decomp)) {
+      if ( engine == "spats" ) {
+        genotypes <- droplevels(unique(fitMods[[1]]$data$genotype
+                                       [fitMods[[1]]$data$genotype.original
+                                         %in% genotypes]))       }
+      if ( engine == "asreml" ) {
+        genotypes <- droplevels(unique(fitMods[[1]]$call$data$genotype
+                                       [fitMods[[1]]$call$data$genotype.original
+                                         %in% genotypes]))      }
       preds <- preds[preds[["genotype"]] %in% genotypes, ]
       preds <- droplevels(preds)
       corrected <- corrected[corrected[["genotype"]] %in% genotypes, ]
@@ -258,7 +307,7 @@ timeLapsePlot <- function(fitMods,
   }, movie.name = outFile, autobrowse = FALSE)
 }
 
-#' Function for extracting for objects of class fitMod that keeps class.
+#' Function for extracting objects of class fitMod that keeps class.
 #'
 #' @param x An object of class fitMod.
 #' @param i An index specifying the element to extract of replace.
