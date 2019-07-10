@@ -56,14 +56,13 @@ plot.fitMod <- function(x,
   if (engine == "SpATS") {
     trait <- fitMods[[1]]$model$response
   } else if (engine == "asreml") {
-    trait <- all.vars(update(fitMods[[1]]$formulae$fixed, . ~ 0))
+    trait <- all.vars(update(fitMods[[1]]$formulae$fixed, .~0))
   }
   ## Get check from fitted models.
   if (engine == "SpATS") {
     useCheck <- grepl(pattern = "check", x = deparse(fitMods[[1]]$model$fixed))
   } else if (engine == "asreml") {
-    useCheck <- "check" %in% all.vars(update(fitMods2b[[1]]$formulae$fixed,
-                                             0 ~ .))
+    useCheck <- "check" %in% all.vars(update(fitMods[[1]]$formulae$fixed, 0~.))
   }
 
   if (!is.null(outFile) && plotType != "timeLapse") {

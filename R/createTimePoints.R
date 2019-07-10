@@ -40,10 +40,6 @@
 #' the row number of the plot.
 #' @param colNum A character string indicating the column in dat containing
 #' the column number of the plot.
-#' @param rowId A character string indicating the column in dat containing
-#' the row number of the plot.
-#' @param colId A character string indicating the column in dat containing
-#' the column number of the plot.
 #' @param addCheck Should a column check be added to the output? If \code{TRUE},
 #' checkGenotypes cannot be \code{NULL}.
 #' @param checkGenotypes A character vector containing the genotypes used as
@@ -62,8 +58,6 @@ createTimePoints <- function(dat,
                              repId = NULL,
                              rowNum = NULL,
                              colNum = NULL,
-                             rowId = rowNum,
-                             colId = colNum,
                              addCheck = FALSE,
                              checkGenotypes = NULL) {
   ## Save name of original dat for naming output.
@@ -79,13 +73,14 @@ createTimePoints <- function(dat,
   ## tibbles and possibly other data structures in the future.
   dat <- as.data.frame(dat)
   cols <- colnames(dat)
-  for (param in c(genotype, timePoint, plotId, repId, rowId, colId,
-                  rowNum, colNum)) {
+  for (param in c(genotype, timePoint, plotId, repId, rowNum, colNum)) {
     if (!is.null(param) && (!is.character(param) || length(param) > 1 ||
                             !hasName(dat, param))) {
       stop(paste(deparse(param), "has to be NULL or a column in dat.\n"))
     }
   }
+  rowId <- rowNum
+  colId <- colNum
   ## Create list of reserved column names for renaming columns.
   renameCols <- c("genotype", "timePoint", "plotId", "repId", "rowId", "colId",
                   "rowNum", "colNum")

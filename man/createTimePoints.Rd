@@ -5,8 +5,8 @@
 \title{Create an object of class TP}
 \usage{
 createTimePoints(dat, genotype, timePoint, plotId, repId = NULL,
-  rowNum = NULL, colNum = NULL, rowId = rowNum, colId = colNum,
-  addCheck = FALSE, checkGenotypes = NULL)
+  rowNum = NULL, colNum = NULL, addCheck = FALSE,
+  checkGenotypes = NULL)
 }
 \arguments{
 \item{dat}{A data.frame.}
@@ -27,12 +27,6 @@ the replicates.}
 the row number of the plot.}
 
 \item{colNum}{A character string indicating the column in dat containing
-the column number of the plot.}
-
-\item{rowId}{A character string indicating the column in dat containing
-the row number of the plot.}
-
-\item{colId}{A character string indicating the column in dat containing
 the column number of the plot.}
 
 \item{addCheck}{Should a column check be added to the output? If \code{TRUE},
