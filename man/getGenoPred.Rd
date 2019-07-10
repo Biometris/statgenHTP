@@ -2,7 +2,7 @@
 % Please edit documentation in R/getMethods.R
 \name{getGenoPred}
 \alias{getGenoPred}
-\title{Extract genomic predictions}
+\title{Extract genotypic predictions}
 \usage{
 getGenoPred(fitMod, outFile = NULL)
 }
@@ -13,8 +13,8 @@ getGenoPred(fitMod, outFile = NULL)
 results should be written. If \code{NULL} no file is written.}
 }
 \value{
-A data.frame with genomic predictions per time point.
+A data.frame with genotypic predictions per time point.
 }
 \description{
-Extract genomic predictions from an object of class fitMod.
+Extract predictions of the genotypic value from an object of class fitMod.
 }

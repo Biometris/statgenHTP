@@ -18,7 +18,7 @@ the genotypes.}
 the time points.}
 
 \item{plotId}{A character string indicating the column in dat containing
-the plotId. This has to be a unique identifier per plot.}
+the plotId. This has to be a unique identifier per plot/plant.}
 
 \item{repId}{A character string indicating the column in dat containing
 the replicates.}
@@ -35,14 +35,14 @@ the row number of the plot.}
 \item{colId}{A character string indicating the column in dat containing
 the column number of the plot.}
 
-\item{addCheck}{Should a column check be added to the output. If \code{TRUE}
+\item{addCheck}{Should a column check be added to the output? If \code{TRUE},
 checkGenotypes cannot be \code{NULL}.}
 
 \item{checkGenotypes}{A character vector containing the genotypes used as
 checks in the experiment.}
 }
 \value{
-An object of class TP. A list with per time point in the input a
+An object of class TP. A list with, per time point in the input, a
 data.frame containing the data for that time point.
 }
 \description{
@@ -63,13 +63,14 @@ the name of the genotype for the \code{checkGenotypes}. Also a column
 genoCheck is added with the names of the genotypes that are not in
 \code{checkGenotypes} and \code{NA} for the \code{checkGenotypes}. These
 columns are necessary for fitting models on data that includes check
-genotypes.}
+genotypes, e.g. reference genotypes that are highly replicated or in case
+of augmented design.}
 \item{Split input data by time point - each time point in the input data will
 become a list item in the output.}
 \item{Add a list of time points as attribute \code{timePoints} to the
 output.}
 }
-Note that \code{plotId} needs to be a unique identifier for a plot. It cannot
+Note that \code{plotId} needs to be a unique identifier for a plot or a plant. It cannot
 occur more than once per time point.
 }
 \seealso{

@@ -16,5 +16,5 @@ results should be written. If \code{NULL} no file is written.}
 A data.frame with row predictions per time point.
 }
 \description{
-Extract row predictions from an object of class fitMod.
+Extract predictions of the row values from an object of class fitMod.
 }

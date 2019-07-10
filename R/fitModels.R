@@ -111,12 +111,7 @@ fitModels <- function(TP,
   timePoints <- attr(TP, which = "timePoints")
   ## If geno.decomp is used genotype and covariates have to be replaced by
   ## an interaction of genotype and covariates with the geno.decomp variables.
-  ## First saving the original genotypes ID in a column (use for plotting).
-  TP <- lapply(X = TP, FUN = function(timePoint) {
-    timePoint[["genotype.original"]] <- timePoint[["genotype"]]
-    return(timePoint)
-  })
-  ## Then construct an interaction of all variables in geno.decomp.
+  ## Construct an interaction of all variables in geno.decomp.
   if (length(geno.decomp) > 1) {
     TP <- lapply(X = TP, FUN = function(timePoint) {
       timePoint[["geno.decomp"]] <- interaction(timePoint[geno.decomp],
@@ -162,7 +157,7 @@ fitModels <- function(TP,
     fitMods <- lapply(X = TP, function(timePoint) {
       message(timePoint[["timePoint"]][1])
       ## Only keep columns needed for analysis.
-      modCols <- c("timePoint", "plotId", "genotype.original","genotype", "genoCheck", "check",
+      modCols <- c("timePoint", "plotId", "genotype", "genoCheck", "check",
                    "colId", "rowId", "colNum", "rowNum", covariates,
                    geno.decomp, trait)
       modDat <- timePoint[colnames(timePoint) %in% modCols]

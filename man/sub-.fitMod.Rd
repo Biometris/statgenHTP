@@ -2,7 +2,7 @@
 % Please edit documentation in R/createFitMod.R
 \name{[.fitMod}
 \alias{[.fitMod}
-\title{Function for extracting for objects of class fitMod that keeps class.}
+\title{Function for extracting objects of class fitMod that keeps class.}
 \usage{
 \method{[}{fitMod}(x, i, ...)
 }
@@ -14,5 +14,5 @@
 \item{...}{Ignored.}
 }
 \description{
-Function for extracting for objects of class fitMod that keeps class.
+Function for extracting objects of class fitMod that keeps class.
 }

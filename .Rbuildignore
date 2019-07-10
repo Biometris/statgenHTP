@@ -4,7 +4,7 @@ data-raw
 output
 outputOrigScript
 origScripts
-testScript.R
+testScript*
 .gitlab-ci.yml
 .gitlab-ci.R
 ^README\.Rmd$

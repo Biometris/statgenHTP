@@ -16,5 +16,5 @@ results should be written. If \code{NULL} no file is written.}
 A data.frame with column predictions per time point.
 }
 \description{
-Extract column predictions from an object of class fitMod.
+Extract predictions of the column values from an object of class fitMod.
 }
