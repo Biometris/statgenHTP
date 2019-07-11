@@ -107,7 +107,7 @@ fitModels <- function(TP,
     }
   }
   engine <- match.arg(engine)
-  ## Extract timepoints attribute for readding in the end.
+  ## Extract timepoints attribute for re-adding in the end.
   timePoints <- attr(TP, which = "timePoints")
   ## If geno.decomp is used genotype and covariates have to be replaced by
   ## an interaction of genotype and covariates with the geno.decomp variables.

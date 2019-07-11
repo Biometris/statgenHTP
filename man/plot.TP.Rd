@@ -18,7 +18,10 @@ section.}
 made. See the sections below for a detailed explanation of the plots.}
 
 \item{timePoints}{A character or numeric vector indicating the timePoints
-to be plotted.}
+to be plotted. When using a character string to reference a timePoint, the
+value has to be an exact match to one of the existing timePoints. When using
+a number it will be matched by its number in the timePoints attribute of the
+TP object.}
 
 \item{traits}{A character vector indicating the traits to be plotted in
 a boxplot. Only used if \code{plotType} = "box" or "cor".}

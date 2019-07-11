@@ -12,18 +12,51 @@ createFitMod <- function(models,
 #'
 #' Plotting function for objects of class fitMod.
 #'
+#' @section rawPred plot:
+#' Plots the raw data overlayed with the predicted values from the fitted model.
+#' For each genotype a plot is made per plot/plant over time. These plots are
+#' put together in a 5x5 grid. By using the parameter \code{genotypes} a
+#' selection of genotypes can be plotted.
+#'
+#' @section corrPred plot:
+#' Plots the spatially corrected data overlayed with the predicted values from
+#' the fitted model. For each genotype a plot is made per plot/plant over time.
+#' These plots are put together in a 5x5 grid. By using the parameter
+#' \code{genotypes} a selection of genotypes can be plotted.
+#'
+#' @section herit plot:
+#' Plots the heritability over time. If \code{geno.decomp} is used when fitting
+#' the model, heritabilities are plotted for each level of geno.decomp in a
+#' single plot.
+#'
+#' @section effDim plot:
+#' Plots the effective dimension from models fitted using SpATS over time.
+#'
+#' @section variance plot:
+#' Plots the residual, column and row variance for the fitted model over time.
+#'
+#' @section rowPred plot:
+#' Plots the row predictions for the fitted model over time.
+#'
+#' @section colPred plot:
+#' Plots the row predictions for the fitted model over time.
+#'
+#' @section timeLapse plot:
+#' Creates a time lapse of the spatial trends of models fitted using SpATS over
+#' time.
+#'
 #' @inheritParams plot.TP
 #'
 #' @param x An object of class fitMod.
 #' @param genotypes A character vector indicating the genotypes to be plotted.
 #' Only used if \code{plotType} = "rawPred" or "corrPred".
 #' @param title A character string used as title for the plot.
-#' @param outFile A character string indicating the .pdf file to which the
-#' plots should be written. If \code{NULL} no file is written.
+#' @param outFile A character string indicating the .pdf file or .gif file
+#' (For \code{plotType} = "timeLapse") to which the plots should be written.
 #' @param outFileOpts A named list of extra options for the pdf outfile, e.g.
 #' width and height. See \code{\link[grDevices]{pdf}} for all possible options.
 #'
-#' @return Depending on the plottype either a ggplot object or a list of ggplot
+#' @return Depending on the plot type either a ggplot object or a list of ggplot
 #' objects is invisibly returned.
 #'
 #' @export

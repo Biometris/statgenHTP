@@ -37,7 +37,10 @@ checks in the experiment.}
 }
 \value{
 An object of class TP. A list with, per time point in the input, a
-data.frame containing the data for that time point.
+data.frame containing the data for that time point. A data.frame with
+columns timeNumber and timePoint is added as attribute timePoints to the
+data. This data.frame can be used for referencing timePoints by their
+number.
 }
 \description{
 Convert a data.frame to an object of class TP (Time Points).
@@ -46,7 +49,9 @@ steps:
 \itemize{
 \item{Check input data}
 \item{Rename columns to default column names - default column names:
-genotype, timePoint, plotId, repId, rowNum, colNum, rowId, colId}
+genotype, timePoint, plotId, repId, rowNum, colNum}.
+\item{Add columns rowId and colId to data. These are copies of rowId and
+colId converted to factors.}
 \item{Convert column types to default column types - rowNum and colNum
 are converted to numeric columns, all other renamed columns to factor
 columns. Columns other than the default columns, e.g. traits or other
