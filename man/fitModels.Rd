@@ -4,14 +4,21 @@
 \alias{fitModels}
 \title{Fit spatial models per time point}
 \usage{
-fitModels(TP, trait, covariates = NULL, geno.decomp = NULL,
-  useCheck = FALSE, engine = c("SpATS", "asreml"), spatial = FALSE)
+fitModels(TP, trait, timePoints = names(TP), covariates = NULL,
+  geno.decomp = NULL, useCheck = FALSE, engine = c("SpATS",
+  "asreml"), spatial = FALSE)
 }
 \arguments{
 \item{TP}{An object of class TP.}
 
 \item{trait}{A character string indicating the trait used as response
 variable in the model.}
+
+\item{timePoints}{A character or numeric vector indicating the timePoints
+to be modeled. When using a character string to reference a timePoint, the
+value has to be an exact match to one of the existing timePoints. When using
+a number it will be matched by its number in the timePoints attribute of the
+TP object.}
 
 \item{covariates}{A character vector indicating the variables used as
 fixed effects in the model.}

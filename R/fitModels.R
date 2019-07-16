@@ -50,6 +50,11 @@
 #' @param TP An object of class TP.
 #' @param trait A character string indicating the trait used as response
 #' variable in the model.
+#' @param timePoints A character or numeric vector indicating the timePoints
+#' to be modeled. When using a character string to reference a timePoint, the
+#' value has to be an exact match to one of the existing timePoints. When using
+#' a number it will be matched by its number in the timePoints attribute of the
+#' TP object.
 #' @param covariates A character vector indicating the variables used as
 #' fixed effects in the model.
 #' @param geno.decomp A character vector indicating the variables used to
@@ -75,6 +80,7 @@
 #' @export
 fitModels <- function(TP,
                       trait,
+                      timePoints = names(TP),
                       covariates = NULL,
                       geno.decomp = NULL,
                       useCheck = FALSE,
@@ -84,6 +90,7 @@ fitModels <- function(TP,
   if (!inherits(TP, "TP")) {
     stop("TP should be an object of class TP.\n")
   }
+  TP <- TP[timePoints]
   if (!all(sapply(X = TP, FUN = hasName, name = trait))) {
     stop(trait, " should be a column in TP for all timePoints.\n")
   }
@@ -187,11 +194,10 @@ fitModels <- function(TP,
       modDat <- droplevels(timePoint)
       ## Run model.
       if (!spatial) {
-        asrFit <- asreml::asreml(fixed = update(fixedForm, paste(trait, "~ .")),
-                                 random = randForm, data = modDat,
-                                 trace = FALSE, maxiter = 200,
+        asrFit <- asreml::asreml(fixed = fixedForm, random = randForm,
+                                 data = modDat, trace = FALSE, maxiter = 200,
                                  na.action = asreml::na.method(x = "include"))
-        ## evaluate call terms in mr and mfTrait so predict can be run.
+        ## evaluate call terms so predict can be run.
         asrFit$call$fixed <- eval(asrFit$call$fixed)
         asrFit$call$random <- eval(asrFit$call$random)
         asrFit$call$data <- substitute(modDat)
@@ -235,7 +241,7 @@ bestSpatMod <- function(modDat,
         as.numeric(levels(TPTab[, "Var2"]))[TPTab[, "Var2"]])
     modDat <- rbind(modDat, extObs)
   }
-  ## TP needs to be sorted by row and column to prevent asreml from crashing.
+  ## modDat needs to be sorted by row and column to prevent asreml from crashing.
   modDat <- modDat[order(modDat[["rowId"]], modDat[["colId"]]), ]
   ## Define random terms of models to try.
   randTerm <- c("NULL", rep(x = c("NULL", "units"), each = 3))
