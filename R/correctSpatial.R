@@ -1,10 +1,26 @@
 #' Approach 2: correct for spatial effects and other unnecesary factors
 #' @keywords internal
 correctSpatial <- function(fitMod) {
+  ## Get engine from fitted model.
+  engine <- class(fitMod)
+  ## All steps are different for SpATS and asreml so just move them to
+  ## separate functions.
+  if (engine == "SpATS") {
+    pred <- correctSpatialSpATS(fitMod)
+  } else {
+    pred <- correctSpatialAsreml(fitMod)
+  }
+  ## return results.
+  return(pred)
+}
+
+correctSpatialSpATS <- function(fitMod) {
   ## Check if check was used when fitting model.
   useCheck <- grepl(pattern = "check", x = deparse(fitMod$model$fixed))
   ## Get trait from fitted model.
   trait <- fitMod$model$response
+  ## Get geno.decomp from fitted models.
+  geno.decomp <- fitMod$model$geno$geno.decomp
   ## Include in the prediction the factors (variables) whose effect we are
   ## interested in removing.
   if (!is.null(fitMod$model$fixed)) {
@@ -12,14 +28,13 @@ correctSpatial <- function(fitMod) {
   } else {
     fixVars <- NULL
   }
-  genoDec <- fitMod$model$geno$geno.decomp
   predVars <- setdiff(c(fixVars, "colNum", "rowNum", "colId", "rowId"),
-                      genoDec)
+                      geno.decomp)
   pred <- predict(fitMod, which = predVars)
-  ## Merge genotype, pos, time and timepoint to data
+  ## Merge genotype and timepoint to data
   pred <- merge(pred, fitMod$data[c("rowNum", "colNum", "genotype",
-                                       "plotId", "timePoint", trait,
-                                       genoDec)],
+                                    "plotId", "timePoint", trait,
+                                    geno.decomp)],
                 by = c("rowNum", "colNum"))
   ## Obtain the corrected trait.
   pred[["newTrait"]] <- pred[[trait]] - pred[["predicted.values"]] +
@@ -28,9 +43,54 @@ correctSpatial <- function(fitMod) {
   if (!useCheck) {
     pred[["genotype"]] <- pred[["genotype.y"]]
   }
-  if (!is.null(genoDec)) pred[[genoDec]] <- pred[[paste0(genoDec, ".y")]]
-  pred <- pred[c("newTrait", "genotype", genoDec, predVars, "plotId",
+  if (!is.null(geno.decomp)) {
+    pred[[geno.decomp]] <- pred[[paste0(geno.decomp, ".y")]]
+  }
+  pred <- pred[c("newTrait", "genotype", geno.decomp, predVars, "plotId",
                  "timePoint")]
-  ## return results.
-  return(pred)
+}
+
+correctSpatialAsreml <- function(fitMod) {
+  ## Check if check was used when fitting model.
+  useCheck <- "check" %in% all.vars(update(fitMod$formulae$fixed, 0~.))
+  ## Get trait from fitted model.
+  trait <- all.vars(update(fitMod$formulae$fixed, .~0))
+  ## Get geno.decomp from fitted models.
+  if ("geno.decomp" %in% all.vars(fitMod$formulae$random)) {
+    geno.decomp <- "geno.decomp"
+  } else {
+    geno.decomp <- NULL
+  }
+  ## Include in the prediction the factors (variables) whose effect we are
+  ## interested in removing.
+  if (!is.null(fitMod$formulae$fixed)) {
+    fixVars <- all.vars(update(fitMod$formulae$fixed, 0~.))
+  } else {
+    fixVars <- NULL
+  }
+  randVars <- all.vars(fitMod$formulae$random)
+  predVars <- setdiff(c(fixVars, randVars), c("genotype", "genoCheck", "units", geno.decomp))
+  pred <- predict(fitMod, classify = paste(predVars, collapse = "+"),
+                  present = c(predVars, geno.decomp))$pvals
+  ## Merge genotype and timepoint to data
+  pred <- merge(pred, fitMod$call$data[union(c("genotype",
+                                               "plotId", "timePoint", trait,
+                                               geno.decomp), predVars)],
+                by = predVars)
+  if (!is.null(geno.decomp)) {
+    predGD <- predict(fitMod, classify = "geno.decomp",
+                      present = c(predVars, geno.decomp))$pvals
+    pred <- merge(pred, predGD, by = geno.decomp)
+  } else {
+    predInt <- predict(fitMod, classify = "(Intercept)",
+                       present = c(predVars, geno.decomp))$pvals
+    pred[["predicted.value.x"]] <- pred[["predicted.value"]]
+    pred[["predicted.value.y"]] <- predInt$predicted.value
+  }
+  ## Obtain the corrected trait.git s
+  pred[["newTrait"]] <- pred[[trait]] - pred[["predicted.value.x"]] +
+    pred[["predicted.value.y"]]
+  ## Select the variables needed for subsequent analyses.
+  pred <- pred[c("newTrait", "genotype", geno.decomp, predVars, "plotId",
+                 "timePoint")]
 }

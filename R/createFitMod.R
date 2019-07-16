@@ -83,7 +83,11 @@ plot.fitMod <- function(x,
   if (engine == "SpATS") {
     geno.decomp <- fitMods[[1]]$model$geno$geno.decomp
   } else if (engine == "asreml") {
-    geno.decomp <- fitMods[[1]]$factor.names[1]
+    if ("geno.decomp" %in% all.vars(fitMod$formulae$random)) {
+      geno.decomp <- "geno.decomp"
+    } else {
+      geno.decomp <- NULL
+    }
   }
   ## Get trait from fitted models.
   if (engine == "SpATS") {
@@ -97,7 +101,6 @@ plot.fitMod <- function(x,
   } else if (engine == "asreml") {
     useCheck <- "check" %in% all.vars(update(fitMods[[1]]$formulae$fixed, 0~.))
   }
-
   if (!is.null(outFile) && plotType != "timeLapse") {
     chkFile(outFile, fileType = "pdf")
     output <- TRUE
