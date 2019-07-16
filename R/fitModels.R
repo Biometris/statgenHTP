@@ -243,29 +243,21 @@ bestSpatMod <- function(modDat,
   }
   ## modDat needs to be sorted by row and column to prevent asreml from crashing.
   modDat <- modDat[order(modDat[["rowId"]], modDat[["colId"]]), ]
-  ## Define random terms of models to try.
-  randTerm <- c("NULL", rep(x = c("NULL", "units"), each = 3))
   if (regular) {
     ## Define spatial terms of models to try.
-    spatCh <- c("none", rep(x = c("exp(x)id", "id(x)exp",
-                                  "isotropic exponential"), times = 2))
-    spatTerm <- c(NA, paste("~", rep(x = c("exp(rowNum):colNum",
-                                           "rowNum:exp(colNum)",
-                                           "iexp(rowNum,colNum)"),
-                                     times = 2)))
+    spatCh <- c("none", "exp(x)id", "id(x)exp", "isotropic exponential")
+    spatTerm <- c(NA, paste("~", c("exp(rowNum):colNum", "rowNum:exp(colNum)",
+                                   "iexp(rowNum,colNum)")))
   } else {
-    spatCh <- c("none", rep(x = c("AR1(x)id", "id(x)AR1", "AR1(x)AR1"),
-                            times = 2))
-    spatTerm <- c(NA, paste("~",
-                            rep(x = c("ar1(rowId):colId", "rowId:ar1(colId)",
-                                      "ar1(rowId):ar1(colId)"), times = 2)))
+    spatCh <- c("none", "AR1(x)id", "id(x)AR1", "AR1(x)AR1")
+    spatTerm <- c(NA, paste("~", c("ar1(rowId):colId", "rowId:ar1(colId)",
+                                   "ar1(rowId):ar1(colId)")))
   }
   ## Create empty base lists.
   fitMods <- spatial <- sumTab <- setNames(vector(mode = "list",
                                              length = length(traits)),
                                       traits)
-  btCols <- c("spatial", "random", "AIC", "BIC", "row", "col", "error",
-              "correlated error", "converge")
+  btCols <- c("spatial", "AIC", "BIC", "row", "col", "error", "converge")
   for (trait in traits) {
     ## Reset criterion to Inf.
     criterionBest <- Inf
@@ -273,9 +265,9 @@ bestSpatMod <- function(modDat,
     modSum <- as.data.frame(matrix(nrow = length(spatCh), ncol = length(btCols),
                                    dimnames = list(NULL, btCols)))
     ## Fit model with genotype random for all different random/spatial terms.
-    for (i in seq_along(randTerm)) {
+    for (i in seq_along(spatTerm)) {
       ## Add extra random term to random part.
-      randForm <- update(randomForm, paste("~ . + rowId + colId +", randTerm[i]))
+      randForm <- update(randomForm, "~ . + rowId + colId")
       asrArgs <- c(list(fixed = fixedForm, random = randForm, aom = TRUE,
                          data = modDat, maxiter = maxIter, trace = FALSE,
                          na.action = asreml::na.method(x = "include")),
@@ -307,7 +299,6 @@ bestSpatMod <- function(modDat,
       }
       ## Fill model summary table.
       modSum[i, "spatial"] <- spatCh[i]
-      modSum[i, "random"] <- randTerm[i]
       modSum[i, "converge"] <- isTRUE(!is.null(fitMod) & fitMod$converge)
       if (!is.null(fitMod)) {
         summ <- summary(fitMod)$varcomp["component"]
@@ -325,16 +316,10 @@ bestSpatMod <- function(modDat,
                          c("rowId:colId!colId!cor", "rowNum:colNum!colNum!pow",
                            "iexp(rowNum,colNum)!pow"), ]
         modSum[i, "col"] <- ifelse(length(colVal) == 0, NA, colVal)
-        modSum[i, "error"] <-
-          ifelse(randTerm[i] == "units", summ[rownames(summ) == "units", ],
-                 summ[rownames(summ) %in% c("units!R", "rowId:colId!R",
-                                            "rowNum:colNum!R",
-                                            "iexp(rowNum,colNum)!R"), ])
-        if (randTerm[i] == "units") {
-          modSum[i, "correlated error"] <-
-            summ[rownames(summ) %in% c("rowId:colId!R", "rowNum:colNum!R",
+        modSum[i, "error"] <- summ[rownames(summ) %in%
+                                     c("units!R", "rowId:colId!R",
+                                       "rowNum:colNum!R",
                                        "iexp(rowNum,colNum)!R"), ]
-        }
         ## If current model is better than best so far based on chosen criterion
         ## define best model as current model.
         if (fitMod$converge) {
