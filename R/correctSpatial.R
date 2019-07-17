@@ -87,7 +87,7 @@ correctSpatialAsreml <- function(fitMod) {
     pred[["predicted.value.x"]] <- pred[["predicted.value"]]
     pred[["predicted.value.y"]] <- predInt$predicted.value
   }
-  ## Obtain the corrected trait.git s
+  ## Obtain the corrected trait.
   pred[["newTrait"]] <- pred[[trait]] - pred[["predicted.value.x"]] +
     pred[["predicted.value.y"]]
   ## Select the variables needed for subsequent analyses.

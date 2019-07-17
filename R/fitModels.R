@@ -187,13 +187,13 @@ fitModels <- function(TP,
     ## Construct formula for random part of the model.
     randForm <- formula(paste("~ ", if (is.null(geno.decomp)) genoCol else
       paste0("at(", geno.decomp, "):genotype")))
-    ## Loop on timepoint to run asreml.
-    fitMods <- lapply(X = TP, function(timePoint) {
-      message(timePoint[["timePoint"]][1])
-      ## Only keep columns needed for analysis.
-      modDat <- droplevels(timePoint)
-      ## Run model.
-      if (!spatial) {
+    if (!spatial) {
+      ## Loop on timepoint to run asreml.
+      fitMods <- lapply(X = TP, function(timePoint) {
+        message(timePoint[["timePoint"]][1])
+        ## Only keep columns needed for analysis.
+        modDat <- droplevels(timePoint)
+        ## Run model.
         asrFit <- asreml::asreml(fixed = fixedForm, random = randForm,
                                  data = modDat, trace = FALSE, maxiter = 200,
                                  na.action = asreml::na.method(x = "include"))
@@ -201,14 +201,40 @@ fitModels <- function(TP,
         asrFit$call$fixed <- eval(asrFit$call$fixed)
         asrFit$call$random <- eval(asrFit$call$random)
         asrFit$call$data <- substitute(modDat)
-      } else {
+        return(asrFit)
+      })
+    } else {
+      ## First find the best spatial model over all timePoints by fitting
+      ## all models for 20% of the time points (with a minimum of 10)
+      bestNum <- min(max(length(TP) / 5, 10), length(TP))
+      bestMod <- character()
+      for (i in round(seq(1, length(TP), length.out = bestNum))) {
+        timePoint <- TP[[i]]
+        ## Only keep columns needed for analysis.
+        modDat <- droplevels(timePoint)
         asrFitSpat <- bestSpatMod(modDat = modDat, traits = trait,
                                   fixedForm = fixedForm, randomForm = randForm)
+        bestMod <- c(bestMod, attr(asrFitSpat[["sumTab"]][[trait]], "chosen"))
+      }
+      bestMod <- names(which.max(table(bestMod)))
+      fitMods <- setNames(vector(mode = "list", length = length(TP)), names(TP))
+      for (i in seq_along(TP)) {
+        timePoint <- TP[[i]]
+        message(timePoint[["timePoint"]][1])
+        ## Only keep columns needed for analysis.
+        modDat <- droplevels(timePoint)
+        asrFitSpat <- bestSpatMod(modDat = modDat, traits = trait,
+                                  fixedForm = fixedForm, randomForm = randForm,
+                                  spatTerms = bestMod)
         asrFit <- asrFitSpat[["fitMods"]][[trait]]
         attr(x = asrFit, which = "sumTab") <- asrFitSpat[["sumTab"]]
+        ## evaluate call terms so predict can be run.
+        asrFit$call$fixed <- eval(asrFit$call$fixed)
+        asrFit$call$random <- eval(asrFit$call$random)
+        asrFit$call$data <- substitute(modDat)
+        fitMods[[i]] <- asrFit
       }
-      return(asrFit)
-    })
+    }
   }
   return(createFitMod(fitMods,
                       timePoints = timePoints))
@@ -219,12 +245,14 @@ fitModels <- function(TP,
 #' @keywords internal
 bestSpatMod <- function(modDat,
                         traits,
-                        regular = FALSE,
                         criterion = "AIC",
                         fixedForm,
                         randomForm,
+                        spatTerms = c("none", "AR1(x)id", "id(x)AR1",
+                                      "AR1(x)AR1"),
                         ...) {
   dotArgs <- list(...)
+  spatTerms <- match.arg(spatTerms, several.ok = TRUE)
   ## Increase max number of iterations for asreml.
   maxIter <- 200
   ## Add empty observations.
@@ -243,20 +271,15 @@ bestSpatMod <- function(modDat,
   }
   ## modDat needs to be sorted by row and column to prevent asreml from crashing.
   modDat <- modDat[order(modDat[["rowId"]], modDat[["colId"]]), ]
-  if (regular) {
-    ## Define spatial terms of models to try.
-    spatCh <- c("none", "exp(x)id", "id(x)exp", "isotropic exponential")
-    spatTerm <- c(NA, paste("~", c("exp(rowNum):colNum", "rowNum:exp(colNum)",
-                                   "iexp(rowNum,colNum)")))
-  } else {
-    spatCh <- c("none", "AR1(x)id", "id(x)AR1", "AR1(x)AR1")
-    spatTerm <- c(NA, paste("~", c("ar1(rowId):colId", "rowId:ar1(colId)",
-                                   "ar1(rowId):ar1(colId)")))
-  }
+  spatCh <- c("none", "AR1(x)id", "id(x)AR1", "AR1(x)AR1")
+  spatSel <- which(spatCh %in% spatTerms)
+  spatCh <- spatCh[spatSel]
+  spatTerm <- c(NA, paste("~", c("ar1(rowId):colId", "rowId:ar1(colId)",
+                                 "ar1(rowId):ar1(colId)")))[spatSel]
   ## Create empty base lists.
   fitMods <- spatial <- sumTab <- setNames(vector(mode = "list",
-                                             length = length(traits)),
-                                      traits)
+                                                  length = length(traits)),
+                                           traits)
   btCols <- c("spatial", "AIC", "BIC", "row", "col", "error", "converge")
   for (trait in traits) {
     ## Reset criterion to Inf.
@@ -269,14 +292,14 @@ bestSpatMod <- function(modDat,
       ## Add extra random term to random part.
       randForm <- update(randomForm, "~ . + rowId + colId")
       asrArgs <- c(list(fixed = fixedForm, random = randForm, aom = TRUE,
-                         data = modDat, maxiter = maxIter, trace = FALSE,
-                         na.action = asreml::na.method(x = "include")),
-                    dotArgs)
+                        data = modDat, maxiter = maxIter, trace = FALSE,
+                        na.action = asreml::na.method(x = "include")),
+                   dotArgs)
       if (!is.na(spatTerm[i])) {
         asrArgs[["residual"]] <- formula(spatTerm[i])
       }
       capture.output(fitMod <- tryCatchExt(do.call(what = asreml::asreml,
-                                                    args = asrArgs)),
+                                                   args = asrArgs)),
                      file = tempfile())
       if (!is.null(fitMod$warning)) {
         fitMod <- chkLastIter(fitMod)
@@ -308,18 +331,12 @@ bestSpatMod <- function(modDat,
         ## Row and column output differs for regular/non-regular.
         ## Always max. one of the possibilities is in summary so rowVal and
         ## colVal are always a single value.
-        rowVal <- summ[rownames(summ) %in%
-                         c("rowId:colId!rowId!cor", "rowNum:colNum!rowNum!pow",
-                           "iexp(rowNum,colNum)!pow"), ]
+        rowVal <- summ[rownames(summ) == "rowId:colId!rowId!cor", ]
         modSum[i, "row"] <- ifelse(length(rowVal) == 0, NA, rowVal)
-        colVal <- summ[rownames(summ) %in%
-                         c("rowId:colId!colId!cor", "rowNum:colNum!colNum!pow",
-                           "iexp(rowNum,colNum)!pow"), ]
+        colVal <- summ[rownames(summ) == "rowId:colId!colId!cor", ]
         modSum[i, "col"] <- ifelse(length(colVal) == 0, NA, colVal)
         modSum[i, "error"] <- summ[rownames(summ) %in%
-                                     c("units!R", "rowId:colId!R",
-                                       "rowNum:colNum!R",
-                                       "iexp(rowNum,colNum)!R"), ]
+                                     c("units!R", "rowId:colId!R"), ]
         ## If current model is better than best so far based on chosen criterion
         ## define best model as current model.
         if (fitMod$converge) {
@@ -339,7 +356,7 @@ bestSpatMod <- function(modDat,
           bestModTr$call$residual <- eval(bestModTr$call$residual)
           bestModTr$call$data <- substitute(modDat)
           criterionBest <- criterionCur
-          bestMod <- i
+          bestMod <- spatCh[i]
         }
       }
     }
