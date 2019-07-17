@@ -41,10 +41,17 @@ fitMods1c <- fitModels(TP = inTP[1:3], trait = "pheno",
 fitMods1d <- fitModels(TP = inTP[1:3], trait = "pheno",
                        covariates = c("repId", "Image_pos"), engine = "asreml",
                        spatial = TRUE)
-
 fitMods1e <- fitModels(TP = inTP[1:3], trait = "pheno",
                        covariates = c("repId", "Image_pos"), engine = "asreml",
                        useCheck = TRUE, spatial = TRUE)
+
+timePoint <- 3
+fitMod <- fitMods1e[[timePoint]]
+vc.g <- summary(fitMod)$varcomp['genoCheck','component']
+vdBLUP.avg <- predict(fitMod, classify = "genoCheck", only = "genoCheck",
+                      sed = TRUE)$avsed["mean"]^2
+(H2Cullis <- 1 - (vdBLUP.avg / 2 / vc.g))
+SpATS::getHeritability(fitMods1a[[timePoint]])
 
 spatCorr <- getCorrected(fitMods)
 spatCorr1a <- getCorrected(fitMods1a)
@@ -137,5 +144,21 @@ ggplot2::ggplot(comp2a, ggplot2::aes(x = newTrait.x, y = newTrait.y)) +
   ggplot2::geom_point() + ggplot2::geom_abline(colour = "red") +
   ggplot2::facet_wrap(~timePoint)
 
+timePoint <- 3
 
+fitMod <- fitMods2c[[timePoint]]
+vc.g <- summary(fitMod)$varcomp[3:6,'component']
+vdBLUP.mat <- predict(fitMod, classify = "geno.decomp:genotype",
+                      sed = TRUE)$sed^2
+vdBLUP.avg <- mean(vdBLUP.mat[upper.tri(vdBLUP.mat, diag = FALSE)])/4
+SpATS::getHeritability(fitMods2[[timePoint]])
+(H2Cullis <- 1 - (vdBLUP.avg / 2 / vc.g))
 
+#vdBLUP.avg <- predict(fitMod, classify = "geno.decomp:genotype",
+#        sed = TRUE)$avsed["mean"]^2
+# vdBLUP.avg1 <- mean(vdBLUP.mat[1:180,1:180][upper.tri(vdBLUP.mat[1:180,1:180], diag = FALSE)], na.rm = TRUE)
+# vdBLUP.avg2 <- mean(vdBLUP.mat[181:306,181:360][upper.tri(vdBLUP.mat[181:306,181:360], diag = FALSE)], na.rm = TRUE)
+# vdBLUP.avg3 <- mean(vdBLUP.mat[361:540,361:540][upper.tri(vdBLUP.mat[361:540,361:540], diag = FALSE)], na.rm = TRUE)
+# vdBLUP.avg4 <- mean(vdBLUP.mat[541:720,541:720][upper.tri(vdBLUP.mat[541:720,541:720], diag = FALSE)], na.rm = TRUE)
+#
+# H2Cullis <- 1 - (c(vdBLUP.avg1, vdBLUP.avg2, vdBLUP.avg3, vdBLUP.avg4)  / 2 / vc.g)

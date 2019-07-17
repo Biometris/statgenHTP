@@ -231,7 +231,7 @@ fitModels <- function(TP,
         ## evaluate call terms so predict can be run.
         asrFit$call$fixed <- eval(asrFit$call$fixed)
         asrFit$call$random <- eval(asrFit$call$random)
-        asrFit$call$data <- substitute(modDat)
+        asrFit$call$data <- eval(asrFit$call$data)
         fitMods[[i]] <- asrFit
       }
     }
