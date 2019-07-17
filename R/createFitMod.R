@@ -225,7 +225,9 @@ plot.fitMod <- function(x,
   if (!is.null(outFile) && plotType != "timeLapse") {
     dev.off()
   }
-  invisible(p)
+  if (!plotType == "timeLapse") {
+    invisible(p)
+  }
 }
 
 #' Helper function for creating field plots.
@@ -242,7 +244,7 @@ fieldPlot <- function(plotDat,
   p <- ggplot2::ggplot(data = plotDat,
                        ggplot2::aes_string(x = "colNum", y = "rowNum",
                                            fill = fillVar)) +
-    ggplot2::geom_raster(na.rm = TRUE) +
+    ggplot2::geom_tile(na.rm = TRUE) +
     ## Remove empty space between ticks and actual plot.
     ggplot2::scale_x_continuous(expand = c(0, 0), breaks = xTicks) +
     ggplot2::scale_y_continuous(expand = c(0, 0)) +
@@ -316,17 +318,23 @@ timeLapsePlot <- function(fitMods,
       plotDatSpat$rowNum <- rep(x = spatTr$row.p, each = p1 * nCol)
       ## Remove missings from data.
       plotDatSpat <- ggplot2::remove_missing(plotDatSpat, na.rm = TRUE)
+
+      plotDatSpat$mean <- mean(plotDat[[trait]], na.rm = TRUE)
+      plotDatSpat$value <- 100 * plotDatSpat$value / plotDatSpat$mean
+
       return(plotDatSpat)
     })
     ## Extract all zVals to use identical limits for spatial pattern
     ## This enables proper comparison of plots over timePoints.
     zVals <- unlist(sapply(X = plotSpatDats, `[[`, "value"))
-    zLim <- c(min(zVals), max(zVals))
+    zLim <- c(min(c(zVals, -10)), max(c(zVals, 10)))
     ## Create a plot of the spatial trend per time point.
     for (i in seq_along(plotSpatDats)) {
       p <- fieldPlot(plotDat = plotSpatDats[[i]], fillVar = "value",
                      title = paste(trait, names(plotSpatDats)[i]),
-                     colors = topo.colors(100), zlim = zLim)
+                     colors = colorRampPalette(c("red", "yellow", "blue"),
+                                               space = "Lab")(100),
+                     zlim = zLim)
       plot(p)
     }
   }, movie.name = outFile, autobrowse = FALSE)
