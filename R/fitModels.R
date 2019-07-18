@@ -119,7 +119,7 @@ fitModels <- function(TP,
   ## If geno.decomp is used genotype and covariates have to be replaced by
   ## an interaction of genotype and covariates with the geno.decomp variables.
   ## Construct an interaction of all variables in geno.decomp.
-  if (length(geno.decomp) > 1) {
+  if (length(geno.decomp) > 0) {
     TP <- lapply(X = TP, FUN = function(timePoint) {
       timePoint[["geno.decomp"]] <- interaction(timePoint[geno.decomp],
                                                 sep = "_")
