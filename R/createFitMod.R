@@ -83,7 +83,7 @@ plot.fitMod <- function(x,
   if (engine == "SpATS") {
     geno.decomp <- fitMods[[1]]$model$geno$geno.decomp
   } else if (engine == "asreml") {
-    if ("geno.decomp" %in% all.vars(fitMod$formulae$random)) {
+    if ("geno.decomp" %in% all.vars(fitMods[[1]]$formulae$random)) {
       geno.decomp <- "geno.decomp"
     } else {
       geno.decomp <- NULL
@@ -105,6 +105,7 @@ plot.fitMod <- function(x,
     chkFile(outFile, fileType = "pdf")
     output <- TRUE
     outFileOpts <- c(list(file = outFile), outFileOpts)
+    on.exit(dev.off(), add = TRUE)
     do.call(pdf, args = outFileOpts)
   }
   if (plotType == "rawPred") {
@@ -220,10 +221,7 @@ plot.fitMod <- function(x,
     }
   } else if (plotType == "timeLapse") {
     chkFile(outFile, fileType = "gif")
-    timeLapsePlot(fitMods, outFile = outFile)
-  }
-  if (!is.null(outFile) && plotType != "timeLapse") {
-    dev.off()
+    timeLapsePlot(fitMods, outFile = outFile, ...)
   }
   if (!plotType == "timeLapse") {
     invisible(p)
@@ -240,25 +238,33 @@ fieldPlot <- function(plotDat,
                       colors,
                       zlim = range(plotDat[fillVar]),
                       xTicks = ggplot2::waiver(),
+                      scaleLim = Inf,
                       ...) {
-  p <- ggplot2::ggplot(data = plotDat,
-                       ggplot2::aes_string(x = "colNum", y = "rowNum",
-                                           fill = fillVar)) +
+  p <- ggplot2::ggplot(
+    data = plotDat,
+    ggplot2::aes_string(x = "colNum", y = "rowNum",
+                        fill = fillVar,
+                        color = if (is.infinite(scaleLim)) NULL else "''")) +
     ggplot2::geom_tile(na.rm = TRUE) +
     ## Remove empty space between ticks and actual plot.
     ggplot2::scale_x_continuous(expand = c(0, 0), breaks = xTicks) +
     ggplot2::scale_y_continuous(expand = c(0, 0)) +
     ## Adjust plot colors.
-    ggplot2::scale_fill_gradientn(limits = zlim, colors = colors) +
+    ggplot2::scale_fill_gradientn(limits = zlim, colors = colors, name = NULL,
+                                  labels = scales::percent,
+                                  breaks = seq(zlim[1], zlim[2],
+                                               length.out = 5)) +
+    ggplot2::scale_color_manual(values = NA) +
+    ggplot2::guides(
+      fill = ggplot2::guide_colorbar(order = 1),
+      color = ggplot2::guide_legend("Larger than scale limit",
+                                    override.aes = list(fill = "grey50",
+                                                        color = "grey50"))) +
     ## No background. Center and resize title. Resize axis labels.
     ## Remove legend title and resize legend entries.
     ggplot2::theme(panel.background = ggplot2::element_blank(),
                    plot.title = ggplot2::element_text(hjust = 0.5, size = 10),
-                   axis.title = ggplot2::element_text(size = 9),
-                   legend.title = ggplot2::element_blank(),
-                   legend.text =
-                     ggplot2::element_text(size = 8,
-                                           margin = ggplot2::margin(l = 5))) +
+                   axis.title = ggplot2::element_text(size = 9)) +
     ggplot2::ggtitle(title)
   return(p)
 }
@@ -268,7 +274,14 @@ fieldPlot <- function(plotDat,
 #' @noRd
 #' @keywords internal
 timeLapsePlot <- function(fitMods,
-                          outFile = "spatialTrends.gif") {
+                          outFile = "spatialTrends.gif",
+                          ...) {
+  dotArgs <- list(...)
+  if (!is.null(dotArgs$scaleLim)) {
+    scaleLim <- dotArgs$scaleLim / 100
+  } else {
+    scaleLim <- Inf
+  }
   animation::saveGIF({
     ## Get trait from fitted models.
     trait <- fitMods[[1]]$model$response
@@ -308,36 +321,43 @@ timeLapsePlot <- function(fitMods,
           ifelse(is.na(plotDat[i, trait]), NA, 1)
       }
       spatTrDat <- kronecker(M, matrix(data = 1, ncol = p1, nrow = p2)) *
-        spatTr$fit
+        spatTr[["fit"]]
       ## Melt to get the data in ggplot shape. Rows and columns in the
       ## spatial trend coming from SpATS are swapped so therefore use t()
       plotDatSpat <- reshape2::melt(t(spatTrDat),
                                     varnames = c("colNum", "rowNum"))
       ## Add true values for columns and rows for plotting.
-      plotDatSpat$colNum <- spatTr$col.p
-      plotDatSpat$rowNum <- rep(x = spatTr$row.p, each = p1 * nCol)
+      plotDatSpat[["colNum"]] <- spatTr[["col.p"]]
+      plotDatSpat[["rowNum"]] <- rep(x = spatTr[["row.p"]], each = p1 * nCol)
       ## Remove missings from data.
       plotDatSpat <- ggplot2::remove_missing(plotDatSpat, na.rm = TRUE)
-
-      plotDatSpat$mean <- mean(plotDat[[trait]], na.rm = TRUE)
-      plotDatSpat$value <- 100 * plotDatSpat$value / plotDatSpat$mean
-
+      ## Divide by mean value of trait to get trend as percentage.
+      plotDatSpat[["mean"]] <- mean(plotDat[[trait]], na.rm = TRUE)
+      plotDatSpat[["value"]] <- plotDatSpat[["value"]] / plotDatSpat[["mean"]]
+      ## Set values outside scale limits to NA.
+      plotDatSpat[["value"]][plotDatSpat[["value"]] > scaleLim |
+                               plotDatSpat[["value"]] < -scaleLim] <- NA
       return(plotDatSpat)
     })
     ## Extract all zVals to use identical limits for spatial pattern
     ## This enables proper comparison of plots over timePoints.
     zVals <- unlist(sapply(X = plotSpatDats, `[[`, "value"))
-    zLim <- c(min(c(zVals, -10)), max(c(zVals, 10)))
+    if (is.infinite(scaleLim)) {
+      zLim <- c(min(c(zVals, -0.1), na.rm = TRUE),
+                max(c(zVals, 0.1), na.rm = TRUE))
+    } else {
+      zLim <- c(-scaleLim, scaleLim)
+    }
     ## Create a plot of the spatial trend per time point.
     for (i in seq_along(plotSpatDats)) {
       p <- fieldPlot(plotDat = plotSpatDats[[i]], fillVar = "value",
                      title = paste(trait, names(plotSpatDats)[i]),
                      colors = colorRampPalette(c("red", "yellow", "blue"),
                                                space = "Lab")(100),
-                     zlim = zLim)
+                     zlim = zLim, scaleLim = scaleLim)
       plot(p)
     }
-  }, movie.name = outFile, autobrowse = FALSE)
+  }, movie.name = outFile, autobrowse = FALSE, loop = 1)
 }
 
 #' Function for extracting objects of class fitMod that keeps class.
