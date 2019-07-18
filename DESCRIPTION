@@ -28,5 +28,8 @@ Imports:
     animation
 Suggests: 
     asreml (>= 4.0),
-    covr
+    covr,
+    knitr,
+    rmarkdown
 RoxygenNote: 6.1.1
+VignetteBuilder: knitr
