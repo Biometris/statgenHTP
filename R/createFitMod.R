@@ -271,6 +271,7 @@ fieldPlot <- function(plotDat,
 
 #' Helper function for creating time lapse plots.
 #'
+#' @importFrom grDevices colorRampPalette
 #' @noRd
 #' @keywords internal
 timeLapsePlot <- function(fitMods,

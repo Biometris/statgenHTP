@@ -69,7 +69,7 @@ correctSpatialAsreml <- function(fitMod) {
     fixVars <- NULL
   }
   randVars <- all.vars(fitMod$formulae$random)
-  predVars <- setdiff(c(fixVars, randVars), c("genotype", "genoCheck", "units", geno.decomp))
+  predVars <- setdiff(c(fixVars, randVars), c("genotype", "genoCheck", geno.decomp))
   pred <- predict(fitMod, classify = paste(predVars, collapse = "+"),
                   present = c(predVars, geno.decomp))$pvals
   ## Merge genotype and timepoint to data
@@ -78,12 +78,11 @@ correctSpatialAsreml <- function(fitMod) {
                                                geno.decomp), predVars)],
                 by = predVars)
   if (!is.null(geno.decomp)) {
-    predGD <- predict(fitMod, classify = "geno.decomp",
-                      present = c(predVars, geno.decomp))$pvals
+    predGD <- predict(fitMod, classify = "geno.decomp")$pvals
     pred <- merge(pred, predGD, by = geno.decomp)
   } else {
     predInt <- predict(fitMod, classify = "(Intercept)",
-                       present = c(predVars, geno.decomp))$pvals
+                       present = fixVars)$pvals
     pred[["predicted.value.x"]] <- pred[["predicted.value"]]
     pred[["predicted.value.y"]] <- predInt$predicted.value
   }
