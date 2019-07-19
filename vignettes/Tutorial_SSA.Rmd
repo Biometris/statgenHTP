@@ -1,6 +1,6 @@
 ---
 title: "Tutorial"
-author: "Emilie Millet"
+author: "Emilie Millet, Bart-Jan van Rossum"
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:
@@ -25,11 +25,11 @@ library(statgenHTP)
 
 # The statgenSSA Package  
 
-The statgenSSA package is developed as an easy-to-use package for analyzing data of 
-plant breeding experiments with many options for plotting and reporting 
-the results of the analyses.  
+The statgenHTP package is developed as an easy-to-use package for analyzing data coming  
+from high throughput phenotyping platform experiments. The package provides many options 
+for plotting and reporting the results of the analyses.  
 
-This vignette describes in detail how to prepare data for analysis, perform analyses using different modeling engines and extract the results from the models.
+This vignette describes in detail how to prepare data for analysis, perform analyses  using different modeling engines and extract the results from the models.
 
 ----
 

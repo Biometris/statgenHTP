@@ -1,0 +1,239 @@
+---
+title: "Tutorial"
+author: "Emilie Millet, Bart-Jan van Rossum"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    toc: false
+    number_sections: true
+vignette: >
+  %\VignetteIndexEntry{Tutorial}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(statgenHTP)
+```
+
+# The statgenHTP Package  
+
+The statgenHTP package is developed as an easy-to-use package for analyzing data coming  
+from high throughput phenotyping platform experiments. The package provides many options 
+for plotting and reporting the results of the analyses.  
+
+This vignette describes in detail how to prepare data for analysis, perform analyses using different modeling engines and extract the results from the models.
+
+----
+
+# Data preparation
+
+A large majority of platform measure traits at several time point. The first step when 
+modeling platform experiment data analysis with the statgenHTP package
+is creating an object of class `TP` (Time Points). This object split the time points into
+single data frame. It is then used throughout the statgenHTP package as input for analyses. 
+
+## Creating a `TP` object
+
+A `TP` object can be created from a `data.frame` with the function `createTimePoints`. 
+This function does a number of things:  
+
+* Rename columns to default column names used by the functions in the statgenHTP package. For example, the column in the data containing variety/accession/genotype is renamed to "genotype". Original column names are stored as an attribute of the `TP` object.
+* Convert column types to the default column types. For example, the column 
+"genotype" is converted to a factor and "rowCoord" to a numeric column.
+* Split the data into separate data.frames by time points. A `TP` object is a
+`list` of `data.frames` where each `data.frame` contains the data for a single
+time point. If there is only one time points or no column time is defined, the output will 
+be a `list` with only one item.
+* Create a `data.frame` with columns `timeNumber` and `timePoint` is added as attribute timePoints to the data. This `data.frame` can be used for referencing the time points by their number.
+
+
+## Example
+
+The data from an experiment in the Phenovator platform (WUR, Netherlands) with Arabidopsis 
+plants will be used as an example throughout this vignette. It consists of one experiment 
+with 1440 plants grown in a growth chamber. The number of tested genotypes is 192 with 6-7 
+replicates per genotype. Four reference genotypes were also tested with 15 or 30 replicates. 
+The studied trait is the photosystem efficiency measured over time
+(PSII, see van Rooien et al. 2017 Nat. Comm.).
+
+For the example first a `TP` object is created containing all the time points. 
+```{r createTP}
+## Create a TP object containing the data from the Phenovator.
+data("PhenovatorDat1")
+phenoTP <- createTimePoints(dat = inDat, 
+                            genotype = "Genotype",
+                            timePoint = "timepoints",
+                            repId = "Sowing_Block",
+                            plotId = "pos",
+                            rowNum = "y", colNum = "x",
+                            addCheck = TRUE,
+                            checkGenotypes = c("col", "ely", "evo1", "ler"))
+```
+The `TP` object just created is a `list` with 73 items, one for each time points 
+ in the original `data.frame` (called `inDat`).
+The column "Genotype" in the original data is renamed to "genotype" and converted to 
+a factor. The columns "Sowing_Block" and "pos" are renamed and converted likewise. 
+The newly created column "plotID" needs to be a unique identifier for a plot or a plant. 
+It cannot occur more than once per time point. 
+The columns "y" and "x" are renamed to "rowNum" and "colNum" respectively. 
+Simultaneously two columns "rowId" and "colId" are created containing 
+the same information converted to a factor. This seemingly
+duplicate information is needed for spatial analysis. The information about which columns
+have been renamed when creating a `TP` object is stored as an attribute of each 
+individual `data.frame` in the object.
+The option `addCheck` is set as `TRUE` to specify that the genotypes listed in
+`checkGenotypes` are reference genotypes (or check). This option will create a column 
+"check" with a value "noCheck" for the genotypes that are not in `checkGenotypes` and
+the name of the genotype for the `checkGenotypes`. Also a column
+"genoCheck"" is added with the names of the genotypes that are not in
+`checkGenotypes` and `NA` for the `checkGenotypes`. These
+columns are necessary for fitting models on data in case of augmented design.
+
+## Plotting a `TP` object
+
+Several plots can be made to further investigate the contents of a `TP` object.    
+
+The first type of plot displays the layout of the experiment as a grid using the roow and column coordinates in "plotID". The default plot creates plots of all time points in the `TP` object.
+This can be restricted to selected time points using their number in the option `timePoints`.
+If replicates ("repId") are available, a black line is plotted between them. Missing plots are indicated in white.
+```{r layoutPlot, fig.height=4, fig.width=5}
+plot(phenoTP, 
+     plotType = "layout",
+     timePoints = c(3))
+```
+
+Here, the 3rd time point is displayed which corresponds to the 1st of June at 11:37. 
+This plot can be extended by highlighting interesting genotypes in the layout. Here the
+check genotypes are highlighted:
+```{r layoutPlotHL, fig.height=4, fig.width=5}
+## Plot the layout for the 3rd time point with the check genotypes highlighted.
+plot(phenoTP, 
+     plotType = "layout",
+     timePoints = c(3),  
+     highlight = c("col", "ely", "evo1", "ler"))
+```
+
+It is possible to add the names of the genotypes to the layout. 
+```{r layoutPlotSG, fig.height=4, fig.width=5}
+## Plot the layout for the 3rd time points.
+plot(phenoTP, 
+     plotType = "layout",
+     timePoints = c(3),  
+     highlight = c("col", "ely", "evo1", "ler"),
+     showGeno = TRUE)
+```
+
+Boxplots can be made to get an idea of the contents of the data in the `TP` object.
+By default a box is plotted per time point for the specified traits using all time points. Boxplots for selected time points can be made.
+```{r boxPlot, fig.height=4, fig.width=7}
+## Create a boxplot for PSII using the default all time points.
+plot(phenoTP, 
+     plotType = "box",
+     traits = "pheno") 
+```
+
+Colors can be applied to groups within time points using the parameter `colorBy`. The boxes 
+for the (groups of) time points can be ordered using `orderBy`. Boxes can be ordered by external vector or by the group mean.
+```{r boxPlotCL, fig.height=4, fig.width=6}
+## Create a boxplot for PSII with 5 time points and boxes colored by repIds within
+## time point.
+plot(phenoTP, 
+     plotType = "box",
+     traits = "pheno", 
+     timePoints = c(1:5),
+     colorBy = "repId")
+```
+
+The time points in the boxplot can be grouped using the parameter `groupBy`. 
+```{r boxPlotGP, fig.height=4, fig.width=4}
+## Create a boxplot for PSII with 5 time points and boxes grouped by repIds.
+plot(phenoTP, 
+     plotType = "box",
+     traits = "pheno", 
+     timePoints = c(1:5),
+     groupBy = "repId")
+```
+
+The last plot that can be made is a plot of the correlations between the time points for
+a specified trait. The order of the plot is the time and by default all time points are used.
+```{r corPlot, fig.height=5, fig.width=6}
+## Create a correlation plot for PSII for a selection of time points.
+plot(phenoTP, 
+     plotType = "cor",
+     traits = "pheno",
+     timePoints = c(1,10,20,30,40,50,60,70))
+```
+
+----
+
+# Modeling
+
+After creating a `TP` object, a model can be fitted on the trial data. The aim is to accurately separate the genotype effects from the spatial effects at each time point. This is done 
+using the function `fitModels`. Depending on the design of the experiment several 
+different models can be fitted. The design can be given as a parameter in the 
+function. (In the former case the same model will be fitted for all trials, in the latter different models can be fitted for different trials depending on the design. If both are available the function parameter will always be leading.)
+
+The output of `fitModels` is an object of class `fitMod`, a
+`list` of fitted models with one item for each trial the model was fitted for. 
+
+## Model types
+
+`fitModels` uses two different engines for fitting the models, namely
+SpATS [@RodAlv2017] and asreml [@Gilmour2017]. For models 
+with row column or resolvable row column design, SpATS is the default engine, 
+for the other models asreml. This can always be overruled by specifying the function 
+parameter `engine`.
+
+Models can be fitted for five different experimental designs. These are listed in the 
+following table with their respective model specifications.  
+
+design | code | model fitted |
+-------------------------- | -------- | ----------------------------------------- |
+incomplete block design | ibd | trait = genotype + *subBlock* + $\epsilon$ |
+resovable incomplete block design | res.ibd | trait = genotype + **repId** + **repId:subBlock** + $\epsilon$ |
+randomized complete block design | rcbd | trait = genotype + **repId** + $\epsilon$ | 
+row column design | rowcol | trait = genotype + *rowId* + *colId* + $\epsilon$ |
+resolvable row column design | res.rowcol | trait = genotype + **repId** + *repId:rowId* + *repId:colId* + $\epsilon$ |
+
+In the models above, fixed effects are indicated in *italics* whereas random 
+effects are indicated in **bold**. genotype can be fitted as fixed or as 
+random effect depending on the value of the parameter `what`. Extra
+fixed effects may be fitted using the parameter `covariates`.  
+If SpATS is used as modeling engine, an extra spatial term is always 
+included in the model. The same is done when the engine is asreml and 
+the function parameter `trySpatial` is set to `TRUE`.
+
+Using the `TD` object phenoTP from the previous section, a model for the 3rd time point 
+ and trait PSII can now be fitted on the data as follows. For the design
+of the trial a resolvable row column design is assumed. Since `engine` is not 
+supplied as a parameter SpATS is used for fitting the model.
+```{r fitSp, message=FALSE}
+## Fit a model for a single time point.
+modPhenoSp <- fitModels(TP = phenoTP, trait = "pheno",
+                        covariates = c("repId", "Image_pos"), 
+                        timePoints = 3)
+```
+(Note that by not supplying the `what` argument to the function, two models are
+fitted, one with genotype as a fixed effect and one with genotype as a 
+random effect. The results of both these models are stored in the `fitMod` object
+`modPhenoSp`. This is very useful for extracting different results from the 
+model later on. A trade-off is that fitting two models takes more time than 
+fitting only one so when fitting models on large datasets it is sensible to explicitly define `what` )
+
+```{r fitSpC, message=FALSE}
+## Fit a model for a single time point.
+modPhenoSp <- fitModels(TP = phenoTP, trait = "pheno",
+                        covariates = c("repId", "Image_pos"), 
+                        timePoints = 3)
+```
+
+
+
