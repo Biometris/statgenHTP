@@ -150,12 +150,16 @@ fitModels <- function(TP,
     })
   }
   ## Fixed part consists of covariates, geno.decomp and check.
-  if (!is.null(c(covariates, geno.decomp))) {
-    fixedForm <- formula(paste("~", paste(c(covariates, geno.decomp),
-                                          collapse = "+"),
-                               if (useCheck) "+ check"))
-  } else {
-    fixedForm <- if (useCheck) formula("~ check") else NULL
+  fixedForm <- formula("~ .")
+  if (!is.null(covariates)) {
+    fixedForm <- update(fixedForm,
+                        paste("~ +" ,paste(c(covariates), collapse = "+")))
+  }
+  if (!is.null(geno.decomp) && is.null(covariates)) {
+    fixedForm <- update(fixedForm, "~ + geno.decomp")
+  }
+  if (useCheck) {
+    fixedForm <- update(fixedForm, "~ + check")
   }
   ## Get column containing genotype.
   genoCol <- if (useCheck) "genoCheck" else "genotype"

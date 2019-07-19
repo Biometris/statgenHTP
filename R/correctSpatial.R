@@ -43,7 +43,7 @@ correctSpatialSpATS <- function(fitMod) {
   if (!useCheck) {
     pred[["genotype"]] <- pred[["genotype.y"]]
   }
-  if (!is.null(geno.decomp)) {
+  if (!is.null(geno.decomp) && !hasName(pred , "geno.decomp")) {
     pred[[geno.decomp]] <- pred[[paste0(geno.decomp, ".y")]]
   }
   pred <- pred[c("newTrait", "genotype", geno.decomp, predVars, "plotId",
@@ -71,7 +71,7 @@ correctSpatialAsreml <- function(fitMod) {
   randVars <- all.vars(fitMod$formulae$random)
   predVars <- setdiff(c(fixVars, randVars), c("genotype", "genoCheck", geno.decomp))
   pred <- predict(fitMod, classify = paste(predVars, collapse = "+"),
-                  present = c(predVars, geno.decomp))$pvals
+                  present = predVars)$pvals
   ## Merge genotype and timepoint to data
   pred <- merge(pred, fitMod$call$data[union(c("genotype",
                                                "plotId", "timePoint", trait,
