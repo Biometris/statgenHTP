@@ -128,14 +128,20 @@ fitModels <- function(TP,
     ## Set geno.decomp to newly constructed variable.
     geno.decomp <- "geno.decomp"
   }
+  ## Get column containing genotype.
+  genoCol <- if (useCheck) "genoCheck" else "genotype"
   ## Replace genotype and covariates by their interaction with geno.decomp.
   if (!is.null(geno.decomp)) {
     TP <- lapply(X = TP, FUN = function(timePoint) {
-      timePoint[["genotype"]] <- interaction(timePoint[[geno.decomp]],
-                                             timePoint[["genotype"]], sep = "_")
+      timePoint[[genoCol]] <- interaction(timePoint[[geno.decomp]],
+                                          timePoint[[genoCol]], sep = "_")
       for (covar in covariates) {
         timePoint[[covar]] <- interaction(timePoint[[geno.decomp]],
                                           timePoint[[covar]], sep = "_")
+      }
+      if (useCheck) {
+        timePoint[["check"]] <- interaction(timePoint[[geno.decomp]],
+                                            timePoint[["check"]], sep = "_")
       }
       return(timePoint)
     })
@@ -150,19 +156,17 @@ fitModels <- function(TP,
     })
   }
   ## Fixed part consists of covariates, geno.decomp and check.
-  fixedForm <- formula("~ .")
+  fixedForm <- formula("~ 1")
   if (!is.null(covariates)) {
     fixedForm <- update(fixedForm,
-                        paste("~ +" ,paste(c(covariates), collapse = "+")))
-  }
-  if (!is.null(geno.decomp) && is.null(covariates)) {
-    fixedForm <- update(fixedForm, "~ + geno.decomp")
+                        paste("~ . +" , paste(c(covariates), collapse = "+")))
   }
   if (useCheck) {
-    fixedForm <- update(fixedForm, "~ + check")
+    fixedForm <- update(fixedForm, "~ . + check")
   }
-  ## Get column containing genotype.
-  genoCol <- if (useCheck) "genoCheck" else "genotype"
+  if (!is.null(geno.decomp) && is.null(covariates) && !useCheck) {
+    fixedForm <- update(fixedForm, "~ . + geno.decomp")
+  }
   if (engine == "SpATS") {
     ## Loop on timepoint to run SpATS.
     fitMods <- lapply(X = TP, function(timePoint) {
@@ -190,7 +194,7 @@ fitModels <- function(TP,
     fixedForm <- update(fixedForm, paste(trait, "~ ."))
     ## Construct formula for random part of the model.
     randForm <- formula(paste("~ ", if (is.null(geno.decomp)) genoCol else
-      paste0("at(", geno.decomp, "):genotype")))
+      paste0("at(", geno.decomp, "):", genoCol)))
     if (!spatial) {
       ## Loop on timepoint to run asreml.
       fitMods <- lapply(X = TP, function(timePoint) {
