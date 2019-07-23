@@ -72,10 +72,14 @@ correctSpatialAsreml <- function(fitMod) {
   predVars <- setdiff(c(fixVars, randVars), c("genotype", "genoCheck",
                                               if (useCheck) "check",
                                               geno.decomp))
+  predVars <- setdiff(randVars, c("genotype", "genoCheck",
+                                  if (useCheck) "check",
+                                  geno.decomp))
   pred <- predict(fitMod, classify = paste(predVars, collapse = "+"),
                   present = predVars)$pvals
   ## Merge genotype and timepoint to data
-  pred <- merge(pred, fitMod$call$data[union(c("genotype", "check",
+  pred <- merge(pred, fitMod$call$data[union(c("genotype",
+                                               if (useCheck) "check",
                                                "plotId", "timePoint", trait,
                                                geno.decomp), predVars)],
                 by = predVars)

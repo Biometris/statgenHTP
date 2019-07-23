@@ -9,7 +9,8 @@ predictGeno <- function(fitMod) {
     ## Genotype prediction (including the effect of geno.decomp as well as
     ## the intercept).
     predGeno <- predict(fitMod,
-                        which = c(genoCol, fitMod$model$geno$geno.decomp))
+                        which = c(genoCol, fitMod$model$geno$geno.decomp,
+                                  if (useCheck) "check"))
     ## Repeat for the check genotypes.
     if (useCheck) {
       ## Predict check genotypes.
@@ -29,30 +30,32 @@ predictGeno <- function(fitMod) {
     useCheck <- grepl(pattern = "check", x = deparse(fitMod$formulae$fixed))
     ## Get name of genotype column used.
     genoCol <- if (useCheck) "genoCheck" else "genotype"
+    useGenoDecomp <- "geno.decomp" %in% all.vars(fitMod$formulae$random)
     ## Genotype prediction (including the effect of geno.decomp as well as
     ## the intercept).
-    predGeno <- predictAsreml(fitMod, classify = "geno.decomp+genoCheck",
-                               vcov = FALSE)$pvals
-
-    predGeno <- predGeno[substring(predGeno$genoCheck, 1,1) ==
-                           as.character(predGeno$geno.decomp), ]
-
+    predGeno <- predictAsreml(fitMod, classify = "geno.decomp:genotype",
+                              vcov = FALSE)$pvals
+    classForm <- paste0(if (useGenoDecomp) "geno.decomp:", genoCol)
+    predGeno <- predictAsreml(fitMod, classify = classForm,
+                              present = c(genoCol,
+                                          if (useGenoDecomp) "geno.decomp",
+                                          if (useCheck) "check"),
+                              vcov = FALSE)$pvals
+    predGeno <- predGeno[predGeno[["status"]] == "Estimable", ]
     ## Repeat for the check genotypes.
     if (useCheck) {
       ## Predict check genotypes.
-      predCheck <- predict(fitMod, classify = "geno.decomp+check", vcov = FALSE)$pvals
+      #predCheck <- predict(fitMod, classify = "geno.decomp+check", vcov = FALSE)$pvals
+
+      predCheck <- predict(fitMod, classify = "check", vcov = FALSE)$pvals
+
       ## Rename check to genotype for merging with genotype predictions.
       predCheck[["genotype"]] <- predCheck[["check"]]
       ## Remove noCheck
       predCheck <- predCheck[predCheck[["genotype"]] != "noCheck", ]
-
-
-      predCheck <- predCheck[substring(predCheck$check, 1,1) ==
-                             as.character(predCheck$geno.decomp), ]
-
       ## Rename genoCol to genotype for merging with check predictions.
       predGeno[["genotype"]] <- predGeno[[genoCol]]
-      predGeno <- rbind(predGeno[-2], predCheck[-2])
+      predGeno <- rbind(predGeno[-1], predCheck[-1])
     }
     ## Rename columns to match those from SpATS predictions.
     colnames(predGeno)[colnames(predGeno) == "predicted.value"] <-
