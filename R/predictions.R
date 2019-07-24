@@ -33,8 +33,6 @@ predictGeno <- function(fitMod) {
     useGenoDecomp <- "geno.decomp" %in% all.vars(fitMod$formulae$random)
     ## Genotype prediction (including the effect of geno.decomp as well as
     ## the intercept).
-    predGeno <- predictAsreml(fitMod, classify = "geno.decomp:genotype",
-                              vcov = FALSE)$pvals
     classForm <- paste0(if (useGenoDecomp) "geno.decomp:", genoCol)
     predGeno <- predictAsreml(fitMod, classify = classForm,
                               present = c(genoCol,
