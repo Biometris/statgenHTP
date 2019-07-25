@@ -16,5 +16,6 @@ results should be written. If \code{NULL} no file is written.}
 A data.frame with genotypic BLUPs per time point.
 }
 \description{
-Extract genotypic Best Linear Unbiased Predictors (BLUPs) from an object of class fitMod.
+Extract genotypic Best Linear Unbiased Predictors (BLUPs) from an object of
+class fitMod.
 }

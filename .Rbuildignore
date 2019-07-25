@@ -4,6 +4,7 @@ data-raw
 output
 outputOrigScript
 origScripts
+comparisons
 testScript*
 .gitlab-ci.yml
 .gitlab-ci.R

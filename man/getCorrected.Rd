@@ -16,8 +16,9 @@ results should be written. If \code{NULL} no file is written.}
 A data.frame with spatially corrected values per time point.
 }
 \description{
-Extract corrected phenotype from an object of class fitMod. After fitting a spatial model
-at each time point, the raw phenotypic data is corrected by subtracting the (estimated)
-sources of (environmental, design effect) which are of no interest (nuisances).
-This allows keeping the data resolution at the plot/lant level.
+Extract corrected phenotype from an object of class fitMod. After fitting a
+spatial model at each time point, the raw phenotypic data is corrected by
+subtracting the (estimated) sources of (environmental, design effect) which
+are of no interest (nuisances). This allows keeping the data resolution at
+the plot/plant level.
 }

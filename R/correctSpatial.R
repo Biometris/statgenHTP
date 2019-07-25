@@ -36,9 +36,17 @@ correctSpatialSpATS <- function(fitMod) {
                                     "plotId", "timePoint", trait,
                                     geno.decomp)],
                 by = c("rowNum", "colNum"))
+  corVars <- setdiff(fixVars, c(geno.decomp, "check"))
+  intercept <- fitMod$coeff["Intercept"]
+  # if (length(corVars) > 0) {
+  #   coeffs <- fitMod$coeff[!attr(fitMod$coeff, "random")]
+  #   for (corVar in corVars) {
+  #     intercept <- intercept + mean(c(0, coeffs[grepl("repId", names(coeffs))]))
+  #   }
+  # }
   ## Obtain the corrected trait.
   pred[["newTrait"]] <- pred[[trait]] - pred[["predicted.values"]] +
-    fitMod$coeff["Intercept"]
+    intercept
   ## Select the variables needed for subsequent analyses.
   if (!useCheck) {
     pred[["genotype"]] <- pred[["genotype.y"]]

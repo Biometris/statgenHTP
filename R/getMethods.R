@@ -94,7 +94,8 @@ getRowPred <- function(fitMod,
 
 #' Extract genotypic BLUPs
 #'
-#' Extract genotypic Best Linear Unbiased Predictors (BLUPs) from an object of class fitMod.
+#' Extract genotypic Best Linear Unbiased Predictors (BLUPs) from an object of
+#' class fitMod.
 #'
 #' @inheritParams getGenoPred
 #'
@@ -166,10 +167,11 @@ getBLUPsRow <- function(fitMod,
 
 #' Extract corrected phenotypic values
 #'
-#' Extract corrected phenotype from an object of class fitMod. After fitting a spatial model
-#' at each time point, the raw phenotypic data is corrected by subtracting the (estimated)
-#' sources of (environmental, design effect) which are of no interest (nuisances).
-#' This allows keeping the data resolution at the plot/lant level.
+#' Extract corrected phenotype from an object of class fitMod. After fitting a
+#' spatial model at each time point, the raw phenotypic data is corrected by
+#' subtracting the (estimated) sources of (environmental, design effect) which
+#' are of no interest (nuisances). This allows keeping the data resolution at
+#' the plot/plant level.
 #'
 #' @inheritParams getGenoPred
 #'

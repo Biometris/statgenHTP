@@ -35,7 +35,7 @@ models.}
 \item{spatial}{Should a spatial model be fitted for asreml?}
 }
 \value{
-An object of class fitMod, a list of fitted spatial models.
+An object of class fitMod, a list of fitted models.
 }
 \description{
 Perform REML analysis given a specific experimental design using either
@@ -61,24 +61,9 @@ six models are fitted with different random terms and covariance structure.
 The best model is determined based on a goodness-of-fit criterion, either
 AIC or BIC. This can be set using the control parameter \code{criterion},
 default is AIC.
-The fitted random terms depend on the structure of the data. If the design
-has a regular structure, i.e. all replicates appear the same amount of times
-in the design, the following combinations of random and spatial terms are
-fitted
+The following combinations of random and spatial terms are fitted
 \itemize{
-\item{random = NULL, spatial = exp(rowCoord):colCoord}
-\item{random = NULL, spatial = rowCoord:exp(colCoord)}
-\item{random = NULL, spatial = iexp(rowCoord,colCoord)}
-\item{random = repId:rowId, spatial = exp(rowCoord):colCoord}
-\item{random = repId:colId, spatial = rowCoord:exp(colCoord)}
-\item{random = repId:rowId + repId:colId, spatial = iexp(rowCoord,colCoord)}
-}
-If the design is not regular the following combinations of random and spatial
-terms are fitted
-\itemize{
-\item{random = NULL, spatial = ar1(rowId):colId}
-\item{random = NULL, spatial = rowId:ar1(colId)}
-\item{random = NULL, spatial = ar1(rowId):ar1(colId)}
+\item{random = repId:rowId, spatial = NULL}
 \item{random = repId:rowId, spatial = ar1(rowId):colId}
 \item{random = repId:colId, spatial = rowId:ar1(colId)}
 \item{random = repId:rowId + repId:colId, spatial = ar1(rowId):ar1(colId)}
@@ -92,7 +77,6 @@ Eilers (2017). Correcting for spatial heterogeneity in plant breeding
 experiments with P-splines. Spatial Statistics
 \url{https://doi.org/10.1016/j.spasta.2017.10.003}
 
-Douglas Bates, Martin Maechler, Ben Bolker, Steve Walker (2015). Fitting
-Linear Mixed-Effects Models Using lme4. Journal of Statistical Software,
-67(1), 1-48. \url{https://www.jstatsoft.org/article/view/v067i01/0}.
+Butler, D. G., et al. (2018).ASReml-R Reference Manual Version 4. VSN
+International Ltd, http://asreml.org
 }
