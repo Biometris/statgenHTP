@@ -44,6 +44,9 @@
 #' fixed effects in the model.
 #' @param geno.decomp A character vector indicating the variables used to
 #' group the genotypes in the model.
+#' @param what A character vector specifying whether "genotype" should
+#' be fitted as "random" or "fixed" effect. Note that when using SpATS and
+#' geno.decomp fitting a model with genotype as "fixed" effect is not possible.
 #' @param useCheck Should check genotypes be used as an extra factor in the
 #' model?
 #' @param engine A character string indicating the engine used to fit the
@@ -67,6 +70,7 @@ fitModels <- function(TP,
                       timePoints = names(TP),
                       covariates = NULL,
                       geno.decomp = NULL,
+                      what = c("random", "fixed"),
                       useCheck = FALSE,
                       engine = c("SpATS", "asreml"),
                       spatial = FALSE) {
@@ -92,6 +96,8 @@ fitModels <- function(TP,
       }
     }
   }
+  what <- match.arg(what)
+  genoRand <- what == "random"
   if (useCheck) {
     if (!all(sapply(X = TP, FUN = hasName, name = "check"))) {
       stop("check should be a column in TP for all timePoints.\n")
@@ -168,7 +174,7 @@ fitModels <- function(TP,
                    random = ~ colId + rowId,
                    spatial = ~ SpATS::PSANOVA(colNum, rowNum, nseg = nseg,
                                               nest.div = c(2, 2)),
-                   genotype = genoCol, genotype.as.random = TRUE,
+                   genotype = genoCol, genotype.as.random = genoRand,
                    geno.decomp = geno.decomp, data = modDat,
                    control = list(maxit = 50, tolerance = 1e-03,
                                   monitoring = 0))
@@ -176,9 +182,18 @@ fitModels <- function(TP,
   } else if (engine == "asreml") {
     ## fixed in asreml needs response variable on lhs of formula.
     fixedForm <- update(fixedForm, paste(trait, "~ ."))
+    ## Genotype should be specified in either the fixed or the random part
+    ## of the model.
+    if (genoRand) {
     ## Construct formula for random part of the model.
-    randForm <- formula(paste("~ ", if (is.null(geno.decomp)) genoCol else
-      paste0("at(", geno.decomp, "):", genoCol)))
+      randForm <- formula(paste("~ ", if (is.null(geno.decomp)) genoCol else
+        paste0("at(", geno.decomp, "):", genoCol)))
+    } else {
+      fixedForm <- update(fixedForm,
+                          paste("~ . + ", if (is.null(geno.decomp)) genoCol else
+                            paste0("at(", geno.decomp, "):", genoCol)))
+      randForm <- ~NULL
+    }
     if (!spatial) {
       ## Loop on timepoint to run asreml.
       fitMods <- lapply(X = TP, function(timePoint) {
