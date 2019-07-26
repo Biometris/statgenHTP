@@ -36,9 +36,13 @@ predictGeno <- function(fitMod) {
     classForm <- paste0(if (useGenoDecomp) "geno.decomp:", genoCol)
     predGeno <- predictAsreml(fitMod, classify = classForm,
                               present = c(genoCol,
-                                          if (useGenoDecomp) "geno.decomp",
+                          #                if (useGenoDecomp) "geno.decomp",
                                           if (useCheck) "check"),
                               vcov = FALSE)$pvals
+    if (useGenoDecomp) {
+      predGeno <- predGeno[startsWith(as.character(predGeno[[genoCol]]),
+                                      as.character(predGeno[["geno.decomp"]])), ]
+    }
     predGeno <- predGeno[predGeno[["status"]] == "Estimable", ]
     ## Repeat for the check genotypes.
     if (useCheck) {
@@ -53,7 +57,11 @@ predictGeno <- function(fitMod) {
       predCheck <- predCheck[predCheck[["genotype"]] != "noCheck", ]
       ## Rename genoCol to genotype for merging with check predictions.
       predGeno[["genotype"]] <- predGeno[[genoCol]]
-      predGeno <- rbind(predGeno[-1], predCheck[-1])
+      if (useGenoDecomp) {
+        predGeno <- rbind(predGeno[-c(1, 2)], predCheck[-1])
+      } else {
+        predGeno <- rbind(predGeno[-1], predCheck[-1])
+      }
     }
     ## Rename columns to match those from SpATS predictions.
     colnames(predGeno)[colnames(predGeno) == "predicted.value"] <-
@@ -72,10 +80,10 @@ predictGeno <- function(fitMod) {
 #' @keywords internal
 predictCol <- function(fitMod) {
   if (inherits(fitMod, "SpATS")) {
-  ## Col prediction (including intercept)
-  predCol <- predict(fitMod, which = "colId")
-  ## Include time point.
-  predCol[["timePoint"]] <- fitMod$data[["timePoint"]][1]
+    ## Col prediction (including intercept)
+    predCol <- predict(fitMod, which = "colId")
+    ## Include time point.
+    predCol[["timePoint"]] <- fitMod$data[["timePoint"]][1]
   } else if (inherits(fitMod, "asreml")) {
     ## Col prediction (including intercept)
     predCol <- predict(fitMod, classify = "colId")$pvals
