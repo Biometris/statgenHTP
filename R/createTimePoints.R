@@ -13,7 +13,7 @@
 #' are converted to numeric columns, all other renamed columns to factor
 #' columns. Columns other than the default columns, e.g. traits or other
 #' covariates will be included in the output unchanged.}
-#' \item{If \code{addCheck} = \code{TRUE}, add a column check with a value
+#' \item{If \code{addCheck = TRUE}, add a column check with a value
 #' "noCheck" for the genotypes that are not in \code{checkGenotypes} and
 #' the name of the genotype for the \code{checkGenotypes}. Also a column
 #' genoCheck is added with the names of the genotypes that are not in
@@ -26,8 +26,8 @@
 #' \item{Add a list of time points as attribute \code{timePoints} to the
 #' output.}
 #' }
-#' Note that \code{plotId} needs to be a unique identifier for a plot or a plant. It cannot
-#' occur more than once per time point.
+#' Note that \code{plotId} needs to be a unique identifier for a plot or a
+#' plant. It cannot occur more than once per time point.
 #'
 #' @param dat A data.frame.
 #' @param genotype A character string indicating the column in dat containing
@@ -65,11 +65,6 @@ createTimePoints <- function(dat,
                              colNum = NULL,
                              addCheck = FALSE,
                              checkGenotypes = NULL) {
-  ## Save name of original dat for naming output.
-  datName <- deparse(substitute(dat))
-  if (length(datName) > 1) {
-    datName <- "dat"
-  }
   ## Checks.
   if (missing(dat) || !is.data.frame(dat)) {
     stop("dat has to be a data.frame.\n")
@@ -78,18 +73,36 @@ createTimePoints <- function(dat,
   ## tibbles and possibly other data structures in the future.
   dat <- as.data.frame(dat)
   cols <- colnames(dat)
+  ## Check that all columns to be renamed are columns in dat.
   for (param in c(genotype, timePoint, plotId, repId, rowNum, colNum)) {
     if (!is.null(param) && (!is.character(param) || length(param) > 1 ||
                             !hasName(dat, param))) {
-      stop(paste(deparse(param), "has to be NULL or a column in dat.\n"))
+      stop(deparse(param), " has to be NULL or a column in dat.\n")
     }
   }
+  ## Check uniqueness of plotId.
+  if (max(table(dat[[plotId]], dat[[timePoint]])) > 1) {
+    stop("plotId has to be unique within each time point.\n")
+  }
+  ## Check presence of check genotypes.
+  if (addCheck) {
+    if (is.null(checkGenotypes) || !is.character(checkGenotypes)) {
+      stop("checkGenotypes should be a character vector.\n")
+    }
+    if (!all(checkGenotypes %in% dat[[genotype]])) {
+      stop("All checkGenotypes should be genotypes in dat.\n")
+    }
+  }
+  ## Set rowId and colId to rowNum and colNum.
+  ## rowId and colId will be factor with identical information as numeric
+  ## rowNum and colNum needed by both SpATS and asreml in modeling.
   rowId <- rowNum
   colId <- colNum
   ## Create list of reserved column names for renaming columns.
   renameCols <- c("genotype", "timePoint", "plotId", "repId", "rowId", "colId",
                   "rowNum", "colNum")
-  ## First rename duplicate colums and add duplicated columns to dat
+  ## Get the value associated with the column to be renamed.
+  ## These values are derived from the input parameters.
   renameFrom <- as.character(sapply(X = renameCols, FUN = function(x) {
     get(x)
   }))
@@ -97,6 +110,7 @@ createTimePoints <- function(dat,
   renamed <- data.frame(orig = renameFrom[renameFrom != "NULL"],
                         new = renameCols[renameFrom != "NULL"],
                         stringsAsFactors = FALSE)
+  ## First rename duplicate colums and add duplicated columns to dat.
   ## Get duplicate columns.
   dupCols <- which(duplicated(renameFrom) & renameFrom != "NULL")
   for (dupCol in dupCols) {
@@ -116,10 +130,15 @@ createTimePoints <- function(dat,
   dat[["timePoint"]] <- lubridate::as_datetime(dat[["timePoint"]])
   ## Add check genotype.
   if (addCheck) {
+    ## Add column check with genotype for check genotypes and noCheck for
+    ## all other genotypes. To be used as covariate in model.
     dat[["check"]] <- ifelse(dat[["genotype"]] %in% checkGenotypes,
                              dat[["genotype"]], "noCheck")
-    dat[["genoCheck"]] <- dat[["genotype"]]
-    dat[["genoCheck"]][dat[["check"]] != "noCheck"] <- NA
+    ## Add column genoCheck with NA for check genotypes and genotype for
+    ## all other genotypes. Preserve original column so models without check
+    ## can still be fitted.
+    dat[["genoCheck"]] <- ifelse(dat[["genotype"]] %in% checkGenotypes,
+                                 NA, dat[["genotype"]])
   }
   ## Convert columns to factor if neccessary.
   factorCols <-  c("genotype", "plotId", "repId", "rowId", "colId", "check",

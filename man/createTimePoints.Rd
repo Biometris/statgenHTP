@@ -56,7 +56,7 @@ colId converted to factors.}
 are converted to numeric columns, all other renamed columns to factor
 columns. Columns other than the default columns, e.g. traits or other
 covariates will be included in the output unchanged.}
-\item{If \code{addCheck} = \code{TRUE}, add a column check with a value
+\item{If \code{addCheck = TRUE}, add a column check with a value
 "noCheck" for the genotypes that are not in \code{checkGenotypes} and
 the name of the genotype for the \code{checkGenotypes}. Also a column
 genoCheck is added with the names of the genotypes that are not in
@@ -69,8 +69,8 @@ become a list item in the output.}
 \item{Add a list of time points as attribute \code{timePoints} to the
 output.}
 }
-Note that \code{plotId} needs to be a unique identifier for a plot or a plant. It cannot
-occur more than once per time point.
+Note that \code{plotId} needs to be a unique identifier for a plot or a
+plant. It cannot occur more than once per time point.
 }
 \seealso{
 Other functions for TP objects: \code{\link{plot.TP}}
