@@ -205,6 +205,7 @@ fitModels <- function(TP,
                                  data = modDat, trace = FALSE, maxiter = 200,
                                  na.action = asreml::na.method(x = "include"))
         ## evaluate call terms so predict can be run.
+        asrFit$call[[1]] <- quote(asreml::asreml)
         asrFit$call$fixed <- eval(asrFit$call$fixed)
         asrFit$call$random <- eval(asrFit$call$random)
         asrFit$call$data <- substitute(modDat)
@@ -236,6 +237,7 @@ fitModels <- function(TP,
         asrFit <- asrFitSpat[["fitMods"]][[trait]]
         attr(x = asrFit, which = "sumTab") <- asrFitSpat[["sumTab"]]
         ## evaluate call terms so predict can be run.
+        asrFit$call[[1]] <- quote(asreml::asreml)
         asrFit$call$fixed <- eval(asrFit$call$fixed)
         asrFit$call$random <- eval(asrFit$call$random)
         asrFit$call$data <- eval(asrFit$call$data)
@@ -358,6 +360,7 @@ bestSpatMod <- function(modDat,
           ## Evaluate call terms in bestModTr so predict can be run.
           ## Needs to be called in every iteration to prevent final result
           ## from always having the values of the last iteration.
+          bestModTr$call[[1]] <- quote(asreml::asreml)
           bestModTr$call$fixed <- eval(bestModTr$call$fixed)
           bestModTr$call$random <- eval(bestModTr$call$random)
           bestModTr$call$residual <- eval(bestModTr$call$residual)
