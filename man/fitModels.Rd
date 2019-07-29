@@ -5,8 +5,8 @@
 \title{Fit spatial models per time point}
 \usage{
 fitModels(TP, trait, timePoints = names(TP), covariates = NULL,
-  geno.decomp = NULL, useCheck = FALSE, engine = c("SpATS",
-  "asreml"), spatial = FALSE)
+  geno.decomp = NULL, what = c("random", "fixed"), useCheck = FALSE,
+  engine = c("SpATS", "asreml"), spatial = FALSE)
 }
 \arguments{
 \item{TP}{An object of class TP.}
@@ -25,6 +25,10 @@ fixed effects in the model.}
 
 \item{geno.decomp}{A character vector indicating the variables used to
 group the genotypes in the model.}
+
+\item{what}{A character vector specifying whether "genotype" should
+be fitted as "random" or "fixed" effect. Note that when using SpATS and
+geno.decomp fitting a model with genotype as "fixed" effect is not possible.}
 
 \item{useCheck}{Should check genotypes be used as an extra factor in the
 model?}
@@ -53,11 +57,10 @@ Variables in \code{covariates} are fitted as extra fixed effects.\cr\cr
 When \code{SpATS} is used for modeling, an extra spatial term is included
 in the model. This term is constructed using the function
 \code{\link[SpATS]{PSANOVA}} from the SpATS package as\cr
-\code{PSANOVA(colCoord, rowCoord, nseg = nSeg, nest.div = 2)}
-where\cr \code{nSeg = (number of columns, number of rows)}. nseg and
-nest.div can be modified using the \code{control} parameter.\cr\cr
+\code{PSANOVA(colNum, rowNum, nseg = nSeg, nest.div = 2)}
+where\cr \code{nSeg = (number of columns, number of rows)}.\cr\cr
 When \code{asreml} is used for modeling and \code{spatial = TRUE}
-six models are fitted with different random terms and covariance structure.
+four models are fitted with different random terms and covariance structure.
 The best model is determined based on a goodness-of-fit criterion, either
 AIC or BIC. This can be set using the control parameter \code{criterion},
 default is AIC.

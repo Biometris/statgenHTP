@@ -14,11 +14,10 @@
 #' When \code{SpATS} is used for modeling, an extra spatial term is included
 #' in the model. This term is constructed using the function
 #' \code{\link[SpATS]{PSANOVA}} from the SpATS package as\cr
-#' \code{PSANOVA(colCoord, rowCoord, nseg = nSeg, nest.div = 2)}
-#' where\cr \code{nSeg = (number of columns, number of rows)}. nseg and
-#' nest.div can be modified using the \code{control} parameter.\cr\cr
+#' \code{PSANOVA(colNum, rowNum, nseg = nSeg, nest.div = 2)}
+#' where\cr \code{nSeg = (number of columns, number of rows)}.\cr\cr
 #' When \code{asreml} is used for modeling and \code{spatial = TRUE}
-#' six models are fitted with different random terms and covariance structure.
+#' four models are fitted with different random terms and covariance structure.
 #' The best model is determined based on a goodness-of-fit criterion, either
 #' AIC or BIC. This can be set using the control parameter \code{criterion},
 #' default is AIC.
@@ -75,21 +74,37 @@ fitModels <- function(TP,
                       engine = c("SpATS", "asreml"),
                       spatial = FALSE) {
   ## Checks.
-  if (!inherits(TP, "TP")) {
+  if (missing(TP) || !inherits(TP, "TP")) {
     stop("TP should be an object of class TP.\n")
   }
+  ## Check time points and convert numerical input to corresponding
+  ## character values.
+  timePoints <- chkTimePoints(TP, timePoints)
+  ## Restrict TP to selected time points.
   TP <- TP[timePoints]
+  ## Check trait.
+  if (missing(trait) || !is.character(trait) || length(trait) > 1) {
+    stop("trait should be a character string.\n")
+  }
   if (!all(sapply(X = TP, FUN = hasName, name = trait))) {
     stop(trait, " should be a column in TP for all timePoints.\n")
   }
+  ## Check covariates.
   if (!is.null(covariates)) {
+    if (!is.character(covariates)) {
+      stop("covariates should be a character vector.\n")
+    }
     for (covar in covariates) {
       if (!all(sapply(X = TP, FUN = hasName, name = covar))) {
-        stop(covar, " should be a column in TP for all timePoints.\n")
+        stop(covar, " should be columns in TP for all timePoints.\n")
       }
     }
   }
+  ## Check geno.decomp.
   if (!is.null(geno.decomp)) {
+    if (!is.character(geno.decomp)) {
+      stop("geno.decomp should be a character vector.\n")
+    }
     for (gd in geno.decomp) {
       if (!all(sapply(X = TP, FUN = hasName, name = gd))) {
         stop(gd, " should be a column for all timePoints.\n")
@@ -104,6 +119,14 @@ fitModels <- function(TP,
     }
   }
   engine <- match.arg(engine)
+  ## For spatial models spatial columns are required.
+  if (engine == "SpATS" || (engine = "asreml" && spatial)) {
+    spatCols <- c("rowId", "colId", "rowNum", "colNum")
+    if (!all(sapply(X = TP, FUN = hasName, name = trait))) {
+      stop(spatCols, " should be a columns in TP for all timePoints when ",
+           "fitting spatial models.\n")
+    }
+  }
   ## Extract timepoints attribute for re-adding in the end.
   timePoints <- attr(TP, which = "timePoints")
   ## If geno.decomp is used genotype and covariates have to be replaced by
@@ -185,10 +208,12 @@ fitModels <- function(TP,
     ## Genotype should be specified in either the fixed or the random part
     ## of the model.
     if (genoRand) {
-    ## Construct formula for random part of the model.
+      ## Construct formula for random part of the model.
       randForm <- formula(paste("~ ", if (is.null(geno.decomp)) genoCol else
         paste0("at(", geno.decomp, "):", genoCol)))
     } else {
+      ## For genotype fixed the base random formula is empty.
+      ## Genotype is added to the fixedForm.
       fixedForm <- update(fixedForm,
                           paste("~ . + ", if (is.null(geno.decomp)) genoCol else
                             paste0("at(", geno.decomp, "):", genoCol)))
@@ -205,6 +230,9 @@ fitModels <- function(TP,
                                  data = modDat, trace = FALSE, maxiter = 200,
                                  na.action = asreml::na.method(x = "include"))
         ## evaluate call terms so predict can be run.
+        ## The first (unnamed) item in call contains the full asreml function.
+        ## This is replaced by a named reference to drastically reduce output
+        ## size.
         asrFit$call[[1]] <- quote(asreml::asreml)
         asrFit$call$fixed <- eval(asrFit$call$fixed)
         asrFit$call$random <- eval(asrFit$call$random)
@@ -237,6 +265,9 @@ fitModels <- function(TP,
         asrFit <- asrFitSpat[["fitMods"]][[trait]]
         attr(x = asrFit, which = "sumTab") <- asrFitSpat[["sumTab"]]
         ## evaluate call terms so predict can be run.
+        ## The first (unnamed) item in call contains the full asreml function.
+        ## This is replaced by a named reference to drastically reduce output
+        ## size.
         asrFit$call[[1]] <- quote(asreml::asreml)
         asrFit$call$fixed <- eval(asrFit$call$fixed)
         asrFit$call$random <- eval(asrFit$call$random)
@@ -358,6 +389,9 @@ bestSpatMod <- function(modDat,
         if (criterionCur < criterionBest) {
           bestModTr <- fitMod
           ## Evaluate call terms in bestModTr so predict can be run.
+          ## The first (unnamed) item in call contains the full asreml function.
+          ## This is replaced by a named reference to drastically reduce output
+          ## size.
           ## Needs to be called in every iteration to prevent final result
           ## from always having the values of the last iteration.
           bestModTr$call[[1]] <- quote(asreml::asreml)
