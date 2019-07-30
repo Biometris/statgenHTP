@@ -146,14 +146,17 @@ getVar <- function(fitMod,
   if (missing(fitMod) || !inherits(fitMod, "fitMod")) {
     stop(fitMod, " should be an object of class fitMod.\n")
   }
+  useRepId <- attr(x = fitMod, which = "useRepId")
+  colVarId <- ifelse(useRepId, "repId:colId", "colId")
+  rowVarId <- ifelse(useRepId, "repId:rowId", "rowId")
   if (inherits(fitMod[[1]], "SpATS")) {
     varRes <- sapply(X = fitMod, FUN = function(x) x$psi[1])
-    varCol <- sapply(X = fitMod, FUN = function(x) x$var.comp["colId"])
-    varRow <- sapply(X = fitMod, FUN = function(x) x$var.comp["rowId"])
+    varCol <- sapply(X = fitMod, FUN = function(x) x$var.comp[colVarId])
+    varRow <- sapply(X = fitMod, FUN = function(x) x$var.comp[rowVarId])
   } else if (inherits(fitMod[[1]], "asreml")) {
     varRes <- sapply(X = fitMod, FUN = function(x) x$sigma2)
-    varCol <- sapply(X = fitMod, FUN = function(x) x$vparameters["colId"])
-    varRow <- sapply(X = fitMod, FUN = function(x) x$vparameters["rowId"])
+    varCol <- sapply(X = fitMod, FUN = function(x) x$vparameters[colVarId])
+    varRow <- sapply(X = fitMod, FUN = function(x) x$vparameters[rowVarId])
   }
   variance <- data.frame(timePoint = lubridate::as_datetime(names(varRes)),
                          varRes = varRes, varCol = varCol, varRow = varRow,
@@ -226,12 +229,15 @@ getEffDims <- function(fitMod,
   if (!inherits(fitMod[[1]], "SpATS")) {
     stop("Models in ", fitMod, " should be fitted using SpATS.\n")
   }
+  useRepId <- attr(x = fitMod, which = "useRepId")
+  colVarId <- ifelse(useRepId, "repId:colId", "colId")
+  rowVarId <- ifelse(useRepId, "repId:rowId", "rowId")
   effDimSurface <- sapply(X = fitMod, FUN = function(x) {
     sum(x$eff.dim[c("f(colNum)", "f(rowNum)", "f(colNum):rowNum",
                     "colNum:f(rowNum)","f(colNum):f(rowNum)")])
   })
-  effDimCol <- sapply(X = fitMod, FUN = function(x) x$eff.dim["colId"])
-  effDimRow <- sapply(X = fitMod, FUN = function(x) x$eff.dim["rowId"])
+  effDimCol <- sapply(X = fitMod, FUN = function(x) x$eff.dim[colVarId])
+  effDimRow <- sapply(X = fitMod, FUN = function(x) x$eff.dim[rowVarId])
   effDim <- data.frame(timePoint = lubridate::as_datetime(names(effDimSurface)),
                        effDimSurface = effDimSurface,
                        effDimCol = effDimCol, effDimRow = effDimRow,
