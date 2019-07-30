@@ -44,9 +44,18 @@ correctSpatialSpATS <- function(fitMod) {
   corVars <- setdiff(fixVars, c(geno.decomp, "check"))
   intercept <- fitMod$coeff["Intercept"]
   if (length(corVars) > 0) {
+    ## Order in descreasing order so variables that are substrings of other
+    ## variables are treated correctly.
+    corVars <- corVars[order(nchar(corVars), decreasing = TRUE)]
+    ## Get coefficients for fixed variables.
     coeffs <- fitMod$coeff[!attr(fitMod$coeff, "random")]
+    ## Loop over corVars and adjust predicted value by mean of fixed effects
+    ## for corVar. Then remove it from coeff so it isn't used again by a
+    ## shorter variable, i.e. repId1 and repId
     for (corVar in corVars) {
-      intercept <- intercept + mean(c(0, coeffs[grepl(corVar, names(coeffs))]))
+      corMean <- mean(c(0, coeffs[grepl(corVar, names(coeffs))]))
+      intercept <- intercept + corMean
+      coeffs <- coeffs[!grepl(corVar, names(coeffs))]
     }
   }
   ## Obtain the corrected trait.

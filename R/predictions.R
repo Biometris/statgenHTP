@@ -32,12 +32,20 @@ predictGeno <- function(fitMod) {
     ## Note that this means the standard errors are no longer correct.
     corVars <- setdiff(all.vars(fitMod$model$fixed), c(geno.decomp, "check"))
     if (length(corVars) > 0) {
+      ## Order in descreasing order so variables that are substrings of other
+      ## variables are treated correctly.
+      corVars <- corVars[order(nchar(corVars), decreasing = TRUE)]
+      ## Get coefficients for fixed variables.
       coeffs <- fitMod$coeff[!attr(fitMod$coeff, "random")]
-      corMeans <- sapply(X = corVars, FUN = function(corVar){
-        mean(c(0, coeffs[grepl(corVar, names(coeffs))]))
-      })
-      predGeno[["predicted.values"]] <- predGeno[["predicted.values"]] +
-        sum(corMeans)
+      ## Loop over corVars and adjust predicted value by mean of fixed effects
+      ## for corVar. Then remove it from coeff so it isn't used again by a
+      ## shorter variable, i.e. repId1 and repId
+      for (corVar in corVars) {
+        corMean <- mean(c(0, coeffs[grepl(corVar, names(coeffs))]))
+        predGeno[["predicted.values"]] <-
+          predGeno[["predicted.values"]] + corMean
+        coeffs <- coeffs[!grepl(corVar, names(coeffs))]
+      }
     }
     ## Include time point.
     predGeno[["timePoint"]] <- fitMod$data[["timePoint"]][1]
