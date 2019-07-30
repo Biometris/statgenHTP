@@ -36,14 +36,19 @@ correctSpatialSpATS <- function(fitMod) {
                                     "plotId", "timePoint", trait,
                                     geno.decomp)],
                 by = c("rowNum", "colNum"))
+  ## Temporary fix for difference between SpATS and asreml predictions.
+  ## asreml predicts marginal means whereas SpATS predicts conditional means.
+  ## By adding the means of the fixed effects to the conditional means the
+  ## marginal means are calculated.
+  ## Note that this means the standard errors are no longer correct.
   corVars <- setdiff(fixVars, c(geno.decomp, "check"))
   intercept <- fitMod$coeff["Intercept"]
-  # if (length(corVars) > 0) {
-  #   coeffs <- fitMod$coeff[!attr(fitMod$coeff, "random")]
-  #   for (corVar in corVars) {
-  #     intercept <- intercept + mean(c(0, coeffs[grepl("repId", names(coeffs))]))
-  #   }
-  # }
+  if (length(corVars) > 0) {
+    coeffs <- fitMod$coeff[!attr(fitMod$coeff, "random")]
+    for (corVar in corVars) {
+      intercept <- intercept + mean(c(0, coeffs[grepl(corVar, names(coeffs))]))
+    }
+  }
   ## Obtain the corrected trait.
   pred[["newTrait"]] <- pred[[trait]] - pred[["predicted.values"]] +
     intercept

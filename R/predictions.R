@@ -6,10 +6,12 @@ predictGeno <- function(fitMod) {
     genoCol <- fitMod$model$geno$genotype
     ## Check if check was used when fitting model.
     useCheck <- grepl(pattern = "check", x = deparse(fitMod$model$fixed))
+
+    geno.decomp <- fitMod$model$geno$geno.decomp
     ## Genotype prediction (including the effect of geno.decomp as well as
     ## the intercept).
     predGeno <- predict(fitMod,
-                        which = c(genoCol, fitMod$model$geno$geno.decomp,
+                        which = c(genoCol, geno.decomp,
                                   if (useCheck) "check"))
     ## Repeat for the check genotypes.
     if (useCheck) {
@@ -22,6 +24,20 @@ predictGeno <- function(fitMod) {
       ## Rename genoCol to genotype for merging with check predictions.
       predGeno[["genotype"]] <- predGeno[[genoCol]]
       predGeno <- rbind(predGeno, predCheck)
+    }
+    ## Temporary fix for difference between SpATS and asreml predictions.
+    ## asreml predicts marginal means whereas SpATS predicts conditional means.
+    ## By adding the means of the fixed effects to the conditional means the
+    ## marginal means are calculated.
+    ## Note that this means the standard errors are no longer correct.
+    corVars <- setdiff(all.vars(fitMod$model$fixed), c(geno.decomp, "check"))
+    if (length(corVars) > 0) {
+      coeffs <- fitMod$coeff[!attr(fitMod$coeff, "random")]
+      corMeans <- sapply(X = corVars, FUN = function(corVar){
+        mean(c(0, coeffs[grepl(corVar, names(coeffs))]))
+      })
+      predGeno[["predicted.values"]] <- predGeno[["predicted.values"]] +
+        sum(corMeans)
     }
     ## Include time point.
     predGeno[["timePoint"]] <- fitMod$data[["timePoint"]][1]
@@ -47,10 +63,7 @@ predictGeno <- function(fitMod) {
     ## Repeat for the check genotypes.
     if (useCheck) {
       ## Predict check genotypes.
-      #predCheck <- predict(fitMod, classify = "geno.decomp+check", vcov = FALSE)$pvals
-
       predCheck <- predict(fitMod, classify = "check", vcov = FALSE)$pvals
-
       ## Rename check to genotype for merging with genotype predictions.
       predCheck[["genotype"]] <- predCheck[["check"]]
       ## Remove noCheck
@@ -80,12 +93,12 @@ predictGeno <- function(fitMod) {
 #' @keywords internal
 predictCol <- function(fitMod) {
   if (inherits(fitMod, "SpATS")) {
-    ## Col prediction (including intercept)
+    ## Col prediction (including intercept).
     predCol <- predict(fitMod, which = "colId")
     ## Include time point.
     predCol[["timePoint"]] <- fitMod$data[["timePoint"]][1]
   } else if (inherits(fitMod, "asreml")) {
-    ## Col prediction (including intercept)
+    ## Col prediction (including intercept).
     predCol <- predict(fitMod, classify = "colId")$pvals
     ## Rename columns to match those from SpATS predictions.
     colnames(predCol)[colnames(predCol) == "predicted.value"] <-
@@ -104,12 +117,12 @@ predictCol <- function(fitMod) {
 #' @keywords internal
 predictRow <- function(fitMod) {
   if (inherits(fitMod, "SpATS")) {
-    ## Row prediction (including intercept)
+    ## Row prediction (including intercept).
     predRow <- predict(fitMod, which = "rowId")
     ## Include time point.
     predRow[["timePoint"]] <- fitMod$data[["timePoint"]][1]
   } else if (inherits(fitMod, "asreml")) {
-    ## Col prediction (including intercept)
+    ## Col prediction (including intercept).
     predRow <- predict(fitMod, classify = "rowId")$pvals
     ## Rename columns to match those from SpATS predictions.
     colnames(predRow)[colnames(predRow) == "predicted.value"] <-

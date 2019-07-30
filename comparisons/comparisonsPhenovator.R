@@ -4,7 +4,7 @@ library(statgenHTP)
 
 # Create inTP ----
 {
-  inDat <- data.table::fread("./data-raw/Original_PAM_reshape.csv",
+  inDat <- data.table::fread("./inst/extdata//Original_PAM_reshape.csv",
                              data.table = FALSE)
   inDat <- inDat[!is.na(inDat$pheno), ]
   # Create an indicator for each plot (according to the row and column position)
@@ -90,6 +90,17 @@ fitMods1_3b <- fitModels(TP = inTP, trait = "pheno", timePoints = tp,
                          useCheck = TRUE,
                          engine = "asreml")
 compare(fitMods1a, fitMods1_3b, outFile = "phenovatorNoSpatial")
+
+compare(fitMods1a, fitMods1_1a, outFile = "phenovatorSpATS_withWithoutCovar")
+compare(fitMods1b, fitMods1_1b, outFile = "phenovatorAsreml_withWithoutCovar")
+
+# Add geno.decomp ----
+fitMods1_4a <- fitModels(TP = inTP, trait = "pheno", timePoints = tp,
+                         geno.decomp = "Basin")
+fitMods1_4b <- fitModels(TP = inTP, trait = "pheno", timePoints = tp,
+                         geno.decomp = "Basin",
+                         engine = "asreml", spatial = TRUE)
+compare(fitMods1_4a, fitMods1_4b, outFile = "phenovatorGenoDecomp")
 
 # Compare asreml and lme4
 pdf("./comparisons/phenovatorAsremlLme4.pdf")
