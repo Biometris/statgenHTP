@@ -50,7 +50,8 @@ createFitMod <- function(models,
 #' @param x An object of class fitMod.
 #' @param genotypes A character vector indicating the genotypes to be plotted.
 #' Only used if \code{plotType} = "rawPred" or "corrPred".
-#' @param title A character string used as title for the plot.
+#' @param title A character string used as title for the plot. If \code{NULL} a
+#' default title is added to the plot depending on \code{plotType}.
 #' @param outFile A character string indicating the .pdf file or .gif file
 #' (For \code{plotType} = "timeLapse") to which the plots should be written.
 #' @param outFileOpts A named list of extra options for the pdf outfile, e.g.
@@ -75,6 +76,12 @@ plot.fitMod <- function(x,
   timePoints <- chkTimePoints(x, timePoints)
   plotType <- match.arg(plotType)
   dotArgs <- list(...)
+  if (!is.null(genotypes) || !is.character(genotypes)) {
+    stop("genotypes should be NULL or a character vector.\n")
+  }
+  if (!is.null(title) || !is.character(title) || length(title) > 1) {
+    stop("title should be NULL or a character string.\n")
+  }
   ## Restrict x to selected time points.
   fitMods <- x[timePoints]
   ## Get engine from fitted models.
@@ -93,6 +100,7 @@ plot.fitMod <- function(x,
   if (engine == "SpATS") {
     trait <- fitMods[[1]]$model$response
   } else if (engine == "asreml") {
+    ## Trait is always the only lhs variable in the fixed part.
     trait <- all.vars(update(fitMods[[1]]$formulae$fixed, .~0))
   }
   ## Get check from fitted models.

@@ -27,7 +27,8 @@ TP object.}
 \item{genotypes}{A character vector indicating the genotypes to be plotted.
 Only used if \code{plotType} = "rawPred" or "corrPred".}
 
-\item{title}{A character string used as title for the plot.}
+\item{title}{A character string used as title for the plot. If \code{NULL} a
+default title is added to the plot depending on \code{plotType}.}
 
 \item{output}{Should the plot be output to the current device? If
 \code{FALSE} only a list of ggplot objects is invisibly returned. Ignored if
