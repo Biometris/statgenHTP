@@ -6,7 +6,7 @@
 \usage{
 fitModels(TP, trait, timePoints = names(TP), covariates = NULL,
   geno.decomp = NULL, what = c("random", "fixed"), useCheck = FALSE,
-  engine = c("SpATS", "asreml"), spatial = FALSE)
+  useRepId = FALSE, engine = c("SpATS", "asreml"), spatial = FALSE)
 }
 \arguments{
 \item{TP}{An object of class TP.}
@@ -32,6 +32,10 @@ geno.decomp fitting a model with genotype as "fixed" effect is not possible.}
 
 \item{useCheck}{Should check genotypes be used as an extra factor in the
 model?}
+
+\item{useRepId}{Should repId be used as a fixed effect in the model? When
+fitting a spatial model repId is also added as an interaction term with
+rowId and colId in the random part of the model.}
 
 \item{engine}{A character string indicating the engine used to fit the
 models.}

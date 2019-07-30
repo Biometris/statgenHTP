@@ -48,6 +48,9 @@
 #' geno.decomp fitting a model with genotype as "fixed" effect is not possible.
 #' @param useCheck Should check genotypes be used as an extra factor in the
 #' model?
+#' @param useRepId Should repId be used as a fixed effect in the model? When
+#' fitting a spatial model repId is also added as an interaction term with
+#' rowId and colId in the random part of the model.
 #' @param engine A character string indicating the engine used to fit the
 #' models.
 #' @param spatial Should a spatial model be fitted for asreml?
@@ -71,6 +74,7 @@ fitModels <- function(TP,
                       geno.decomp = NULL,
                       what = c("random", "fixed"),
                       useCheck = FALSE,
+                      useRepId = FALSE,
                       engine = c("SpATS", "asreml"),
                       spatial = FALSE) {
   ## Checks.
@@ -278,6 +282,7 @@ fitModels <- function(TP,
   }
   return(createFitMod(fitMods,
                       what = what,
+                      useRepId = useRepId,
                       timePoints = timePoints))
 }
 
