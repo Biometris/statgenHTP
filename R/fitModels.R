@@ -94,6 +94,10 @@ fitModels <- function(TP,
     stop(trait, " should be a column in TP for all timePoints.\n")
   }
   ## Check covariates.
+  if (useRepId) {
+    ## Add repId to covariates so it is used as fixed effect.
+    covariates <- c(covariates, "repId")
+  }
   if (!is.null(covariates)) {
     if (!is.character(covariates)) {
       stop("covariates should be a character vector.\n")
@@ -185,6 +189,11 @@ fitModels <- function(TP,
     fixedForm <- update(fixedForm, "~ . + geno.decomp")
   }
   if (engine == "SpATS") {
+    if (useRepId) {
+      randForm <- formula("~ repId:rowId + repId:colId")
+    } else {
+      randForm <- formula("~ rowId + colId")
+    }
     ## Loop on timepoint to run SpATS.
     fitMods <- lapply(X = TP, function(timePoint) {
       message(timePoint[["timePoint"]][1])
@@ -198,7 +207,7 @@ fitModels <- function(TP,
       nseg = c(nlevels(modDat[["colId"]]), nlevels(modDat[["rowId"]]))
       ## Fit and return the model.
       SpATS::SpATS(response = trait, fixed = fixedForm,
-                   random = ~ colId + rowId,
+                   random = randForm,
                    spatial = ~ SpATS::PSANOVA(colNum, rowNum, nseg = nseg,
                                               nest.div = c(2, 2)),
                    genotype = genoCol, genotype.as.random = genoRand,
@@ -265,7 +274,7 @@ fitModels <- function(TP,
         modDat <- droplevels(timePoint)
         asrFitSpat <- bestSpatMod(modDat = modDat, traits = trait,
                                   fixedForm = fixedForm, randomForm = randForm,
-                                  spatTerms = bestMod)
+                                  useRepId = useRepId, spatTerms = bestMod)
         asrFit <- asrFitSpat[["fitMods"]][[trait]]
         attr(x = asrFit, which = "sumTab") <- asrFitSpat[["sumTab"]]
         ## evaluate call terms so predict can be run.
@@ -294,6 +303,7 @@ bestSpatMod <- function(modDat,
                         criterion = "AIC",
                         fixedForm,
                         randomForm,
+                        useRepId = FALSE,
                         spatTerms = c("none", "AR1(x)id", "id(x)AR1",
                                       "AR1(x)AR1"),
                         ...) {
@@ -336,7 +346,11 @@ bestSpatMod <- function(modDat,
     ## Fit model with genotype random for all different random/spatial terms.
     for (i in seq_along(spatTerm)) {
       ## Add extra random term to random part.
-      randForm <- update(randomForm, "~ . + rowId + colId")
+      if (useRepId) {
+        randForm <- update(randomForm, "~ . + repId:rowId + repId:colId")
+      } else {
+        randForm <- update(randomForm, "~ . + rowId + colId")
+      }
       asrArgs <- c(list(fixed = fixedForm, random = randForm, aom = TRUE,
                         data = modDat, maxiter = maxIter, trace = FALSE,
                         na.action = asreml::na.method(x = "include")),
