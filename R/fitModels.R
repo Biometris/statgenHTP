@@ -277,6 +277,7 @@ fitModels <- function(TP,
     }
   }
   return(createFitMod(fitMods,
+                      what = what,
                       timePoints = timePoints))
 }
 
