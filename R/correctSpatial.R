@@ -85,26 +85,34 @@ correctSpatialAsreml <- function(fitMod) {
   predVars <- setdiff(c(fixVars, randVars), c("genotype", "genoCheck",
                                               if (useCheck) "check",
                                               geno.decomp))
-  pred <- predict(fitMod, classify = paste(predVars, collapse = "+"),
-                  present = c(predVars, geno.decomp))$pvals
-  ## Merge genotype and timepoint to data
-  pred <- merge(pred, fitMod$call$data[union(c("genotype",
-                                               if (useCheck) "check",
-                                               "plotId", "timePoint", trait,
-                                               geno.decomp), predVars)],
-                by = predVars)
-  if (!is.null(geno.decomp)) {
-    predGD <- predict(fitMod, classify = "geno.decomp")$pvals
-    pred <- merge(pred, predGD, by = geno.decomp)
+  if (length(predVars) > 0) {
+    pred <- predict(fitMod, classify = paste(predVars, collapse = "+"),
+                    present = c(predVars, geno.decomp))$pvals
+    ## Merge genotype and timepoint to data
+    pred <- merge(pred, fitMod$call$data[union(c("genotype",
+                                                 if (useCheck) "check",
+                                                 "plotId", "timePoint", trait,
+                                                 geno.decomp), predVars)],
+                  by = predVars)
+    if (!is.null(geno.decomp)) {
+      predGD <- predict(fitMod, classify = "geno.decomp")$pvals
+      pred <- merge(pred, predGD, by = geno.decomp)
+    } else {
+      predInt <- predict(fitMod, classify = "(Intercept)",
+                         present = predVars)$pvals
+      pred[["predicted.value.x"]] <- pred[["predicted.value"]]
+      pred[["predicted.value.y"]] <- predInt$predicted.value
+    }
+    ## Obtain the corrected trait.
+    pred[["newTrait"]] <- pred[[trait]] - pred[["predicted.value.x"]] +
+      pred[["predicted.value.y"]]
   } else {
-    predInt <- predict(fitMod, classify = "(Intercept)",
-                       present = predVars)$pvals
-    pred[["predicted.value.x"]] <- pred[["predicted.value"]]
-    pred[["predicted.value.y"]] <- predInt$predicted.value
+    ## Nothing to correct for. Return raw values.
+    pred <- fitMod$call$data[c("genotype", if (useCheck) "check", "plotId",
+                               "timePoint", trait, geno.decomp)]
+    pred[["newTrait"]] <- pred[[trait]]
+    warning("No spatial or fixed effects to correct for. Returning raw data.\n")
   }
-  ## Obtain the corrected trait.
-  pred[["newTrait"]] <- pred[[trait]] - pred[["predicted.value.x"]] +
-    pred[["predicted.value.y"]]
   ## Select the variables needed for subsequent analyses.
   pred <- pred[c("newTrait", "genotype", geno.decomp, predVars, "plotId",
                  "timePoint")]

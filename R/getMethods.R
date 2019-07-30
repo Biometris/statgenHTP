@@ -114,8 +114,15 @@ getCorrected <- function(fitMod,
   if (missing(fitMod) || !inherits(fitMod, "fitMod")) {
     stop(fitMod, " should be an object of class fitMod.\n")
   }
-  spatCorrTP <- lapply(X = fitMod, FUN = correctSpatial)
-  spatCorr <- Reduce(f = rbind, x = spatCorrTP)
+  ## correctSpatial will throw warnings for every timepoint when no spatial
+  ## or fixed effects are present. Catch these and only show once.
+  spatCorrTP <- tryCatchExt(lapply(X = fitMod, FUN = correctSpatial))
+  if (!is.null(spatCorrTP$error)) {
+    stop(spatCorrTP$error)
+  } else if (!is.null(spatCorrTP$warning)) {
+    warning(unique(spatCorrTP$warning))
+  }
+  spatCorr <- Reduce(f = rbind, x = spatCorrTP$value)
   spatCorr <- addTimeNumber(fitMod, spatCorr)
   if (!is.null(outFile)) {
     chkFile(outFile, fileType = "csv")
