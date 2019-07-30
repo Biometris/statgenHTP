@@ -12,7 +12,7 @@
 getGenoPred <- function(fitMod,
                         outFile = NULL) {
   ## Checks.
-  if (!inherits(fitMod, "fitMod")) {
+  if (missing(fitMod) || !inherits(fitMod, "fitMod")) {
     stop(fitMod, " should be an object of class fitMod.\n")
   }
   genoPred <- lapply(X = fitMod, FUN = predictGeno)
@@ -36,7 +36,7 @@ getGenoPred <- function(fitMod,
 getColPred <- function(fitMod,
                        outFile = NULL) {
   ## Checks.
-  if (!inherits(fitMod, "fitMod")) {
+  if (missing(fitMod) || !inherits(fitMod, "fitMod")) {
     stop(fitMod, " should be an object of class fitMod.\n")
   }
   ## Column prediction can always be done for SpATS and
@@ -70,7 +70,7 @@ getColPred <- function(fitMod,
 getRowPred <- function(fitMod,
                        outFile = NULL) {
   ## Checks.
-  if (!inherits(fitMod, "fitMod")) {
+  if (missing(fitMod) || !inherits(fitMod, "fitMod")) {
     stop(fitMod, " should be an object of class fitMod.\n")
   }
   ## Row prediction can always be done for SpATS and
@@ -108,7 +108,7 @@ getRowPred <- function(fitMod,
 getCorrected <- function(fitMod,
                          outFile = NULL) {
   ## Checks.
-  if (!inherits(fitMod, "fitMod")) {
+  if (missing(fitMod) || !inherits(fitMod, "fitMod")) {
     stop(fitMod, " should be an object of class fitMod.\n")
   }
   spatCorrTP <- lapply(X = fitMod, FUN = correctSpatial)
@@ -132,7 +132,7 @@ getCorrected <- function(fitMod,
 getVar <- function(fitMod,
                    outFile = NULL) {
   ## Checks.
-  if (!inherits(fitMod, "fitMod")) {
+  if (missing(fitMod) || !inherits(fitMod, "fitMod")) {
     stop(fitMod, " should be an object of class fitMod.\n")
   }
   if (inherits(fitMod[[1]], "SpATS")) {
@@ -166,7 +166,7 @@ getVar <- function(fitMod,
 getHerit <- function(fitMod,
                      outFile = NULL) {
   ## Checks.
-  if (!inherits(fitMod, "fitMod")) {
+  if (missing(fitMod) || !inherits(fitMod, "fitMod")) {
     stop(fitMod, " should be an object of class fitMod.\n")
   }
   h2 <- lapply(X = fitMod, FUN = SpATS::getHeritability)
@@ -204,7 +204,7 @@ getHerit <- function(fitMod,
 getEffDims <- function(fitMod,
                        outFile = NULL) {
   ## Checks.
-  if (!inherits(fitMod, "fitMod")) {
+  if (missing(fitMod) || !inherits(fitMod, "fitMod")) {
     stop(fitMod, " should be an object of class fitMod.\n")
   }
   if (!inherits(fitMod[[1]], "SpATS")) {
