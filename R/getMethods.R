@@ -181,6 +181,9 @@ getHerit <- function(fitMod,
   if (missing(fitMod) || !inherits(fitMod, "fitMod")) {
     stop(fitMod, " should be an object of class fitMod.\n")
   }
+  if (attr(x = fitMod, which = "what") == "fixed") {
+    stop("Heritability can only be calculated when genotype is random.\n")
+  }
   h2 <- lapply(X = fitMod, FUN = SpATS::getHeritability)
   genoDec <- fitMod[[1]]$model$geno$geno.decomp
   h2Out <- data.frame(timePoint = lubridate::as_datetime(names(h2)),
