@@ -253,7 +253,8 @@ getEffDims <- function(fitMod,
 #' Helper function for adding time numbers to data containing a time point
 #' column.
 #'
-#'  @keywords internal
+#' @noRd
+#' @keywords internal
 addTimeNumber <- function(fitMod,
                           dat) {
   ## Get data.frame containing time numbers and time points.
