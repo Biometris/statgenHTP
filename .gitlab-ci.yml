@@ -4,8 +4,8 @@ stages:
 
 image: rocker/r-ver
 
-variables:
-  R_LIBS_USER: "$CI_PROJECT_DIR/ci/lib"
+#variables:
+#  R_LIBS_USER: "$CI_PROJECT_DIR/ci/lib"
 
 before_script:
   ## cache apt.
@@ -20,11 +20,8 @@ before_script:
   - apt-get update && apt-get install -y pandoc pandoc-citeproc > /dev/null
   ## install ImageMagick++ for timelapse.
   - apt-get update && apt-get install -y libmagick++-6.q16-dev > /dev/null
-  ## cache R packages.
-  - mkdir -p $R_LIBS_USER
-  - echo 'R_LIBS_USER='$R_LIBS_USER > .Renviron
   ## Set _R_CHECK_FORCE_SUGGESTS_ to FALSE so R check doesn't crash over asreml.
-  - echo '_R_CHECK_FORCE_SUGGESTS_="false"' >> .Renviron
+  - echo '_R_CHECK_FORCE_SUGGESTS_="false"' >> /usr/local/lib/R/etc/Renviron
 
 R-release:
   stage: build
@@ -48,7 +45,7 @@ R-release:
   cache:
     key: release-cache
     paths:
-      - $R_LIBS_USER
+      - /usr/local/lib/R/site-library
       - $CI_PROJECT_DIR/.apt
 
 R-devel:
@@ -74,7 +71,7 @@ R-devel:
   cache:
     key: devel-cache
     paths:
-      - $R_LIBS_USER
+      - /usr/local/lib/R/site-library
       - $CI_PROJECT_DIR/.apt
 
 coverage:
@@ -86,14 +83,12 @@ coverage:
   cache:
     key: release-cache
     paths:
-      - $R_LIBS_USER
+      - /usr/local/lib/R/site-library
       - $CI_PROJECT_DIR/.apt
     policy: pull
   only:
     - develop
     - master
-  before_script:
-    - echo 'R_LIBS_USER='$R_LIBS_USER > .Renviron
   script:
     - Rscript -e 'covr::package_coverage()'
   coverage: '/Coverage:\s*(\d+.\d+\%)/'
