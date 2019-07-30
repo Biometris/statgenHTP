@@ -19,7 +19,7 @@ before_script:
   ## install pandoc - needed for checking readme.
   - apt-get update && apt-get install -y pandoc pandoc-citeproc > /dev/null
   ## install ImageMagick++ for timelapse.
-  - apt-get update && apt-get install -y libmagick++-dev > /dev/null
+  - apt-get update && apt-get install -y libmagick++-6.q16-dev > /dev/null
   ## cache R packages.
   - mkdir -p $R_LIBS_USER
   - echo 'R_LIBS_USER='$R_LIBS_USER > .Renviron
