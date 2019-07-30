@@ -17,6 +17,7 @@ getGenoPred <- function(fitMod,
   }
   genoPred <- lapply(X = fitMod, FUN = predictGeno)
   genoPred <- Reduce(f = rbind, x = genoPred)
+  genoPred <- addTimeNumber(fitMod, genoPred)
   if (!is.null(outFile)) {
     chkFile(outFile, fileType = "csv")
     write.csv(genoPred, file = outFile, row.names = FALSE)
@@ -47,6 +48,7 @@ getColPred <- function(fitMod,
                                              which = "term.labels"))))) {
     colPred <- lapply(X = fitMod, FUN = predictCol)
     colPred <- Reduce(f = rbind, x = colPred)
+    colPred <- addTimeNumber(fitMod, colPred)
     if (!is.null(outFile)) {
       chkFile(outFile, fileType = "csv")
       write.csv(colPred, file = outFile, row.names = FALSE)
@@ -81,6 +83,7 @@ getRowPred <- function(fitMod,
                                              which = "term.labels"))))) {
     rowPred <- lapply(X = fitMod, FUN = predictRow)
     rowPred <- Reduce(f = rbind, x = rowPred)
+    rowPred <- addTimeNumber(fitMod, rowPred)
     if (!is.null(outFile)) {
       chkFile(outFile, fileType = "csv")
       write.csv(rowPred, file = outFile, row.names = FALSE)
@@ -113,6 +116,7 @@ getCorrected <- function(fitMod,
   }
   spatCorrTP <- lapply(X = fitMod, FUN = correctSpatial)
   spatCorr <- Reduce(f = rbind, x = spatCorrTP)
+  spatCorr <- addTimeNumber(fitMod, spatCorr)
   if (!is.null(outFile)) {
     chkFile(outFile, fileType = "csv")
     write.csv(spatCorr, file = outFile, row.names = FALSE)
@@ -147,6 +151,7 @@ getVar <- function(fitMod,
   variance <- data.frame(timePoint = lubridate::as_datetime(names(varRes)),
                          varRes = varRes, varCol = varCol, varRow = varRow,
                          row.names = NULL)
+  variance <- addTimeNumber(fitMod, variance)
   if (!is.null(outFile)) {
     chkFile(outFile, fileType = "csv")
     write.csv(variance, file = outFile, row.names = FALSE)
@@ -185,6 +190,7 @@ getHerit <- function(fitMod,
   } else {
     h2Out <- cbind(h2Out, data.frame(h2 = unlist(h2), row.names = NULL))
   }
+  h2Out <- addTimeNumber(fitMod, h2Out)
   if (!is.null(outFile)) {
     chkFile(outFile, fileType = "csv")
     write.csv(h2Out, file = outFile, row.names = FALSE)
@@ -220,9 +226,27 @@ getEffDims <- function(fitMod,
                        effDimSurface = effDimSurface,
                        effDimCol = effDimCol, effDimRow = effDimRow,
                        row.names = NULL)
+  effDim <- addTimeNumber(fitMod, effDim)
   if (!is.null(outFile)) {
     chkFile(outFile, fileType = "csv")
     write.csv(effDim, file = outFile, row.names = FALSE)
   }
   return(effDim)
 }
+
+#' Helper function for adding time numbers to data containing a time point
+#' column.
+#'
+#'  @keywords internal
+addTimeNumber <- function(fitMod,
+                          dat) {
+  ## Get data.frame containing time numbers and time points.
+  timePoints <- attr(x = fitMod, which = "timePoints")
+  ## Covert timePoint column to datetime format for merging.
+  timePoints[["timePoint"]] <- lubridate::as_datetime(timePoints[["timePoint"]])
+  ## Merge time number to data.
+  dat <- merge(timePoints, dat)
+  ## Put timeNumber as first column and timePoint as second.
+  dat <- dat[c(2, 1, 3:ncol(dat))]
+}
+
