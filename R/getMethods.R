@@ -118,7 +118,7 @@ getHerit <- function(fitMod,
     stop("Heritability can only be calculated when genotype is random.\n")
   }
   h2Out <- lapply(X = fitMod, FUN = heritability)
-  h2Out <- Reduce(f = rbind, x = h2Out)
+  h2Out <- dfBind(h2Out)
   h2Out <- addTimeNumber(fitMod, h2Out)
   if (!is.null(outFile)) {
     chkFile(outFile, fileType = "csv")

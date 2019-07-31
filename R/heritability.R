@@ -17,21 +17,20 @@ heritability <- function(fitMod) {
 #' @noRd
 #' @keywords internal
 heritabilitySpATS <- function(fitMod) {
+  ## SpATS heritabily function returns a numeric value if geno.decomp was
+  ## not used and a vector otherwise.
   h2 <- SpATS::getHeritability(fitMod)
-  genoDec <- fitMod[[1]]$model$geno$geno.decomp
+  ## Get variable used as geno.decomp.
+  geno.decomp <- fitMod$model$geno$geno.decomp
+  ## Create a base data.frame to which the heritability can be merged.
   h2Out <- data.frame(timePoint = fitMod$data[["timePoint"]][1],
                       row.names = NULL)
-  if (!is.null(genoDec)) {
-    totDat <- Reduce(f = rbind, x = lapply(fitMod, `[[`, "data"))
-    h2Mat <- matrix(nrow = length(h2), ncol = nlevels(totDat[[genoDec]]),
-                    dimnames = list(NULL, levels(totDat[[genoDec]])))
-    for (i in seq_along(h2)) {
-      h2Mat[i, match(names(h2[[i]]),
-                     paste0(genoDec, colnames(h2Mat)))] <- h2[[i]]
-    }
+  if (!is.null(geno.decomp)) {
+    names(h2) <- gsub(pattern = "geno.decomp", replacement = "", x = names(h2))
+    h2Mat <- matrix(h2, nrow = 1, dimnames = list(NULL, names(h2)))
     h2Out <- cbind(h2Out, h2Mat)
   } else {
-    h2Out <- cbind(h2Out, data.frame(h2 = unlist(h2), row.names = NULL))
+    h2Out <- cbind(h2Out, data.frame(h2 = h2, row.names = NULL))
   }
   return(h2Out)
 }
