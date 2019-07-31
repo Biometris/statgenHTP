@@ -135,6 +135,13 @@ fitModels <- function(TP,
            "fitting spatial models.\n")
     }
   }
+  ## At the moment for SpATS
+  ## combination of what = fixed and useCheck = TRUE crashes.
+  ## combination of what = fixed and use of geno.decomp crashes.
+  if (what == "fixed" && (useCheck || !is.null(geno.decomp))) {
+    stop("Using SpATs fitting models with genotype as fixed effect and ",
+         "useCheck = TRUE or using geno.decomp is not possible.\n")
+  }
   ## Extract timepoints attribute for re-adding in the end.
   timePoints <- attr(TP, which = "timePoints")
   ## If geno.decomp is used genotype and covariates have to be replaced by

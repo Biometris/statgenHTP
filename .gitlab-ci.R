@@ -4,7 +4,7 @@ installIfNeeded <- function(pkg,
   pkgPath <- find.package(pkg, quiet = quiet)
   if (length(pkgPath) == 0) {
     message("NOTE: pkg ", pkg, " missing, installing...")
-    install.packages(pkg, repos = repos, quiet = quiet)
+    install.packages(pkg, repos = repos, quiet = FALSE)
   } else {
     update.packages(pkg, repos = repos, ask = FALSE)
   }
