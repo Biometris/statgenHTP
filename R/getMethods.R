@@ -117,22 +117,8 @@ getHerit <- function(fitMod,
   if (attr(x = fitMod, which = "what") == "fixed") {
     stop("Heritability can only be calculated when genotype is random.\n")
   }
-  h2 <- lapply(X = fitMod, FUN = SpATS::getHeritability)
-  genoDec <- fitMod[[1]]$model$geno$geno.decomp
-  h2Out <- data.frame(timePoint = lubridate::as_datetime(names(h2)),
-                      row.names = NULL)
-  if (!is.null(genoDec)) {
-    totDat <- Reduce(f = rbind, x = lapply(fitMod, `[[`, "data"))
-    h2Mat <- matrix(nrow = length(h2), ncol = nlevels(totDat[[genoDec]]),
-                    dimnames = list(NULL, levels(totDat[[genoDec]])))
-    for (i in seq_along(h2)) {
-      h2Mat[i, match(names(h2[[i]]),
-                     paste0(genoDec, colnames(h2Mat)))] <- h2[[i]]
-    }
-    h2Out <- cbind(h2Out, h2Mat)
-  } else {
-    h2Out <- cbind(h2Out, data.frame(h2 = unlist(h2), row.names = NULL))
-  }
+  h2Out <- lapply(X = fitMod, FUN = heritability)
+  h2Out <- Reduce(f = rbind, x = h2Out)
   h2Out <- addTimeNumber(fitMod, h2Out)
   if (!is.null(outFile)) {
     chkFile(outFile, fileType = "csv")

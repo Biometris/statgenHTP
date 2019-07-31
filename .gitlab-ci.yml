@@ -29,12 +29,12 @@ R-release:
     ## Install missing and outdated packages.
     - Rscript -e 'source(".gitlab-ci.R"); pkgsUpdate(repos = "https://cran.rstudio.com", quiet = TRUE, instPkgdown = FALSE)'
     ## Remove vignettes folder and get VignetteBuilder field out of DESCRIPTION file.
-    - rm -rf vignettes
-    - Rscript -e 'd <- read.dcf("DESCRIPTION"); d[, colnames(d) == "VignetteBuilder"] <- NA; write.dcf(d, "DESCRIPTION")'
+    #- rm -rf vignettes
+    #- Rscript -e 'd <- read.dcf("DESCRIPTION"); d[, colnames(d) == "VignetteBuilder"] <- NA; write.dcf(d, "DESCRIPTION")'
     # Build package.
-    - R CMD build . --no-build-vignettes --no-manual
+    - R CMD build . --no-manual
     - PKG_FILE_NAME=$(ls -1t *.tar.gz | head -n 1)
-    - R CMD check "${PKG_FILE_NAME}" --no-build-vignettes --no-manual --as-cran
+    - R CMD check "${PKG_FILE_NAME}" --no-manual --as-cran
   artifacts:
     when: always
     paths:
@@ -43,7 +43,7 @@ R-release:
   cache:
     key: release-cache
     paths:
-      - /usr/local/lib/R/library
+      - /usr/local/lib/R/site-library
       - $CI_PROJECT_DIR/.apt
 
 R-devel:
@@ -69,7 +69,7 @@ R-devel:
   cache:
     key: devel-cache
     paths:
-      - /usr/local/lib/R/library
+      - /usr/local/lib/R/site-library
       - $CI_PROJECT_DIR/.apt
 
 coverage:
@@ -81,7 +81,7 @@ coverage:
   cache:
     key: release-cache
     paths:
-      - /usr/local/lib/R/library
+      - /usr/local/lib/R/site-library
       - $CI_PROJECT_DIR/.apt
     policy: pull
   only:
