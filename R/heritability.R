@@ -41,6 +41,10 @@ heritabilitySpATS <- function(fitMod) {
 #' @noRd
 #' @keywords internal
 heritabilityAsreml <- function(fitMod) {
+  if ("geno.decomp" %in% all.vars(fitMod$formulae$random)) {
+    stop("Extracting heritability for asreml using geno.decomp is not ",
+         "possible.\n")
+  }
   ## Check if check was used when fitting model.
   useCheck <- grepl(pattern = "check", x = deparse(fitMod$formulae$fixed))
   ## Get name of genotype column used.
@@ -58,5 +62,3 @@ heritabilityAsreml <- function(fitMod) {
                       row.names = NULL)
   return(h2Out)
 }
-
-
