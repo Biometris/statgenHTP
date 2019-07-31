@@ -159,7 +159,7 @@ fitModels <- function(TP,
   ## Get column containing genotype.
   genoCol <- if (useCheck) "genoCheck" else "genotype"
   ## Replace genotype and covariates by their interaction with geno.decomp.
-  if (!is.null(geno.decomp)) {
+  if (!is.null(geno.decomp) && engine == "SpATS") {
     TP <- lapply(X = TP, FUN = function(timePoint) {
       timePoint[[genoCol]] <- interaction(timePoint[[geno.decomp]],
                                           timePoint[[genoCol]], sep = "_")

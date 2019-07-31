@@ -41,24 +41,46 @@ heritabilitySpATS <- function(fitMod) {
 #' @noRd
 #' @keywords internal
 heritabilityAsreml <- function(fitMod) {
-  if ("geno.decomp" %in% all.vars(fitMod$formulae$random)) {
-    stop("Extracting heritability for asreml using geno.decomp is not ",
-         "possible.\n")
-  }
   ## Check if check was used when fitting model.
   useCheck <- grepl(pattern = "check", x = deparse(fitMod$formulae$fixed))
   ## Get name of genotype column used.
   genoCol <- if (useCheck) "genoCheck" else "genotype"
-  ## Get genetic variance.
-  varGen <- fitMod$vparameters[genoCol] * fitMod$sigma2
-  ## Obtain squared s.e.d. matrix.
-  vdBLUP <- predict(fitMod, classify = genoCol, only = genoCol,
-                    sed = TRUE)$sed^2
-  ## Compute mean variance of a difference of two genotypic BLUPs.
-  vdBLUPMean <- mean(as.numeric(vdBLUP), na.rm = TRUE)
-  ## Compute heritability.
+  ## Create a base data.frame to which the heritability can be merged.
   h2Out <- data.frame(timePoint = fitMod$call$data[["timePoint"]][1],
-                      h2 = 1 - (vdBLUPMean / 2 / varGen),
                       row.names = NULL)
+  if (!"geno.decomp" %in% all.vars(fitMod$formulae$random)) {
+    ## Get genetic variance.
+    varGen <- fitMod$vparameters[genoCol] * fitMod$sigma2
+    ## Obtain squared s.e.d. matrix.
+    vdBLUP <- predict(fitMod, classify = genoCol, only = genoCol,
+                      sed = TRUE)$sed^2
+    ## Compute mean variance of a difference of two genotypic BLUPs.
+    vdBLUPMean <- mean(as.numeric(vdBLUP), na.rm = TRUE)
+    ## Compute heritability.
+    h2Out <- cbind(h2Out, data.frame(h2 = 1 - (vdBLUPMean / 2 / varGen),
+                                     row.names = NULL))
+  } else {
+    decompLabs <- levels(droplevels(fitMod$call$data[["geno.decomp"]]))
+    h2 <- sapply(X = seq_along(decompLabs), FUN = function(i) {
+      varName <- paste0("at(geno.decomp, ", decompLabs[i], "):", genoCol)
+      ## Get genetic variance.
+      levVarGen <- fitMod$vparameters[varName] * fitMod$sigma2
+      ## Get predictions for genotype on current level of geno.decomp.
+      levPred <- predict(fitMod, classify = paste0("geno.decomp:", genoCol),
+                         present = c("geno.decomp", "genotype"),
+                         levels = list(geno.decomp = i), sed = TRUE)
+      ## Compute mean variance of a difference of two genotypic BLUPs.
+      levVdBLUP <- levPred$sed^2
+      ## Only use values that were actually estimated and not aliased.
+      levVdBLUP <- levVdBLUP[levPred$pvals$status == "Estimable",
+                             levPred$pvals$status == "Estimable"]
+      ## Compute mean variance of a difference of two genotypic BLUPs.
+      levVdBLUPMean <- mean(as.numeric(levVdBLUP), na.rm = TRUE)
+      ## Compute heritability.
+      1 - (levVdBLUPMean / 2 / levVarGen)
+    })
+    h2Mat <- matrix(h2, nrow = 1, dimnames = list(NULL, decompLabs))
+    h2Out <- cbind(h2Out, h2Mat)
+  }
   return(h2Out)
 }
