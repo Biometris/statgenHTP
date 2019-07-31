@@ -5,32 +5,28 @@ setwd(paste0("~/Documents/PostDoc/Pipeline_Biometris/statgenHTP/"))
 #_________________ EXAMPLE 1 _____________________________________________________________
 
 #### DATASET-SPECIFIC FORMATING #######
+source("./data-raw/exampleData.R")
 
-inDat <- data.table::fread("./data-raw/Original_PAM_reshape.csv",
-                           data.table = FALSE)
-
-# creating a unique ID per plant using the row and col coordinate
-# (in principle the column "Sowing_Position" was also a unique ID but I wanted to see the position)
-inDat$ID <- interaction(inDat[["x"]], inDat[["y"]], sep = "_")
-inDat <- inDat[!is.na(inDat$pheno), ]
-# Create an indicator for each plot (according to the row and column position)
-inDat$pos <- paste0("c", inDat[["x"]], "r", inDat[["y"]])
-
-# I removed a plant that has very few measurements
-inDat <- inDat[inDat$pos != "c1r54",]
+# inDat <- data.table::fread("./data-raw/Original_PAM_reshape.csv",
+                           # data.table = FALSE)
 
 #### BEGINING FUNCTION USE #######
 
-inTP <- createTimePoints(dat = inDat, genotype = "Genotype",
+inTP <- createTimePoints(dat = PhenovatorDat1,
+                         genotype = "Genotype",
                          timePoint = "timepoints",
                          repId = "Sowing_Block",
                          plotId = "pos",
-                         rowNum = "y", colNum = "x",
+                         rowNum = "y",
+                         colNum = "x",
                          addCheck = TRUE,
                          checkGenotypes = c("col", "ely", "evo1", "ler"))
 
+timepoint <- data.frame(attr(inTP,"timePoints"))
+timepoint$timePoint <- lubridate::ymd_hms(timepoint$timePoint)
+
 plot(inTP, plotType = "layout",
-     timePoints = c(1,3),#c("2018-05-31 16:37:00", "2018-06-01 09:07:00"),
+     timePoints = c(1),#c("2018-05-31 16:37:00", "2018-06-01 09:07:00"),
      highlight = c("col", "ely", "evo1", "ler"))
 
 plot(inTP, plotType = "cor",
@@ -38,13 +34,13 @@ plot(inTP, plotType = "cor",
      timePoints = c(1:10)) #c("2018-05-31 16:37:00", "2018-06-01 09:07:00"))
 
 plot(inTP, plotType = "box",
-     traits = "pheno"),
+     traits = "pheno",
      timePoints = c(1,3), #c("2018-05-31 16:37:00", "2018-06-01 09:07:00"),
      colorBy = "repId")
 
 plot(inTP, plotType = "raw",
      traits = "pheno",
-     timePoints = c(1,4,6), #c("2018-05-31 16:37:00", "2018-06-01 09:07:00"),
+     timePoints = c(1:10), #c("2018-05-31 16:37:00", "2018-06-01 09:07:00"),
      genotypes = c("col", "ely", "evo1", "ler","1","18","340","2231"))
 
 
@@ -77,8 +73,11 @@ dev.off()
 plot(inTP, plotType = "raw", traits = "pheno",
      genotypes = c("col", "ely", "evo1", "ler"))
 
-fitMods <- fitModels(TP = inTP, trait = "pheno",
-                     covariates = c("repId", "Image_pos"), useCheck = TRUE)
+fitMods <- fitModels(TP = inTP,
+                     trait = "pheno",
+                     covariates = c("repId", "Image_pos"),
+                     useCheck = TRUE)
+
 fitMods1b <- fitModels(TP = inTP[1:3], trait = "pheno",
                        covariates = c("repId", "Image_pos"), engine = "asreml")
 
@@ -86,15 +85,21 @@ fitMods1c <- fitModels(TP = inTP[1:3], trait = "pheno",
                        covariates = c("repId", "Image_pos"), engine = "asreml",
                        useCheck = TRUE)
 
+
+spatCorr <- getCorrected(fitMods) #), outFile = "Corrected_PAM_modRep.csv")
+spatCorr$timeNumber <- timepoint$timeNumber[match(spatCorr$timePoint,timepoint$timePoint)]
+
+write.table(spatCorr,
+            file="~/Documents/PostDoc/EPPN2020/Platform/Phenovator/Rene/spline_function_HTP/Corrected_PAM_modRepCheck.csv",
+            row.names=F,sep=",")
+
 genoPreds <- getGenoPred(fitMods, outFile = "BLUPs_PAM_modRep.csv")
-colPreds <- getColPred(fitMods)
-genoPreds1b <- getGenoPred(fitMods1b)
-genoPreds1c <- getGenoPred(fitMods1c)
-colPreds1c <- getColPred(fitMods1c)
-spatCorr <- getCorrected(fitMods, outFile = "Corrected_PAM_modRep.csv")
 variance <- getVar(fitMods)
 h2 <- getHerit(fitMods)
-genoBLUPS <- getBLUPsGeno(fitMods)
+
+genoPreds1b <- getGenoPred(fitMods1b)
+genoPreds1c <- getGenoPred(fitMods1c)
+
 
 plot(fitMods, plotType = "corrPred",
      genotypes = c("col", "ely", "evo1", "ler"), outFile = "test.pdf")
