@@ -183,7 +183,8 @@ plot.fitMod <- function(x,
     herit <- getHerit(fitMods)
     ## Convert to long format needed by ggplot.
     herit <- reshape2::melt(herit, measure.vars = setdiff(colnames(herit),
-                                                          "timePoint"),
+                                                          c("timeNumber",
+                                                            "timePoint")),
                             variable.name = "herit", value.name = "h2")
     p <- ggplot2::ggplot(herit,
                          ggplot2::aes_string(x = "timePoint", y = "h2",
