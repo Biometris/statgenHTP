@@ -184,14 +184,13 @@ getEffDims <- function(fitMod,
                           row.names = NULL)
   ## Get effective dimensions for spatial terms.
   effDims <- sapply(X = fitMod, FUN = function(x) {
-    x$eff.dim[c(colVarId, rowVarId, "colNum", "rowNum", "rowNumcolNum",
-                "f(colNum)", "f(rowNum)", "f(colNum):rowNum",
-                "colNum:f(rowNum)","f(colNum):f(rowNum)")]
+    x$eff.dim[c(colVarId, rowVarId, "f(colNum)", "f(rowNum)",
+                "f(colNum):rowNum", "colNum:f(rowNum)","f(colNum):f(rowNum)")]
   })
   ## Transpose to get dimensions in columns.
   effDims <- t(effDims)
   ## Add effective dimension for surface.
-  effDims <- cbind(effDims, rowSums(effDims[, 6:10, drop = FALSE]))
+  effDims <- cbind(effDims, rowSums(effDims[, 3:7, drop = FALSE]))
   ## Rename columns to more readable format.
   colnames(effDims) <- c("colId", "rowId", "fCol", "fRow", "fColRow", "colfRow",
                          "fColfRow", "surface")
