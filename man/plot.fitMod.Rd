@@ -6,9 +6,9 @@
 \usage{
 \method{plot}{fitMod}(x, ..., plotType = c("rawPred", "corrPred",
   "herit", "effDim", "variance", "timeLapse"), whichED = c("colId",
-  "rowId", "col", "row", "rowCol", "fCol", "fRow", "fColRow", "colfRow",
-  "fColfRow", "surface"), timePoints = names(x), genotypes = NULL,
-  title = NULL, output = TRUE, outFile = NULL, outFileOpts = NULL)
+  "rowId", "fCol", "fRow", "fColRow", "colfRow", "fColfRow", "surface"),
+  timePoints = names(x), genotypes = NULL, title = NULL,
+  output = TRUE, outFile = NULL, outFileOpts = NULL)
 }
 \arguments{
 \item{x}{An object of class fitMod.}

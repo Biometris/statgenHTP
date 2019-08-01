@@ -193,8 +193,7 @@ getEffDims <- function(fitMod,
   ## Add effective dimension for surface.
   effDims <- cbind(effDims, rowSums(effDims[, 6:10, drop = FALSE]))
   ## Rename columns to more readable format.
-  colnames(effDims) <- c("colId", "rowId", "col", "row", "rowCol",
-                         "fCol", "fRow", "fColRow", "colfRow",
+  colnames(effDims) <- c("colId", "rowId", "fCol", "fRow", "fColRow", "colfRow",
                          "fColfRow", "surface")
   effDimOut <- cbind(effDimOut, effDims)
   effDimOut <- addTimeNumber(fitMod, effDimOut)
