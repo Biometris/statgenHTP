@@ -80,10 +80,10 @@ plot.fitMod <- function(x,
   timePoints <- chkTimePoints(x, timePoints)
   plotType <- match.arg(plotType)
   dotArgs <- list(...)
-  if (!is.null(genotypes) || !is.character(genotypes)) {
+  if (!is.null(genotypes) && !is.character(genotypes)) {
     stop("genotypes should be NULL or a character vector.\n")
   }
-  if (!is.null(title) || !is.character(title) || length(title) > 1) {
+  if (!is.null(title) && (!is.character(title) || length(title) > 1)) {
     stop("title should be NULL or a character string.\n")
   }
   ## Restrict x to selected time points.
