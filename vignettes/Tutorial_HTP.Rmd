@@ -6,6 +6,7 @@ output:
   rmarkdown::html_vignette:
     toc: false
     number_sections: true
+bibliography: bibliography.bib
 vignette: >
   %\VignetteIndexEntry{Tutorial}
   %\VignetteEngine{knitr::rmarkdown}
@@ -28,7 +29,11 @@ library(statgenHTP)
 The statgenHTP package is developed as an easy-to-use package for analyzing data coming  
 from high throughput phenotyping platform experiments. The package provides many options 
 for plotting and exporting the results of the analyses.  
-It was developped within the [EPPN^2020^ project](https://eppn2020.plant-phenotyping.eu/).  in response to demand for pipeline of analysis... blablabla joint work tested on several datasets... lablabla
+It was developped within the EPPN^2020^ [project](https://eppn2020.plant-phenotyping.eu/).  
+in response to demand for pipeline of analysis... blablabla joint work tested on several datasets... lablabla
+<center>
+![logoEPPN](LogoEPPN_2020_pfade.jpg){width=20%}
+</center>
 
 This vignette describes in detail how to prepare data for analysis, perform analyses using different modeling engines and extract the results from the models.
 
@@ -58,12 +63,12 @@ be a `list` with only one item.
 
 ## Example
 
-The data from an experiment in the Phenovator platform (WUR, Netherlands) with Arabidopsis 
+The data from an experiment in the Phenovator platform (WUR, Netherlands, [@Flood2016]) with Arabidopsis 
 plants will be used as an example throughout this vignette. It consists of one experiment 
 with 1440 plants grown in a growth chamber. The number of tested genotypes is 192 with 6-7 
 replicates per genotype. Four reference genotypes were also tested with 15 or 30 replicates. 
 The studied trait is the photosystem efficiency measured over time
-(PSII, see van Rooien et al. 2017 Nat. Comm.).
+(PSII, see van [@vanRooi2017]).
 
 For the example first a `TP` object is created containing all the time points. 
 ```{r createTP}
@@ -105,7 +110,7 @@ Several plots can be made to further investigate the contents of a `TP` object.
 The first type of plot displays the layout of the experiment as a grid using the roow and column coordinates in "plotID". The default plot creates plots of all time points in the `TP` object.
 This can be restricted to selected time points using their number in the option `timePoints`.
 If replicates ("repId") are available, a black line is plotted between them. Missing plots are indicated in white.
-```{r layoutPlot, fig.height=4, fig.width=5}
+```{r layoutPlot, fig.height=4, fig.width=5, fig.align = 'center'}
 plot(phenoTP, 
      plotType = "layout",
      timePoints = c(3))
@@ -114,7 +119,7 @@ plot(phenoTP,
 Here, the 3rd time point is displayed which corresponds to the 1st of June at 11:37. 
 This plot can be extended by highlighting interesting genotypes in the layout. Here the
 check genotypes are highlighted:
-```{r layoutPlotHL, fig.height=4, fig.width=5}
+```{r layoutPlotHL, fig.height=4, fig.width=5, fig.align = 'center'}
 ## Plot the layout for the 3rd time point with the check genotypes highlighted.
 plot(phenoTP, 
      plotType = "layout",
@@ -123,7 +128,7 @@ plot(phenoTP,
 ```
 
 It is possible to add the names of the genotypes to the layout. 
-```{r layoutPlotSG, fig.height=4, fig.width=5}
+```{r layoutPlotSG, fig.height=4, fig.width=5, fig.align = 'center'}
 ## Plot the layout for the 3rd time points.
 plot(phenoTP, 
      plotType = "layout",
@@ -134,7 +139,7 @@ plot(phenoTP,
 
 Boxplots can be made to get an idea of the contents of the data in the `TP` object.
 By default a box is plotted per time point for the specified traits using all time points. Boxplots for selected time points can be made.
-```{r boxPlot, fig.height=4, fig.width=7}
+```{r boxPlot, fig.height=4, fig.width=7, fig.align = 'center'}
 ## Create a boxplot for PSII using the default all time points.
 plot(phenoTP, 
      plotType = "box",
@@ -143,7 +148,7 @@ plot(phenoTP,
 
 Colors can be applied to groups within time points using the parameter `colorBy`. The boxes 
 for the (groups of) time points can be ordered using `orderBy`. Boxes can be ordered by external vector or by the group mean.
-```{r boxPlotCL, fig.height=4, fig.width=6}
+```{r boxPlotCL, fig.height=4, fig.width=6, fig.align = 'center'}
 ## Create a boxplot for PSII with 5 time points and boxes colored by repIds within
 ## time point.
 plot(phenoTP, 
@@ -154,7 +159,7 @@ plot(phenoTP,
 ```
 
 The time points in the boxplot can be grouped using the parameter `groupBy`. 
-```{r boxPlotGP, fig.height=4, fig.width=4}
+```{r boxPlotGP, fig.height=4, fig.width=4, fig.align = 'center'}
 ## Create a boxplot for PSII with 5 time points and boxes grouped by repIds.
 plot(phenoTP, 
      plotType = "box",
@@ -165,7 +170,7 @@ plot(phenoTP,
 
 The last plot that can be made is a plot of the correlations between the time points for
 a specified trait. The order of the plot is the time and by default all time points are used.
-```{r corPlot, fig.height=5, fig.width=6}
+```{r corPlot, fig.height=5, fig.width=6, fig.align = 'center'}
 ## Create a correlation plot for PSII for a selection of time points.
 plot(phenoTP, 
      plotType = "cor",
@@ -183,7 +188,7 @@ After creating a `TP` object, a model can be fitted on the trial data. The aim i
 using the function `fitModels`. 
 High dimensionality of data from HTP exepriment with several time point = automatic fit of model that is robust 
 and identical for each time point = best to limit the selection steps
-Default engine is SpATS: has proven as good alternative to AR1xAR1 in the field and also suitable for platform, has been tested on several datasets in the EPPN2020 project.
+Default engine is SpATS: has proven as good alternative to AR1×AR1 in the field [@Velazco2017] and also suitable for platform, has been tested on several datasets in the EPPN^2020^ project.
 
 Depending on the options,  
 different models can be fitted. 
@@ -201,18 +206,18 @@ variance using for example a treatment effect (see part 3.4).
 
 ## Spatial model using SpATS without genotypic variance decomposition
 
-When SpATS is used for modeling, an extra spatial term is included in the model. This spatial component is composed
-using the `PSANOVA` function in the SpATS package which uses 2-dimensional 
+When SpATS is used for modeling, an extra spatial term is included in the model. This spatial component is composed using the `PSANOVA` function in the SpATS package which uses 2-dimensional 
 smoothing with P-splines as described in @Lee2013 and in @RodAlv2017. See `help(PSANOVA, SpATS)`
-for a detailed description. The parameters `nseg` and `nest.div` of `PSANOVA` 
-can be modified using the `control` parameter in `fitTD`. Extra fixed effects may be fitted using the parameter `covariates`. The model specifications are listed in the table below.
+for a detailed description. Extra fixed effects may be fitted using the parameter `covariates`. 
+The model can also be fitted following a resolvable row-column design using `useRepId`.
+The model specifications are listed in the table below. 
 
 otpion | model fitted | spatial term |
----------------- | ---------------------------------- | ------------------------- |
-default | trait = *covariates* + **genotype** + $\epsilon$ | PSANOVA(colCoord, rowCoord, nseg = nSeg, nest.div = 2) |
-covariates = c("A","B") | trait = *A* + *B* + **genotype** + $\epsilon$ | PSANOVA(colCoord, rowCoord, nseg = nSeg, nest.div = 2) |
-useRepId = TRUE | trait = *covariates* + *repId* + **genotype** + **repId:rowId** + **repId:colId** +  $\epsilon$ | PSANOVA(colCoord, rowCoord, nseg = nSeg, nest.div = 2) |
-useCheck = TRUE | trait = *covariates* + *check* + **genoCheck** +  $\epsilon$ | PSANOVA(colCoord, rowCoord, nseg = nSeg, nest.div = 2) |
+-------------------- | ------------------------------------------------- | --------- |
+default | trait = *covariates* + **genotype** + $\epsilon$ | PSANOVA |
+covariates = c("A","B") | trait = *A* + *B* + **genotype** + $\epsilon$ | PSANOVA |
+useRepId = TRUE | trait = *covariates* + *repId* + **genotype** + **repId:rowId** + **repId:colId** +  $\epsilon$ | PSANOVA |
+useCheck = TRUE | trait = *covariates* + *check* + **genoCheck** +  $\epsilon$ | PSANOVA |
 
 In the models above, fixed effects are indicated in *italics* whereas random 
 effects are indicated in **bold**. "genotype" can be fitted as **random** or *fixed* effect
@@ -220,15 +225,22 @@ using the option `what`. The same model will run with genotype as fixed. The opt
 `useCheck` allows treating some genotypes as check: it splits the column genotypes
 into two columns as follow:
 
-genotype | check | genoCheck |
----------- | ---------- | ---------- |
-G~1~ | noCheck | G~1~ |
-... | noCheck | ... |
-G~n~ | noCheck | G~n~ |
-check~1~ | 1 | NA |
-... | ... | ... |
-check~n~ | n | NA |
+<center>
 
+| genotype | check | genoCheck |
+|:----------:|:----------:|:----------:|
+| G~1~ | noCheck | G~1~ |
+| G~2~ | noCheck | G~2~ |
+| ... | noCheck | ... |
+| G~n-1~ | noCheck | G~n-1~ |
+| G~n~ | noCheck | G~n~ |
+| check~1~ | 1 | NA |
+| check~2~ | 2 | NA |
+| ... | ... | ... |
+| check~n-1~ | n-1 | NA |
+| check~n~ | n | NA |
+
+</center>
 
 ### Calling SpATS
 
@@ -244,7 +256,7 @@ modPhenoSp <- fitModels(TP = phenoTP,
                         timePoints = c(3,10,20,30,60))
 ```
 
-The output is a `fitMod`  object containing one list per time point. Note that by not supplying the `what` argument to the function, genotype is set as random. We can run it again with genotype as fixed using `what`.
+The output is a `fitMod`  object containing one list per time point. Note that by not supplying the `what` argument to the function, genotype is set as random. We can run it again with genotype as fixed using `what`:
 pheno = *genotype* + **rowId** + **colId** + $\epsilon$
 
 ```{r fitSpFix, message=FALSE}
@@ -255,7 +267,7 @@ modPhenoSpFix <- fitModels(TP = phenoTP,
                            what="fixed")
 ```
 
-We can extend the model by including covariates as main fixed effect:
+We can extend the model by including covariates as main fixed effect:  
 pheno = *repId* + *Image_pos* + **genotype** + **rowId** + **colId** + $\epsilon$
 
 ```{r fitSpCov, message=FALSE}
@@ -266,7 +278,7 @@ modPhenoSpCov <- fitModels(TP = phenoTP,
                            timePoints = 3)
 ```
 
-We can also extend this model by including check genotypes:
+We can also extend this model by including check genotypes:  
 pheno = *repId* + *Image_pos* + *check* + **genoCheck** + **rowId** + **colId** + $\epsilon$
 
 ```{r fitSpCheck, message=FALSE}
@@ -279,28 +291,44 @@ modPhenoSpCheck <- fitModels(TP = phenoTP,
 ```
 
 We can finally fit the model following a resolvable row-column design: including the
-interactions between replicate and row-col.
+interactions between replicate and row-col.  
 pheno = *repId* + **genoCheck** + **repId:rowId** + **repId:colId** + $\epsilon$
 
 ```{r fitSpRCD, message=FALSE}
 ## Fit a model for a single time point.
-modPhenoSpRCD <- fitModels(TP = phenoTP, 
-                           trait = "pheno",
-                           timePoints = 3,
-                           useRepId = TRUE)
+# modPhenoSpRCD <- fitModels(TP = phenoTP, 
+                           # trait = "pheno",
+                           # timePoints = 3,
+                           # useRepId = TRUE)
 ```
 
 ### Model plots
 
+summary(modPhenoSp)
 `plot.fitMod` function
 
+Effective dimensions blablabla
 
-Creates a time lapse of the spatial trends of models fitted using SpATS over
-time.
-```{r plotSpSpat, message=FALSE, fig.height=5, fig.width=6}
+Creates a plot of the spatial trends of models per time point.
+```{r plotSpat,  fig.height=5, fig.width=6, message=FALSE, eval=FALSE, include=FALSE}
 plot(modPhenoSp, 
-     plotType = "timeLapse")
+     plotType = "spatial",
+     timepoints = 3,
+     what = "raw")
 ```
+
+
+Creates a time lapse of the spatial trends of models fitted using SpATS over time.
+```{r plotTimeLapse,  fig.height=5, fig.width=6, message=FALSE, eval=FALSE, include=TRUE}
+plot(modPhenoSp, 
+     plotType = "timeLapse",
+     outFile = "TimeLapse_modPhenoSp.gif")
+```
+
+<center>
+![Timelapse1](TimeLapse_modPhenoSp.gif){width=30%}
+</center>
+
 
 ### Extracting model results
 
@@ -317,85 +345,199 @@ getVar() | Variance components |
 getHerit() | Generalised heritabilities (Cullis) - only when genotype is random |
 getEffDims() | Extract effective dimensions - only for `SpATS` |
 
-```{r getPred, message=FALSE}
+```{r getFun, message=FALSE}
 # Extraction of output from the first spatial model. 
-genoPredSp <- getGenoPred(modPhenoSp)
-spatCorrSp <- getCorrected(modPhenoSp)
+genoPredSp <- getGenoPred(modPhenoSp, timePoints = 3)
+genoPredSpCov <- getGenoPred(modPhenoSpCov, timePoints = 3)
+spatCorrSp <- getCorrected(modPhenoSp, timePoints = 3)
 varianceSp <- getVar(modPhenoSp)
 heritSp <- getHerit(modPhenoSp)
 effDimSp <- getEffDims(modPhenoSp)
 ```
-By default, all the functions run for all the time point. It is possible to select some using `TimePoint`.
+By default, all the functions run for all the time points. It is possible to select some of them using `TimePoint`.
+
+The genotypic predictions of one time point are displayed in a table like the following:
+
+```{r getPred, echo=FALSE, message=FALSE}
+knitr::kable(head(genoPredSp), align=c('c','c','c','c','c'), padding = 0)
+```
+
+TO NOTE: when covariates are used, the standard error from SpATS are wrong. We are waiting for a update of the package.
+
+The corrected values are obtained by by subtracting the estimated sources of variation which
+are of no interest to the raw data:  
+corrected data = raw data − estimated(spatial) − estimated(row) − estimated(col)  
+This allows keeping the data at the experimental unit level (plants) and having more degrees of freedom for further modelling. The corrected values of one time point are displayed in a table like the following:
+
+```{r getCorr, echo=FALSE, message=FALSE}
+knitr::kable(head(spatCorrSp), align=c('c','c','c','c','c','c','c'), padding = 0)
+```
+
 
 ### Ploting model results
 
-Plots the raw data overlayed with the predicted values from the fitted model.
+Different plots can be displayed from the fitmod.TD object. The first one is "rawPred" and 
+it plots the raw data (colored) overlayed with the predicted values (black line) from the fitted model.
 For each genotype a plot is made per plot/plant over time. These plots are
-put together in a 5x5 grid. By using the parameter \code{genotypes} a
+put together in a 5x5 grid. By using the parameter `genotypes` a
 selection of genotypes can be plotted.
-```{r plotSpPred, message=FALSE, fig.height=5, fig.width=6}
+
+```{r plotSpPred, message=FALSE, fig.height=2, fig.width=6, fig.align = 'center'}
 plot(modPhenoSp, 
      plotType = "rawPred",
-     genotypes = c("col", "ler", "ely", "evo1") )
+     genotypes = c("col", "ler", "ely", "evo1"))
 ```
 
-Plots the spatially corrected data overlayed with the predicted values from
-the fitted model. For each genotype a plot is made per plot/plant over time.
-These plots are put together in a 5x5 grid. By using the parameter
+The second one is "corrPred" and it plots the spatially corrected data (colored lines) overlayed with the predicted values from the fitted model (black line). For each genotype a plot is made per plot/plant over time. These plots are put together in a 5×5 grid. By using the parameter
 `genotypes` a selection of genotypes can be plotted.
-```{r plotSpCorr, message=FALSE, fig.height=5, fig.width=6}
+
+```{r plotSpCorr, message=FALSE, fig.height=2, fig.width=6, fig.align = 'center'}
 plot(modPhenoSp, 
      plotType = "corrPred",
      genotypes = c("col", "ler", "ely", "evo1") )
 ```
 
-Plots the heritability over time. If `geno.decomp` is used when fitting
+The three last type of plots display different model parameters over time. Option "herit"
+plots the heritability over time. If `geno.decomp` is used when fitting
 the model, heritabilities are plotted for each level of geno.decomp in a
-single plot.
-```{r plotSpHerit, message=FALSE, fig.height=5, fig.width=6}
+single plot (see section 3.4).
+
+```{r plotSpHerit, message=FALSE, fig.height=2, fig.width=3, fig.align = 'center'}
 plot(modPhenoSp, 
      plotType = "herit")
 ```
 
-Plots the effective dimension from models fitted using SpATS over time.
-```{r plotSpED, message=FALSE, fig.height=5, fig.width=6}
+Option "effDim" plots the effective dimension from models fitted using SpATS over time.
+```{r plotSpED, message=FALSE, fig.height=2, fig.width=4, fig.align = 'center'}
 plot(modPhenoSp, 
-     plotType = "effDim")
+     plotType = "effDim",
+     whichED = c("colId", "rowId", "fColRow","colfRow", "surface"))
 ```
 
-Plots the residual, column and row variance for the fitted model over time.
-```{r plotSpVar, message=FALSE, fig.height=5, fig.width=6}
+By default, all the spatial components are plotted. This can be restricted using the option `whichED`.
+
+Option "variance" plots the residual, column and row variance for the fitted model over time.
+```{r plotSpVar, fig.height=2, fig.width=4, message=FALSE, fig.align = 'center'}
 plot(modPhenoSp, 
      plotType = "variance")
 ```
 
 
-
 ## Spatial model with ASReml without variance decomposition
 
-When asreml is used for modeling and spatial = TRUE six models are fitted with different random terms and covariance structure. The best model is determined based on a goodness-of-fit criterion, either AIC or BIC. This can be set using the control parameter criterion, default is AIC. The fitted random terms depend on the structure of the data. If the design has a regular structure, i.e. all replicates appear the same amount of times in the design, the following combinations of random and spatial terms are fitted
+When asreml is used for modeling and spatial = TRUE four models are fitted with different random terms and covariance structure. The best model is determined based on a goodness-of-fit criterion, either AIC or BIC, on 20% on the time points or at least 10 time points. The best model is then run on all time point. Same as for SpATS, all the asreml model can be extended by fitting fixed covariates using the option `covariates`.
 
-otpion | model fitted | spatial term |
----------------- | ------------------------------------- | ---------------------- |
-spatial = TRUE, regular design | trait = **genotype** + *covariates* + $\epsilon$ | exp(rowCoord):colCoord |
-spatial = TRUE, regular design | trait = **genotype** + *covariates* + $\epsilon$ | rowCoord:exp(colCoord) |
-spatial = TRUE, regular design | trait = **genotype** + *covariates* + $\epsilon$ | iexp(rowCoord,colCoord) |
-spatial = TRUE, regular design | trait = **genotype** + **repId:rowId** + *covariates* + $\epsilon$ | exp(rowCoord):colCoord |
-spatial = TRUE, regular design | trait = **genotype** + **repId:colId** + *covariates* + $\epsilon$ | rowCoord:exp(colCoord) |
-spatial = TRUE, regular design | trait = **genotype** + **repId:rowId** + *covariates* + $\epsilon$ | iexp(rowCoord,colCoord) |
-spatial = TRUE, irregular design | trait = **genotype** + *covariates* + $\epsilon$ | ar1(rowId):colId |
-spatial = TRUE, irregular design | trait = **genotype** + *covariates* + $\epsilon$ | rowId:ar1(colId) |
-spatial = TRUE, irregular design | trait = **genotype** + *covariates* + $\epsilon$ | ar1(rowId):ar1(colId) |
-spatial = TRUE, irregular design | trait = **genotype** + **repId:rowId** + *covariates* + $\epsilon$ | ar1(rowId):colId |
-spatial = TRUE, irregular design | trait = **genotype** + **repId:colId** + *covariates* + $\epsilon$ | rowId:ar1(colId) |
-spatial = TRUE, irregular design | trait = **genotype** + **repId:rowId** + *covariates* + $\epsilon$ | ar1(rowId):ar1(colId) |
+| option | model fitted | spatial term |
+|----------------------|------------------------------------------|-----------------|
+| spatial = TRUE | trait = **genotype** + **row** + **col** + $\epsilon$ <br> trait = **genotype** + **row** + $\epsilon$ <br> trait = **genotype** + **col** + $\epsilon$ <br> trait = **genotype** + **row** + **col** + $\epsilon$| ar1(rowId):ar1(colId) <br> ar1(rowId):colId <br> rowId:ar1(colId) <br> - |
+| spatial = TRUE, covariates = c("A","B") | trait = *A* + *B* + **genotype** + **row** + **col** + $\epsilon$ <br> trait = *A* + *B* + **genotype** + **row** + $\epsilon$ <br> trait = *A* + *B* + **genotype** + **col** + $\epsilon$ <br> trait = *A* + *B* + **genotype** + **row** + **col** + $\epsilon$ <br> | ar1(rowId):ar1(colId) <br> ar1(rowId):colId <br> rowId:ar1(colId) <br> - |
+| spatial = TRUE, <br> repID = TRUE | trait = *repId* + **genotype** + **repId:row** + **repId:col** + $\epsilon$ <br> trait = *repId* + **genotype** + **repId:row** + $\epsilon$ <br> trait = *repId* + **genotype** + **repId:col** + $\epsilon$ <br> trait = *repId* + **genotype** + **repId:row** + **repId:col** + $\epsilon$ <br> | ar1(rowId):ar1(colId) <br> ar1(rowId):colId <br> rowId:ar1(colId) <br> - |
+
+In the models above, fixed effects are indicated in *italics* whereas random 
+effects are indicated in **bold**. "genotype" can be fitted as **random** or *fixed* effect
+using the option `what`. The same model will run with genotype as fixed. The option `useCheck` 
+is not displayed in the table but works the same as for SpATS: treating some genotypes as check (see section 3.1).
+
+Calling asreml is done by changing the "engine" option in the `fitModels` function.
+
+```{r fitSpASReml, message=FALSE}
+## Fit a model on few time points without spatial function.
+modPhenoAs <- fitModels(TP = phenoTP, 
+                        trait = "pheno",
+                        timePoints = c(3,10,20,30,60),
+                        engine = "asreml",
+                        spatial = FALSE)
+## Fit a model on few time points with spatial function.
+modPhenoSpAs <- fitModels(TP = phenoTP, 
+                          trait = "pheno",
+                          timePoints = c(3,10,20,30,60),
+                          engine = "asreml",
+                          spatial = TRUE)
+# summary(modPhenoSpAs)
+```
+
+Here the best spatial model is: trait = **genotype** + **row** + **col** + $\epsilon$ with a spatial function **ar1(rowId):colId**. It has run on all the specified time points "timePoints = c(3,10,20,30,60)" to be selected. 
+
+Plotting and extracting results is then done the same way as for SpATS. Below are few examples.
+
+```{r getFunAs, message=FALSE}
+spatCorrSpAs <- getCorrected(modPhenoSpAs, timePoints = 3)
+genoPredSpAs <- getGenoPred(modPhenoSpAs, timePoints = 3)
+```
+
+```{r getCorrAs, echo=FALSE, message=FALSE}
+knitr::kable(head(spatCorrSpAs), align=c('c','c','c','c','c','c','c'), padding = 0)
+```
+
+```{r plotSpAsHerit, message=FALSE, fig.height=2, fig.width=4, fig.align = 'center'}
+plot(modPhenoSpAs, 
+     plotType = "herit")
+```
+
+Note that when using asreml the heritability is calculating with the formula provided in [@Cullis2006].
 
 ## Modelling without spatial terms with ASReml without variance decomposition
 
-When the row,column coordinate are not available.
+When the row and column coordinates are not available, asreml can be used for modelling.
+In that case, the model simply uses the genotype and the covariates, if any.
+
+| option | model fitted | spatial term |
+|---------------|---------------------------------------------|-------------------|
+| spatial = FALSE | trait = **genotype** + $\epsilon$ |  - |
+| spatial = FALSE, covariates = c("A","B") | trait = *A* + *B* + **genotype** + $\epsilon$ | - |
+
+In the models above and below, fixed effects are indicated in *italics* whereas random 
+effects are indicated in **bold**. "genotype" can be fitted as **random** or *fixed* effect
+using the option `what`. The same model will run with genotype as fixed. The option `useCheck` is not displayed in the table but works the same as for SpATS (see section 3.1).
+
 
 ## Modelling with variance decomposition
 
-Including treatment and other possible level of genotypic variance decomposition.
+Including treatment and other possible level of genotypic variance decomposition.  
 **WARNING: Fitting genotype as fixed with the SpATS engine and the geno.decomp option is not available yet**
+
+Example with two models, one per engine:
+
+| option | engine | model fitted | spatial term |
+|---------------|--------|-----------------------------------------|---------------|
+| spatial = TRUE, geno.decomp = c("variable") | spats | trait = *variable* + **variable:genotype** + **row** + **col** + $\epsilon$ |  PSANOVA |
+| spatial = FALSE, geno.decomp = c("variable") | asreml | trait = *variable* + + **variable:genotype** + **row** + **col** + $\epsilon$ | ar1(row):ar1(col) |
+
+```{r fitSpGD, message=FALSE}
+## Fit a model few time points using spats.
+modPhenoSpGD <- fitModels(TP = phenoTP, 
+                          trait = "pheno",
+                          geno.decomp = c("Basin"),
+                          timePoints = c(3,10,20,30,60))
+
+## Fit a model few time points using asreml
+modPhenoSpAsGD <- fitModels(TP = phenoTP, 
+                        trait = "pheno",
+                        geno.decomp = c("Basin"),
+                        timePoints = c(3,10,20,30,60),
+                        spatial = TRUE,
+                        engine = "asreml")
+```
+
+```{r plotextract1, message=FALSE}
+genoPredSpGD <- getGenoPred(modPhenoSpGD, timePoints = 3)
+spatCorrSpGD <- getCorrected(modPhenoSpGD, timePoints = 3)
+varianceSpGD <- getVar(modPhenoSpGD)
+heritSpGD <- getHerit(modPhenoSpGD)
+effDimSpGD <- getEffDims(modPhenoSpGD)
+
+genoPredSpAsGD <- getGenoPred(modPhenoSpAsGD, timePoints = 3)
+spatCorrSpAsGD <- getCorrected(modPhenoSpAsGD, timePoints = 3)
+varianceSpAsGD <- getVar(modPhenoSpAsGD)
+heritSpAsGD <- getHerit(modPhenoSpAsGD)
+# effDimSpAsGD <- getEffDims(modPhenoSpAsGD)
+
+```
+
+
+
+
+----
+
+## References
 
