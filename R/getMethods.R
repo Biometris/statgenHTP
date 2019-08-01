@@ -91,11 +91,15 @@ getCorrected <- function(fitMod,
 #'
 #' @export
 getVar <- function(fitMod,
+                   timePoints = names(fitMod),
                    outFile = NULL) {
   ## Checks.
   if (missing(fitMod) || !inherits(fitMod, "fitMod")) {
     stop(fitMod, " should be an object of class fitMod.\n")
   }
+  timePoints <- chkTimePoints(fitMod, timePoints)
+  ## Restrict fitMod to selected timePoints.
+  fitMod <- fitMod[timePoints]
   useRepId <- attr(x = fitMod, which = "useRepId")
   colVarId <- ifelse(useRepId, "repId:colId", "colId")
   rowVarId <- ifelse(useRepId, "repId:rowId", "rowId")
@@ -129,6 +133,7 @@ getVar <- function(fitMod,
 #'
 #' @export
 getHerit <- function(fitMod,
+                     timePoints = names(fitMod),
                      outFile = NULL) {
   ## Checks.
   if (missing(fitMod) || !inherits(fitMod, "fitMod")) {
@@ -137,6 +142,9 @@ getHerit <- function(fitMod,
   if (attr(x = fitMod, which = "what") == "fixed") {
     stop("Heritability can only be calculated when genotype is random.\n")
   }
+  timePoints <- chkTimePoints(fitMod, timePoints)
+  ## Restrict fitMod to selected timePoints.
+  fitMod <- fitMod[timePoints]
   h2Out <- lapply(X = fitMod, FUN = heritability)
   h2Out <- dfBind(h2Out)
   h2Out <- addTimeNumber(fitMod, h2Out)
@@ -157,6 +165,7 @@ getHerit <- function(fitMod,
 #'
 #' @export
 getEffDims <- function(fitMod,
+                       timePoints = names(fitMod),
                        outFile = NULL) {
   ## Checks.
   if (missing(fitMod) || !inherits(fitMod, "fitMod")) {
@@ -165,6 +174,9 @@ getEffDims <- function(fitMod,
   if (!inherits(fitMod[[1]], "SpATS")) {
     stop("Models in ", fitMod, " should be fitted using SpATS.\n")
   }
+  timePoints <- chkTimePoints(fitMod, timePoints)
+  ## Restrict fitMod to selected timePoints.
+  fitMod <- fitMod[timePoints]
   useRepId <- attr(x = fitMod, which = "useRepId")
   colVarId <- ifelse(useRepId, "repId:colId", "colId")
   rowVarId <- ifelse(useRepId, "repId:rowId", "rowId")
