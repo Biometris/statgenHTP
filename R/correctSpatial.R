@@ -77,7 +77,8 @@ correctSpatialSpATS <- function(fitMod) {
   if (!is.null(geno.decomp) && !hasName(pred , "geno.decomp")) {
     pred[[geno.decomp]] <- pred[[paste0(geno.decomp, ".y")]]
   }
-  pred <- pred[c("newTrait", "genotype", geno.decomp, predVars, "plotId",
+  pred <- pred[c("newTrait", "genotype", geno.decomp,
+                 setdiff(predVars, c("rowNum", "colNum")), "plotId",
                  "timePoint")]
 }
 
