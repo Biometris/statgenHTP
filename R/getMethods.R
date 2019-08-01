@@ -3,6 +3,11 @@
 #' Extract predictions of the genotypic value from an object of class fitMod.
 #'
 #' @param fitMod An object of class fitMod.
+#' @param timePoints A character or numeric vector indicating the timePoints
+#' to be modeled. When using a character string to reference a timePoint, the
+#' value has to be an exact match to one of the existing timePoints. When using
+#' a number it will be matched by its number in the timePoints attribute of the
+#' TP object.
 #' @param outFile A character string indicating the .csv file to which the
 #' results should be written. If \code{NULL} no file is written.
 #'
@@ -10,15 +15,23 @@
 #'
 #' @export
 getGenoPred <- function(fitMod,
+                        timePoints = names(fitMod),
                         outFile = NULL) {
   ## Checks.
   if (missing(fitMod) || !inherits(fitMod, "fitMod")) {
     stop(fitMod, " should be an object of class fitMod.\n")
   }
+  timePoints <- chkTimePoints(fitMod, timePoints)
+  ## Restrict fitMod to selected timePoints.
+  fitMod <- fitMod[timePoints]
+  ## Get predictions per time point.
   genoPred <- lapply(X = fitMod, FUN = predictGeno)
+  ## Create one data.frame containing all time points.
   genoPred <- Reduce(f = rbind, x = genoPred)
+  ## Add time numbers.
   genoPred <- addTimeNumber(fitMod, genoPred)
   if (!is.null(outFile)) {
+    ## Check if file exists and is writable.
     chkFile(outFile, fileType = "csv")
     write.csv(genoPred, file = outFile, row.names = FALSE)
   }
@@ -39,11 +52,15 @@ getGenoPred <- function(fitMod,
 #'
 #' @export
 getCorrected <- function(fitMod,
+                         timePoints = names(fitMod),
                          outFile = NULL) {
   ## Checks.
   if (missing(fitMod) || !inherits(fitMod, "fitMod")) {
     stop(fitMod, " should be an object of class fitMod.\n")
   }
+  timePoints <- chkTimePoints(fitMod, timePoints)
+  ## Restrict fitMod to selected timePoints.
+  fitMod <- fitMod[timePoints]
   ## correctSpatial will throw warnings for every timepoint when no spatial
   ## or fixed effects are present. Catch these and only show once.
   spatCorrTP <- tryCatchExt(lapply(X = fitMod, FUN = correctSpatial))
@@ -52,9 +69,12 @@ getCorrected <- function(fitMod,
   } else if (!is.null(spatCorrTP$warning)) {
     warning(unique(spatCorrTP$warning))
   }
+  ## Create one data.frame with corrected values for all time points.
   spatCorr <- Reduce(f = rbind, x = spatCorrTP$value)
+  ## Add time number.
   spatCorr <- addTimeNumber(fitMod, spatCorr)
   if (!is.null(outFile)) {
+    ## Check if file exists and is writable.
     chkFile(outFile, fileType = "csv")
     write.csv(spatCorr, file = outFile, row.names = FALSE)
   }
