@@ -180,22 +180,29 @@ getEffDims <- function(fitMod,
   useRepId <- attr(x = fitMod, which = "useRepId")
   colVarId <- ifelse(useRepId, "repId:colId", "colId")
   rowVarId <- ifelse(useRepId, "repId:rowId", "rowId")
-  effDimSurface <- sapply(X = fitMod, FUN = function(x) {
-    sum(x$eff.dim[c("f(colNum)", "f(rowNum)", "f(colNum):rowNum",
-                    "colNum:f(rowNum)","f(colNum):f(rowNum)")])
+  effDimOut <- data.frame(timePoint = lubridate::as_datetime(names(fitMod)),
+                          row.names = NULL)
+  ## Get effective dimensions for spatial terms.
+  effDims <- sapply(X = fitMod, FUN = function(x) {
+    x$eff.dim[c(colVarId, rowVarId, "colNum", "rowNum", "rowNumcolNum",
+                "f(colNum)", "f(rowNum)", "f(colNum):rowNum",
+                "colNum:f(rowNum)","f(colNum):f(rowNum)")]
   })
-  effDimCol <- sapply(X = fitMod, FUN = function(x) x$eff.dim[colVarId])
-  effDimRow <- sapply(X = fitMod, FUN = function(x) x$eff.dim[rowVarId])
-  effDim <- data.frame(timePoint = lubridate::as_datetime(names(effDimSurface)),
-                       effDimSurface = effDimSurface,
-                       effDimCol = effDimCol, effDimRow = effDimRow,
-                       row.names = NULL)
-  effDim <- addTimeNumber(fitMod, effDim)
+  ## Transpose to get dimensions in columns.
+  effDims <- t(effDims)
+  ## Add effective dimension for surface.
+  effDims <- cbind(effDims, rowSums(effDims[, 6:10, drop = FALSE]))
+  ## Rename columns to more readable format.
+  colnames(effDims) <- c("edColId", "edRowId", "edCol", "edRow", "edRowcol",
+                         "edfCol", "edfRow", "edfColRow", "edColfRow",
+                         "edfColfRow", "edSurface")
+  effDimOut <- cbind(effDimOut, effDims)
+  effDimOut <- addTimeNumber(fitMod, effDimOut)
   if (!is.null(outFile)) {
     chkFile(outFile, fileType = "csv")
-    write.csv(effDim, file = outFile, row.names = FALSE)
+    write.csv(effDimOut, file = outFile, row.names = FALSE)
   }
-  return(effDim)
+  return(effDimOut)
 }
 
 #' Helper function for adding time numbers to data containing a time point
