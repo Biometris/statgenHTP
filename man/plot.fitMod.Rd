@@ -6,8 +6,10 @@
 \usage{
 \method{plot}{fitMod}(x, ..., plotType = c("rawPred", "corrPred",
   "herit", "effDim", "variance", "rowPred", "colPred", "timeLapse"),
-  timePoints = names(x), genotypes = NULL, title = NULL,
-  output = TRUE, outFile = NULL, outFileOpts = NULL)
+  whichED = c("colId", "rowId", "col", "row", "rowCol", "fCol", "fRow",
+  "fColRow", "colfRow", "fColfRow", "surface"), timePoints = names(x),
+  genotypes = NULL, title = NULL, output = TRUE, outFile = NULL,
+  outFileOpts = NULL)
 }
 \arguments{
 \item{x}{An object of class fitMod.}
@@ -17,6 +19,9 @@ section.}
 
 \item{plotType}{A single character string indicating which plot should be
 made. See the sections below for a detailed explanation of the plots.}
+
+\item{whichED}{A character vector indicating which effective dimensions
+shoul be plotted. Only used if \code{plotType} = "effDim".}
 
 \item{timePoints}{A character or numeric vector indicating the timePoints
 to be plotted. When using a character string to reference a timePoint, the

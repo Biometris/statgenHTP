@@ -52,6 +52,8 @@ createFitMod <- function(models,
 #' @inheritParams plot.TP
 #'
 #' @param x An object of class fitMod.
+#' @param whichED A character vector indicating which effective dimensions
+#' shoul be plotted. Only used if \code{plotType} = "effDim".
 #' @param genotypes A character vector indicating the genotypes to be plotted.
 #' Only used if \code{plotType} = "rawPred" or "corrPred".
 #' @param title A character string used as title for the plot. If \code{NULL} a
@@ -70,6 +72,9 @@ plot.fitMod <- function(x,
                         plotType = c("rawPred", "corrPred", "herit", "effDim",
                                      "variance", "rowPred", "colPred",
                                      "timeLapse"),
+                        whichED = c("colId", "rowId", "col", "row", "rowCol",
+                                   "fCol", "fRow", "fColRow", "colfRow",
+                                   "fColfRow", "surface"),
                         timePoints = names(x),
                         genotypes = NULL,
                         title = NULL,
@@ -196,18 +201,18 @@ plot.fitMod <- function(x,
       plot(p)
     }
   } else if (plotType == "effDim") {
+    whichED <- match.arg(whichED, several.ok = TRUE)
     if (is.null(title)) title <- "Effective dimensions"
     ## Get effective dimensions.
     effDim <- getEffDims(fitMods)
     ## Convert to long format needed by ggplot.
-    effDim <- reshape2::melt(effDim, measure.vars = c("effDimSurface",
-                                                      "effDimCol", "effDimRow"),
+    effDim <- reshape2::melt(effDim, measure.vars = whichED,
                              variable.name = "effDim", value.name = "ED")
     p <- ggplot2::ggplot(effDim,
                          ggplot2::aes_string(x = "timePoint", y = "ED",
                                              group = "effDim", color = "effDim")) +
       ggplot2::geom_line() +
-      ggplot2::scale_color_discrete(labels = c("Surface", "Columns", "Rows")) +
+    #  ggplot2::scale_color_discrete(labels = c("Surface", "Columns", "Rows")) +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) +
       ggplot2::labs(title = title, color = "Effective dimension")
     if (output) {
