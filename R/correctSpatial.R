@@ -36,6 +36,15 @@ correctSpatialSpATS <- function(fitMod) {
                                     "plotId", "timePoint", trait,
                                     geno.decomp)],
                 by = c("rowNum", "colNum"))
+  if (!is.null(geno.decomp)) {
+    ## Genotype was converted to an interaction term of genotype and
+    ## geno.decomp in the proces of fitting the model. That needs to be
+    ## undone to get the genotype back in the output again.
+    genoStart <- nchar(as.character(pred[["geno.decomp.y"]])) + 2
+    pred[["genotype.y"]] <- as.factor(substring(pred[["genotype.y"]],
+                                                first = genoStart))
+
+  }
   ## Temporary fix for difference between SpATS and asreml predictions.
   ## asreml predicts marginal means whereas SpATS predicts conditional means.
   ## By adding the means of the fixed effects to the conditional means the

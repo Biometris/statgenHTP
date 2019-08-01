@@ -39,12 +39,6 @@ createFitMod <- function(models,
 #' @section variance plot:
 #' Plots the residual, column and row variance for the fitted model over time.
 #'
-#' @section rowPred plot:
-#' Plots the row predictions for the fitted model over time.
-#'
-#' @section colPred plot:
-#' Plots the row predictions for the fitted model over time.
-#'
 #' @section timeLapse plot:
 #' Creates a time lapse of the spatial trends of models fitted using SpATS over
 #' time.
@@ -70,8 +64,7 @@ createFitMod <- function(models,
 plot.fitMod <- function(x,
                         ...,
                         plotType = c("rawPred", "corrPred", "herit", "effDim",
-                                     "variance", "rowPred", "colPred",
-                                     "timeLapse"),
+                                     "variance", "timeLapse"),
                         whichED = c("colId", "rowId", "col", "row", "rowCol",
                                    "fCol", "fRow", "fColRow", "colfRow",
                                    "fColfRow", "surface"),
@@ -95,6 +88,9 @@ plot.fitMod <- function(x,
   fitMods <- x[timePoints]
   ## Get engine from fitted models.
   engine <- class(fitMods[[1]])
+  if (engine == "asreml" && plotType == "effDim") {
+    stop("Effective dimensions can only be plotted for models fitted with SpATS")
+  }
   ## Get geno.decomp from fitted models.
   if (engine == "SpATS") {
     geno.decomp <- fitMods[[1]]$model$geno$geno.decomp
@@ -137,10 +133,13 @@ plot.fitMod <- function(x,
         fitMod$call$data
       }))
     }
-    ## Modify genotypes for restricting when geno.decomp is used.
-    if (!is.null(geno.decomp)) {
-      genotypes <- as.vector(outer(X = levels(raw[["geno.decomp"]]),
-                                   Y = genotypes, FUN = paste, sep = "_"))
+    if (!is.null(geno.decomp) && engine == "SpATS") {
+      ## Genotype was converted to an interaction term of genotype and
+      ## geno.decomp in the proces of fitting the model. That needs to be
+      ## undone to get the genotype back in the output again.
+      genoStart <- nchar(as.character(raw[["geno.decomp"]])) + 2
+      raw[["genotype"]] <- as.factor(substring(raw[["genotype"]],
+                                               first = genoStart))
     }
     ## Restrict genotypes.
     if (!is.null(genotypes)) {
@@ -157,19 +156,16 @@ plot.fitMod <- function(x,
     ## Add combinations missing in data to raw.
     raw <- addMissVals(dat = raw, trait = trait)
     p <- xyFacetPlot(baseDat = raw, overlayDat = preds, yVal = trait,
-                     yValOverlay = "predicted.values", title = title,
-                     yLab = trait, output = output)
+                     yValOverlay = "predicted.values",
+                     facetVal = c("genotype",
+                                  if (!is.null(geno.decomp)) "geno.decomp"),
+                     title = title, yLab = trait, output = output)
   } else if (plotType == "corrPred") {
     if (is.null(title)) title <- "Genotypic predictions + spatial corrected data"
     ## Get genotypic predictions.
     preds <- getGenoPred(fitMods)
     ## Get spatial corrected values.
-    corrected <- getCorrected(fitMods)
-    ## Modify genotypes for restricting when geno.decomp is used.
-    if (!is.null(geno.decomp)) {
-      genotypes <- as.vector(outer(X = levels(corrected[["geno.decomp"]]),
-                                   Y = genotypes, FUN = paste, sep = "_"))
-    }
+    corrected <- suppressWarnings(getCorrected(fitMods))
     ## Restrict genotypes.
     if (!is.null(genotypes)) {
       preds <- preds[preds[["genotype"]] %in% genotypes, ]
@@ -180,7 +176,10 @@ plot.fitMod <- function(x,
     ## Add combinations missing in data to corrected.
     corrected <- addMissVals(dat = corrected, trait = "newTrait")
     p <- xyFacetPlot(baseDat = corrected, overlayDat = preds, yVal = "newTrait",
-                     yValOverlay = "predicted.values", title = title,
+                     yValOverlay = "predicted.values",
+                     facetVal = c("genotype",
+                                  if (!is.null(geno.decomp)) "geno.decomp"),
+                     title = title,
                      yLab = trait, output = output)
   } else if (plotType == "herit") {
     if (is.null(title)) title <- "Heritabilities"
@@ -212,7 +211,6 @@ plot.fitMod <- function(x,
                          ggplot2::aes_string(x = "timePoint", y = "ED",
                                              group = "effDim", color = "effDim")) +
       ggplot2::geom_line() +
-    #  ggplot2::scale_color_discrete(labels = c("Surface", "Columns", "Rows")) +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) +
       ggplot2::labs(title = title, color = "Effective dimension")
     if (output) {
@@ -229,7 +227,7 @@ plot.fitMod <- function(x,
     p <- ggplot2::ggplot(variance,
                          ggplot2::aes_string(x = "timePoint", y = "value",
                                              group = "var", color = "var")) +
-      ggplot2::geom_line() +
+      ggplot2::geom_line(na.rm = TRUE) +
       ggplot2::scale_color_discrete(labels = c("Residual", "Columns", "Rows")) +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) +
       ggplot2::labs(title = title, color = "variance",

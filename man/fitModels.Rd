@@ -70,7 +70,7 @@ AIC or BIC. This can be set using the control parameter \code{criterion},
 default is AIC.
 The following combinations of random and spatial terms are fitted
 \itemize{
-\item{random = repId:rowId, spatial = NULL}
+\item{random = repId:rowId + repId:colId, spatial = NULL}
 \item{random = repId:rowId, spatial = ar1(rowId):colId}
 \item{random = repId:colId, spatial = rowId:ar1(colId)}
 \item{random = repId:rowId + repId:colId, spatial = ar1(rowId):ar1(colId)}

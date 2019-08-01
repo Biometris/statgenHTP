@@ -187,9 +187,11 @@ calcPlotBorders <- function(tpDat,
 addMissVals <- function(dat,
                         trait) {
   ## Create lhs formula for dcast using all columns in dat except
-  ## timePoint (rhs) and trait (value var).
-  castCols <- setdiff(colnames(dat), c("timePoint", trait))
-  castForm <- formula(paste(paste(castCols, collapse = "+"), "~ timePoint"))
+  ## timePoint (rhs), timeNumber (rhs) and trait (value var).
+  castCols <- setdiff(colnames(dat), c("timePoint", "timeNumber",  trait))
+  rhsCols <- intersect(c("timePoint", "timeNumber"), colnames(dat))
+  castForm <- formula(paste(paste(castCols, collapse = "+"), "~ " ,
+                            paste(rhsCols, collapse = "+")))
   ## Melt and reshape with default settings adds missing combinations to the
   ## data table.
   datOut <- reshape2::melt(data = reshape2::dcast(data = dat,
@@ -234,11 +236,14 @@ xyFacetPlot <- function(baseDat,
                                 data = overlayDat, color = "black", size = 1,
                                 show.legend = FALSE, na.rm = TRUE)
   }
-  nPag <- ceiling(nlevels(baseDat[[facetVal]]) / 25)
+ # nPag <- ceiling(nlevels(baseDat[[facetVal]]) / 25)
+  nPag <- ceiling(nlevels(interaction(baseDat[facetVal], drop = TRUE)) / 25)
   pPag <- vector(mode = "list", length = nPag)
   for (i in 1:nPag) {
-    pPag[[i]] <- p + ggforce::facet_wrap_paginate(facets = facetVal, nrow = 5,
-                                                  ncol = 5, page = i)
+    pPag[[i]] <- p +
+      ggforce::facet_wrap_paginate(facets = facetVal, nrow = 5, ncol = 5,
+                                   labeller = ggplot2::label_wrap_gen(multi_line = FALSE),
+                                   page = i)
     if (output) {
       plot(pPag[[i]])
     }

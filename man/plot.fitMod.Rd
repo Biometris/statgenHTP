@@ -5,11 +5,10 @@
 \title{Plot function for class fitMod}
 \usage{
 \method{plot}{fitMod}(x, ..., plotType = c("rawPred", "corrPred",
-  "herit", "effDim", "variance", "rowPred", "colPred", "timeLapse"),
-  whichED = c("colId", "rowId", "col", "row", "rowCol", "fCol", "fRow",
-  "fColRow", "colfRow", "fColfRow", "surface"), timePoints = names(x),
-  genotypes = NULL, title = NULL, output = TRUE, outFile = NULL,
-  outFileOpts = NULL)
+  "herit", "effDim", "variance", "timeLapse"), whichED = c("colId",
+  "rowId", "col", "row", "rowCol", "fCol", "fRow", "fColRow", "colfRow",
+  "fColfRow", "surface"), timePoints = names(x), genotypes = NULL,
+  title = NULL, output = TRUE, outFile = NULL, outFileOpts = NULL)
 }
 \arguments{
 \item{x}{An object of class fitMod.}
@@ -83,16 +82,6 @@ Plots the effective dimension from models fitted using SpATS over time.
 \section{variance plot}{
 
 Plots the residual, column and row variance for the fitted model over time.
-}
-
-\section{rowPred plot}{
-
-Plots the row predictions for the fitted model over time.
-}
-
-\section{colPred plot}{
-
-Plots the row predictions for the fitted model over time.
 }
 
 \section{timeLapse plot}{

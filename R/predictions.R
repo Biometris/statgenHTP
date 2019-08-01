@@ -6,12 +6,12 @@ predictGeno <- function(fitMod) {
     genoCol <- fitMod$model$geno$genotype
     ## Check if check was used when fitting model.
     useCheck <- grepl(pattern = "check", x = deparse(fitMod$model$fixed))
-
-    geno.decomp <- fitMod$model$geno$geno.decomp
+    useGenoDecomp <- !is.null(fitMod$model$geno$geno.decomp)
     ## Genotype prediction (including the effect of geno.decomp as well as
     ## the intercept).
     predGeno <- predict(fitMod,
-                        which = c(genoCol, geno.decomp,
+                        which = c(genoCol,
+                                  if (useGenoDecomp) "geno.decomp",
                                   if (useCheck) "check"))
     ## Repeat for the check genotypes.
     if (useCheck) {
@@ -25,12 +25,21 @@ predictGeno <- function(fitMod) {
       predGeno[["genotype"]] <- predGeno[[genoCol]]
       predGeno <- rbind(predGeno, predCheck)
     }
+    if (useGenoDecomp) {
+      ## Genotype was converted to an interaction term of genotype and
+      ## geno.decomp in the proces of fitting the model. That needs to be
+      ## undone to get the genotype back in the output again.
+      genoStart <- nchar(as.character(predGeno[["geno.decomp"]])) + 2
+      predGeno[["genotype"]] <- as.factor(substring(predGeno[["genotype"]],
+                                                    first = genoStart))
+
+    }
     ## Temporary fix for difference between SpATS and asreml predictions.
     ## asreml predicts marginal means whereas SpATS predicts conditional means.
     ## By adding the means of the fixed effects to the conditional means the
     ## marginal means are calculated.
     ## Note that this means the standard errors are no longer correct.
-    corVars <- setdiff(all.vars(fitMod$model$fixed), c(geno.decomp, "check"))
+    corVars <- setdiff(all.vars(fitMod$model$fixed), c("geno.decomp", "check"))
     if (length(corVars) > 0) {
       ## Order in descreasing order so variables that are substrings of other
       ## variables are treated correctly.
@@ -89,7 +98,7 @@ predictGeno <- function(fitMod) {
     predGeno[["timePoint"]] <- fitMod$call$data[["timePoint"]][1]
   }
   ## Select the variables needed for subsequent analyses.
-  predGeno <- predGeno[c("timePoint", "genotype", "predicted.values",
-                         "standard.errors")]
+  predGeno <- predGeno[c("timePoint", if (useGenoDecomp) "geno.decomp",
+                         "genotype", "predicted.values", "standard.errors")]
   return(predGeno)
 }
