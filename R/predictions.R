@@ -60,13 +60,9 @@ predictGeno <- function(fitMod) {
     classForm <- paste0(if (useGenoDecomp) "geno.decomp:", genoCol)
     predGeno <- predictAsreml(fitMod, classify = classForm,
                               present = c(genoCol,
-                          #                if (useGenoDecomp) "geno.decomp",
+                                          if (useGenoDecomp) "geno.decomp",
                                           if (useCheck) "check"),
                               vcov = FALSE)$pvals
-    if (useGenoDecomp) {
-      predGeno <- predGeno[startsWith(as.character(predGeno[[genoCol]]),
-                                      as.character(predGeno[["geno.decomp"]])), ]
-    }
     predGeno <- predGeno[predGeno[["status"]] == "Estimable", ]
     ## Repeat for the check genotypes.
     if (useCheck) {
