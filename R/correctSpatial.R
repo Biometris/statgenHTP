@@ -113,6 +113,9 @@ correctSpatialAsreml <- function(fitMod) {
                                                  "plotId", "timePoint", trait,
                                                  geno.decomp), predVars)],
                   by = predVars)
+    ## Only keep values that were actually estimated.
+    ## This removes rows and columns that were added for the asreml model to run.
+    pred <- pred[pred[["status"]] == "Estimable", ]
     if (!is.null(geno.decomp)) {
       predGD <- predict(fitMod, classify = "geno.decomp")$pvals
       pred <- merge(pred, predGD, by = geno.decomp)
