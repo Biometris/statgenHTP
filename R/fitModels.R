@@ -339,6 +339,10 @@ bestSpatMod <- function(modDat,
   spatCh <- spatCh[spatSel]
   spatTerm <- c(NA, paste("~", c("ar1(rowId):colId", "rowId:ar1(colId)",
                                  "ar1(rowId):ar1(colId)")))[spatSel]
+  randTermNoRep <- c("~ ." , "~ . + rowId", "~ . + colId",
+                     "~ . + rowId + colId")[spatSel]
+  randTermRep <- c("~ ." , "~ . + repId:rowId", "~ . + repId:colId",
+                   "~ . + repId:rowId + repId:colId")[spatSel]
   ## Create empty base lists.
   fitMods <- spatial <- sumTab <- setNames(vector(mode = "list",
                                                   length = length(traits)),
@@ -354,9 +358,9 @@ bestSpatMod <- function(modDat,
     for (i in seq_along(spatTerm)) {
       ## Add extra random term to random part.
       if (useRepId) {
-        randForm <- update(randomForm, "~ . + repId:rowId + repId:colId")
+        randForm <- update(randomForm, randTermRep[i])
       } else {
-        randForm <- update(randomForm, "~ . + rowId + colId")
+        randForm <- update(randomForm, randTermNoRep[i])
       }
       asrArgs <- c(list(fixed = fixedForm, random = randForm, aom = TRUE,
                         data = modDat, maxiter = maxIter, trace = FALSE,
