@@ -2,10 +2,10 @@
 title: "Tutorial"
 author: "Emilie Millet, Bart-Jan van Rossum"
 date: "`r Sys.Date()`"
-output: pdf_document
-  # rmarkdown::html_vignette:
-  #   toc: false
-  #   number_sections: true
+output:
+  rmarkdown::html_vignette:
+    toc: false
+    number_sections: true
 bibliography: bibliography.bib
 vignette: >
   %\VignetteIndexEntry{Tutorial}
@@ -261,7 +261,7 @@ modPhenoSp <- fitModels(TP = phenoTP,
 The output is a `fitMod`  object containing one list per time point. Note that by not supplying the `what` argument to the function, genotype is set as random. We can run it again with genotype as fixed using `what`:
 pheno = *genotype* + **rowId** + **colId** + $\epsilon$
 
-```{r fitSpFix, message=FALSE}
+```{r fitSpFix, message=FALSE, eval=FALSE}
 ## Fit a model for a single time point.
 modPhenoSpFix <- fitModels(TP = phenoTP, 
                            trait = "pheno",
@@ -272,7 +272,7 @@ modPhenoSpFix <- fitModels(TP = phenoTP,
 We can extend the model by including covariates as main fixed effect:  
 pheno = *repId* + *Image_pos* + **genotype** + **rowId** + **colId** + $\epsilon$
 
-```{r fitSpCov, message=FALSE}
+```{r fitSpCov, message=FALSE, eval=FALSE}
 ## Fit a model for a single time point with covariates.
 modPhenoSpCov <- fitModels(TP = phenoTP, 
                            trait = "pheno",
@@ -283,7 +283,7 @@ modPhenoSpCov <- fitModels(TP = phenoTP,
 We can also extend this model by including check genotypes:  
 pheno = *repId* + *Image_pos* + *check* + **genoCheck** + **rowId** + **colId** + $\epsilon$
 
-```{r fitSpCheck, message=FALSE}
+```{r fitSpCheck, message=FALSE, eval=FALSE}
 ## Fit a model for a single time point with covariates and check genotypes.
 modPhenoSpCheck <- fitModels(TP = phenoTP, 
                              trait = "pheno",
@@ -296,7 +296,7 @@ We can finally fit the model following a resolvable row-column design: including
 interactions between replicate and row-col.  
 pheno = *repId* + **genoCheck** + **repId:rowId** + **repId:colId** + $\epsilon$
 
-```{r fitSpRCD, message=FALSE, eval=FALSE}
+```{r fitSpRCD, message=FALSE, eval=FALSE, eval=FALSE}
 ## Fit a model for a single time point.
 modPhenoSpRCD <- fitModels(TP = phenoTP,
                            trait = "pheno",
@@ -312,16 +312,18 @@ summary(modPhenoSp)
 Effective dimensions blablabla
 
 Creates a plot of the spatial trends of models per time point.
-```{r plotSpat,  fig.height=5, fig.width=6, message=FALSE, eval=FALSE, include=FALSE}
+```{r plotSpat,  fig.height=5, fig.width=6, message=FALSE, eval=FALSE}
 plot(modPhenoSp, 
      plotType = "spatial",
      timepoints = 3,
      what = "raw")
 ```
 
+proportion = estimated spatial trend / mean(raw pheno)
+scale adjusted based on all the time points used but will be at least 10% scale display
 
 Creates a time lapse of the spatial trends of models fitted using SpATS over time.
-```{r plotTimeLapse,  fig.height=5, fig.width=6, message=FALSE, eval=FALSE, include=TRUE}
+```{r plotTimeLapse,  fig.height=5, fig.width=6, message=FALSE, eval=FALSE}
 plot(modPhenoSp, 
      plotType = "timeLapse",
      outFile = "TimeLapse_modPhenoSp.gif")
@@ -350,11 +352,8 @@ getEffDims() | Extract effective dimensions - only for `SpATS` |
 ```{r getFun, message=FALSE}
 # Extract the genotypic predictions: 
 genoPredSp <- getGenoPred(modPhenoSp, timePoints = 6)
-genoPredSpCov <- getGenoPred(modPhenoSpCov, timePoints = 3)
-genoPredSpCheck <- getGenoPred(modPhenoSpCheck, timePoints = 3)
 # Extract the corrected values: 
 spatCorrSp <- getCorrected(modPhenoSp, timePoints = 6)
-spatCorrSpCheck <- getCorrected(modPhenoSpCheck, timePoints = 3)
 # Extract model components: 
 varianceSp <- getVar(modPhenoSp)
 heritSp <- getHerit(modPhenoSp)
@@ -406,15 +405,16 @@ plot(modPhenoSp,
 The three last type of plots display different model parameters over time. Option "herit"
 plots the heritability over time. If `geno.decomp` is used when fitting
 the model, heritabilities are plotted for each level of geno.decomp in a
-single plot (see section 3.4).
+single plot (see section 3.4). Scale of the plot can be adjusted using `yLim`.
 
 ```{r plotSpHerit, message=FALSE, fig.height=2, fig.width=3, fig.align = 'center'}
 plot(modPhenoSp, 
-     plotType = "herit")
+     plotType = "herit",
+     yLim = c(0.5,1))
 ```
 
 Option "effDim" plots the effective dimension from models fitted using SpATS over time.
-```{r plotSpED, message=FALSE, fig.height=2, fig.width=4, fig.align = 'center'}
+```{r plotSpED, message=FALSE, fig.height=3, fig.width=5, fig.align = 'center'}
 plot(modPhenoSp, 
      plotType = "effDim",
      whichED = c("colId", "rowId", "fColRow","colfRow", "surface"))
@@ -423,7 +423,7 @@ plot(modPhenoSp,
 By default, all the spatial components are plotted. This can be restricted using the option `whichED`.
 
 Option "variance" plots the residual, column and row variance for the fitted model over time.
-```{r plotSpVar, fig.height=2, fig.width=4, message=FALSE, fig.align = 'center'}
+```{r plotSpVar, fig.height=3, fig.width=5, message=FALSE, fig.align = 'center'}
 plot(modPhenoSp, 
      plotType = "variance")
 ```
@@ -454,21 +454,6 @@ modPhenoSpAs <- fitModels(TP = phenoTP,
                           engine = "asreml",
                           spatial = TRUE)
 # summary(modPhenoSpAs)
-## Fit a model on one time point with spatial function and check genotypes:
-modPhenoSpAsCheck <- fitModels(TP = phenoTP, 
-                               useCheck = TRUE,
-                               trait = "pheno",
-                               timePoints = 3,
-                               covariates = "Image_pos",
-                               engine = "asreml",
-                               spatial = TRUE)
-## Fit a model on one time point with spatial function and rowcol design:
-modPhenoSpAsRCD <- fitModels(TP = phenoTP, 
-                             useRepId = TRUE,
-                             trait = "pheno",
-                             timePoints = 3,
-                             engine = "asreml",
-                             spatial = TRUE)
 ```
 
 Here the best spatial model is: trait = **genotype** + **row** + **col** + $\epsilon$ with a spatial function **ar1(rowId):ar1(colId)**. It has run on all XX time points to be selected. 
@@ -477,15 +462,13 @@ Plotting and extracting results is then done the same way as for SpATS. Below ar
 
 ```{r getFunAs, message=FALSE}
 spatCorrSpAs <- getCorrected(modPhenoSpAs, timePoints = 6)
-# genoPredSpAs <- getGenoPred(modPhenoSpAs, timePoints = 6)
-# genoPredSpAsCheck <- getGenoPred(modPhenoSpAsCheck, timePoints = 3)
 ```
 
 ```{r getCorrAs, echo=FALSE, message=FALSE}
 knitr::kable(head(spatCorrSpAs), align=c('c','c','c','c','c','c','c'), padding = 0)
 ```
 
-```{r plotSpAsHerit, message=FALSE, fig.height=2, fig.width=4, fig.align = 'center'}
+```{r plotSpAsHerit, message=FALSE, fig.height=3, fig.width=5, fig.align = 'center'}
 plot(modPhenoSpAs, 
      plotType = "herit")
 ```
@@ -506,7 +489,7 @@ In the models above and below, fixed effects are indicated in *italics* whereas 
 effects are indicated in **bold**. "genotype" can be fitted as **random** or *fixed* effect
 using the option `what`. The same model will run with genotype as fixed. The option `useCheck` is not displayed in the table but works the same as for SpATS (see section 3.1).
 
-```{r asremlNoSpat }
+```{r asremlNoSpat, eval=FALSE }
 ## Fit a model on few time points without spatial function.
 modPhenoAs <- fitModels(TP = phenoTP, 
                         trait = "pheno",
@@ -514,7 +497,6 @@ modPhenoAs <- fitModels(TP = phenoTP,
                         engine = "asreml",
                         spatial = FALSE)
 ```
-
 
 ## Modelling with variance decomposition
 
@@ -530,74 +512,45 @@ Example with two models, one per engine:
 > Note that for the moment, it is not possible to use the geno.decomp and genotype as fixed with SpATS.
 
 ```{r fitSpGD, message=FALSE}
-## Fit a model few time points using spats.
 modPhenoSpGD <- fitModels(TP = phenoTP, 
                           trait = "pheno",
                           geno.decomp = c("Basin"),
                           timePoints = seq(1,73,by=5))
-
-## Fit a model few time points using asreml
-modPhenoSpAsGD <- fitModels(TP = phenoTP, 
-                        trait = "pheno",
-                        geno.decomp = c("Basin"),
-                        timePoints = seq(1,73,by=5),
-                        spatial = TRUE,
-                        engine = "asreml")
 ```
 
-Extracting results from the model works exactly the same as previously:
+Extracting results and plotting from the models works exactly the same as previously. Some significant differences in the display are highlighted below.
 
-```{r extractGD, message=FALSE}
-genoPredSpGD <- getGenoPred(modPhenoSpGD, timePoints = 6)
-spatCorrSpGD <- getCorrected(modPhenoSpGD, timePoints = 6)
-varianceSpGD <- getVar(modPhenoSpGD)
-heritSpGD <- getHerit(modPhenoSpGD)
-effDimSpGD <- getEffDims(modPhenoSpGD)
-
-# genoPredSpAsGD <- getGenoPred(modPhenoSpAsGD, timePoints = 6)
-# spatCorrSpAsGD <- getCorrected(modPhenoSpAsGD, timePoints = 6)
-# varianceSpAsGD <- getVar(modPhenoSpAsGD)
-# heritSpAsGD <- getHerit(modPhenoSpAsGD)
-```
-
-Prediction is now giving two values per genotype, one per level of geno.decomp, here "Basin", as illustrated in the table below for three genotypes predicted from the SpATS model `genoPredSpGD`.
+Prediction is now giving two values per genotype, one per level of geno.decomp, here "Basin", as illustrated in the table below for three genotypes predicted from the SpATS model `modPhenoSpGD`.
 
 ```{r getPredSpGD, echo=FALSE, message=FALSE}
-knitr::kable(head(genoPredSpGD[genoPredSpGD$genotype%in%c("1","1016","1060"),],6), 
-             align=c('c','c','c','c','c','c'), padding = 0)
+genoPredSpGD <- getGenoPred(modPhenoSpGD, timePoints = 6)
+toto <- head(genoPredSpGD[genoPredSpGD$genotype%in%c("1","1016","1060"),],6)
+row.names(toto) <- 1:6
+knitr::kable(toto, align=c('c','c','c','c','c','c'), padding = 0)
 ```
 
-Plotting the results works also the same but some output will look different. The heritability plot now display one line per level of geno.decomp:
+The heritabilities are now split into geno.decomp level and their plot now displays one line per level of geno.decomp.
 
-```{r plotSpHeritGD, message=FALSE, fig.height=2, fig.width=4, fig.align = 'center'}
-plot(modPhenoSpGD, 
-     plotType = "herit")
-# plot(modPhenoSpAsGD, 
-#      plotType = "herit")
-
-plot(modPhenoSpGD, 
-     plotType = "variance")
-# plot(modPhenoSpAsGD, 
-#      plotType = "variance")
+```{r getHeritSpGD, echo=FALSE, message=FALSE}
+genoHeritSpGD <- getHerit(modPhenoSpGD)
+knitr::kable(head(genoHeritSpGD), 
+             align=c('c','c','c','c'), padding = 0)
 ```
 
-The prediction and corrected plot now displays one plot per combination genotype×geno.decomp:
-```{r plotSprawGD, message=FALSE, fig.height=3, fig.width=6, fig.align = 'center'}
+```{r plotSpHeritGD, echo=FALSE, fig.align='center', fig.height=3, fig.width=4, message=FALSE}
+plot(modPhenoSpGD, 
+     plotType = "herit",
+     yLim = c(0,1))
+```
+
+The prediction and corrected plot now displays one plot per combination genotype×geno.decomp.
+
+```{r plotSprawGD, echo=FALSE, message=FALSE, fig.height=3, fig.width=6, fig.align = 'center'}
 plot(modPhenoSpGD, 
      plotType = "rawPred",
      genotypes = c("col", "ler", "ely", "evo1") )
-# plot(modPhenoSpAsGD, 
-#      plotType = "rawPred",
-#      genotypes = c("col", "ler", "ely", "evo1") )
-
-# plot(modPhenoSpGD, 
-#      plotType = "corrPred",
-#      genotypes = c("col", "ler", "ely", "evo1") )
-# plot(modPhenoSpAsGD, 
-#      plotType = "corrPred",
-#      genotypes = c("col", "ler", "ely", "evo1") )
-
 ```
+
 
 
 ```{r fitSpGDfixed, eval=FALSE, message=FALSE, include=TRUE}
@@ -605,7 +558,7 @@ plot(modPhenoSpGD,
 modPhenoSpGD <- fitModels(TP = phenoTP, 
                           trait = "pheno",
                           covariates = "Image_pos",
-                          # geno.decomp = c("Basin"),
+                          geno.decomp = c("Basin"),
                           timePoints = c(6,11),
                           what = "fixed")
 
