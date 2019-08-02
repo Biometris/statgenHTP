@@ -86,6 +86,7 @@ createFitMod <- function(models,
 #' @return Depending on the plot type either a ggplot object or a list of
 #' ggplot objects is invisibly returned.
 #'
+#' @import ggplot2
 #' @export
 plot.fitMod <- function(x,
                         ...,
@@ -223,7 +224,8 @@ plot.fitMod <- function(x,
                          ggplot2::aes_string(x = "timePoint", y = "h2",
                                              group = "herit", color = "herit")) +
       ggplot2::geom_line(na.rm = TRUE) +
-      ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) +
+      ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5),
+                     axis.title.y = ggplot2::element_text(angle = 0, vjust = 0.5)) +
       ggplot2::ylim(c(NA, yLim))
       ggplot2::labs(title = title)
     if (output) {
@@ -246,7 +248,8 @@ plot.fitMod <- function(x,
                          ggplot2::aes_string(x = "timePoint", y = "ED",
                                              group = "effDim", color = "effDim")) +
       ggplot2::geom_line() +
-      ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) +
+      ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5),
+                     axis.title.y = ggplot2::element_text(angle = 0, vjust = 0.5)) +
       ggplot2::ylim(c(NA, yLim)) +
       ggplot2::labs(title = title, color = "Effective dimension")
     if (output) {
@@ -267,7 +270,8 @@ plot.fitMod <- function(x,
                                              group = "var", color = "var")) +
       ggplot2::geom_line(na.rm = TRUE) +
       ggplot2::scale_color_discrete(labels = c("Residual", "Columns", "Rows")) +
-      ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) +
+      ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5),
+                     axis.title.y = ggplot2::element_text(angle = 0, vjust = 0.5)) +
       ggplot2::ylim(c(NA, yLim)) +
       ggplot2::labs(title = title, color = "variance",
                     y = expression(sigma ^ 2))
