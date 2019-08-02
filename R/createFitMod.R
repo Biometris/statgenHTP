@@ -223,9 +223,9 @@ plot.fitMod <- function(x,
               max(dotArgs$yLim[2], herit[["h2"]]))
     p <- ggplot(herit, aes_string(x = "timePoint", y = "h2",
                                   group = "herit", color = "herit")) +
-      geom_line(na.rm = TRUE) +
-      theme(plot.title = element_text(hjust = 0.5),
-            axis.title.y = element_text(angle = 0, vjust = 0.5)) +
+      geom_line(size = 0.5, na.rm = TRUE) +
+      geom_point(size = 3, na.rm = TRUE) +
+      plotTheme() +
       ylim(yLim) +
       labs(title = title)
     if (output) {
@@ -234,8 +234,12 @@ plot.fitMod <- function(x,
   } else if (plotType == "effDim") {
     whichEDopts <- c("colId", "rowId", "fCol", "fRow", "fColRow", "colfRow",
                      "fColfRow", "surface")
-    whichED <- match.arg(dotArgs$whichED, choices = whichEDopts,
-                         several.ok = TRUE)
+    if (is.null(dotArgs$which)) {
+      whichED <- whichEDopts
+    } else {
+      whichED <- match.arg(dotArgs$whichED, choices = whichEDopts,
+                           several.ok = TRUE)
+    }
     if (is.null(title)) title <- "Effective dimensions"
     ## Get effective dimensions.
     effDim <- getEffDims(fitMods)
@@ -247,9 +251,9 @@ plot.fitMod <- function(x,
               max(dotArgs$yLim[2], effDim[["ED"]]))
     p <- ggplot(effDim, aes_string(x = "timePoint", y = "ED",
                                    group = "effDim", color = "effDim")) +
-      geom_line() +
-      theme(plot.title = element_text(hjust = 0.5),
-            axis.title.y = element_text(angle = 0, vjust = 0.5)) +
+      geom_line(size = 0.5, na.rm = TRUE) +
+      geom_point(size = 3, na.rm = TRUE) +
+      plotTheme() +
       ylim(yLim) +
       labs(title = title, color = "Effective dimension")
     if (output) {
@@ -268,10 +272,10 @@ plot.fitMod <- function(x,
               max(dotArgs$yLim[2], variance[["value"]]))
     p <- ggplot(variance, aes_string(x = "timePoint", y = "value",
                                      group = "var", color = "var")) +
-      geom_line(na.rm = TRUE) +
+      geom_line(size = 0.5, na.rm = TRUE) +
+      geom_point(size = 3, na.rm = TRUE) +
       scale_color_discrete(labels = c("Residual", "Columns", "Rows")) +
-      theme(plot.title = element_text(hjust = 0.5),
-            axis.title.y = element_text(angle = 0, vjust = 0.5)) +
+      plotTheme() +
       ylim(yLim) +
       labs(title = title, color = "variance",
            y = expression(sigma ^ 2))
@@ -287,6 +291,19 @@ plot.fitMod <- function(x,
   if (!plotType == "timeLapse") {
     invisible(p)
   }
+}
+
+#' Helper function for minimal plot theme.
+#'
+#' @noRd
+#' @keywords internal
+plotTheme <- function() {
+  theme(panel.grid = element_blank(),
+        panel.background = element_blank(),
+        legend.key = element_blank(),
+        axis.line = element_line(color = "black"),
+        plot.title = element_text(hjust = 0.5),
+        axis.title.y = element_text(angle = 0, vjust = 0.5))
 }
 
 #' Helper function for creating spatial plots.
