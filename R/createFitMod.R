@@ -64,7 +64,7 @@ createFitMod <- function(models,
 plot.fitMod <- function(x,
                         ...,
                         plotType = c("rawPred", "corrPred", "herit", "effDim",
-                                     "variance", "timeLapse"),
+                                     "variance", "timeLapse", "spatial"),
                         whichED = c("colId", "rowId", "fCol", "fRow", "fColRow",
                                     "colfRow", "fColfRow", "surface"),
                         timePoints = names(x),
@@ -234,12 +234,136 @@ plot.fitMod <- function(x,
     if (output) {
       plot(p)
     }
+  } else if (plotType == "spatial") {
+    p <- lapply(X = fitMods, FUN = spatPlot, output = output)
   } else if (plotType == "timeLapse") {
     chkFile(outFile, fileType = "gif")
     timeLapsePlot(fitMods, outFile = outFile, ...)
   }
   if (!plotType == "timeLapse") {
     invisible(p)
+  }
+}
+
+#' Helper function for creating spatial plots.
+#'
+#' @noRd
+#' @keywords internal
+spatPlot <- function(fitMod,
+                     output = TRUE,
+                     ...) {
+  dotArgs <- list(...)
+  ## Extract data from model.
+  modDat <- fitMod$data
+  ## Extract time point from model data.
+  timePoint <- modDat[["timePoint"]][1]
+  ## Extract trait from model.
+  trait <- fitMod$model$response
+  ## Extract what from model.
+  what <- ifelse(fitMod$model$geno$as.random, "random", "fixed")
+  ## Extract raw data.
+  raw <- modDat[c("genotype", trait, "rowNum", "colNum")]
+  ## Extract fitted values from model.
+  fitted <- fitted(fitMod)
+  ## Extract predictions (BLUEs or BLUPs) from model.
+  pred <- predictGeno(fitMod)[c("genotype", "predicted.values")]
+  ## Create plot data by merging extracted data together and renaming some
+  ## columns.
+  plotDat <- cbind(raw, fitted)
+  plotDat <- merge(plotDat, pred, by = "genotype")
+  plotDat[["predicted.values"]][is.na(plotDat[["fitted"]])] <- NA
+  plotDat[["resid"]] <- plotDat[[trait]] - plotDat[["fitted"]]
+  ## Get limits for row and columns.
+  yMin <- min(plotDat[["rowNum"]])
+  yMax <- max(plotDat[["rowNum"]])
+  xMin <- min(plotDat[["rowNum"]])
+  xMax <- max(plotDat[["colNum"]])
+  ## Execute this part first since it needs plotData without missings
+  ## removed.
+  ## Code mimickes code from SpATS package but is adapted to create a
+  ## data.frame useable by ggplot.
+  plotDat <- plotDat[order(plotDat[["colNum"]], plotDat[["rowNum"]]), ]
+  nCol <- xMax - xMin + 1
+  nRow <- yMax - yMin + 1
+  p1 <- 100 %/% nCol + 1
+  p2 <- 100 %/% nRow + 1
+  ## Get spatial trend from SpATS object.
+  spatTr <- SpATS::obtain.spatialtrend(fitMod, grid = c(nCol * p1, nRow * p2))
+  ## spatial trend contains values for all data points, so NA in original
+  ## data need to be removed. The kronecker multiplication is needed to
+  ## convert the normal row col pattern to the smaller grid extending the
+  ## missing values.
+  ## First a matrix M is created containing information for all
+  ## columns/rows in the field even if they are completely empty.
+  M <- matrix(nrow = nRow, ncol = nCol,
+              dimnames = list(yMin:yMax, xMin:xMax))
+  for (i in 1:nrow(plotDat)) {
+    M[as.character(plotDat[i, "rowNum"]),
+      as.character(plotDat[i, "colNum"])] <-
+      ifelse(is.na(plotDat[i, trait]), NA, 1)
+  }
+  spatTrDat <- kronecker(M, matrix(data = 1, ncol = p1, nrow = p2)) *
+    spatTr$fit
+  ## Melt to get the data in ggplot shape. Rows and columns in the
+  ## spatial trend coming from SpATS are swapped so therefore use t()
+  plotDatSpat <- reshape2::melt(t(spatTrDat), varnames = c("colNum", "rowNum"))
+  ## Add true values for columns and rows for plotting.
+  plotDatSpat[["colNum"]] <- spatTr$col.p
+  plotDatSpat[["rowNum"]] <- rep(x = spatTr$row.p, each = p1 * nCol)
+  ## Remove missings from data.
+  plotDatSpat <- ggplot2::remove_missing(plotDatSpat, na.rm = TRUE)
+  ## Now missing values can be removed from plotDat.
+  plotDat <- ggplot2::remove_missing(plotDat, na.rm = TRUE)
+  ## Code taken from plot.SpATS and simplified.
+  ## Set colors and legends.
+  colors <- topo.colors(100)
+  legends <- c("Raw data", "Fitted data", "Residuals",
+               "Fitted Spatial Trend",
+               ifelse(what == "fixed", "Genotypic BLUEs",
+                      "Genotypic BLUPs"), "Histogram")
+  ## Compute range of values in response + fitted data so same scale
+  ## can be used over plots.
+  zlim <- range(c(plotDat[[trait]], plotDat[["fitted"]]), na.rm = TRUE)
+  ## Create empty list for storing plots
+  plots <- vector(mode = "list")
+  ## Create main plot title.
+  plotTitle <- ifelse(!is.null(dotArgs$title), dotArgs$title,
+                      paste("Timepoint:", timePoint, "Trait:", trait))
+  ## Create separate plots.
+  plots$p1 <- fieldPlot(plotDat = plotDat, fillVar = trait,
+                        title = legends[1], colors = colors, zlim = zlim)
+  plots$p2 <- fieldPlot(plotDat = plotDat, fillVar = "fitted",
+                        title = legends[2], colors = colors, zlim = zlim)
+  plots$p3 <- fieldPlot(plotDat = plotDat, fillVar = "resid",
+                        title = legends[3], colors = colors)
+  ## Get tickmarks from first plot to be used as ticks.
+  ## Spatial plot tends to use different tickmarks by default.
+  xTicks <-
+    ggplot2::ggplot_build(plots[[1]])$layout$panel_params[[1]]$x.major_source
+  plots$p4 <- fieldPlot(plotDat = plotDatSpat, fillVar = "value",
+                        title = legends[4], colors = colors,
+                        xTicks = xTicks)
+  plots$p5 <- fieldPlot(plotDat = plotDat, fillVar = "predicted.values",
+                        title = legends[5], colors = colors)
+  plots$p6 <- ggplot2::ggplot(data = plotDat) +
+    ggplot2::geom_histogram(ggplot2::aes(x = predicted.values),
+                            fill = "white", col = "black", bins = 10,
+                            boundary = 0) +
+    ## Remove empty space between ticks and actual plot.
+    ggplot2::scale_x_continuous(expand = c(0, 0)) +
+    ggplot2::scale_y_continuous(expand = c(0, 0)) +
+    ## No background. Center and resize title. Resize axis labels.
+    ggplot2::theme(panel.background = ggplot2::element_blank(),
+                   plot.title = ggplot2::element_text(hjust = 0.5,
+                                                      size = 10),
+                   axis.title = ggplot2::element_text(size = 9)) +
+    ggplot2::labs(y = "Frequency", x = legends[5]) +
+    ggplot2::ggtitle(legends[6])
+  if (output) {
+    ## do.call is needed since grid.arrange doesn't accept lists as input.
+    do.call(gridExtra::grid.arrange,
+            args = c(Filter(f = Negate(f = is.null), x = plots),
+                     list(ncol = 3, top = plotTitle)))
   }
 }
 
@@ -253,36 +377,70 @@ fieldPlot <- function(plotDat,
                       colors,
                       zlim = range(plotDat[fillVar]),
                       xTicks = ggplot2::waiver(),
-                      scaleLim = Inf,
                       ...) {
-  p <- ggplot2::ggplot(
-    data = plotDat,
-    ggplot2::aes_string(x = "colNum", y = "rowNum",
-                        fill = fillVar,
-                        color = if (is.infinite(scaleLim)) NULL else "''")) +
-    ggplot2::geom_tile(na.rm = TRUE) +
+  p <- ggplot2::ggplot(data = plotDat,
+                       ggplot2::aes_string(x = "colNum", y = "rowNum",
+                                           fill = fillVar)) +
+    ggplot2::geom_raster() +
     ## Remove empty space between ticks and actual plot.
     ggplot2::scale_x_continuous(expand = c(0, 0), breaks = xTicks) +
     ggplot2::scale_y_continuous(expand = c(0, 0)) +
     ## Adjust plot colors.
-    ggplot2::scale_fill_gradientn(limits = zlim, colors = colors, name = NULL,
-                                  labels = scales::percent,
-                                  breaks = seq(zlim[1], zlim[2],
-                                               length.out = 5)) +
-    ggplot2::scale_color_manual(values = NA) +
-    ggplot2::guides(
-      fill = ggplot2::guide_colorbar(order = 1),
-      color = ggplot2::guide_legend("Larger than scale limit",
-                                    override.aes = list(fill = "grey50",
-                                                        color = "grey50"))) +
+    ggplot2::scale_fill_gradientn(limits = zlim, colors = colors) +
     ## No background. Center and resize title. Resize axis labels.
     ## Remove legend title and resize legend entries.
     ggplot2::theme(panel.background = ggplot2::element_blank(),
                    plot.title = ggplot2::element_text(hjust = 0.5, size = 10),
-                   axis.title = ggplot2::element_text(size = 9)) +
+                   axis.title = ggplot2::element_text(size = 9),
+                   legend.title = ggplot2::element_blank(),
+                   legend.text =
+                     ggplot2::element_text(size = 8,
+                                           margin = ggplot2::margin(l = 5))) +
     ggplot2::ggtitle(title)
   return(p)
 }
+
+
+#' Helper function for creating field plots.
+#'
+#' @noRd
+#' @keywords internal
+# fieldPlot <- function(plotDat,
+#                       fillVar,
+#                       title,
+#                       colors,
+#                       zlim = range(plotDat[fillVar]),
+#                       xTicks = ggplot2::waiver(),
+#                       scaleLim = Inf,
+#                       ...) {
+#   p <- ggplot2::ggplot(
+#     data = plotDat,
+#     ggplot2::aes_string(x = "colNum", y = "rowNum",
+#                         fill = fillVar,
+#                         color = if (is.infinite(scaleLim)) NULL else "''")) +
+#     ggplot2::geom_tile(na.rm = TRUE) +
+#     ## Remove empty space between ticks and actual plot.
+#     ggplot2::scale_x_continuous(expand = c(0, 0), breaks = xTicks) +
+#     ggplot2::scale_y_continuous(expand = c(0, 0)) +
+#     ## Adjust plot colors.
+#     ggplot2::scale_fill_gradientn(limits = zlim, colors = colors, name = NULL,
+#                                   labels = scales::percent,
+#                                   breaks = seq(zlim[1], zlim[2],
+#                                                length.out = 5)) +
+#     ggplot2::scale_color_manual(values = NA) +
+#     ggplot2::guides(
+#       fill = ggplot2::guide_colorbar(order = 1),
+#       color = ggplot2::guide_legend("Larger than scale limit",
+#                                     override.aes = list(fill = "grey50",
+#                                                         color = "grey50"))) +
+#     ## No background. Center and resize title. Resize axis labels.
+#     ## Remove legend title and resize legend entries.
+#     ggplot2::theme(panel.background = ggplot2::element_blank(),
+#                    plot.title = ggplot2::element_text(hjust = 0.5, size = 10),
+#                    axis.title = ggplot2::element_text(size = 9)) +
+#     ggplot2::ggtitle(title)
+#   return(p)
+# }
 
 #' Helper function for creating time lapse plots.
 #'
