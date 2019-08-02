@@ -40,7 +40,12 @@ createFitMod <- function(models,
 #' @section herit plot:
 #' Plots the heritability over time. If \code{geno.decomp} is used when fitting
 #' the model, heritabilities are plotted for each level of geno.decomp in a
-#' single plot.
+#' single plot. Extra parameter options:
+#' \describe{
+#' \item{yLim}{A numerical value used for setting the upper limit of the y-axis
+#' of the plot. If a value lower than the highest value to be plotted is
+#' given, then it is ignored.}
+#' }
 #'
 #' @section effDim plot:
 #' Plots the effective dimension from models fitted using SpATS over time.
@@ -50,10 +55,19 @@ createFitMod <- function(models,
 #' shoul be plotted. This should be a subset of "colId", "rowId", "fCol",
 #' "fRow", "fColRow", "colfRow", "fColfRow" and "surface". Default all
 #' effective dimensions are plotted.}
+#' \item{yLim}{A numerical value used for setting the upper limit of the y-axis
+#' of the plot. If a value lower than the highest value to be plotted is
+#' given, then it is ignored.}
 #' }
 #'
 #' @section variance plot:
 #' Plots the residual, column and row variance for the fitted model over time.
+#' Extra parameter options:
+#' \describe{
+#' \item{yLim}{A numerical value used for setting the upper limit of the y-axis
+#' of the plot. If a value lower than the highest value to be plotted is
+#' given, then it is ignored.}
+#' }
 #'
 #' @section timeLapse plot:
 #' Creates a time lapse of the spatial trends of models fitted using SpATS over
@@ -61,7 +75,7 @@ createFitMod <- function(models,
 #'
 #' @inheritParams plot.TP
 #'
-#' @param x An object of class fitMod.#'
+#' @param x An object of class fitMod.
 #' @param title A character string used as title for the plot. If \code{NULL} a
 #' default title is added to the plot depending on \code{plotType}.
 #' @param outFile A character string indicating the .pdf file or .gif file
@@ -69,8 +83,8 @@ createFitMod <- function(models,
 #' @param outFileOpts A named list of extra options for the pdf outfile, e.g.
 #' width and height. See \code{\link[grDevices]{pdf}} for all possible options.
 #'
-#' @return Depending on the plot type either a ggplot object or a list of ggplot
-#' objects is invisibly returned.
+#' @return Depending on the plot type either a ggplot object or a list of
+#' ggplot objects is invisibly returned.
 #'
 #' @export
 plot.fitMod <- function(x,
@@ -78,7 +92,6 @@ plot.fitMod <- function(x,
                         plotType = c("rawPred", "corrPred", "herit", "effDim",
                                      "variance", "timeLapse", "spatial"),
                         timePoints = names(x),
-                        genotypes = NULL,
                         title = NULL,
                         output = TRUE,
                         outFile = NULL,
@@ -204,11 +217,14 @@ plot.fitMod <- function(x,
                                                           c("timeNumber",
                                                             "timePoint")),
                             variable.name = "herit", value.name = "h2")
+    ## Manually modify limit of y-axis.
+    yLim <- max(dotArgs$yLim, herit[["h2"]])
     p <- ggplot2::ggplot(herit,
                          ggplot2::aes_string(x = "timePoint", y = "h2",
                                              group = "herit", color = "herit")) +
       ggplot2::geom_line(na.rm = TRUE) +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) +
+      ggplot2::ylim(c(NA, yLim))
       ggplot2::labs(title = title)
     if (output) {
       plot(p)
@@ -224,11 +240,14 @@ plot.fitMod <- function(x,
     ## Convert to long format needed by ggplot.
     effDim <- reshape2::melt(effDim, measure.vars = whichED,
                              variable.name = "effDim", value.name = "ED")
+    ## Manually modify limit of y-axis.
+    yLim <- max(dotArgs$yLim, effDim[["ED"]])
     p <- ggplot2::ggplot(effDim,
                          ggplot2::aes_string(x = "timePoint", y = "ED",
                                              group = "effDim", color = "effDim")) +
       ggplot2::geom_line() +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) +
+      ggplot2::ylim(c(NA, yLim)) +
       ggplot2::labs(title = title, color = "Effective dimension")
     if (output) {
       plot(p)
@@ -241,12 +260,15 @@ plot.fitMod <- function(x,
     variance <- reshape2::melt(variance, measure.vars = c("varRes", "varCol",
                                                           "varRow"),
                                variable.name = "var")
+    ## Manually modify limit of y-axis.
+    yLim <- max(dotArgs$yLim, variance[["value"]])
     p <- ggplot2::ggplot(variance,
                          ggplot2::aes_string(x = "timePoint", y = "value",
                                              group = "var", color = "var")) +
       ggplot2::geom_line(na.rm = TRUE) +
       ggplot2::scale_color_discrete(labels = c("Residual", "Columns", "Rows")) +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) +
+      ggplot2::ylim(c(NA, yLim)) +
       ggplot2::labs(title = title, color = "variance",
                     y = expression(sigma ^ 2))
     if (output) {

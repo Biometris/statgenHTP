@@ -6,11 +6,11 @@
 \usage{
 \method{plot}{fitMod}(x, ..., plotType = c("rawPred", "corrPred",
   "herit", "effDim", "variance", "timeLapse", "spatial"),
-  timePoints = names(x), genotypes = NULL, title = NULL,
-  output = TRUE, outFile = NULL, outFileOpts = NULL)
+  timePoints = names(x), title = NULL, output = TRUE,
+  outFile = NULL, outFileOpts = NULL)
 }
 \arguments{
-\item{x}{An object of class fitMod.#'}
+\item{x}{An object of class fitMod.}
 
 \item{...}{Extra plot options. Described per plotType in their respective
 section.}
@@ -38,8 +38,8 @@ default title is added to the plot depending on \code{plotType}.}
 width and height. See \code{\link[grDevices]{pdf}} for all possible options.}
 }
 \value{
-Depending on the plot type either a ggplot object or a list of ggplot
-objects is invisibly returned.
+Depending on the plot type either a ggplot object or a list of
+ggplot objects is invisibly returned.
 }
 \description{
 Plotting function for objects of class fitMod. A detailed description and
@@ -73,7 +73,12 @@ options:
 
 Plots the heritability over time. If \code{geno.decomp} is used when fitting
 the model, heritabilities are plotted for each level of geno.decomp in a
-single plot.
+single plot. Extra parameter options:
+\describe{
+\item{yLim}{A numerical value used for setting the upper limit of the y-axis
+of the plot. If a value lower than the highest value to be plotted is
+given, then it is ignored.}
+}
 }
 
 \section{effDim plot}{
@@ -85,12 +90,21 @@ Extra parameter options:
 shoul be plotted. This should be a subset of "colId", "rowId", "fCol",
 "fRow", "fColRow", "colfRow", "fColfRow" and "surface". Default all
 effective dimensions are plotted.}
+\item{yLim}{A numerical value used for setting the upper limit of the y-axis
+of the plot. If a value lower than the highest value to be plotted is
+given, then it is ignored.}
 }
 }
 
 \section{variance plot}{
 
 Plots the residual, column and row variance for the fitted model over time.
+Extra parameter options:
+\describe{
+\item{yLim}{A numerical value used for setting the upper limit of the y-axis
+of the plot. If a value lower than the highest value to be plotted is
+given, then it is ignored.}
+}
 }
 
 \section{timeLapse plot}{
