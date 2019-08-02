@@ -133,12 +133,12 @@ createTimePoints <- function(dat,
     ## Add column check with genotype for check genotypes and noCheck for
     ## all other genotypes. To be used as covariate in model.
     dat[["check"]] <- ifelse(dat[["genotype"]] %in% checkGenotypes,
-                             dat[["genotype"]], "noCheck")
+                             as.character(dat[["genotype"]]), "noCheck")
     ## Add column genoCheck with NA for check genotypes and genotype for
     ## all other genotypes. Preserve original column so models without check
     ## can still be fitted.
     dat[["genoCheck"]] <- ifelse(dat[["genotype"]] %in% checkGenotypes,
-                                 NA, dat[["genotype"]])
+                                 NA, as.character(dat[["genotype"]]))
   }
   ## Convert columns to factor if neccessary.
   factorCols <-  c("genotype", "plotId", "repId", "rowId", "colId", "check",
