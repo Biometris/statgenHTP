@@ -167,6 +167,9 @@ plot.fitMod <- function(x,
     }
     ## Restrict genotypes.
     if (!is.null(genotypes)) {
+      if (!all(genotypes %in% preds[["genotype"]])) {
+        stop("All genotypes should be in ", deparse(substitute(x)))
+      }
       preds <- preds[preds[["genotype"]] %in% genotypes, ]
       preds <- droplevels(preds)
       raw <- raw[raw[["genotype"]] %in% genotypes, ]
@@ -196,6 +199,9 @@ plot.fitMod <- function(x,
     corrected <- suppressWarnings(getCorrected(fitMods))
     ## Restrict genotypes.
     if (!is.null(genotypes)) {
+      if (!all(genotypes %in% preds[["genotype"]])) {
+        stop("All genotypes should be in ", deparse(substitute(x)))
+      }
       preds <- preds[preds[["genotype"]] %in% genotypes, ]
       preds <- droplevels(preds)
       corrected <- corrected[corrected[["genotype"]] %in% genotypes, ]
