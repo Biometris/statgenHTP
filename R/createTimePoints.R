@@ -55,6 +55,7 @@
 #'
 #' @family functions for TP objects
 #'
+#' @import ggplot2
 #' @export
 createTimePoints <- function(dat,
                              genotype,
@@ -323,37 +324,33 @@ plot.TP <- function(x,
         repBord <- calcPlotBorders(tpDat = tpDat, bordVar = "repId")
       }
       ## Create base plot.
-      pTp <- ggplot2::ggplot(data = tpDat,
-                             ggplot2::aes_string(x = "colNum",
-                                                 y = "rowNum")) +
-        ggplot2::coord_fixed(ratio = aspect,
-                             xlim = range(tpDat$colNum) + c(-0.5, 0.5),
-                             ylim = range(tpDat$rowNum) + c(-0.5, 0.5),
-                             clip = "off") +
-        ggplot2::theme(panel.background = ggplot2::element_blank(),
-                       plot.title = ggplot2::element_text(hjust = 0.5)) +
+      pTp <- ggplot(data = tpDat, aes_string(x = "colNum", y = "rowNum")) +
+        coord_fixed(ratio = aspect,
+                    xlim = range(tpDat$colNum) + c(-0.5, 0.5),
+                    ylim = range(tpDat$rowNum) + c(-0.5, 0.5),
+                    clip = "off") +
+        theme(panel.background = element_blank(),
+              plot.title = element_text(hjust = 0.5)) +
         ## Move ticks to edge of the plot.
-        ggplot2::scale_x_continuous(breaks = scales::pretty_breaks(),
-                                    expand = c(0, 0)) +
-        ggplot2::scale_y_continuous(breaks = scales::pretty_breaks(),
-                                    expand = c(0, 0)) +
-        ggplot2::ggtitle(timePoint)
+        scale_x_continuous(breaks = scales::pretty_breaks(), expand = c(0, 0)) +
+        scale_y_continuous(breaks = scales::pretty_breaks(), expand = c(0, 0)) +
+        ggtitle(timePoint)
       if (sum(!is.na(tpDat$highlight.)) > 0) {
         ## Genotypes to be highlighted get a color.
         ## Everything else the NA color.
-        pTp <- pTp + ggplot2::geom_tile(
-          ggplot2::aes_string(fill = "highlight."), color = "grey75") +
-          ggplot2::labs(fill = "Highlighted") +
+        pTp <- pTp + geom_tile(
+          aes_string(fill = "highlight."), color = "grey75") +
+          labs(fill = "Highlighted") +
           ## Remove NA from scale.
-          ggplot2::scale_fill_discrete(na.translate = FALSE)
+          scale_fill_discrete(na.translate = FALSE)
       } else {
         ## No hightlights so just a single fill color.
-        pTp <- pTp + ggplot2::geom_tile(fill = "white", color = "grey75")
+        pTp <- pTp + geom_tile(fill = "white", color = "grey75")
       }
       if (showGeno) {
         ## Add names of genotypes to the center of the tiles.
-        pTp <- pTp + ggplot2::geom_text(ggplot2::aes_string(label = "genotype"),
-                                        size = 2, check_overlap = TRUE)
+        pTp <- pTp + geom_text(aes_string(label = "genotype"),
+                               size = 2, check_overlap = TRUE)
       }
       if (plotRep) {
         ## Add lines for replicates.
@@ -361,24 +358,21 @@ plot.TP <- function(x,
           ## Add verical lines as segment.
           ## adding/subtracting 0.5 assures plotting at the borders of
           ## the tiles.
-          ggplot2::geom_segment(
-            ggplot2::aes_string(x = "x - 0.5", xend = "x - 0.5",
-                                y = "y - 0.5", yend = "y + 0.5",
-                                linetype = "'replicates'"),
+          geom_segment(aes_string(x = "x - 0.5", xend = "x - 0.5",
+                                  y = "y - 0.5", yend = "y + 0.5",
+                                  linetype = "'replicates'"),
             data = repBord$vertW, size = 1) +
-          ggplot2::geom_segment(
-            ggplot2::aes_string(x = "x - 0.5", xend = "x + 0.5",
-                                y = "y - 0.5", yend = "y - 0.5"),
-            data = repBord$horW, size = 1)
+          geom_segment(aes_string(x = "x - 0.5", xend = "x + 0.5",
+                                  y = "y - 0.5", yend = "y - 0.5"),
+                       data = repBord$horW, size = 1)
       }
       if (plotRep) {
         pTp <- pTp +
           ## Add a legend entry for replicates and subBlocks.
-          ggplot2::scale_linetype_manual("replicates",
-                                         values = c("replicates" = "solid"),
-                                         name = ggplot2::element_blank()) +
-          ggplot2::guides(linetype = ggplot2::guide_legend(override.aes =
-                                                             list(size = 1)))
+          scale_linetype_manual("replicates",
+                                values = c("replicates" = "solid"),
+                                name = element_blank()) +
+          guides(linetype = guide_legend(override.aes = list(size = 1)))
       }
       p[[timePoint]] <- pTp
       if (output) {
@@ -459,16 +453,13 @@ plot.TP <- function(x,
       }
       ## Create boxplot.
       ## Back ticks around variable names are needed to handle spaces in names.
-      pTp <- ggplot2::ggplot(plotDat,
-                             ggplot2::aes_string(x = paste0("`", xVar, "`"),
-                                                 y = paste0("`", trait, "`"),
-                                                 fill = if (is.null(colorBy)) NULL else
-                                                   paste0("`", colorBy, "`"))) +
-        ggplot2::geom_boxplot(na.rm = TRUE) +
-        ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90,
-                                                           vjust = 0.5,
-                                                           hjust = 1)) +
-        ggplot2::labs(x = xVar, y = trait)
+      pTp <- ggplot(plotDat, aes_string(x = paste0("`", xVar, "`"),
+                                        y = paste0("`", trait, "`"),
+                                        fill = if (is.null(colorBy)) NULL else
+                                          paste0("`", colorBy, "`"))) +
+        geom_boxplot(na.rm = TRUE) +
+        theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+        labs(x = xVar, y = trait)
       p[[trait]] <- pTp
       if (output) {
         plot(pTp)
@@ -488,12 +479,12 @@ plot.TP <- function(x,
       ## them to NULL.
       plotDat <- Reduce(f = rbind, x = lapply(X = x[timePoints],
                                               FUN = function(timePoint) {
-        if (!hasName(x = timePoint, name = trait)) {
-          NULL
-        } else {
-          timePoint[c("plotId", "timePoint", trait)]
-        }
-      }))
+                                                if (!hasName(x = timePoint, name = trait)) {
+                                                  NULL
+                                                } else {
+                                                  timePoint[c("plotId", "timePoint", trait)]
+                                                }
+                                              }))
       if (is.null(plotDat)) {
         warning(paste0(trait, " isn't a column in any of the timePoints.\n",
                        "Plot skipped.\n"), call. = FALSE)
@@ -525,31 +516,29 @@ plot.TP <- function(x,
       meltedCorMat <- meltedCorMat[as.numeric(meltedCorMat$Var1) >
                                      as.numeric(meltedCorMat$Var2), ]
       ## Create plot.
-      pTp <- ggplot2::ggplot(data = meltedCorMat,
-                             ggplot2::aes_string(x = "Var1", y = "Var2",
-                                                 fill = "value")) +
-        ggplot2::geom_tile(color = "grey50") +
+      pTp <- ggplot(data = meltedCorMat, aes_string(x = "Var1", y = "Var2",
+                                                    fill = "value")) +
+        geom_tile(color = "grey50") +
         ## Create a gradient scale.
-        ggplot2::scale_fill_gradient2(low = "blue", high = "red", mid = "white",
-                                      na.value = "grey", limit = c(-1, 1)) +
+        scale_fill_gradient2(low = "blue", high = "red", mid = "white",
+                             na.value = "grey", limit = c(-1, 1)) +
         ## Move y-axis to the right for easier reading.
-        ggplot2::scale_y_discrete(position = "right") +
-        ggplot2::theme_minimal() +
-        ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45,
-                                                           vjust = 1, size = 6,
-                                                           hjust = 1)) +
-        ggplot2::theme(axis.text.y = ggplot2::element_text(size = 6)) +
+        scale_y_discrete(position = "right") +
+        theme_minimal() +
+        theme(axis.text.x = element_text(angle = 45, vjust = 1, size = 6,
+                                         hjust = 1)) +
+        theme(axis.text.y = element_text(size = 6)) +
         ## Center title.
-        ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) +
+        theme(plot.title = element_text(hjust = 0.5)) +
         ## Remove grid behind empty bit of triangle.
-        ggplot2::theme(panel.grid.major = ggplot2::element_blank(),
-                       panel.grid.minor = ggplot2::element_blank()) +
+        theme(panel.grid.major = element_blank(),
+              panel.grid.minor = element_blank()) +
         ## No axis and legend titles.
-        ggplot2::labs(x = "", y = "", color = "") +
-        ggplot2::ggtitle(paste("Correlations of timepoints for", trait)) +
-        ggplot2::guides(size = FALSE) +
+        labs(x = "", y = "", color = "") +
+        ggtitle(paste("Correlations of timepoints for", trait)) +
+        guides(size = FALSE) +
         ## Fix coordinates to get a square sized plot.
-        ggplot2::coord_fixed()
+        coord_fixed()
       p[[trait]] <- pTp
       if (output) {
         plot(pTp)
@@ -573,12 +562,12 @@ plot.TP <- function(x,
       ## by setting them to NULL.
       plotDat <- Reduce(f = rbind, x = lapply(X = x[timePoints],
                                               FUN = function(timePoint) {
-        if (!hasName(x = timePoint, name = trait)) {
-          NULL
-        } else {
-          timePoint[c("genotype", "timePoint", "plotId", trait, geno.decomp)]
-        }
-      }))
+                                                if (!hasName(x = timePoint, name = trait)) {
+                                                  NULL
+                                                } else {
+                                                  timePoint[c("genotype", "timePoint", "plotId", trait, geno.decomp)]
+                                                }
+                                              }))
       if (is.null(plotDat)) {
         warning(paste0(trait, " isn't a column in any of the timePoints.\n",
                        "Plot skipped.\n"), call. = FALSE)
