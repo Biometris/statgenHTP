@@ -331,7 +331,8 @@ dfBind <- function(dfList) {
             nwDat <- sapply(X = setdiff(allNms, names(x)), FUN = function(y) {
               NA
             })
-            data.frame(c(x, nwDat), stringsAsFactors = FALSE)
+            data.frame(c(x, nwDat), check.names = FALSE,
+                       stringsAsFactors = FALSE)
           }), make.row.names = FALSE)
   )
 }
