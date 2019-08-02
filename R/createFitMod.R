@@ -42,9 +42,9 @@ createFitMod <- function(models,
 #' the model, heritabilities are plotted for each level of geno.decomp in a
 #' single plot. Extra parameter options:
 #' \describe{
-#' \item{yLim}{A numerical value used for setting the upper limit of the y-axis
-#' of the plot. If a value lower than the highest value to be plotted is
-#' given, then it is ignored.}
+#' \item{yLim}{A numerical vector of length two used for setting the limits of
+#' the y-axis of the plot. If values outside of the plotting range are given,
+#' then these are ignored.}
 #' }
 #'
 #' @section effDim plot:
@@ -219,13 +219,14 @@ plot.fitMod <- function(x,
                                                             "timePoint")),
                             variable.name = "herit", value.name = "h2")
     ## Manually modify limit of y-axis.
-    yLim <- max(dotArgs$yLim, herit[["h2"]])
+    yLim <- c(min(dotArgs$yLim[1], herit[["h2"]]),
+              max(dotArgs$yLim[2], herit[["h2"]]))
     p <- ggplot(herit, aes_string(x = "timePoint", y = "h2",
                                   group = "herit", color = "herit")) +
       geom_line(na.rm = TRUE) +
       theme(plot.title = element_text(hjust = 0.5),
             axis.title.y = element_text(angle = 0, vjust = 0.5)) +
-      ylim(c(NA, yLim)) +
+      ylim(yLim) +
       labs(title = title)
     if (output) {
       plot(p)
@@ -242,13 +243,14 @@ plot.fitMod <- function(x,
     effDim <- reshape2::melt(effDim, measure.vars = whichED,
                              variable.name = "effDim", value.name = "ED")
     ## Manually modify limit of y-axis.
-    yLim <- max(dotArgs$yLim, effDim[["ED"]])
+    yLim <- c(min(dotArgs$yLim[1], effDim[["ED"]]),
+              max(dotArgs$yLim[2], effDim[["ED"]]))
     p <- ggplot(effDim, aes_string(x = "timePoint", y = "ED",
                                    group = "effDim", color = "effDim")) +
       geom_line() +
       theme(plot.title = element_text(hjust = 0.5),
             axis.title.y = element_text(angle = 0, vjust = 0.5)) +
-      ylim(c(NA, yLim)) +
+      ylim(yLim) +
       labs(title = title, color = "Effective dimension")
     if (output) {
       plot(p)
@@ -262,14 +264,15 @@ plot.fitMod <- function(x,
                                                           "varRow"),
                                variable.name = "var")
     ## Manually modify limit of y-axis.
-    yLim <- max(dotArgs$yLim, variance[["value"]])
+    yLim <- c(min(dotArgs$yLim[1], variance[["value"]]),
+              max(dotArgs$yLim[2], variance[["value"]]))
     p <- ggplot(variance, aes_string(x = "timePoint", y = "value",
                                      group = "var", color = "var")) +
       geom_line(na.rm = TRUE) +
       scale_color_discrete(labels = c("Residual", "Columns", "Rows")) +
       theme(plot.title = element_text(hjust = 0.5),
             axis.title.y = element_text(angle = 0, vjust = 0.5)) +
-      ylim(c(NA, yLim)) +
+      ylim(yLim) +
       labs(title = title, color = "variance",
            y = expression(sigma ^ 2))
     if (output) {
