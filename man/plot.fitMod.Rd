@@ -6,12 +6,11 @@
 \usage{
 \method{plot}{fitMod}(x, ..., plotType = c("rawPred", "corrPred",
   "herit", "effDim", "variance", "timeLapse", "spatial"),
-  whichED = c("colId", "rowId", "fCol", "fRow", "fColRow", "colfRow",
-  "fColfRow", "surface"), timePoints = names(x), genotypes = NULL,
-  title = NULL, output = TRUE, outFile = NULL, outFileOpts = NULL)
+  timePoints = names(x), genotypes = NULL, title = NULL,
+  output = TRUE, outFile = NULL, outFileOpts = NULL)
 }
 \arguments{
-\item{x}{An object of class fitMod.}
+\item{x}{An object of class fitMod.#'}
 
 \item{...}{Extra plot options. Described per plotType in their respective
 section.}
@@ -19,17 +18,11 @@ section.}
 \item{plotType}{A single character string indicating which plot should be
 made. See the sections below for a detailed explanation of the plots.}
 
-\item{whichED}{A character vector indicating which effective dimensions
-shoul be plotted. Only used if \code{plotType} = "effDim".}
-
 \item{timePoints}{A character or numeric vector indicating the timePoints
 to be plotted. When using a character string to reference a timePoint, the
 value has to be an exact match to one of the existing timePoints. When using
 a number it will be matched by its number in the timePoints attribute of the
 TP object.}
-
-\item{genotypes}{A character vector indicating the genotypes to be plotted.
-Only used if \code{plotType} = "rawPred" or "corrPred".}
 
 \item{title}{A character string used as title for the plot. If \code{NULL} a
 default title is added to the plot depending on \code{plotType}.}
@@ -49,14 +42,19 @@ Depending on the plot type either a ggplot object or a list of ggplot
 objects is invisibly returned.
 }
 \description{
-Plotting function for objects of class fitMod.
+Plotting function for objects of class fitMod. A detailed description and
+optional extra parameters of the different plots is given in the sections
+below.
 }
 \section{rawPred plot}{
 
 Plots the raw data overlayed with the predicted values from the fitted model.
 For each genotype a plot is made per plot/plant over time. These plots are
 put together in a 5x5 grid. By using the parameter \code{genotypes} a
-selection of genotypes can be plotted.
+selection of genotypes can be plotted. Extra parameter options:
+\describe{
+\item{genotypes}{A character vector indicating the genotypes to be plotted.}
+}
 }
 
 \section{corrPred plot}{
@@ -64,7 +62,11 @@ selection of genotypes can be plotted.
 Plots the spatially corrected data overlayed with the predicted values from
 the fitted model. For each genotype a plot is made per plot/plant over time.
 These plots are put together in a 5x5 grid. By using the parameter
-\code{genotypes} a selection of genotypes can be plotted.
+\code{genotypes} a selection of genotypes can be plotted. Extra parameter
+options:
+\describe{
+\item{genotypes}{A character vector indicating the genotypes to be plotted.}
+}
 }
 
 \section{herit plot}{
@@ -77,6 +79,13 @@ single plot.
 \section{effDim plot}{
 
 Plots the effective dimension from models fitted using SpATS over time.
+Extra parameter options:
+\describe{
+\item{whichED}{A character vector indicating which effective dimensions
+shoul be plotted. This should be a subset of "colId", "rowId", "fCol",
+"fRow", "fColRow", "colfRow", "fColfRow" and "surface". Default all
+effective dimensions are plotted.}
+}
 }
 
 \section{variance plot}{

@@ -14,19 +14,28 @@ createFitMod <- function(models,
 
 #' Plot function for class fitMod
 #'
-#' Plotting function for objects of class fitMod.
+#' Plotting function for objects of class fitMod. A detailed description and
+#' optional extra parameters of the different plots is given in the sections
+#' below.
 #'
 #' @section rawPred plot:
 #' Plots the raw data overlayed with the predicted values from the fitted model.
 #' For each genotype a plot is made per plot/plant over time. These plots are
 #' put together in a 5x5 grid. By using the parameter \code{genotypes} a
-#' selection of genotypes can be plotted.
+#' selection of genotypes can be plotted. Extra parameter options:
+#' \describe{
+#' \item{genotypes}{A character vector indicating the genotypes to be plotted.}
+#' }
 #'
 #' @section corrPred plot:
 #' Plots the spatially corrected data overlayed with the predicted values from
 #' the fitted model. For each genotype a plot is made per plot/plant over time.
 #' These plots are put together in a 5x5 grid. By using the parameter
-#' \code{genotypes} a selection of genotypes can be plotted.
+#' \code{genotypes} a selection of genotypes can be plotted. Extra parameter
+#' options:
+#' \describe{
+#' \item{genotypes}{A character vector indicating the genotypes to be plotted.}
+#' }
 #'
 #' @section herit plot:
 #' Plots the heritability over time. If \code{geno.decomp} is used when fitting
@@ -35,6 +44,13 @@ createFitMod <- function(models,
 #'
 #' @section effDim plot:
 #' Plots the effective dimension from models fitted using SpATS over time.
+#' Extra parameter options:
+#' \describe{
+#' \item{whichED}{A character vector indicating which effective dimensions
+#' shoul be plotted. This should be a subset of "colId", "rowId", "fCol",
+#' "fRow", "fColRow", "colfRow", "fColfRow" and "surface". Default all
+#' effective dimensions are plotted.}
+#' }
 #'
 #' @section variance plot:
 #' Plots the residual, column and row variance for the fitted model over time.
@@ -45,11 +61,7 @@ createFitMod <- function(models,
 #'
 #' @inheritParams plot.TP
 #'
-#' @param x An object of class fitMod.
-#' @param whichED A character vector indicating which effective dimensions
-#' shoul be plotted. Only used if \code{plotType} = "effDim".
-#' @param genotypes A character vector indicating the genotypes to be plotted.
-#' Only used if \code{plotType} = "rawPred" or "corrPred".
+#' @param x An object of class fitMod.#'
 #' @param title A character string used as title for the plot. If \code{NULL} a
 #' default title is added to the plot depending on \code{plotType}.
 #' @param outFile A character string indicating the .pdf file or .gif file
@@ -65,8 +77,6 @@ plot.fitMod <- function(x,
                         ...,
                         plotType = c("rawPred", "corrPred", "herit", "effDim",
                                      "variance", "timeLapse", "spatial"),
-                        whichED = c("colId", "rowId", "fCol", "fRow", "fColRow",
-                                    "colfRow", "fColfRow", "surface"),
                         timePoints = names(x),
                         genotypes = NULL,
                         title = NULL,
@@ -77,9 +87,6 @@ plot.fitMod <- function(x,
   timePoints <- chkTimePoints(x, timePoints)
   plotType <- match.arg(plotType)
   dotArgs <- list(...)
-  if (!is.null(genotypes) && !is.character(genotypes)) {
-    stop("genotypes should be NULL or a character vector.\n")
-  }
   if (!is.null(title) && (!is.character(title) || length(title) > 1)) {
     stop("title should be NULL or a character string.\n")
   }
@@ -121,6 +128,10 @@ plot.fitMod <- function(x,
     do.call(pdf, args = outFileOpts)
   }
   if (plotType == "rawPred") {
+    genotypes <- dotArgs$genotypes
+    if (!is.null(genotypes) && !is.character(genotypes)) {
+      stop("genotypes should be NULL or a character vector.\n")
+    }
     if (is.null(title)) title <- "Genotypic predictions + raw data"
     ## Get genotypic predictions.
     preds <- getGenoPred(fitMods)
@@ -160,6 +171,10 @@ plot.fitMod <- function(x,
                                   if (!is.null(geno.decomp)) "geno.decomp"),
                      title = title, yLab = trait, output = output)
   } else if (plotType == "corrPred") {
+    genotypes <- dotArgs$genotypes
+    if (!is.null(genotypes) && !is.character(genotypes)) {
+      stop("genotypes should be NULL or a character vector.\n")
+    }
     if (is.null(title)) title <- "Genotypic predictions + spatial corrected data"
     ## Get genotypic predictions.
     preds <- getGenoPred(fitMods)
@@ -199,7 +214,10 @@ plot.fitMod <- function(x,
       plot(p)
     }
   } else if (plotType == "effDim") {
-    whichED <- match.arg(whichED, several.ok = TRUE)
+    whichEDopts <- c("colId", "rowId", "fCol", "fRow", "fColRow", "colfRow",
+                     "fColfRow", "surface")
+    whichED <- match.arg(dotArgs$whichED, choices = whichEDopts,
+                         several.ok = TRUE)
     if (is.null(title)) title <- "Effective dimensions"
     ## Get effective dimensions.
     effDim <- getEffDims(fitMods)
@@ -346,7 +364,7 @@ spatPlot <- function(fitMod,
   plots$p5 <- fieldPlot(plotDat = plotDat, fillVar = "predicted.values",
                         title = legends[5], colors = colors)
   plots$p6 <- ggplot2::ggplot(data = plotDat) +
-    ggplot2::geom_histogram(ggplot2::aes(x = predicted.values),
+    ggplot2::geom_histogram(ggplot2::aes_string(x = "predicted.values"),
                             fill = "white", col = "black", bins = 10,
                             boundary = 0) +
     ## Remove empty space between ticks and actual plot.
