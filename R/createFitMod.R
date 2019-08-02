@@ -73,6 +73,14 @@ createFitMod <- function(models,
 #' Creates a time lapse of the spatial trends of models fitted using SpATS over
 #' time.
 #'
+#' @section spatial plot:
+#' Create a series of six spatial plots. Extra parameter options:
+#' \describe{
+#' \item{spaTrend}{A character string indicating how the spatial trend should
+#' be displayed. Either "raw" for raw values, or "percentage" for displaying
+#' as a percentage of the original phenotypic values.}
+#' }
+#'
 #' @inheritParams plot.TP
 #'
 #' @param x An object of class fitMod.
@@ -289,7 +297,7 @@ plot.fitMod <- function(x,
       plot(p)
     }
   } else if (plotType == "spatial") {
-    p <- lapply(X = fitMods, FUN = spatPlot, output = output)
+    p <- lapply(X = fitMods, FUN = spatPlot, output = output, ... = ...)
   } else if (plotType == "timeLapse") {
     chkFile(outFile, fileType = "gif")
     timeLapsePlot(fitMods, outFile = outFile, ...)
@@ -320,24 +328,38 @@ spatPlot <- function(fitMod,
                      output = TRUE,
                      ...) {
   dotArgs <- list(...)
+  ## Get plot type for spatial trend from args.
+  spaTrend <- match.arg(dotArgs$spaTrend, choices = c("raw", "percentage"))
+  ## Get engine from fitted model.
+  engine <- class(fitMod)
   ## Extract data from model.
   modDat <- fitMod$data
   ## Extract time point from model data.
   timePoint <- modDat[["timePoint"]][1]
   ## Extract trait from model.
   trait <- fitMod$model$response
+  ## Get geno.decomp from fitted models.
+  geno.decomp <- fitMod$model$geno$geno.decomp
   ## Extract what from model.
   what <- ifelse(fitMod$model$geno$as.random, "random", "fixed")
   ## Extract raw data.
-  raw <- modDat[c("genotype", trait, "rowNum", "colNum")]
+  raw <- modDat[c("genotype", trait, "rowNum", "colNum", geno.decomp)]
   ## Extract fitted values from model.
   fitted <- fitted(fitMod)
   ## Extract predictions (BLUEs or BLUPs) from model.
-  pred <- predictGeno(fitMod)[c("genotype", "predicted.values")]
+  pred <- predictGeno(fitMod)[c("genotype", "predicted.values", geno.decomp)]
+  if (!is.null(geno.decomp) && engine == "SpATS") {
+    ## Genotype was converted to an interaction term of genotype and
+    ## geno.decomp in the proces of fitting the model. That needs to be
+    ## undone to get the genotype back in the output again.
+    genoStart <- nchar(as.character(raw[["geno.decomp"]])) + 2
+    raw[["genotype"]] <- as.factor(substring(raw[["genotype"]],
+                                             first = genoStart))
+  }
   ## Create plot data by merging extracted data together and renaming some
   ## columns.
   plotDat <- cbind(raw, fitted)
-  plotDat <- merge(plotDat, pred, by = "genotype")
+  plotDat <- merge(plotDat, pred, by = c("genotype", geno.decomp))
   plotDat[["predicted.values"]][is.na(plotDat[["fitted"]])] <- NA
   plotDat[["resid"]] <- plotDat[[trait]] - plotDat[["fitted"]]
   ## Get limits for row and columns.
@@ -403,13 +425,22 @@ spatPlot <- function(fitMod,
                         title = legends[2], colors = colors, zlim = zlim)
   plots$p3 <- fieldPlot(plotDat = plotDat, fillVar = "resid",
                         title = legends[3], colors = colors)
-  ## Get tickmarks from first plot to be used as ticks.
-  ## Spatial plot tends to use different tickmarks by default.
-  xTicks <-
-    ggplot_build(plots[[1]])$layout$panel_params[[1]]$x.major_source
-  plots$p4 <- fieldPlot(plotDat = plotDatSpat, fillVar = "value",
-                        title = legends[4], colors = colors,
-                        xTicks = xTicks)
+  if (spaTrend == "raw") {
+    ## Get tickmarks from first plot to be used as ticks.
+    ## Spatial plot tends to use different tickmarks by default.
+    xTicks <- ggplot_build(plots[[1]])$layout$panel_params[[1]]$x.major_source
+    plots$p4 <- fieldPlot(plotDat = plotDatSpat, fillVar = "value",
+                          title = legends[4], colors = colors,
+                          xTicks = xTicks)
+  } else {
+    phenoMean <- mean(modDat[[trait]], na.rm = TRUE)
+    plotDatSpat[["value"]] <- plotDatSpat[["value"]] / phenoMean
+    zlim <- c(-1, 1) * max(c(abs(plotDatSpat[["value"]]), 0.1))
+    plots$p4 <- fieldPlotPcts(plotDat = plotDatSpat, fillVar = "value",
+                              title = legends[4], zlim = zlim,
+                              colors = colorRampPalette(c("red", "yellow", "blue"),
+                                                        space = "Lab")(100))
+  }
   plots$p5 <- fieldPlot(plotDat = plotDat, fillVar = "predicted.values",
                         title = legends[5], colors = colors)
   plots$p6 <- ggplot(data = plotDat) +
@@ -467,42 +498,42 @@ fieldPlot <- function(plotDat,
 #'
 #' @noRd
 #' @keywords internal
-# fieldPlot <- function(plotDat,
-#                       fillVar,
-#                       title,
-#                       colors,
-#                       zlim = range(plotDat[fillVar]),
-#                       xTicks = waiver(),
-#                       scaleLim = Inf,
-#                       ...) {
-#   p <- ggplot(
-#     data = plotDat,
-#     aes_string(x = "colNum", y = "rowNum",
-#                         fill = fillVar,
-#                         color = if (is.infinite(scaleLim)) NULL else "''")) +
-#     geom_tile(na.rm = TRUE) +
-#     ## Remove empty space between ticks and actual plot.
-#     scale_x_continuous(expand = c(0, 0), breaks = xTicks) +
-#     scale_y_continuous(expand = c(0, 0)) +
-#     ## Adjust plot colors.
-#     scale_fill_gradientn(limits = zlim, colors = colors, name = NULL,
-#                                   labels = scales::percent,
-#                                   breaks = seq(zlim[1], zlim[2],
-#                                                length.out = 5)) +
-#     scale_color_manual(values = NA) +
-#     guides(
-#       fill = guide_colorbar(order = 1),
-#       color = guide_legend("Larger than scale limit",
-#                                     override.aes = list(fill = "grey50",
-#                                                         color = "grey50"))) +
-#     ## No background. Center and resize title. Resize axis labels.
-#     ## Remove legend title and resize legend entries.
-#     theme(panel.background = element_blank(),
-#                    plot.title = element_text(hjust = 0.5, size = 10),
-#                    axis.title = element_text(size = 9)) +
-#     ggtitle(title)
-#   return(p)
-# }
+fieldPlotPcts <- function(plotDat,
+                          fillVar,
+                          title,
+                          colors,
+                          zlim = range(plotDat[fillVar]),
+                          xTicks = waiver(),
+                          scaleLim = Inf,
+                          ...) {
+  p <- ggplot(
+    data = plotDat,
+    aes_string(x = "colNum", y = "rowNum",
+               fill = fillVar,
+               color = if (is.infinite(scaleLim)) NULL else "''")) +
+    geom_tile(na.rm = TRUE) +
+    ## Remove empty space between ticks and actual plot.
+    scale_x_continuous(expand = c(0, 0), breaks = xTicks) +
+    scale_y_continuous(expand = c(0, 0)) +
+    ## Adjust plot colors.
+    scale_fill_gradientn(limits = zlim, colors = colors, name = NULL,
+                         labels = scales::percent,
+                         breaks = seq(zlim[1], zlim[2],
+                                      length.out = 5)) +
+    scale_color_manual(values = NA) +
+    guides(
+      fill = guide_colorbar(order = 1),
+      color = guide_legend("Larger than scale limit",
+                           override.aes = list(fill = "grey50",
+                                               color = "grey50"))) +
+    ## No background. Center and resize title. Resize axis labels.
+    ## Remove legend title and resize legend entries.
+    theme(panel.background = element_blank(),
+          plot.title = element_text(hjust = 0.5, size = 10),
+          axis.title = element_text(size = 9)) +
+    ggtitle(title)
+  return(p)
+}
 
 #' Helper function for creating time lapse plots.
 #'
@@ -586,11 +617,11 @@ timeLapsePlot <- function(fitMods,
     }
     ## Create a plot of the spatial trend per time point.
     for (i in seq_along(plotSpatDats)) {
-      p <- fieldPlot(plotDat = plotSpatDats[[i]], fillVar = "value",
-                     title = paste(trait, names(plotSpatDats)[i]),
-                     colors = colorRampPalette(c("red", "yellow", "blue"),
-                                               space = "Lab")(100),
-                     zlim = zLim, scaleLim = scaleLim)
+      p <- fieldPlotPcts(plotDat = plotSpatDats[[i]], fillVar = "value",
+                         title = paste(trait, names(plotSpatDats)[i]),
+                         colors = colorRampPalette(c("red", "yellow", "blue"),
+                                                   space = "Lab")(100),
+                         zlim = zLim, scaleLim = scaleLim)
       plot(p)
     }
   }, movie.name = outFile, autobrowse = FALSE, loop = 1)

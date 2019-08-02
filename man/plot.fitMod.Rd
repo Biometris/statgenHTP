@@ -75,9 +75,9 @@ Plots the heritability over time. If \code{geno.decomp} is used when fitting
 the model, heritabilities are plotted for each level of geno.decomp in a
 single plot. Extra parameter options:
 \describe{
-\item{yLim}{A numerical value used for setting the upper limit of the y-axis
-of the plot. If a value lower than the highest value to be plotted is
-given, then it is ignored.}
+\item{yLim}{A numerical vector of length two used for setting the limits of
+the y-axis of the plot. If values outside of the plotting range are given,
+then these are ignored.}
 }
 }
 
@@ -111,5 +111,15 @@ given, then it is ignored.}
 
 Creates a time lapse of the spatial trends of models fitted using SpATS over
 time.
+}
+
+\section{spatial plot}{
+
+Create a series of six spatial plots. Extra parameter options:
+\describe{
+\item{spaTrend}{A character string indicating how the spatial trend should
+be displayed. Either "raw" for raw values, or "percentage" for displaying
+as a percentage of the original phenotypic values.}
+}
 }
 
