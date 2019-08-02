@@ -169,10 +169,11 @@ getEffDims <- function(fitMod,
                        outFile = NULL) {
   ## Checks.
   if (missing(fitMod) || !inherits(fitMod, "fitMod")) {
-    stop(fitMod, " should be an object of class fitMod.\n")
+    stop("fitMod should be an object of class fitMod.\n")
   }
   if (!inherits(fitMod[[1]], "SpATS")) {
-    stop("Models in ", fitMod, " should be fitted using SpATS.\n")
+    stop("Models in ", deparse(substitute(fitMod)), " should be fitted using",
+         " SpATS.\n")
   }
   timePoints <- chkTimePoints(fitMod, timePoints)
   ## Restrict fitMod to selected timePoints.
