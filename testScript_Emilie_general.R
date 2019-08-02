@@ -1,113 +1,347 @@
 
 setwd(paste0("~/Documents/PostDoc/Pipeline_Biometris/statgenHTP/"))
 # devtools::load_all(".")
+library(statgenHTP)
 
-#_________________ EXAMPLE 1 _____________________________________________________________
+#----------------------------------------------------------------------------------------
+#####
+##### Create a TP object containing the data from the Phenovator #######################
+#####
+data("PhenovatorDat1")
+phenoTP <- createTimePoints(dat = PhenovatorDat1,
+                            genotype = "Genotype",
+                            timePoint = "timepoints",
+                            repId = "Sowing_Block",
+                            plotId = "pos",
+                            rowNum = "y", colNum = "x",
+                            addCheck = TRUE,
+                            checkGenotypes = c("col", "ely", "evo1", "ler"))
 
-#### DATASET-SPECIFIC FORMATING #######
-source("./data-raw/exampleData.R")
-
-# inDat <- data.table::fread("./data-raw/Original_PAM_reshape.csv",
-                           # data.table = FALSE)
-
-#### BEGINING FUNCTION USE #######
-
-inTP <- createTimePoints(dat = PhenovatorDat1,
-                         genotype = "Genotype",
-                         timePoint = "timepoints",
-                         repId = "Sowing_Block",
-                         plotId = "pos",
-                         rowNum = "y",
-                         colNum = "x",
-                         addCheck = TRUE,
-                         checkGenotypes = c("col", "ely", "evo1", "ler"))
-
-timepoint <- data.frame(attr(inTP,"timePoints"))
+### Extract the time points table
+timepoint <- data.frame(attr(phenoTP,"timePoints"))
 timepoint$timePoint <- lubridate::ymd_hms(timepoint$timePoint)
+### Summary of the TP object
+# TO DO TO DO TO DO TO DO TO DO TO DO TO DO TO DO TO DO TO DO TO DO TO DO TO DO
 
-plot(inTP, plotType = "layout",
-     timePoints = c(1),#c("2018-05-31 16:37:00", "2018-06-01 09:07:00"),
+#----------------------------------------------------------------------------------------
+#####
+##### Plotting the TP object containing the data from the Phenovator #####################
+#####
+
+## ----layoutPlot
+plot(phenoTP,
+     plotType = "layout",
+     timePoints = c(3))
+
+## Plot the layout for the 3rd time point with the check genotypes highlighted.
+plot(phenoTP,
+     plotType = "layout",
+     timePoints = c(3),
      highlight = c("col", "ely", "evo1", "ler"))
 
-plot(inTP, plotType = "cor",
-     traits = "pheno",
-     timePoints = c(1:10)) #c("2018-05-31 16:37:00", "2018-06-01 09:07:00"))
-
-plot(inTP, plotType = "box",
-     traits = "pheno",
-     timePoints = c(1,3), #c("2018-05-31 16:37:00", "2018-06-01 09:07:00"),
-     colorBy = "repId")
-
-plot(inTP, plotType = "raw",
-     traits = "pheno",
-     timePoints = c(1:10), #c("2018-05-31 16:37:00", "2018-06-01 09:07:00"),
-     genotypes = c("col", "ely", "evo1", "ler","1","18","340","2231"))
-
-
-plot(inTP, plotType = "raw",
-     traits = "pheno",
-     # timePoints = c(1,25,60), #c("2018-05-31 16:37:00", "2018-06-01 09:07:00"),
-     genotypes = c("col", "ely", "evo1", "ler","1","18","340","2231"))
-
-plot(inTP, plotType = "layout",
-     timePoints = c(1,3),
+## Plot the layout for the 3rd time points.
+plot(phenoTP,
+     plotType = "layout",
+     timePoints = c(3),
      highlight = c("col", "ely", "evo1", "ler"),
-     outFile = "test.pdf")
+     showGeno = TRUE)
 
-plot(inTP, plotType = "cor",
+## Create a boxplot for PSII using the default all time points.
+plot(phenoTP,
+     plotType = "box",
+     traits = "pheno")
+
+## Create a boxplot for PSII with 5 time points and boxes colored by repIds within
+## time point.
+plot(phenoTP,
+     plotType = "box",
      traits = "pheno",
-     timePoints = c(1,4,14,23,42,50,68))
-
-plot(inTP, plotType = "box", traits = "pheno", timePoints = c(5,6,7),
+     timePoints = c(1:5),
      colorBy = "repId")
 
-plot(inTP, plotType = "raw", traits = "pheno",
-     timePoints = c(8,4,2),
-     genotypes = c("col", "ely", "evo1", "ler"),
-     outFile = "test.pdf")
+## Create a boxplot for PSII with 5 time points and boxes grouped by repIds.
+plot(phenoTP,
+     plotType = "box",
+     traits = "pheno",
+     timePoints = c(1:5),
+     groupBy = "repId")
 
-pdf("Phenovator_Rene_raw_data_na.pdf", height = 8, width = 12)
-plot(inTP, plotType = "raw", traits = "pheno")
-dev.off()
+## Create a correlation plot for PSII for a selection of time points.
+plot(phenoTP,
+     plotType = "cor",
+     traits = "pheno",
+     timePoints = seq(from=1,to=73,by=5))
+#####
 
-plot(inTP, plotType = "raw", traits = "pheno",
-     genotypes = c("col", "ely", "evo1", "ler"))
+#----------------------------------------------------------------------------------------
+#####-
+##### Fitting SpATS models on the Phenovator data #######################################-
+#####-
 
-fitMods <- fitModels(TP = inTP,
-                     trait = "pheno",
-                     covariates = c("repId", "Image_pos"),
-                     useCheck = TRUE)
+#####
+##### ------ Fit a model few time points with geno = R ----------------------------------#
+#####
+modPhenoSp <- fitModels(TP = phenoTP,
+                        trait = "pheno",
+                        timePoints = seq(1,73,by=5)) #c(3,10,20,30,60)
 
-fitMods1b <- fitModels(TP = inTP[1:3], trait = "pheno",
-                       covariates = c("repId", "Image_pos"), engine = "asreml")
+obj <- modPhenoSp
+# Extract the genotypic predictions:
+genoPred <- getGenoPred(obj, timePoints = 6)
+# Extract the corrected values:
+spatCorr <- getCorrected(obj, timePoints = 6)
+# Extract model components:
+variance <- getVar(obj)
+herit    <- getHerit(obj)
+effDim   <- getEffDims(obj)
+## plot Pred
+plot(obj,
+     plotType = "rawPred",
+     # genotypes = c("col", "ler", "ely", "evo1","toto")) #levels(factor(PhenovatorDat1$Genotype))[1:28] )
+     genotypes = c("toto", "tutu", "tata")) #levels(factor(PhenovatorDat1$Genotype))[1:28] )
+## plot Corr
+plot(obj,
+     plotType = "corrPred",
+     genotypes = c("col", "ler", "ely", "evo1") )
+## plot Herit
+plot(obj,
+     plotType = "herit", yLim = c(0,1))
+## plot ED
+plot(obj,
+     plotType = "effDim",
+     whichED = c("colId", "rowId", "fColRow","colfRow", "surface"))
+## plot Var
+plot(obj,
+     plotType = "variance")
 
-fitMods1c <- fitModels(TP = inTP[1:3], trait = "pheno",
-                       covariates = c("repId", "Image_pos"), engine = "asreml",
-                       useCheck = TRUE)
+
+#####
+##### ------ Fit a model few time points with geno = R and Covar ------------------------#
+#####
+modPhenoSpCov <- fitModels(TP = phenoTP,
+                           trait = "pheno",
+                           covariates = c("repId", "Image_pos"),
+                           timePoints = seq(1,73,by=5))
+obj <- modPhenoSpCov
+# Extract the genotypic predictions:
+genoPred <- getGenoPred(obj, timePoints = 6)
+# Extract the corrected values:
+spatCorr <- getCorrected(obj, timePoints = 6)
+# Extract model components:
+variance <- getVar(obj)
+herit    <- getHerit(obj)
+effDim   <- getEffDims(obj)
+## plot Pred
+plot(obj,
+     plotType = "rawPred",
+     genotypes = c("col", "ler", "ely", "evo1")) #levels(factor(PhenovatorDat1$Genotype))[1:28] )
+## plot Corr
+plot(obj,
+     plotType = "corrPred",
+     genotypes = c("col", "ler", "ely", "evo1") )
+## plot Herit
+plot(obj,
+     plotType = "herit")
+## plot ED
+plot(obj,
+     plotType = "effDim",
+     whichED = c("colId", "rowId", "fColRow","colfRow", "surface"))
+## plot Var
+plot(obj,
+     plotType = "variance")
+
+#####
+##### ------ Fit a model few time points with geno = R and check genotypes --------------#
+#####
+modPhenoSpCheck <- fitModels(TP = phenoTP,
+                             trait = "pheno",
+                             useCheck = TRUE,
+                             timePoints = seq(1,73,by=5))
+
+modPhenoSpCheck <- fitModels(TP = phenoTP,
+                             trait = "pheno",
+                             useCheck = TRUE,
+                             engine = "asreml",
+                             spatial = TRUE,
+                             timePoints = seq(1,73,by=5))
+obj <- modPhenoSpCheck
+# Extract the genotypic predictions:
+genoPred <- getGenoPred(obj, timePoints = 6)
+# Extract the corrected values:
+spatCorr <- getCorrected(obj, timePoints = 6)
+# Extract model components:
+variance <- getVar(obj)
+herit    <- getHerit(obj)
+effDim   <- getEffDims(obj)
+## plot Pred
+plot(obj,
+     plotType = "rawPred",
+     genotypes = c("col", "ler", "ely", "evo1")) #levels(factor(PhenovatorDat1$Genotype))[1:28] )
+## plot Corr
+plot(obj,
+     plotType = "corrPred",
+     genotypes = c("col", "ler", "ely", "evo1") )
+## plot Herit
+plot(obj,
+     plotType = "herit", yLim = .5)
+## plot ED
+plot(obj,
+     plotType = "effDim",
+     whichED = c("colId", "rowId", "fColRow","colfRow", "surface"))
+## plot Var
+plot(obj,
+     plotType = "variance")
 
 
-spatCorr <- getCorrected(fitMods) #), outFile = "Corrected_PAM_modRep.csv")
-spatCorr$timeNumber <- timepoint$timeNumber[match(spatCorr$timePoint,timepoint$timePoint)]
+#####
+##### ------ Fit a model few time points with geno = R and rowcol design ----------------#
+#####
+modPhenoSpRCD <- fitModels(TP = phenoTP,
+                            trait = "pheno",
+                            timePoints = seq(1,73,by=20),
+                            useRepId = TRUE)
+obj <- modPhenoSpRCD
+# Extract the genotypic predictions:
+genoPred <- getGenoPred(obj, timePoints = 21)
+# Extract the corrected values:
+spatCorr <- getCorrected(obj, timePoints = 21)
+# Extract model components:
+variance <- getVar(obj)
+herit    <- getHerit(obj)
+effDim   <- getEffDims(obj)
+## plot Pred
+plot(obj,
+     plotType = "rawPred",
+     genotypes = c("col", "ler", "ely", "evo1")) #levels(factor(PhenovatorDat1$Genotype))[1:28] )
+## plot Corr
+plot(obj,
+     plotType = "corrPred",
+     genotypes = c("col", "ler", "ely", "evo1") )
+## plot Herit
+plot(obj,
+     plotType = "herit")
+## plot ED
+plot(obj,
+     plotType = "effDim",
+     whichED = c("colId", "rowId", "fColRow","colfRow", "surface"))
+## plot Var
+plot(obj,
+     plotType = "variance")
 
-write.table(spatCorr,
-            file="~/Documents/PostDoc/EPPN2020/Platform/Phenovator/Rene/spline_function_HTP/Corrected_PAM_modRepCheck.csv",
-            row.names=F,sep=",")
+#####
+##### ------ Fit a model few time points with geno = R and rowcol design and cov Rep ----#
+#####
+modPhenoSpRCDCov <- fitModels(TP = phenoTP,
+                              trait = "pheno",
+                              covariates = c("repId","Image_pos"),
+                              timePoints = seq(1,73,by=20),
+                              useRepId = TRUE)
+# Should display a warning? «repID already included as fixed effect when useRepId = TRUE»
+summary(modPhenoSpRCDCov$`2018-05-31 16:37:00`)
+obj <- modPhenoSpRCDCov
 
-genoPreds <- getGenoPred(fitMods, outFile = "BLUPs_PAM_modRep.csv")
-variance <- getVar(fitMods)
-h2 <- getHerit(fitMods)
+#####
+##### ------ Fit a model few time points with geno = R, check = T, rowcol design and cov #
+#####
+modPhenoSpRCDCovCheck <- fitModels(TP = phenoTP,
+                                   trait = "pheno",
+                                   covariates = c("Image_pos"),
+                                   useCheck = TRUE,
+                                   timePoints = seq(1,73,by=20),
+                                   useRepId = TRUE)
 
-genoPreds1b <- getGenoPred(fitMods1b)
-genoPreds1c <- getGenoPred(fitMods1c)
+summary(modPhenoSpRCDCovCheck$`2018-06-05 16:37:00`)
+obj <- modPhenoSpRCDCovCheck
+# Extract the genotypic predictions:
+genoPred <- getGenoPred(obj, timePoints = 21)
+# Extract the corrected values:
+spatCorr <- getCorrected(obj, timePoints = 21)
+# Extract model components:
+variance <- getVar(obj)
+herit    <- getHerit(obj)
+effDim   <- getEffDims(obj)
+## plot Pred
+plot(obj,
+     plotType = "rawPred",
+     genotypes = c("col", "ler", "ely", "evo1"))
+## plot Corr
+plot(obj,
+     plotType = "corrPred",
+     genotypes = c("col", "ler", "ely", "evo1") )
+## plot Herit
+plot(obj,
+     plotType = "herit")
+## plot ED
+plot(obj,
+     plotType = "effDim",
+     whichED = c("colId", "rowId", "fColRow","colfRow", "surface"))
+## plot Var
+plot(obj,
+     plotType = "variance")
+
+#####
+##### ------ Fit a model few time points with geno = F ----------------------------------#
+#####
+modPhenoSpFix <- fitModels(TP = phenoTP,
+                           trait = "pheno",
+                           timePoints = seq(1,73,by=10),
+                           what="fixed")
+##### geno = F, cov = image
+modPhenoSpFix2 <- fitModels(TP = phenoTP,
+                           trait = "pheno",
+                           covariates = c("Image_pos"),
+                           timePoints = seq(1,73,by=10),
+                           what="fixed")
+##### geno = F, cov = image, useRepId = T
+modPhenoSpFix3 <- fitModels(TP = phenoTP,
+                            trait = "pheno",
+                            covariates = c("Image_pos"),
+                            useRepId = TRUE,
+                            timePoints = seq(1,73,by=10),
+                            what="fixed")
+
+obj <- modPhenoSpFix
+obj <- modPhenoSpFix2
+obj <- modPhenoSpFix3
+# Extract the genotypic predictions:
+genoPred <- getGenoPred(obj, timePoints = 11)
+# Extract the corrected values:
+spatCorr <- getCorrected(obj, timePoints = 11)
+# Extract model components:
+variance <- getVar(obj)
+herit    <- getHerit(obj)
+effDim   <- getEffDims(obj)
+## plot Pred
+plot(obj,
+     plotType = "rawPred",
+     genotypes = c("col", "ler", "ely", "evo1")) #levels(factor(PhenovatorDat1$Genotype))[1:28] )
+## plot Corr
+plot(obj,
+     plotType = "corrPred",
+     genotypes = c("col", "ler", "ely", "evo1") )
+## plot Herit
+plot(obj,
+     plotType = "herit")
+## plot ED
+plot(obj,
+     plotType = "effDim",
+     whichED = c("colId", "rowId", "fColRow","colfRow", "surface"))
+## plot Var
+plot(obj,
+     plotType = "variance")
 
 
-plot(fitMods, plotType = "corrPred",
-     genotypes = c("col", "ely", "evo1", "ler"), outFile = "test.pdf")
-plot(fitMods, plotType = "rawPred")
-plot(fitMods, plotType = "herit", timePoints = c(1,5))
-plot(fitMods, plotType = "variance", outFile = "test.pdf")
-plot(fitMods, plotType = "effDim")
-plot(fitMods, plotType = "timeLapse", outFile = "spatialtrends.gif")
+#----------------------------------------------------------------------------------------
+#####-
+##### Fitting ASReml models on the Phenovator data #######################################-
+#####-
+
+
+
+
+
+
+#####
 
 #_________________ EXAMPLE 2 _____________________________________________________________
 
