@@ -320,24 +320,36 @@ spatPlot <- function(fitMod,
                      output = TRUE,
                      ...) {
   dotArgs <- list(...)
+  ## Get engine from fitted model.
+  engine <- class(fitMod)
   ## Extract data from model.
   modDat <- fitMod$data
   ## Extract time point from model data.
   timePoint <- modDat[["timePoint"]][1]
   ## Extract trait from model.
   trait <- fitMod$model$response
+  ## Get geno.decomp from fitted models.
+  geno.decomp <- fitMod$model$geno$geno.decomp
   ## Extract what from model.
   what <- ifelse(fitMod$model$geno$as.random, "random", "fixed")
   ## Extract raw data.
-  raw <- modDat[c("genotype", trait, "rowNum", "colNum")]
+  raw <- modDat[c("genotype", trait, "rowNum", "colNum", geno.decomp)]
   ## Extract fitted values from model.
   fitted <- fitted(fitMod)
   ## Extract predictions (BLUEs or BLUPs) from model.
-  pred <- predictGeno(fitMod)[c("genotype", "predicted.values")]
+  pred <- predictGeno(fitMod)[c("genotype", "predicted.values", geno.decomp)]
+  if (!is.null(geno.decomp) && engine == "SpATS") {
+    ## Genotype was converted to an interaction term of genotype and
+    ## geno.decomp in the proces of fitting the model. That needs to be
+    ## undone to get the genotype back in the output again.
+    genoStart <- nchar(as.character(raw[["geno.decomp"]])) + 2
+    raw[["genotype"]] <- as.factor(substring(raw[["genotype"]],
+                                              first = genoStart))
+  }
   ## Create plot data by merging extracted data together and renaming some
   ## columns.
   plotDat <- cbind(raw, fitted)
-  plotDat <- merge(plotDat, pred, by = "genotype")
+  plotDat <- merge(plotDat, pred, by = c("genotype", geno.decomp))
   plotDat[["predicted.values"]][is.na(plotDat[["fitted"]])] <- NA
   plotDat[["resid"]] <- plotDat[[trait]] - plotDat[["fitted"]]
   ## Get limits for row and columns.
