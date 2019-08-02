@@ -113,3 +113,13 @@ Creates a time lapse of the spatial trends of models fitted using SpATS over
 time.
 }
 
+\section{spatial plot}{
+
+Create a series of six spatial plots. Extra parameter options:
+\describe{
+\item{spaTrend}{A character string indicating how the spatial trend should
+be displayed. Either "raw" for raw values, or "percentage" for displaying
+as a percentage of the original phenotypic values.}
+}
+}
+
