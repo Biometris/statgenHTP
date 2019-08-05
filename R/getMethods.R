@@ -161,11 +161,16 @@ getHerit <- function(fitMod,
 #'
 #' @inheritParams getGenoPred
 #'
+#' @param EDType A character string specifying if the effective dimension
+#' ("dimension") or the ratio of effective dimensions ("ratio") should be
+#' returned.
+#'
 #' @return A data.frame with effective dimensions per time point.
 #'
 #' @export
 getEffDims <- function(fitMod,
                        timePoints = names(fitMod),
+                       EDType = c("dimension", "ratio"),
                        outFile = NULL) {
   ## Checks.
   if (missing(fitMod) || !inherits(fitMod, "fitMod")) {
@@ -175,6 +180,7 @@ getEffDims <- function(fitMod,
     stop("Models in ", deparse(substitute(fitMod)), " should be fitted using",
          " SpATS.\n")
   }
+  EDType <- match.arg(EDType)
   timePoints <- chkTimePoints(fitMod, timePoints)
   ## Restrict fitMod to selected timePoints.
   fitMod <- fitMod[timePoints]
@@ -184,14 +190,25 @@ getEffDims <- function(fitMod,
   effDimOut <- data.frame(timePoint = lubridate::as_datetime(names(fitMod)),
                           row.names = NULL)
   ## Get effective dimensions for spatial terms.
+  effDimNames <- c(colVarId, rowVarId, "f(colNum)", "f(rowNum)",
+                   "f(colNum):rowNum", "colNum:f(rowNum)","f(colNum):f(rowNum)")
   effDims <- sapply(X = fitMod, FUN = function(x) {
-    x$eff.dim[c(colVarId, rowVarId, "f(colNum)", "f(rowNum)",
-                "f(colNum):rowNum", "colNum:f(rowNum)","f(colNum):f(rowNum)")]
+    x$eff.dim[effDimNames]
   })
   ## Transpose to get dimensions in columns.
   effDims <- t(effDims)
   ## Add effective dimension for surface.
   effDims <- cbind(effDims, rowSums(effDims[, 3:7, drop = FALSE]))
+  if (EDType == "ratio") {
+    effDimNom <- sapply(X = fitMod, FUN = function(x) {
+      x$dim.nom[effDimNames]
+    })
+    ## Transpose to get dimensions in columns.
+    effDimNom <- t(effDimNom)
+    ## Add nominal for surface.
+    effDimNom <- cbind(effDimNom, rowSums(effDimNom[, 3:7, drop = FALSE]))
+    effDims <- effDims / effDimNom
+  }
   ## Rename columns to more readable format.
   colnames(effDims) <- c("colId", "rowId", "fCol", "fRow", "fColRow", "colfRow",
                          "fColfRow", "surface")

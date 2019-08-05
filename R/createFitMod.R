@@ -57,6 +57,9 @@ createFitMod <- function(models,
 #' shoul be plotted. This should be a subset of "colId", "rowId", "fCol",
 #' "fRow", "fColRow", "colfRow", "fColfRow" and "surface". Default all
 #' effective dimensions are plotted.}
+#' \item{EDType}{A character string specifying if the effective dimension
+#' ("dimension") or the ratio of effective dimensions ("ratio") should be
+#' plotted. Default the dimensions are plotted.}
 #' \item{yLim}{A numerical value used for setting the upper limit of the y-axis
 #' of the plot. If a value lower than the highest value to be plotted is
 #' given, then it is ignored.}
@@ -263,9 +266,10 @@ plot.fitMod <- function(x,
       whichED <- match.arg(dotArgs$whichED, choices = whichEDopts,
                            several.ok = TRUE)
     }
+    EDType <- match.arg(dotArgs$EDType, choices = c("dimension", "ratio"))
     if (is.null(title)) title <- "Effective dimensions"
     ## Get effective dimensions.
-    effDim <- getEffDims(fitMods)
+    effDim <- getEffDims(fitMods, EDType = EDType)
     ## Convert to long format needed by ggplot.
     effDim <- reshape2::melt(effDim, measure.vars = whichED,
                              variable.name = "effDim", value.name = "ED")

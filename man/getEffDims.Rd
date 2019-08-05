@@ -4,7 +4,8 @@
 \alias{getEffDims}
 \title{Extract effective dimensions}
 \usage{
-getEffDims(fitMod, timePoints = names(fitMod), outFile = NULL)
+getEffDims(fitMod, timePoints = names(fitMod), EDType = c("dimension",
+  "ratio"), outFile = NULL)
 }
 \arguments{
 \item{fitMod}{An object of class fitMod.}
@@ -14,6 +15,10 @@ to be modeled. When using a character string to reference a timePoint, the
 value has to be an exact match to one of the existing timePoints. When using
 a number it will be matched by its number in the timePoints attribute of the
 TP object.}
+
+\item{EDType}{A character string specifying if the effective dimension
+("dimension") or the ratio of effective dimensions ("ratio") should be
+returned.}
 
 \item{outFile}{A character string indicating the .csv file to which the
 results should be written. If \code{NULL} no file is written.}

@@ -90,6 +90,9 @@ Extra parameter options:
 shoul be plotted. This should be a subset of "colId", "rowId", "fCol",
 "fRow", "fColRow", "colfRow", "fColfRow" and "surface". Default all
 effective dimensions are plotted.}
+\item{EDType}{A character string specifying if the effective dimension
+("dimension") or the ratio of effective dimensions ("ratio") should be
+plotted. Default the dimensions are plotted.}
 \item{yLim}{A numerical value used for setting the upper limit of the y-axis
 of the plot. If a value lower than the highest value to be plotted is
 given, then it is ignored.}
