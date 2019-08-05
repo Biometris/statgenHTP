@@ -73,8 +73,8 @@ createTimePoints <- function(dat,
   if (missing(dat) || !is.data.frame(dat)) {
     stop("dat has to be a data.frame.\n")
   }
-  if (missing(experimentName || !is.character(experimentName) ||
-              length(experimentName) > 1)) {
+  if (missing(experimentName) || !is.character(experimentName) ||
+              length(experimentName) > 1) {
     stop("experimentName should be a character string of length one.\n")
   }
   ## Convert input to data.frame. This needs to be done to be able to handle
