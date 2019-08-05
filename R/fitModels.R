@@ -343,9 +343,10 @@ bestSpatMod <- function(modDat,
   spatCh <- spatCh[spatSel]
   spatTerm <- c(NA, paste("~", c("ar1(rowId):colId", "rowId:ar1(colId)",
                                  "ar1(rowId):ar1(colId)")))[spatSel]
-  randTermNoRep <- c("~ ." , "~ . + rowId", "~ . + colId",
+  randTermNoRep <- c("~ . + rowId + colId" , "~ . + rowId", "~ . + colId",
                      "~ . + rowId + colId")[spatSel]
-  randTermRep <- c("~ ." , "~ . + repId:rowId", "~ . + repId:colId",
+  randTermRep <- c("~ . + repId:rowId + repId:colId" , "~ . + repId:rowId",
+                   "~ . + repId:colId",
                    "~ . + repId:rowId + repId:colId")[spatSel]
   ## Create empty base lists.
   fitMods <- spatial <- sumTab <- setNames(vector(mode = "list",
