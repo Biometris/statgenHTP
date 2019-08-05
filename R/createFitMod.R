@@ -258,7 +258,10 @@ plot.fitMod <- function(x,
       plot(p)
     }
   } else if (plotType == "effDim") {
-    whichEDopts <- c("colId", "rowId", "fCol", "fRow", "fColRow", "colfRow",
+    useRepId <- attr(x = fitMods, which = "useRepId")
+    colVarId <- ifelse(useRepId, "repId:colId", "colId")
+    rowVarId <- ifelse(useRepId, "repId:rowId", "rowId")
+    whichEDopts <- c(colVarId, rowVarId, "fCol", "fRow", "fColRow", "colfRow",
                      "fColfRow", "surface")
     if (is.null(dotArgs$which)) {
       whichED <- whichEDopts

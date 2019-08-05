@@ -189,9 +189,9 @@ getEffDims <- function(fitMod,
   rowVarId <- ifelse(useRepId, "repId:rowId", "rowId")
   effDimOut <- data.frame(timePoint = lubridate::as_datetime(names(fitMod)),
                           row.names = NULL)
-  ## Get effective dimensions for spatial terms.
   effDimNames <- c(colVarId, rowVarId, "f(colNum)", "f(rowNum)",
                    "f(colNum):rowNum", "colNum:f(rowNum)","f(colNum):f(rowNum)")
+  ## Get effective dimensions for spatial terms.
   effDims <- sapply(X = fitMod, FUN = function(x) {
     x$eff.dim[effDimNames]
   })
@@ -200,6 +200,7 @@ getEffDims <- function(fitMod,
   ## Add effective dimension for surface.
   effDims <- cbind(effDims, rowSums(effDims[, 3:7, drop = FALSE]))
   if (EDType == "ratio") {
+    ## Get nominal values for spatial terms.
     effDimNom <- sapply(X = fitMod, FUN = function(x) {
       x$dim.nom[effDimNames]
     })
@@ -210,8 +211,8 @@ getEffDims <- function(fitMod,
     effDims <- effDims / effDimNom
   }
   ## Rename columns to more readable format.
-  colnames(effDims) <- c("colId", "rowId", "fCol", "fRow", "fColRow", "colfRow",
-                         "fColfRow", "surface")
+  colnames(effDims) <- c(colVarId, rowVarId, "fCol", "fRow", "fColRow",
+                         "colfRow", "fColfRow", "surface")
   effDimOut <- cbind(effDimOut, effDims)
   effDimOut <- addTimeNumber(fitMod, effDimOut)
   if (!is.null(outFile)) {
