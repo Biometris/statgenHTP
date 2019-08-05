@@ -635,8 +635,7 @@ timeLapsePlot <- function(fitMods,
     ## This enables proper comparison of plots over timePoints.
     zVals <- unlist(sapply(X = plotSpatDats, `[[`, "value"))
     if (is.infinite(scaleLim)) {
-      zLim <- c(min(c(zVals, -0.1), na.rm = TRUE),
-                max(c(zVals, 0.1), na.rm = TRUE))
+      zLim <- c(-1, 1) * max(c(abs(zVals), 0.1), na.rm = TRUE)
     } else {
       zLim <- c(-scaleLim, scaleLim)
     }
