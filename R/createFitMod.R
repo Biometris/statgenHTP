@@ -2,11 +2,13 @@
 createFitMod <- function(models,
                          what,
                          useRepId,
+                         spatial,
                          timePoints) {
   fitMod <- structure(models,
                       timePoints = timePoints,
                       what = what,
                       useRepId = useRepId,
+                      spatial = spatial,
                       class = c("fitMod", "list"),
                       timestamp = Sys.time())
   return(fitMod)
@@ -118,6 +120,11 @@ plot.fitMod <- function(x,
   engine <- class(fitMods[[1]])
   if (engine == "asreml" && plotType == "effDim") {
     stop("Effective dimensions can only be plotted for models fitted with SpATS")
+  }
+  if (engine == "asreml" && plotType == "spatial" &&
+      !attr(x = fitMods, which = "spatial")) {
+    stop("spatial plots can only be made when setting spatial = TRUE when ",
+         "fitting the asreml models.\n")
   }
   ## Get geno.decomp from fitted models.
   if (engine == "SpATS") {

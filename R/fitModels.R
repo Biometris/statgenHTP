@@ -303,6 +303,7 @@ fitModels <- function(TP,
   return(createFitMod(fitMods,
                       what = what,
                       useRepId = useRepId,
+                      spatial = spatial,
                       timePoints = timePoints))
 }
 
