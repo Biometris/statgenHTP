@@ -307,30 +307,49 @@ modPhenoSpRCD <- fitModels(TP = phenoTP,
 ### Model plots
 
 summary(modPhenoSp)
-`plot.fitMod` function
+
+
 
 Effective dimensions blablabla
 
+The first type of plot that can be made for fitted models is the spatial plots per time 
+point using `plotType = "spatial"`. 
+It consists of five plots, spatial plots of the raw data, fitted values, residuals and 
+either BLUEs or BLUPs, and a histogram of the BLUEs or BLUPs. When SpATS is used for 
+modeling an extra plot with the fitted spatial trend is included. 
+
+Note that spatial plots can only be made if spatial information, i.e. `rowCoord` and
+`colCoord`, is available in the `TP` object.
+
 Creates a plot of the spatial trends of models per time point.
-```{r plotSpat,  fig.height=5, fig.width=6, message=FALSE, eval=FALSE}
-plot(modPhenoSp, 
+```{r plotSpatRaw,  fig.height=4, fig.width=7, message=FALSE, eval=TRUE}
+plot(modPhenoSp,
+     timePoints = 36,
      plotType = "spatial",
-     timepoints = 3,
-     what = "raw")
+     spaTrend = "raw")
 ```
 
 proportion = estimated spatial trend / mean(raw pheno)
 scale adjusted based on all the time points used but will be at least 10% scale display
 
-Creates a time lapse of the spatial trends of models fitted using SpATS over time.
+```{r plotSpatPerc,  fig.height=4, fig.width=7, message=FALSE, eval=TRUE}
+plot(modPhenoSp,
+     timePoints = 36,
+     plotType = "spatial",
+     spaTrend = "percentage")
+```
+
+
+Creates a time lapse of the spatial trends of models fitted using SpATS over time. The scale is the same os for the "percentage" spatial plot.
 ```{r plotTimeLapse,  fig.height=5, fig.width=6, message=FALSE, eval=FALSE}
 plot(modPhenoSp, 
      plotType = "timeLapse",
      outFile = "TimeLapse_modPhenoSp.gif")
 ```
 
+Here is an illustration with three time points:
 <center>
-![Timelapse1](TimeLapse_modPhenoSp.gif){width=30%}
+![Timelapse1](timelapse_nogif.png){width=80%}
 </center>
 
 
