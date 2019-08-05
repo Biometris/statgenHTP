@@ -669,6 +669,7 @@ timeLapsePlot <- function(fitMods,
     attr(r, "timePoints") <- timePointsR
     attr(r, "what") <- attr(x, "what")
     attr(r, "useRepId") <- attr(x, "useRepId")
+    attr(r, "spatial") <- attr(x, "spatial")
     attr(r, "class") <- c("fitMod", "list")
     attr(r, "timestamp") <- attr(x, "timestamp")
   } else {
