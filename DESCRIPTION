@@ -21,6 +21,7 @@ Depends:
 Imports:
     ggforce,
     ggplot2,
+    gridExtra,
     lubridate,
     reshape2,
     scales,
