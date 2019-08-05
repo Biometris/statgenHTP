@@ -4,12 +4,15 @@
 \alias{createTimePoints}
 \title{Create an object of class TP}
 \usage{
-createTimePoints(dat, genotype, timePoint, plotId, repId = NULL,
-  rowNum = NULL, colNum = NULL, addCheck = FALSE,
+createTimePoints(dat, experimentName, genotype, timePoint, plotId,
+  repId = NULL, rowNum = NULL, colNum = NULL, addCheck = FALSE,
   checkGenotypes = NULL)
 }
 \arguments{
 \item{dat}{A data.frame.}
+
+\item{experimentName}{A character string, the name of the experiment. Stored
+with the data and used in default plot names.}
 
 \item{genotype}{A character string indicating the column in dat containing
 the genotypes.}

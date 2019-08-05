@@ -30,6 +30,8 @@
 #' plant. It cannot occur more than once per time point.
 #'
 #' @param dat A data.frame.
+#' @param experimentName A character string, the name of the experiment. Stored
+#' with the data and used in default plot names.
 #' @param genotype A character string indicating the column in dat containing
 #' the genotypes.
 #' @param timePoint A character string indicating the column in dat containing
@@ -58,6 +60,7 @@
 #' @import ggplot2
 #' @export
 createTimePoints <- function(dat,
+                             experimentName,
                              genotype,
                              timePoint,
                              plotId,
@@ -69,6 +72,10 @@ createTimePoints <- function(dat,
   ## Checks.
   if (missing(dat) || !is.data.frame(dat)) {
     stop("dat has to be a data.frame.\n")
+  }
+  if (missing(experimentName || !is.character(experimentName) ||
+              length(experimentName) > 1)) {
+    stop("experimentName should be a character string of length one.\n")
   }
   ## Convert input to data.frame. This needs to be done to be able to handle
   ## tibbles and possibly other data structures in the future.
@@ -177,6 +184,7 @@ createTimePoints <- function(dat,
                            timePoint = names(listData),
                            stringsAsFactors = FALSE)
   TP <- structure(listData,
+                  experimentName = experimentName,
                   timePoints = timePoints,
                   class = c("TP", "list"))
   return(TP)
@@ -597,7 +605,8 @@ plot.TP <- function(x,
   invisible(p)
 }
 
-#' Function for extracting for objects of class TP that keeps class.
+#' Function for extracting for objects of class TP that keeps class and
+#' attributes.
 #'
 #' @param x An object of class TP.
 #' @param i An index specifying the element to extract of replace.
@@ -612,6 +621,7 @@ plot.TP <- function(x,
     class(x) <- "list"
     r <- x[timePointsR[["timePoint"]]]
     attr(r, "timePoints") <- timePointsR
+    attr(r, "experimentName") <- attr(x, "experimentName")
     attr(r, "class") <- c("TP", "list")
     attr(r, "timestamp") <- attr(x, "timestamp")
   } else {

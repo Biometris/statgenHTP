@@ -2,7 +2,8 @@
 % Please edit documentation in R/createTimePoints.R
 \name{[.TP}
 \alias{[.TP}
-\title{Function for extracting for objects of class TP that keeps class.}
+\title{Function for extracting for objects of class TP that keeps class and
+attributes.}
 \usage{
 \method{[}{TP}(x, i, ...)
 }
@@ -14,5 +15,6 @@
 \item{...}{Ignored.}
 }
 \description{
-Function for extracting for objects of class TP that keeps class.
+Function for extracting for objects of class TP that keeps class and
+attributes.
 }
