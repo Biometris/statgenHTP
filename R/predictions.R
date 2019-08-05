@@ -76,7 +76,8 @@ predictGeno <- function(fitMod) {
     ## Repeat for the check genotypes.
     if (useCheck) {
       ## Predict check genotypes.
-      predCheck <- predict(fitMod, classify = "check", vcov = FALSE)$pvals
+      classFormChk <- paste0(if (useGenoDecomp) "geno.decomp:", "check")
+      predCheck <- predict(fitMod, classify = classFormChk, vcov = FALSE)$pvals
       ## Rename check to genotype for merging with genotype predictions.
       predCheck[["genotype"]] <- predCheck[["check"]]
       ## Remove noCheck
@@ -84,7 +85,7 @@ predictGeno <- function(fitMod) {
       ## Rename genoCol to genotype for merging with check predictions.
       predGeno[["genotype"]] <- predGeno[[genoCol]]
       if (useGenoDecomp) {
-        predGeno <- rbind(predGeno[-c(1, 2)], predCheck[-1])
+        predGeno <- rbind(predGeno[-2], predCheck[-2])
       } else {
         predGeno <- rbind(predGeno[-1], predCheck[-1])
       }

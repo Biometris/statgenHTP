@@ -142,6 +142,8 @@ plot.fitMod <- function(x,
   } else if (engine == "asreml") {
     useCheck <- "check" %in% all.vars(update(fitMods[[1]]$formulae$fixed, 0~.))
   }
+  ## Get what from fitted models.
+  what <- attr(x = fitMods, which = "what")
   if (!is.null(outFile) && plotType != "timeLapse") {
     chkFile(outFile, fileType = "pdf")
     output <- TRUE
@@ -297,7 +299,9 @@ plot.fitMod <- function(x,
       plot(p)
     }
   } else if (plotType == "spatial") {
-    p <- lapply(X = fitMods, FUN = spatPlot, output = output, ... = ...)
+    p <- lapply(X = fitMods, FUN = spatPlot, trait = trait, what = what,
+                geno.decomp = geno.decomp, engine = engine, output = output,
+                ... = ...)
   } else if (plotType == "timeLapse") {
     chkFile(outFile, fileType = "gif")
     timeLapsePlot(fitMods, outFile = outFile, ...)
@@ -325,23 +329,23 @@ plotTheme <- function() {
 #' @noRd
 #' @keywords internal
 spatPlot <- function(fitMod,
+                     trait,
+                     what,
+                     geno.decomp,
+                     engine,
                      output = TRUE,
                      ...) {
   dotArgs <- list(...)
   ## Get plot type for spatial trend from args.
   spaTrend <- match.arg(dotArgs$spaTrend, choices = c("raw", "percentage"))
-  ## Get engine from fitted model.
-  engine <- class(fitMod)
   ## Extract data from model.
-  modDat <- fitMod$data
+  if (engine == "SpATS") {
+    modDat <- fitMod$data
+  } else if (engine == "asreml") {
+    modDat <- fitMod$call$data
+  }
   ## Extract time point from model data.
   timePoint <- modDat[["timePoint"]][1]
-  ## Extract trait from model.
-  trait <- fitMod$model$response
-  ## Get geno.decomp from fitted models.
-  geno.decomp <- fitMod$model$geno$geno.decomp
-  ## Extract what from model.
-  what <- ifelse(fitMod$model$geno$as.random, "random", "fixed")
   ## Extract raw data.
   raw <- modDat[c("genotype", trait, "rowNum", "colNum", geno.decomp)]
   ## Extract fitted values from model.
@@ -371,36 +375,40 @@ spatPlot <- function(fitMod,
   ## removed.
   ## Code mimickes code from SpATS package but is adapted to create a
   ## data.frame useable by ggplot.
-  plotDat <- plotDat[order(plotDat[["colNum"]], plotDat[["rowNum"]]), ]
-  nCol <- xMax - xMin + 1
-  nRow <- yMax - yMin + 1
-  p1 <- 100 %/% nCol + 1
-  p2 <- 100 %/% nRow + 1
-  ## Get spatial trend from SpATS object.
-  spatTr <- SpATS::obtain.spatialtrend(fitMod, grid = c(nCol * p1, nRow * p2))
-  ## spatial trend contains values for all data points, so NA in original
-  ## data need to be removed. The kronecker multiplication is needed to
-  ## convert the normal row col pattern to the smaller grid extending the
-  ## missing values.
-  ## First a matrix M is created containing information for all
-  ## columns/rows in the field even if they are completely empty.
-  M <- matrix(nrow = nRow, ncol = nCol,
-              dimnames = list(yMin:yMax, xMin:xMax))
-  for (i in 1:nrow(plotDat)) {
-    M[as.character(plotDat[i, "rowNum"]),
-      as.character(plotDat[i, "colNum"])] <-
-      ifelse(is.na(plotDat[i, trait]), NA, 1)
+
+  if (engine == "SpATS") {
+    plotDat <- plotDat[order(plotDat[["colNum"]], plotDat[["rowNum"]]), ]
+    nCol <- xMax - xMin + 1
+    nRow <- yMax - yMin + 1
+    p1 <- 100 %/% nCol + 1
+    p2 <- 100 %/% nRow + 1
+    ## Get spatial trend from SpATS object.
+    spatTr <- SpATS::obtain.spatialtrend(fitMod, grid = c(nCol * p1, nRow * p2))
+    ## spatial trend contains values for all data points, so NA in original
+    ## data need to be removed. The kronecker multiplication is needed to
+    ## convert the normal row col pattern to the smaller grid extending the
+    ## missing values.
+    ## First a matrix M is created containing information for all
+    ## columns/rows in the field even if they are completely empty.
+    M <- matrix(nrow = nRow, ncol = nCol,
+                dimnames = list(yMin:yMax, xMin:xMax))
+    for (i in 1:nrow(plotDat)) {
+      M[as.character(plotDat[i, "rowNum"]),
+        as.character(plotDat[i, "colNum"])] <-
+        ifelse(is.na(plotDat[i, trait]), NA, 1)
+    }
+    spatTrDat <- kronecker(M, matrix(data = 1, ncol = p1, nrow = p2)) *
+      spatTr$fit
+    ## Melt to get the data in ggplot shape. Rows and columns in the
+    ## spatial trend coming from SpATS are swapped so therefore use t()
+    plotDatSpat <- reshape2::melt(t(spatTrDat),
+                                  varnames = c("colNum", "rowNum"))
+    ## Add true values for columns and rows for plotting.
+    plotDatSpat[["colNum"]] <- spatTr$col.p
+    plotDatSpat[["rowNum"]] <- rep(x = spatTr$row.p, each = p1 * nCol)
+    ## Remove missings from data.
+    plotDatSpat <- remove_missing(plotDatSpat, na.rm = TRUE)
   }
-  spatTrDat <- kronecker(M, matrix(data = 1, ncol = p1, nrow = p2)) *
-    spatTr$fit
-  ## Melt to get the data in ggplot shape. Rows and columns in the
-  ## spatial trend coming from SpATS are swapped so therefore use t()
-  plotDatSpat <- reshape2::melt(t(spatTrDat), varnames = c("colNum", "rowNum"))
-  ## Add true values for columns and rows for plotting.
-  plotDatSpat[["colNum"]] <- spatTr$col.p
-  plotDatSpat[["rowNum"]] <- rep(x = spatTr$row.p, each = p1 * nCol)
-  ## Remove missings from data.
-  plotDatSpat <- remove_missing(plotDatSpat, na.rm = TRUE)
   ## Now missing values can be removed from plotDat.
   plotDat <- remove_missing(plotDat, na.rm = TRUE)
   ## Code taken from plot.SpATS and simplified.
@@ -425,21 +433,24 @@ spatPlot <- function(fitMod,
                         title = legends[2], colors = colors, zlim = zlim)
   plots$p3 <- fieldPlot(plotDat = plotDat, fillVar = "resid",
                         title = legends[3], colors = colors)
-  if (spaTrend == "raw") {
-    ## Get tickmarks from first plot to be used as ticks.
-    ## Spatial plot tends to use different tickmarks by default.
-    xTicks <- ggplot_build(plots[[1]])$layout$panel_params[[1]]$x.major_source
-    plots$p4 <- fieldPlot(plotDat = plotDatSpat, fillVar = "value",
-                          title = legends[4], colors = colors,
-                          xTicks = xTicks)
-  } else {
-    phenoMean <- mean(modDat[[trait]], na.rm = TRUE)
-    plotDatSpat[["value"]] <- plotDatSpat[["value"]] / phenoMean
-    zlim <- c(-1, 1) * max(c(abs(plotDatSpat[["value"]]), 0.1))
-    plots$p4 <- fieldPlotPcts(plotDat = plotDatSpat, fillVar = "value",
-                              title = legends[4], zlim = zlim,
-                              colors = colorRampPalette(c("red", "yellow", "blue"),
-                                                        space = "Lab")(100))
+  ## Spatial plot only for SpATS.
+  if (engine == "SpATS") {
+    if (spaTrend == "raw") {
+      ## Get tickmarks from first plot to be used as ticks.
+      ## Spatial plot tends to use different tickmarks by default.
+      xTicks <- ggplot_build(plots[[1]])$layout$panel_params[[1]]$x.major_source
+      plots$p4 <- fieldPlot(plotDat = plotDatSpat, fillVar = "value",
+                            title = legends[4], colors = colors,
+                            xTicks = xTicks)
+    } else {
+      phenoMean <- mean(modDat[[trait]], na.rm = TRUE)
+      plotDatSpat[["value"]] <- plotDatSpat[["value"]] / phenoMean
+      zlim <- c(-1, 1) * max(c(abs(plotDatSpat[["value"]]), 0.1))
+      plots$p4 <- fieldPlotPcts(plotDat = plotDatSpat, fillVar = "value",
+                                title = legends[4], zlim = zlim,
+                                colors = colorRampPalette(c("red", "yellow", "blue"),
+                                                          space = "Lab")(100))
+    }
   }
   plots$p5 <- fieldPlot(plotDat = plotDat, fillVar = "predicted.values",
                         title = legends[5], colors = colors)
