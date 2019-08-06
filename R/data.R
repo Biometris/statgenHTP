@@ -7,19 +7,18 @@
 #' also tested with 15 or 30 replicates. The studied trait is the photosystem II
 #' efficiency (EffpsII) extracted from the pictures over time (van Rooijen et al. 2017).
 #'
-#' @format A data.frame with 103839 rows and 11 columns:
+#' @format A data.frame with 103,839 rows and 10 columns:
 #' \describe{
 #'   \item{Genotype}{Genotypes}
 #'   \item{Basin}{Table of experiment}
-#'   \item{Replicate}{Replicate}
+#'   \item{Replicate}{Block define after sowing for post-blocking. They are not full-resolvable blocks.}
 #'   \item{Image_pos}{Position of the camera}
-#'   \item{Sowing_Block}{Block defined for post-blocking}
-#'   \item{x}{row coordinate}
-#'   \item{y}{column coordinate}
-#'   \item{Sowing_Position}{unique pot ID}
+#'   \item{x}{Row coordinate}
+#'   \item{y}{Column coordinate}
+#'   \item{Sowing_Position}{Unique pot ID}
 #'   \item{timepoints}{time of picture}
-#'   \item{EffpsII}{trial, a combination of location and year}
-#'   \item{pos}{unique pot using rowcol coordinate}
+#'   \item{EffpsII}{Efficiency of the photosystem II}
+#'   \item{pos}{Unique pot ID using rowcol coordinates}
 #' }
 #'
 #' @source \url{}
@@ -50,18 +49,18 @@
 #' and 4 in WD. The studied trait is the leaf area extracted from the pictures over
 #' time. Plants were pictured every day for 35 days.
 #'
-#' @format A data.frame with 50405 rows and 10 columns:
+#' @format A data.frame with 50,405 rows and 10 columns:
 #' \describe{
 #'   \item{geno}{Genotype}
 #'   \item{population}{Panel 1 or 2}
 #'   \item{Scenario}{Water regime}
 #'   \item{Rep}{Replicate}
-#'   \item{Line}{line of conveyor belt (i.e column coordinate)}
-#'   \item{Position}{pot position on the conveyor belt (i.e. row coordinate)}
-#'   \item{Pot}{unique pot ID}
-#'   \item{LA_Estimated}{Leaf area from the picture (m^2^)}
+#'   \item{Line}{Line of conveyor belt (i.e. column coordinate)}
+#'   \item{Position}{Pot position on the conveyor belt (i.e. row coordinate)}
+#'   \item{Pot}{Unique pot ID}
+#'   \item{LA_Estimated}{Leaf area from the picture}
 #'   \item{Date}{Date of measurement}
-#'   \item{pos}{unique pot using rowcol coordinate}
+#'   \item{pos}{Unique pot using rowcol coordinate}
 #' }
 #'
 #' @source \url{}
