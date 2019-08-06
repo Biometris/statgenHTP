@@ -115,6 +115,7 @@ plot.fitMod <- function(x,
   ## Checks.
   timePoints <- chkTimePoints(x, timePoints)
   plotType <- match.arg(plotType)
+  experimentName <- attr(x = x, which = "experimentName")
   dotArgs <- list(...)
   if (!is.null(title) && (!is.character(title) || length(title) > 1)) {
     stop("title should be NULL or a character string.\n")
@@ -168,7 +169,8 @@ plot.fitMod <- function(x,
     if (!is.null(genotypes) && !is.character(genotypes)) {
       stop("genotypes should be NULL or a character vector.\n")
     }
-    if (is.null(title)) title <- "Genotypic predictions + raw data"
+    if (is.null(title)) title <-
+        paste(experimentName, "- genotypic prediction + raw data")
     ## Get genotypic predictions.
     preds <- getGenoPred(fitMods)
     ## Construct full raw data from models.
@@ -214,7 +216,8 @@ plot.fitMod <- function(x,
     if (!is.null(genotypes) && !is.character(genotypes)) {
       stop("genotypes should be NULL or a character vector.\n")
     }
-    if (is.null(title)) title <- "Genotypic predictions + spatial corrected data"
+    if (is.null(title))
+      title <- paste(experimentName, "- genotypic prediction + corrected data")
     ## Get genotypic predictions.
     preds <- getGenoPred(fitMods)
     ## Get spatial corrected values.
@@ -238,7 +241,7 @@ plot.fitMod <- function(x,
                      title = title,
                      yLab = trait, output = output)
   } else if (plotType == "herit") {
-    if (is.null(title)) title <- "Heritabilities"
+    if (is.null(title)) title <- paste(experimentName, "- Heritability")
     ## Get heritabilities.
     herit <- getHerit(fitMods)
     ## Convert to long format needed by ggplot.
@@ -272,7 +275,7 @@ plot.fitMod <- function(x,
                            several.ok = TRUE)
     }
     EDType <- match.arg(dotArgs$EDType, choices = c("dimension", "ratio"))
-    if (is.null(title)) title <- "Effective dimensions"
+    if (is.null(title)) title <- paste(experimentName, "- Effective dimension")
     ## Get effective dimensions.
     effDim <- getEffDims(fitMods, EDType = EDType)
     ## Convert to long format needed by ggplot.
@@ -292,7 +295,7 @@ plot.fitMod <- function(x,
       plot(p)
     }
   } else if (plotType == "variance") {
-    if (is.null(title)) title <- "Variances"
+    if (is.null(title)) title <- paste(experimentName, "- Variances")
     ## Get variances.
     variance <- getVar(fitMods)
     ## Convert to long format needed by ggplot.
@@ -317,7 +320,7 @@ plot.fitMod <- function(x,
   } else if (plotType == "spatial") {
     p <- lapply(X = fitMods, FUN = spatPlot, trait = trait, what = what,
                 geno.decomp = geno.decomp, engine = engine, output = output,
-                ... = ...)
+                ... = ..., experimentName = experimentName)
   } else if (plotType == "timeLapse") {
     chkFile(outFile, fileType = "gif")
     timeLapsePlot(fitMods, outFile = outFile, ...)
@@ -441,7 +444,7 @@ spatPlot <- function(fitMod,
   plots <- vector(mode = "list")
   ## Create main plot title.
   plotTitle <- ifelse(!is.null(dotArgs$title), dotArgs$title,
-                      paste("Timepoint:", timePoint, "Trait:", trait))
+                      paste(dotArgs$experimentName, "-", trait, "-", timePoint))
   ## Create separate plots.
   plots$p1 <- fieldPlot(plotDat = plotDat, fillVar = trait,
                         title = legends[1], colors = colors, zlim = zlim)
@@ -644,7 +647,7 @@ timeLapsePlot <- function(fitMods,
     ## Create a plot of the spatial trend per time point.
     for (i in seq_along(plotSpatDats)) {
       p <- fieldPlotPcts(plotDat = plotSpatDats[[i]], fillVar = "value",
-                         title = paste(trait, names(plotSpatDats)[i]),
+                         title = names(plotSpatDats)[i],
                          colors = colorRampPalette(c("red", "yellow", "blue"),
                                                    space = "Lab")(100),
                          zlim = zLim, scaleLim = scaleLim)
