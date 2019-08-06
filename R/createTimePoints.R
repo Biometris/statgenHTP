@@ -261,6 +261,8 @@ createTimePoints <- function(dat,
 #' TP object.
 #' @param traits A character vector indicating the traits to be plotted in
 #' a boxplot. Only used if \code{plotType} = "box" or "cor".
+#' @param title A character string used as title for the plot. If \code{NULL} a
+#' default title is added to the plot depending on \code{plotType}.
 #' @param output Should the plot be output to the current device? If
 #' \code{FALSE} only a list of ggplot objects is invisibly returned. Ignored if
 #' \code{outFile} is specified.
@@ -279,6 +281,7 @@ plot.TP <- function(x,
                     ...,
                     plotType = c("layout", "box", "cor", "raw"),
                     timePoints = names(x),
+                    title = NULL,
                     traits = NULL,
                     output = TRUE,
                     outFile = NULL,
@@ -302,6 +305,7 @@ plot.TP <- function(x,
     }
     p <- setNames(vector(mode = "list", length = length(timePoints)), timePoints)
     for (timePoint in timePoints) {
+      if (is.null(title)) title <- paste(experimentName, "-", timePoint)
       tpDat <- x[[timePoint]]
       if (!hasName(tpDat, "rowNum")) {
         warning(paste0("rowNum should be a column in ", timePoint, ".\n",
@@ -343,7 +347,7 @@ plot.TP <- function(x,
         ## Move ticks to edge of the plot.
         scale_x_continuous(breaks = scales::pretty_breaks(), expand = c(0, 0)) +
         scale_y_continuous(breaks = scales::pretty_breaks(), expand = c(0, 0)) +
-        ggtitle(paste(experimentName, "-", timePoint))
+        ggtitle(title)
       if (sum(!is.na(tpDat$highlight.)) > 0) {
         ## Genotypes to be highlighted get a color.
         ## Everything else the NA color.
@@ -423,6 +427,7 @@ plot.TP <- function(x,
       ## genotype. Genotype is needed to be able to display hovering info.
       ## timePoints where trait is not measured/available are removed by setting
       ## them to NULL.
+      if (is.null(title)) title <- paste(experimentName, "-", trait)
       xVar <- if (is.null(groupBy)) "timePoint" else groupBy
       plotDat <- Reduce(f = rbind,
                         x = lapply(X = x[timePoints],
@@ -469,7 +474,7 @@ plot.TP <- function(x,
         geom_boxplot(na.rm = TRUE) +
         theme(plot.title = element_text(hjust = 0.5),
               axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
-        labs(title = paste(experimentName, "-", trait), x = xVar, y = trait)
+        labs(title = title, x = xVar, y = trait)
       p[[trait]] <- pTp
       if (output) {
         plot(pTp)
@@ -484,6 +489,8 @@ plot.TP <- function(x,
     }
     p <- setNames(vector(mode = "list", length = length(traits)), traits)
     for (trait in traits) {
+      if (is.null(title))
+        title <- paste(experimentName, "- Correlations of timepoints for", trait)
       ## Create a single data.frame from x with only columns timePoint and trait.
       ## timePoints where trait is not measured/available are removed by setting
       ## them to NULL.
@@ -544,8 +551,7 @@ plot.TP <- function(x,
         theme(panel.grid.major = element_blank(),
               panel.grid.minor = element_blank()) +
         ## No axis and legend titles.
-        labs(title = paste(experimentName, "- Correlations of timepoints for",
-                          trait), x = "", y = "", color = "") +
+        labs(title = title, x = "", y = "", color = "") +
         guides(size = FALSE) +
         ## Fix coordinates to get a square sized plot.
         coord_fixed()
@@ -567,6 +573,8 @@ plot.TP <- function(x,
     }
     p <- setNames(vector(mode = "list", length = length(traits)), traits)
     for (trait in traits) {
+      if (is.null(title))
+        title <- paste(experimentName, "-", trait, "- raw data")
       ## Create a single data.frame from x with only columns timePoint and
       ## trait. timePoints where trait is not measured/available are removed
       ## by setting them to NULL.
@@ -597,8 +605,7 @@ plot.TP <- function(x,
       plotDat <- addMissVals(dat = plotDat, trait = trait)
       ## Create actual plots.
       xyFacetPlot(baseDat = plotDat, yVal = trait,
-                  title = paste(experimentName, "-", trait, "- raw data"),
-                  yLab = trait, output = output)
+                  title = title, yLab = trait, output = output)
     }
   }
   if (!is.null(outFile)) {

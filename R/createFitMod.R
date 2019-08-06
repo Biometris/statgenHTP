@@ -91,8 +91,6 @@ createFitMod <- function(models,
 #' @inheritParams plot.TP
 #'
 #' @param x An object of class fitMod.
-#' @param title A character string used as title for the plot. If \code{NULL} a
-#' default title is added to the plot depending on \code{plotType}.
 #' @param outFile A character string indicating the .pdf file or .gif file
 #' (For \code{plotType} = "timeLapse") to which the plots should be written.
 #' @param outFileOpts A named list of extra options for the pdf outfile, e.g.
@@ -320,7 +318,7 @@ plot.fitMod <- function(x,
   } else if (plotType == "spatial") {
     p <- lapply(X = fitMods, FUN = spatPlot, trait = trait, what = what,
                 geno.decomp = geno.decomp, engine = engine, output = output,
-                ... = ..., experimentName = experimentName)
+                ... = ..., experimentName = experimentName, title = title)
   } else if (plotType == "timeLapse") {
     chkFile(outFile, fileType = "gif")
     timeLapsePlot(fitMods, outFile = outFile, ...)
@@ -394,7 +392,6 @@ spatPlot <- function(fitMod,
   ## removed.
   ## Code mimickes code from SpATS package but is adapted to create a
   ## data.frame useable by ggplot.
-
   if (engine == "SpATS") {
     plotDat <- plotDat[order(plotDat[["colNum"]], plotDat[["rowNum"]]), ]
     nCol <- xMax - xMin + 1

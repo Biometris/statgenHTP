@@ -5,8 +5,8 @@
 \title{Plot function for class TP}
 \usage{
 \method{plot}{TP}(x, ..., plotType = c("layout", "box", "cor", "raw"),
-  timePoints = names(x), traits = NULL, output = TRUE,
-  outFile = NULL, outFileOpts = NULL)
+  timePoints = names(x), title = NULL, traits = NULL,
+  output = TRUE, outFile = NULL, outFileOpts = NULL)
 }
 \arguments{
 \item{x}{An object of class TP.}
@@ -22,6 +22,9 @@ to be plotted. When using a character string to reference a timePoint, the
 value has to be an exact match to one of the existing timePoints. When using
 a number it will be matched by its number in the timePoints attribute of the
 TP object.}
+
+\item{title}{A character string used as title for the plot. If \code{NULL} a
+default title is added to the plot depending on \code{plotType}.}
 
 \item{traits}{A character vector indicating the traits to be plotted in
 a boxplot. Only used if \code{plotType} = "box" or "cor".}
