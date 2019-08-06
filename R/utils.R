@@ -219,18 +219,29 @@ xyFacetPlot <- function(baseDat,
                         yLab = "Trait",
                         output = TRUE) {
   p <- ggplot(baseDat, aes_string(x = xVal, y = yVal)) +
-    geom_line(aes_string(group = groupVal, color = colVal),
-              show.legend = FALSE, na.rm = TRUE) +
     theme(panel.background = element_blank(),
           panel.spacing = unit(0, "cm"),
           panel.border = element_rect(color = "black", fill = "transparent"),
           strip.background = element_rect(color = "black", fill = "bisque"),
           plot.title = element_text(hjust = 0.5)) +
     labs(title = title, x = xLab, y = yLab)
-  if (!is.null(overlayDat)) {
-    p <- p + geom_line(aes_string(x = "timePoint", y = yValOverlay),
-                       data = overlayDat, color = "black", size = 1,
+  if (length(unique(baseDat[[xVal]])) > 1) {
+    p <- p + geom_line(aes_string(group = groupVal, color = colVal),
                        show.legend = FALSE, na.rm = TRUE)
+  } else {
+    p <- p + geom_point(aes_string(group = groupVal, color = colVal),
+                        show.legend = FALSE, na.rm = TRUE, size = 1)
+  }
+  if (!is.null(overlayDat)) {
+    if (length(unique(baseDat[[xVal]])) > 1) {
+      p <- p + geom_line(aes_string(x = "timePoint", y = yValOverlay),
+                         data = overlayDat, color = "black", size = 1,
+                         show.legend = FALSE, na.rm = TRUE)
+    } else {
+      p <- p + geom_point(aes_string(x = "timePoint", y = yValOverlay),
+                          data = overlayDat, color = "black", size = 1.5,
+                          show.legend = FALSE, na.rm = TRUE)
+    }
   }
   nPlots <- nlevels(interaction(baseDat[facetVal], drop = TRUE))
   nPag <- ceiling(nPlots / 25)
@@ -249,7 +260,7 @@ xyFacetPlot <- function(baseDat,
                                    labeller = label_wrap_gen(multi_line = FALSE),
                                    page = i)
     if (output) {
-      plot(pPag[[i]])
+      suppressMessages(plot(pPag[[i]]))
     }
   }
   invisible(pPag)

@@ -252,11 +252,13 @@ plot.fitMod <- function(x,
               max(dotArgs$yLim[2], herit[["h2"]]))
     p <- ggplot(herit, aes_string(x = "timePoint", y = "h2",
                                   group = "herit", color = "herit")) +
-      geom_line(size = 0.5, na.rm = TRUE) +
       geom_point(size = 3, na.rm = TRUE) +
       plotTheme() +
       ylim(yLim) +
       labs(title = title)
+    if (length(unique(herit[["timePoint"]])) > 1) {
+      p <- p + geom_line(size = 0.5, na.rm = TRUE)
+    }
     if (output) {
       plot(p)
     }
@@ -284,11 +286,13 @@ plot.fitMod <- function(x,
               max(dotArgs$yLim[2], effDim[["ED"]]))
     p <- ggplot(effDim, aes_string(x = "timePoint", y = "ED",
                                    group = "effDim", color = "effDim")) +
-      geom_line(size = 0.5, na.rm = TRUE) +
       geom_point(size = 3, na.rm = TRUE) +
       plotTheme() +
       ylim(yLim) +
       labs(title = title, color = "Effective dimension")
+    if (length(unique(effDim[["timePoint"]])) > 1) {
+      p <- p + geom_line(size = 0.5, na.rm = TRUE)
+    }
     if (output) {
       plot(p)
     }
@@ -305,13 +309,15 @@ plot.fitMod <- function(x,
               max(dotArgs$yLim[2], variance[["value"]]))
     p <- ggplot(variance, aes_string(x = "timePoint", y = "value",
                                      group = "var", color = "var")) +
-      geom_line(size = 0.5, na.rm = TRUE) +
       geom_point(size = 3, na.rm = TRUE) +
       scale_color_discrete(labels = c("Residual", "Columns", "Rows")) +
       plotTheme() +
       ylim(yLim) +
       labs(title = title, color = "variance",
            y = expression(sigma ^ 2))
+    if (length(unique(variance[["timePoint"]])) > 1) {
+      p <- p + geom_line(size = 0.5, na.rm = TRUE)
+    }
     if (output) {
       plot(p)
     }
