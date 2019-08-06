@@ -286,6 +286,7 @@ plot.TP <- function(x,
   ## Checks.
   timePoints <- chkTimePoints(x, timePoints)
   plotType <- match.arg(plotType)
+  experimentName <- attr(x = x, which = "experimentName")
   dotArgs <- list(...)
   if (!is.null(outFile)) {
     chkFile(outFile, fileType = "pdf")
@@ -342,7 +343,7 @@ plot.TP <- function(x,
         ## Move ticks to edge of the plot.
         scale_x_continuous(breaks = scales::pretty_breaks(), expand = c(0, 0)) +
         scale_y_continuous(breaks = scales::pretty_breaks(), expand = c(0, 0)) +
-        ggtitle(timePoint)
+        ggtitle(paste(experimentName, "-", timePoint))
       if (sum(!is.na(tpDat$highlight.)) > 0) {
         ## Genotypes to be highlighted get a color.
         ## Everything else the NA color.
@@ -466,8 +467,9 @@ plot.TP <- function(x,
                                         fill = if (is.null(colorBy)) NULL else
                                           paste0("`", colorBy, "`"))) +
         geom_boxplot(na.rm = TRUE) +
-        theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
-        labs(x = xVar, y = trait)
+        theme(plot.title = element_text(hjust = 0.5),
+              axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+        labs(title = paste(experimentName, "-", trait), x = xVar, y = trait)
       p[[trait]] <- pTp
       if (output) {
         plot(pTp)
@@ -542,8 +544,8 @@ plot.TP <- function(x,
         theme(panel.grid.major = element_blank(),
               panel.grid.minor = element_blank()) +
         ## No axis and legend titles.
-        labs(x = "", y = "", color = "") +
-        ggtitle(paste("Correlations of timepoints for", trait)) +
+        labs(title = paste(experimentName, "- Correlations of timepoints for",
+                          trait), x = "", y = "", color = "") +
         guides(size = FALSE) +
         ## Fix coordinates to get a square sized plot.
         coord_fixed()
@@ -595,8 +597,8 @@ plot.TP <- function(x,
       plotDat <- addMissVals(dat = plotDat, trait = trait)
       ## Create actual plots.
       xyFacetPlot(baseDat = plotDat, yVal = trait,
-                  title = "Phenovator platform - Raw data", yLab = trait,
-                  output = output)
+                  title = paste(experimentName, "-", trait, "- raw data"),
+                  yLab = trait, output = output)
     }
   }
   if (!is.null(outFile)) {
