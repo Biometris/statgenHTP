@@ -19,6 +19,8 @@ correctSpatialSpATS <- function(fitMod) {
   useCheck <- grepl(pattern = "check", x = deparse(fitMod$model$fixed))
   ## Get trait from fitted model.
   trait <- fitMod$model$response
+  ## Set name for new trait.
+  newTrait <- paste0(trait, "_corr")
   ## Get geno.decomp from fitted models.
   geno.decomp <- fitMod$model$geno$geno.decomp
   ## Include in the prediction the factors (variables) whose effect we are
@@ -68,7 +70,7 @@ correctSpatialSpATS <- function(fitMod) {
     }
   }
   ## Obtain the corrected trait.
-  pred[["newTrait"]] <- pred[[trait]] - pred[["predicted.values"]] +
+  pred[[newTrait]] <- pred[[trait]] - pred[["predicted.values"]] +
     intercept
   ## Select the variables needed for subsequent analyses.
   if (!useCheck) {
@@ -77,7 +79,7 @@ correctSpatialSpATS <- function(fitMod) {
   if (!is.null(geno.decomp) && !hasName(pred , "geno.decomp")) {
     pred[[geno.decomp]] <- pred[[paste0(geno.decomp, ".y")]]
   }
-  pred <- pred[c("newTrait", "genotype", geno.decomp,
+  pred <- pred[c(newTrait, "genotype", geno.decomp,
                  setdiff(predVars, c("rowNum", "colNum")), "plotId",
                  "timePoint")]
 }
@@ -87,6 +89,8 @@ correctSpatialAsreml <- function(fitMod) {
   useCheck <- "check" %in% all.vars(update(fitMod$formulae$fixed, 0~.))
   ## Get trait from fitted model.
   trait <- all.vars(update(fitMod$formulae$fixed, .~0))
+  ## Set name for new trait.
+  newTrait <- paste0(trait, "_corr")
   ## Get geno.decomp from fitted models.
   if ("geno.decomp" %in% all.vars(fitMod$formulae$random) ||
       "geno.decomp" %in% all.vars(fitMod$formulae$fixed)) {
@@ -109,13 +113,13 @@ correctSpatialAsreml <- function(fitMod) {
   pred <- fitMod$call$data[union(c("genotype", if (useCheck) "check",
                                    "plotId", "timePoint", trait,
                                    geno.decomp), c(randVars, fixVars))]
-  pred[["newTrait"]] <- pred[[trait]]
+  pred[[newTrait]] <- pred[[trait]]
   ## Predict fixed effects.
   if (length(fixVars) > 0) {
     predFix <- predict(fitMod, classify = paste0(fixVars, collapse = ":"),
                        present = fixVars)$pvals
     pred <- merge(pred, predFix[c(fixVars, "predicted.value")])
-    pred[["newTrait"]] <- pred[["newTrait"]] - pred[["predicted.value"]]
+    pred[[newTrait]] <- pred[[newTrait]] - pred[["predicted.value"]]
     pred[["predicted.value"]] <- NULL
   }
   ## Predict random effects.
@@ -123,7 +127,7 @@ correctSpatialAsreml <- function(fitMod) {
     predRand <- predict(fitMod, classify = paste0(randVars, collapse = ":"),
                         only = randVars)$pvals
     pred <- merge(pred, predRand[c(randVars, "predicted.value")])
-    pred[["newTrait"]] <- pred[["newTrait"]] - pred[["predicted.value"]]
+    pred[[newTrait]] <- pred[[newTrait]] - pred[["predicted.value"]]
     pred[["predicted.value"]] <- NULL
   }
   ## Predict intercept.
@@ -131,12 +135,12 @@ correctSpatialAsreml <- function(fitMod) {
     if (!is.null(geno.decomp)) {
       predGD <- predict(fitMod, classify = "geno.decomp")$pvals
       pred <- merge(pred, predGD[c("geno.decomp", "predicted.value")])
-      pred[["newTrait"]] <- pred[["newTrait"]] - pred[["predicted.value"]]
+      pred[[newTrait]] <- pred[[newTrait]] - pred[["predicted.value"]]
       pred[["predicted.value"]] <- NULL
     } else {
       predInt <- predict(fitMod, classify = "(Intercept)",
                          present = predVars)$pvals$predicted.value
-      pred[["newTrait"]] <- pred[["newTrait"]] + predInt
+      pred[[newTrait]] <- pred[[newTrait]] + predInt
     }
   }
   if (length(predVars) == 0) {
@@ -145,6 +149,6 @@ correctSpatialAsreml <- function(fitMod) {
   ## Remove row/col combinations added when fitting models.
   pred <- pred[!is.na(pred[["plotId"]]), ]
   ## Select the variables needed for subsequent analyses.
-  pred <- pred[c("newTrait", "genotype", geno.decomp, fixVars, randVars,
+  pred <- pred[c(newTrait, "genotype", geno.decomp, fixVars, randVars,
                  "plotId", "timePoint")]
 }
