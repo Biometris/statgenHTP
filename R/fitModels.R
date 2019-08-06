@@ -81,6 +81,7 @@ fitModels <- function(TP,
   if (missing(TP) || !inherits(TP, "TP")) {
     stop("TP should be an object of class TP.\n")
   }
+  experimentName <- attr(x = TP, which = "experimentName")
   ## Check time points and convert numerical input to corresponding
   ## character values.
   timePoints <- chkTimePoints(TP, timePoints)
@@ -301,6 +302,7 @@ fitModels <- function(TP,
     }
   }
   return(createFitMod(fitMods,
+                      experimentName = experimentName,
                       what = what,
                       useRepId = useRepId,
                       spatial = spatial,

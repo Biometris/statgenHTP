@@ -1,10 +1,12 @@
 #' @keywords internal
 createFitMod <- function(models,
+                         experimentName,
                          what,
                          useRepId,
                          spatial,
                          timePoints) {
   fitMod <- structure(models,
+                      experimentName = experimentName,
                       timePoints = timePoints,
                       what = what,
                       useRepId = useRepId,
@@ -666,6 +668,7 @@ timeLapsePlot <- function(fitMods,
     class(x) <- "list"
     r <- x[timePointsR[["timePoint"]]]
     attr(r, "timePoints") <- timePointsR
+    attr(r, "experimentName") <- attr(x, "experimentName")
     attr(r, "what") <- attr(x, "what")
     attr(r, "useRepId") <- attr(x, "useRepId")
     attr(r, "spatial") <- attr(x, "spatial")
