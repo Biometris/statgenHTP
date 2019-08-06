@@ -186,8 +186,38 @@ createTimePoints <- function(dat,
   TP <- structure(listData,
                   experimentName = experimentName,
                   timePoints = timePoints,
+                  checkGenotypes = checkGenotypes,
                   class = c("TP", "list"))
   return(TP)
+}
+
+#' Summary function for class TP
+#'
+#' Summary function for class TP
+#'
+#' @param object An object of class TP.
+#' @param ... Ignored.
+#'
+#' @export
+summary.TP <- function(object,
+                       ...)  {
+  experimentName <- attr(x = object, which = "experimentName")
+  noTP <- length(object)
+  firstTP <- names(object)[1]
+  lastTP <- names(object)[noTP]
+  checkGenotypes <- attr(x = object, which = "checkGenotypes")
+
+  cat(deparse(substitute(object)), " contains data for experiment ",
+      experimentName, ".\n\n", sep = "")
+  cat("It contains", noTP, "time points.\n")
+  cat("First time point:", firstTP, "\n")
+  cat("Last time point:", lastTP, "\n\n")
+  if (!is.null(checkGenotypes)) {
+  cat("The following genotypes are defined as check genotypes: " ,
+      paste(checkGenotypes, collapse = ", "), ".\n", sep = "")
+  } else {
+    cat("No check genotypes are defined.\n")
+  }
 }
 
 #' Plot function for class TP
