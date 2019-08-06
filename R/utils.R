@@ -218,23 +218,19 @@ xyFacetPlot <- function(baseDat,
                         xLab = "Time",
                         yLab = "Trait",
                         output = TRUE) {
-  p <- ggplot2::ggplot(baseDat,
-                       ggplot2::aes_string(x = xVal, y = yVal)) +
-    ggplot2::geom_line(ggplot2::aes_string(group = groupVal, color = colVal),
-                       show.legend = FALSE, na.rm = TRUE) +
-    ggplot2::theme(panel.background = ggplot2::element_blank(),
-                   panel.spacing = ggplot2::unit(0, "cm"),
-                   panel.border = ggplot2::element_rect(color = "black",
-                                                        fill = "transparent"),
-                   strip.background = ggplot2::element_rect(color = "black",
-                                                            fill = "bisque"),
-                   plot.title = ggplot2::element_text(hjust = 0.5)) +
-    ggplot2::labs(title = title, x = xLab, y = yLab)
+  p <- ggplot(baseDat, aes_string(x = xVal, y = yVal)) +
+    geom_line(aes_string(group = groupVal, color = colVal),
+              show.legend = FALSE, na.rm = TRUE) +
+    theme(panel.background = element_blank(),
+          panel.spacing = unit(0, "cm"),
+          panel.border = element_rect(color = "black", fill = "transparent"),
+          strip.background = element_rect(color = "black", fill = "bisque"),
+          plot.title = element_text(hjust = 0.5)) +
+    labs(title = title, x = xLab, y = yLab)
   if (!is.null(overlayDat)) {
-    p <- p + ggplot2::geom_line(ggplot2::aes_string(x = "timePoint",
-                                                    y = yValOverlay),
-                                data = overlayDat, color = "black", size = 1,
-                                show.legend = FALSE, na.rm = TRUE)
+    p <- p + geom_line(aes_string(x = "timePoint", y = yValOverlay),
+                       data = overlayDat, color = "black", size = 1,
+                       show.legend = FALSE, na.rm = TRUE)
   }
   nPlots <- nlevels(interaction(baseDat[facetVal], drop = TRUE))
   nPag <- ceiling(nPlots / 25)
@@ -250,7 +246,7 @@ xyFacetPlot <- function(baseDat,
     pPag[[i]] <- p +
       ggforce::facet_wrap_paginate(facets = facetVal,
                                    nrow = rowPag[i], ncol = colPag[i],
-                                   labeller = ggplot2::label_wrap_gen(multi_line = FALSE),
+                                   labeller = label_wrap_gen(multi_line = FALSE),
                                    page = i)
     if (output) {
       plot(pPag[[i]])
