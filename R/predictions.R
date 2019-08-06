@@ -63,13 +63,15 @@ predictGeno <- function(fitMod) {
     useCheck <- grepl(pattern = "check", x = deparse(fitMod$formulae$fixed))
     ## Get name of genotype column used.
     genoCol <- if (useCheck) "genoCheck" else "genotype"
-    useGenoDecomp <- "geno.decomp" %in% all.vars(fitMod$formulae$random)
+    useGenoDecomp <- "geno.decomp" %in% all.vars(fitMod$formulae$random) |
+      "geno.decomp" %in% all.vars(fitMod$formulae$fixed)
+    genoRand <- genoCol %in% all.vars(fitMod$formulae$random)
     ## Genotype prediction (including the effect of geno.decomp as well as
     ## the intercept).
     classForm <- paste0(if (useGenoDecomp) "geno.decomp:", genoCol)
     predGeno <- predictAsreml(fitMod, classify = classForm,
                               present = c(genoCol,
-                                          if (useGenoDecomp) "geno.decomp",
+                                          if (useGenoDecomp & genoRand) "geno.decomp",
                                           if (useCheck) "check"),
                               vcov = FALSE)$pvals
     predGeno <- predGeno[predGeno[["status"]] == "Estimable", ]

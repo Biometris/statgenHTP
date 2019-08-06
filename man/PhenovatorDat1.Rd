@@ -3,44 +3,47 @@
 \docType{data}
 \name{PhenovatorDat1}
 \alias{PhenovatorDat1}
-\title{Field data for a wheat experiment in Chili.}
-\format{A data.frame with 4000 rows and 11 columns:
+\title{Growth chamber data for an Arabidopsis experiment in the Phenovator platform.}
+\format{A data.frame with 103839 rows and 11 columns:
 \describe{
-  \item{rep}{replicate}
-  \item{bl}{block id}
-  \item{trt}{genotype}
-  \item{row}{row within the field}
-  \item{col}{column within the field}
-  \item{DH}{Days to Heading, the number of days from sowing till 50\% of
-  the spikes emerged}
-  \item{GY}{Grain Yield, in tons}
-  \item{NKS}{Number of Kernels per Spike, calculated from 25 randomly
-  selected spikes per plot}
-  \item{TKW}{Thousand Kernel Weight, in grams, calculated from 25 randomly
-  selected spikes per plot}
-  \item{trial}{trial, a combination of location and year}
-  \item{year}{year}
+  \item{Genotype}{Genotypes}
+  \item{Basin}{Table of experiment}
+  \item{Replicate}{Replicate}
+  \item{Image_pos}{Position of the camera}
+  \item{Sowing_Block}{Block defined for post-blocking}
+  \item{x}{row coordinate}
+  \item{y}{column coordinate}
+  \item{Sowing_Position}{unique pot ID}
+  \item{timepoints}{time of picture}
+  \item{EffpsII}{trial, a combination of location and year}
+  \item{pos}{unique pot using rowcol coordinate}
 }}
 \source{
-\url{http://www.g3journal.org/content/3/12/2105/}
+\url{}
 }
 \usage{
 PhenovatorDat1
 }
 \description{
-A dataset containing field data from an experiment with wheat in Chili
-described in detail by Lado (2013). The experiment was performed in 2
-locations in Chili with 2 different drought regimes in 2011 and 2012 for
-the first location and 1 trial in 2012 for the second location. For 384
-genotypes 4 traits were measured in 2011 but in 2012 only grain yield was
-measured.
+A dataset containing growth chamber data from an experiment with Arabidopsis
+in the Phenovator platform (WUR, Netherlands, Flood et al. 2016). It consists of
+one experiment with 1440 plants grown in a growth chamber. The number of tested
+genotypes is 192 with 6-7 replicates per genotype. Four reference genotypes were
+also tested with 15 or 30 replicates. The studied trait is the photosystem II
+efficiency (EffpsII) extracted from the pictures over time (van Rooijen et al. 2017).
 }
 \references{
-Lado, Bettina, Ivan Matus, Alejandra Rodríguez, Luis Inostroza,
-Jesse Poland, François Belzile, Alejandro del Pozo, Martín Quincke,
-Marina Castro, and Jarislav von Zitzewitz. 2013. “Increased Genomic
-Prediction Accuracy in Wheat Breeding Through Spatial Adjustment of Field
-Trial Data.” G3: Genes|Genomes|Genetics 3 (12): 2105–14.
-doi:10.1534/g3.113.007807.
+Rooijen, Roxanne van, Willem Kruijer, René Boesten,
+Fred A. van Eeuwijk, Jeremy Harbinson, and Mark G. M. Aarts. 2017.
+“Natural Variation of YELLOW SEEDLING1 Affects Photosynthetic Acclimation
+of Arabidopsis Thaliana.” Nature Communications 8 (1).
+doi:10.1038/s41467-017-01576-3.
+
+Flood, Pádraic J., Willem Kruijer, Sabine K. Schnabel, Rob van der Schoor,
+Henk Jalink, Jan F. H. Snel, Jeremy Harbinson, and Mark G. M. Aarts. 2016.
+“Phenomics for Photosynthesis, Growth and Reflectance in Arabidopsis Thaliana
+Reveals Circadian and Long-Term Fluctuations in Heritability.”
+Plant Methods 12 (1): 14.
+doi:10.1186/s13007-016-0113-y.
 }
 \keyword{datasets}
