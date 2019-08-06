@@ -16,6 +16,35 @@ createFitMod <- function(models,
   return(fitMod)
 }
 
+#' Summary function for class fitMod
+#'
+#' Summary function for class fitMod
+#'
+#' @param object An object of class fitMod.
+#' @param ... Ignored.
+#'
+#' @export
+summary.fitMod <- function(object,
+                           ...)  {
+  experimentName <- attr(x = object, which = "experimentName")
+  noTP <- length(object)
+  engine <- class(object[[1]])
+  if (engine == "asreml" && attr(x = object, which = "spatial")) {
+    tpUsed <- min(max(noTP / 5, 10), noTP)
+    bestSpat <- attr(x = object[[1]], which = "sumTab")[[1]][, "spatial"]
+  }
+
+  cat("Models in ", deparse(substitute(object)), " where fitted for experiment ",
+      experimentName, ".\n\n", sep = "")
+  cat("It contains", noTP, "time points.\n")
+  cat("The models were fitted using ", engine, ".\n\n", sep = "")
+
+  if (engine == "asreml" && attr(x = object, which = "spatial")) {
+    cat("The selected spatial model is ", bestSpat, ".\n", sep = "")
+    cat(tpUsed, "time points were used to select the best spatial model.\n")
+  }
+}
+
 #' Plot function for class fitMod
 #'
 #' Plotting function for objects of class fitMod. A detailed description and
