@@ -657,7 +657,7 @@ The table below provides one example with two models, one per engine:
 | option | engine | model fitted | spatial term |
 |---------------|--------|-----------------------------------------|---------------|
 | spatial = TRUE, geno.decomp = c("variable") | spats | trait = *variable* + **variable:genotype** + **row** + **col** + $\epsilon$ |  PSANOVA |
-| spatial = FALSE, geno.decomp = c("variable") | asreml | trait = *variable* + + **variable:genotype** + **row** + **col** + $\epsilon$ | ar1(row):ar1(col) |
+| spatial = FALSE, geno.decomp = c("variable") | asreml | trait = *variable* + **variable:genotype** + **row** + **col** + $\epsilon$ | ar1(row):ar1(col) |
 
 > *Note that for the moment, it is not possible to use the geno.decomp and genotype as fixed.*
 
