@@ -21,18 +21,12 @@ knitr::opts_chunk$set(
 library(statgenHTP)
 ```
 
-
-<center>
-[![logoEPPN](LogoEPPN_2020_pfade.jpg){width=10%}](https://eppn2020.plant-phenotyping.eu/)
-</center>
-
-
 # The statgenHTP Package  
 
 The statgenHTP package is developed as an easy-to-use package for analyzing data coming 
 from high throughput phenotyping (HTP) platform experiments. The package provides many options 
 for plotting and exporting the results of the analyses. It was developed within the 
-EPPN^2020^ project to meet the needs for automated analyses of HTP data.
+EPPN^2020^ [project](https://eppn2020.plant-phenotyping.eu/) to meet the needs for automated analyses of HTP data.
 
 New phenotyping techniques enable measuring trait at high throughput, with traits being 
 measured at multiple time points for hundreds/thousands of plants. This requires an 
@@ -118,7 +112,7 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             checkGenotypes = c("check1", "check2", "check3", "check4"))
 ```
 The `TP` object just created is a `list` with 73 items, one for each time points 
-in the original `data.frame` (called "PhenovatorDat1"). The parameter `experimentName`
+in the original `data.frame` (called "PhenovatorDat1"). The option `experimentName`
 is used for identifying the dataset and is a requirement. The column "Genotype" in the 
 original data is renamed to "genotype" and converted to a factor. The columns 
 "Sowing_Block" and "pos" are renamed and converted likewise. The newly created column 
@@ -189,7 +183,7 @@ plot(phenoTP,
      traits = "EffpsII") 
 ```
 
-Colors can be applied to groups within time points using the parameter `colorBy`. The boxes 
+Colors can be applied to groups within time points using the option `colorBy`. The boxes 
 for the (groups of) time points can be ordered using `orderBy`. Boxes can be ordered by 
 external vector or by the group mean.
 ```{r boxPlotCL, fig.height=4.5, fig.width=6, fig.align = 'center'}
@@ -202,7 +196,7 @@ plot(phenoTP,
      colorBy = "repId")
 ```
 
-The time points in the boxplot can be grouped using the parameter `groupBy`. 
+The time points in the boxplot can be grouped using the option `groupBy`. 
 ```{r boxPlotGP, fig.height=4, fig.width=4, fig.align = 'center'}
 ## Create a boxplot for "EffpsII" with 5 time points and boxes grouped by "repId".
 plot(phenoTP, 
@@ -459,7 +453,7 @@ plot(modPhenoSp,
 The second one is "corrPred", it plots the spatially corrected data (colored lines) 
 overlayed with the predicted values from the fitted model (black line). For each genotype 
 a plot is made per plot/plant over time. These plots are put together in a 5×5 grid. 
-By using the parameter `genotypes` a selection of genotypes can be plotted.
+By using the option `genotypes` a selection of genotypes can be plotted.
 
 ```{r plotSpCorr, message=FALSE, fig.height=2, fig.width=6, fig.align = 'center', eval=TRUE}
 plot(modPhenoSp, 
@@ -550,11 +544,15 @@ with a spatial function: **ar1(rowId):ar1(colId)**. It has run on 10 time points
 Plotting and extracting results is then done the same way as for SpATS. Below are few examples.
 
 ```{r getFunAs, message=FALSE}
+if (requireNamespace("asreml", quietly = TRUE)) {
 spatCorrSpAs <- getCorrected(modPhenoSpAs, timePoints = 6)
+}
 ```
 
 ```{r getCorrAs, echo=FALSE, message=FALSE}
+if (requireNamespace("asreml", quietly = TRUE)) {
 knitr::kable(head(spatCorrSpAs), align=c('c','c','c','c','c','c','c'), padding = 0)
+}
 ```
 
 ```{r plotSpAsHerit, message=FALSE, fig.height=2.5, fig.width=3.5, fig.align = 'center'}
@@ -657,7 +655,7 @@ The table below provides one example with two models, one per engine:
 | spatial = TRUE, geno.decomp = c("variable") | spats | trait = *variable* + **variable:genotype** + **row** + **col** + $\epsilon$ |  PSANOVA |
 | spatial = FALSE, geno.decomp = c("variable") | asreml | trait = *variable* + + **variable:genotype** + **row** + **col** + $\epsilon$ | ar1(row):ar1(col) |
 
-> *Note that for the moment, it is not possible to use the geno.decomp and genotype as fixed with SpATS.*
+> *Note that for the moment, it is not possible to use the geno.decomp and genotype as fixed.*
 
 Using the Phenoarch example, we will apply a variance decomposition using the 
 variables "Scenario" and "population":
