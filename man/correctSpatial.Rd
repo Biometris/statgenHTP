@@ -2,11 +2,11 @@
 % Please edit documentation in R/correctSpatial.R
 \name{correctSpatial}
 \alias{correctSpatial}
-\title{Approach 2: correct for spatial effects and other unnecesary factors}
+\title{Correct for spatial effects and other unnecesary factors.}
 \usage{
 correctSpatial(fitMod)
 }
 \description{
-Approach 2: correct for spatial effects and other unnecesary factors
+Correct for spatial effects and other unnecesary factors.
 }
 \keyword{internal}

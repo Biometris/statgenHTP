@@ -1,4 +1,4 @@
-#' Approach 2: correct for spatial effects and other unnecesary factors
+#' Correct for spatial effects and other unnecesary factors.
 #' @keywords internal
 correctSpatial <- function(fitMod) {
   ## Get engine from fitted model.
@@ -14,6 +14,7 @@ correctSpatial <- function(fitMod) {
   return(pred)
 }
 
+#' @keywords internal
 correctSpatialSpATS <- function(fitMod) {
   ## Check if check was used when fitting model.
   useCheck <- grepl(pattern = "check", x = deparse(fitMod$model$fixed))
@@ -87,6 +88,7 @@ correctSpatialSpATS <- function(fitMod) {
                  "timePoint")]
 }
 
+#' @keywords internal
 correctSpatialAsreml <- function(fitMod) {
   ## Check if check was used when fitting model.
   useCheck <- "check" %in% all.vars(update(fitMod$formulae$fixed, 0~.))

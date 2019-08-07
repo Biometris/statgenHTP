@@ -138,7 +138,7 @@ fitModels <- function(TP,
   }
   ## combination of what = fixed and use of geno.decomp gives inconsistent
   ## results for both asreml and SpATS.
-  if (what == "fixed" && !is.null("geno.decomp")) {
+  if (what == "fixed" && !is.null(geno.decomp)) {
     stop("Fitting models with genotype as fixed effect and ",
          "geno.decomp is not possible.\n")
   }
