@@ -75,6 +75,21 @@ output.}
 Note that \code{plotId} needs to be a unique identifier for a plot or a
 plant. It cannot occur more than once per time point.
 }
+\examples{
+## Create a TP object containing the data from the Phenovator.
+data("PhenovatorDat1")
+phenoTP <- createTimePoints(dat = PhenovatorDat1,
+                            experimentName = "Phenovator",
+                            genotype = "Genotype",
+                            timePoint = "timepoints",
+                            repId = "Replicate",
+                            plotId = "pos",
+                            rowNum = "y", colNum = "x",
+                            addCheck = TRUE,
+                            checkGenotypes = c("check1", "check2", "check3", "check4"))
+summary(phenoTP)
+
+}
 \seealso{
 Other functions for TP objects: \code{\link{plot.TP}}
 }

@@ -55,6 +55,19 @@
 #' data. This data.frame can be used for referencing timePoints by their
 #' number.
 #'
+#' @examples ## Create a TP object containing the data from the Phenovator.
+#' data("PhenovatorDat1")
+#' phenoTP <- createTimePoints(dat = PhenovatorDat1,
+#'                             experimentName = "Phenovator",
+#'                             genotype = "Genotype",
+#'                             timePoint = "timepoints",
+#'                             repId = "Replicate",
+#'                             plotId = "pos",
+#'                             rowNum = "y", colNum = "x",
+#'                             addCheck = TRUE,
+#'                             checkGenotypes = c("check1", "check2", "check3", "check4"))
+#' summary(phenoTP)
+#'
 #' @family functions for TP objects
 #'
 #' @import ggplot2
