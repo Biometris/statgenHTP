@@ -4,19 +4,18 @@
 \name{PhenovatorDat1}
 \alias{PhenovatorDat1}
 \title{Growth chamber data for an Arabidopsis experiment in the Phenovator platform.}
-\format{A data.frame with 103839 rows and 11 columns:
+\format{A data.frame with 103,839 rows and 10 columns:
 \describe{
   \item{Genotype}{Genotypes}
   \item{Basin}{Table of experiment}
-  \item{Replicate}{Replicate}
+  \item{Replicate}{Block define after sowing for post-blocking. They are not full-resolvable blocks.}
   \item{Image_pos}{Position of the camera}
-  \item{Sowing_Block}{Block defined for post-blocking}
-  \item{x}{row coordinate}
-  \item{y}{column coordinate}
-  \item{Sowing_Position}{unique pot ID}
+  \item{x}{Row coordinate}
+  \item{y}{Column coordinate}
+  \item{Sowing_Position}{Unique pot ID}
   \item{timepoints}{time of picture}
-  \item{EffpsII}{trial, a combination of location and year}
-  \item{pos}{unique pot using rowcol coordinate}
+  \item{EffpsII}{Efficiency of the photosystem II}
+  \item{pos}{Unique pot ID using rowcol coordinates}
 }}
 \source{
 \url{}

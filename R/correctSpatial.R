@@ -39,6 +39,9 @@ correctSpatialSpATS <- function(fitMod) {
                                     geno.decomp)],
                 by = c("rowNum", "colNum"))
   if (!is.null(geno.decomp)) {
+    if (!hasName(x = pred, name = "geno.decomp.y")) {
+      pred[["geno.decomp.y"]] <- pred[["geno.decomp"]]
+    }
     ## Genotype was converted to an interaction term of genotype and
     ## geno.decomp in the proces of fitting the model. That needs to be
     ## undone to get the genotype back in the output again.
@@ -135,7 +138,7 @@ correctSpatialAsreml <- function(fitMod) {
     if (!is.null(geno.decomp)) {
       predGD <- predict(fitMod, classify = "geno.decomp")$pvals
       pred <- merge(pred, predGD[c("geno.decomp", "predicted.value")])
-      pred[[newTrait]] <- pred[[newTrait]] - pred[["predicted.value"]]
+      pred[[newTrait]] <- pred[[newTrait]] + pred[["predicted.value"]]
       pred[["predicted.value"]] <- NULL
     } else {
       predInt <- predict(fitMod, classify = "(Intercept)",

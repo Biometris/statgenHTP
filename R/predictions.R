@@ -26,20 +26,25 @@ predictGeno <- function(fitMod) {
       predGeno <- rbind(predGeno, predCheck)
     }
     if (useGenoDecomp) {
+      if (!hasName(x = predGeno, name = "geno.decomp")) {
+        genoGenoDecomp <- unique(fitMod$data[c(genoCol, "geno.decomp")])
+        predGeno <- merge(predGeno, genoGenoDecomp,
+                          by.x = "genotype", by.y = genoCol)
+      }
       ## Genotype was converted to an interaction term of genotype and
       ## geno.decomp in the proces of fitting the model. That needs to be
       ## undone to get the genotype back in the output again.
       genoStart <- nchar(as.character(predGeno[["geno.decomp"]])) + 2
       predGeno[["genotype"]] <- as.factor(substring(predGeno[["genotype"]],
                                                     first = genoStart))
-
     }
     ## Temporary fix for difference between SpATS and asreml predictions.
     ## asreml predicts marginal means whereas SpATS predicts conditional means.
     ## By adding the means of the fixed effects to the conditional means the
     ## marginal means are calculated.
     ## Note that this means the standard errors are no longer correct.
-    corVars <- setdiff(all.vars(fitMod$model$fixed), c("geno.decomp", "check"))
+    corVars <- setdiff(all.vars(fitMod$model$fixed),
+                       c(genoCol, "geno.decomp", "check"))
     if (length(corVars) > 0) {
       ## Order in descreasing order so variables that are substrings of other
       ## variables are treated correctly.
@@ -71,10 +76,11 @@ predictGeno <- function(fitMod) {
     classForm <- paste0(if (useGenoDecomp) "geno.decomp:", genoCol)
     predGeno <- predictAsreml(fitMod, classify = classForm,
                               present = c(genoCol,
-                                          if (useGenoDecomp & genoRand) "geno.decomp",
                                           if (useCheck) "check"),
                               vcov = FALSE)$pvals
-    predGeno <- predGeno[predGeno[["status"]] == "Estimable", ]
+    genoGenoDecomp <- unique(fitMod$call$data[c(genoCol,
+                                                if (useGenoDecomp) "geno.decomp")])
+    predGeno <- merge(predGeno, genoGenoDecomp)
     ## Repeat for the check genotypes.
     if (useCheck) {
       ## Predict check genotypes.

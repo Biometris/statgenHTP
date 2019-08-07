@@ -4,18 +4,18 @@
 \name{PhenoarchDat1}
 \alias{PhenoarchDat1}
 \title{Greenhouse data for a maize experiment in the Phenoarch platform.}
-\format{A data.frame with 50405 rows and 10 columns:
+\format{A data.frame with 50,405 rows and 10 columns:
 \describe{
   \item{geno}{Genotype}
   \item{population}{Panel 1 or 2}
   \item{Scenario}{Water regime}
   \item{Rep}{Replicate}
-  \item{Line}{line of conveyor belt (i.e column coordinate)}
-  \item{Position}{pot position on the conveyor belt (i.e. row coordinate)}
-  \item{Pot}{unique pot ID}
-  \item{LA_Estimated}{Leaf area from the picture (m^2^)}
+  \item{Line}{Line of conveyor belt (i.e. column coordinate)}
+  \item{Position}{Pot position on the conveyor belt (i.e. row coordinate)}
+  \item{Pot}{Unique pot ID}
+  \item{LA_Estimated}{Leaf area from the picture}
   \item{Date}{Date of measurement}
-  \item{pos}{unique pot using rowcol coordinate}
+  \item{pos}{Unique pot using rowcol coordinate}
 }}
 \source{
 \url{}
