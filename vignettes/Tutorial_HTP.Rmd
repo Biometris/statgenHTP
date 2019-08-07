@@ -110,6 +110,7 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             rowNum = "y", colNum = "x",
                             addCheck = TRUE,
                             checkGenotypes = c("check1", "check2", "check3", "check4"))
+summary(phenoTP)
 ```
 The `TP` object just created is a `list` with 73 items, one for each time points 
 in the original `data.frame` (called "PhenovatorDat1"). The option `experimentName`
@@ -556,9 +557,11 @@ knitr::kable(head(spatCorrSpAs), align=c('c','c','c','c','c','c','c'), padding =
 ```
 
 ```{r plotSpAsHerit, message=FALSE, fig.height=2.5, fig.width=3.5, fig.align = 'center'}
+if (requireNamespace("asreml", quietly = TRUE)) {
 plot(modPhenoSpAs, 
      plotType = "herit",
      yLim = c(0.5,1))
+}
 ```
 
 Note that when the engine is asreml the heritability is calculating using the formula 
@@ -621,6 +624,7 @@ phenoTParch <- createTimePoints(dat = PhenoarchDat1,
                                 plotId = "pos",
                                 rowNum = "Position", 
                                 colNum = "Line")
+summary(phenoTParch)
 ```
 The "phenoTParch" object just created is a `list` with 35 items, one for each time points 
  in the original `data.frame` (called "PhenoarchDat1"). We can visualise the layout and the 
