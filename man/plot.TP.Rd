@@ -17,11 +17,11 @@ section.}
 \item{plotType}{A single character string indicating which plot should be
 made. See the sections below for a detailed explanation of the plots.}
 
-\item{timePoints}{A character or numeric vector indicating the timePoints
-to be plotted. When using a character string to reference a timePoint, the
+\item{timePoints}{A character or numeric vector indicating the time points
+to be plotted. When using a character string to reference a time point, the
 value has to be an exact match to one of the existing timePoints. When using
-a number it will be matched by its number in the timePoints attribute of the
-TP object.}
+a number it will be matched by its number ("timeNumber") in the timePoints
+attribute of the TP object.}
 
 \item{title}{A character string used as title for the plot. If \code{NULL} a
 default title is added to the plot depending on \code{plotType}.}
@@ -40,7 +40,7 @@ plots should be written. If \code{NULL}, no file is written.}
 width and height. See \code{\link[grDevices]{pdf}} for all possible options.}
 }
 \value{
-Depending on the plottype either a ggplot object or a list of ggplot
+Depending on the plot type, either a ggplot object or a list of ggplot
 objects is invisibly returned.
 }
 \description{
@@ -71,8 +71,8 @@ plot.}
 
 \section{Box Plot}{
 
-Creates a boxplot per selected trait grouped by time point. Extra parameter
-options:
+Creates a boxplot per selected trait grouped by time point (all available time
+points by  default). Extra parameter options:
 \describe{
 \item{groupBy}{A character string indicating a column in \code{TP} by which
 the boxes in the plot should be grouped.
@@ -90,7 +90,7 @@ descending mean. Default boxes are ordered alphabetically.}
 
 \section{Correlation Plot}{
 
-Draws a heatmap of correlations between time points per selected trait
+Draws a heatmap of correlations of raw data between time points per selected trait
 for selected time points (all available time points by default).
 }
 
@@ -109,6 +109,35 @@ genotypes to be plotted.}
 }
 }
 
+\examples{
+# Plot the layout for the third time point with the check
+genotypes highlighted
+plot(phenoTP,
+     plotType = "layout",
+     timePoints = c(3),
+     highlight = c("check1", "check2", "check3", "check4"))
+
+# Create a boxplot for "EffpsII" with 5 time points and boxes colored
+by "repId" within time point.
+plot(phenoTP,
+     plotType = "box",
+     traits = "EffpsII",
+     timePoints = c(1:5),
+     colorBy = "repId")
+
+# Create a correlation plot for "EffpsII" for a selection of time points.
+plot(phenoTP,
+     plotType = "cor",
+     traits = "EffpsII",
+     timePoints = seq(from=1,to=73,by=5))
+
+# Plot the raw data of four genotypes for the trait "EffpsII":
+plot(phenoTP,
+     traits = "EffpsII",
+     plotType = "raw",
+     genotypes = c("G1","G2","check1","check2"))
+
+}
 \seealso{
 Other functions for TP objects: \code{\link{createTimePoints}}
 }

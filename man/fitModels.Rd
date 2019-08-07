@@ -14,21 +14,21 @@ fitModels(TP, trait, timePoints = names(TP), covariates = NULL,
 \item{trait}{A character string indicating the trait used as response
 variable in the model.}
 
-\item{timePoints}{A character or numeric vector indicating the timePoints
-to be modeled. When using a character string to reference a timePoint, the
-value has to be an exact match to one of the existing timePoints. When using
-a number it will be matched by its number in the timePoints attribute of the
-TP object.}
+\item{timePoints}{A character or numeric vector indicating the time points
+to be modeled. When using a character string to reference a time point, the
+value has to be an exact match to one of the existing time points. When using
+a number it will be matched by its number ("timeNumber") in the timePoints
+attribute of the TP object.}
 
-\item{covariates}{A character vector indicating the variables used as
+\item{covariates}{A character vector indicating the variables to use as
 fixed effects in the model.}
 
-\item{geno.decomp}{A character vector indicating the variables used to
-group the genotypes in the model.}
+\item{geno.decomp}{A character vector indicating the variables to use to
+group the genotypic variance in the model.}
 
 \item{what}{A character vector specifying whether "genotype" should
-be fitted as "random" or "fixed" effect. Note that when using SpATS and
-geno.decomp fitting a model with genotype as "fixed" effect is not possible.}
+be fitted as "random" or "fixed" effect. Note that when using \code{geno.decomp},
+fitting a model with genotype as "fixed" effect is not possible.}
 
 \item{useCheck}{Should check genotypes be used as an extra factor in the
 model?}
@@ -46,15 +46,16 @@ models.}
 An object of class fitMod, a list of fitted models.
 }
 \description{
-Perform REML analysis given a specific experimental design using either
-SpATS or asreml. SpATS is used as a default method. See details for the exact
-models fitted.
+Perform REML analysis at each time point using either SpATS or asreml. The
+idea is to is to accurately separate the genetic effects from the spatial
+effects at each time point. SpATS is used as a default method. See details
+for the exact models fitted.
 }
 \details{
 The actual model fitted depends on the function parameters secified. The
 basic model is the following:\cr
 trait = \strong{genotype} + e\cr
-In case \code{useCheck = TRUE}, instead of genotype genoCheck is used and
+In case \code{useCheck = TRUE}, instead of genotype genoCheck is used as genotype
 and check is used as an extra fixed effect. So then the model becomes:\cr
 trait = \emph{check} + \strong{genoCheck} + e\cr
 Variables in \code{covariates} are fitted as extra fixed effects.\cr\cr
@@ -62,12 +63,12 @@ When \code{SpATS} is used for modeling, an extra spatial term is included
 in the model. This term is constructed using the function
 \code{\link[SpATS]{PSANOVA}} from the SpATS package as\cr
 \code{PSANOVA(colNum, rowNum, nseg = nSeg, nest.div = 2)}
-where\cr \code{nSeg = (number of columns, number of rows)}.\cr\cr
-When \code{asreml} is used for modeling and \code{spatial = TRUE}
-four models are fitted with different random terms and covariance structure.
-The best model is determined based on a goodness-of-fit criterion, either
-AIC or BIC. This can be set using the control parameter \code{criterion},
-default is AIC.
+where\cr \code{nSeg = (number of columns/2, number of rows/2)}.\cr\cr
+When \code{asreml} is used for modeling and \code{spatial = TRUE},
+four models are fitted with different random terms and covariance structures.
+The best model is determined based on a goodness-of-fit criterion, AIC, on 20% of
+the time points or at least 10 time points. The best model is then run on all
+time points.
 The following combinations of random and spatial terms are fitted
 \itemize{
 \item{random = repId:rowId + repId:colId, spatial = NULL}
@@ -76,7 +77,43 @@ The following combinations of random and spatial terms are fitted
 \item{random = repId:rowId + repId:colId, spatial = ar1(rowId):ar1(colId)}
 }
 If there are no replicates in the model, repId is left out from the random
-parts above.
+parts above.\cr\cr
+When \code{geno.decomp} is specified, the genotypic variance is decomposed following
+the variable(s) chosen. For example, when a treatment is used in \code{geno.decomp},
+the initial model becomes:\cr
+trait = \emph{treatment} + \strong{treatment:genotype} + e\cr
+}
+\examples{
+## Using the first example dataset (PhenovatorDat1):
+Fit a SpATS model on few time points:
+modPhenoSp <- fitModels(TP = phenoTP,
+                        trait = "EffpsII",
+                        timePoints = seq(1,73,by=5))
+summary(modPhenoSp)
+
+## Fit a model with SpATS for a single time point with covariates and check genotypes:
+modPhenoSpCheck <- fitModels(TP = phenoTP,
+                             trait = "EffpsII",
+                             covariates = c("repId", "Image_pos"),
+                             useCheck = TRUE,
+                             timePoints = 3)
+
+
+## Fit a model with asreml on few time points with a spatial function:
+modPhenoSpAs <- fitModels(TP = phenoTP,
+                          trait = "EffpsII",
+                          timePoints = seq(1,73,by=5),
+                          engine = "asreml",
+                          spatial = TRUE)
+
+## Using the second example dataset (PhenoarchDat1):
+## Fit a model with SpATS on few time points with two variables for geno.decomp:
+modPhenoSpGD <- fitModels(TP = phenoTParch,
+                          trait = "LA_Estimated",
+                          geno.decomp = c("Scenario","population"),
+                          timePoints = seq(1,35,by=3))
+
+
 }
 \references{
 Maria Xose Rodriguez-Alvarez, Martin P. Boer, Fred A. van Eeuwijk, Paul H.C.

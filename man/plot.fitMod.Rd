@@ -18,11 +18,11 @@ section.}
 \item{plotType}{A single character string indicating which plot should be
 made. See the sections below for a detailed explanation of the plots.}
 
-\item{timePoints}{A character or numeric vector indicating the timePoints
-to be plotted. When using a character string to reference a timePoint, the
+\item{timePoints}{A character or numeric vector indicating the time points
+to be plotted. When using a character string to reference a time point, the
 value has to be an exact match to one of the existing timePoints. When using
-a number it will be matched by its number in the timePoints attribute of the
-TP object.}
+a number it will be matched by its number ("timeNumber") in the timePoints
+attribute of the TP object.}
 
 \item{title}{A character string used as title for the plot. If \code{NULL} a
 default title is added to the plot depending on \code{plotType}.}

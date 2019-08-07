@@ -12,7 +12,7 @@ createTimePoints(dat, experimentName, genotype, timePoint, plotId,
 \item{dat}{A data.frame.}
 
 \item{experimentName}{A character string, the name of the experiment. Stored
-with the data and used in default plot names.}
+with the data and used in default plot titles.}
 
 \item{genotype}{A character string indicating the column in dat containing
 the genotypes.}
@@ -21,7 +21,7 @@ the genotypes.}
 the time points.}
 
 \item{plotId}{A character string indicating the column in dat containing
-the plotId. This has to be a unique identifier per plot/plant.}
+the plotId. This has to be a unique identifier per plot/plant per time point.}
 
 \item{repId}{A character string indicating the column in dat containing
 the replicates.}
@@ -59,10 +59,11 @@ colId converted to factors.}
 are converted to numeric columns, all other renamed columns to factor
 columns. Columns other than the default columns, e.g. traits or other
 covariates will be included in the output unchanged.}
-\item{If \code{addCheck = TRUE}, add a column check with a value
+\item{If \code{addCheck = TRUE}, the genotypes listed in \code{checkGenotypes}
+are reference genotypes (or check). It will add a column check with a value
 "noCheck" for the genotypes that are not in \code{checkGenotypes} and
-the name of the genotype for the \code{checkGenotypes}. Also a column
-genoCheck is added with the names of the genotypes that are not in
+the name of the genotypes for the \code{checkGenotypes}. A column
+genoCheck is also added with the names of the genotypes that are not in
 \code{checkGenotypes} and \code{NA} for the \code{checkGenotypes}. These
 columns are necessary for fitting models on data that includes check
 genotypes, e.g. reference genotypes that are highly replicated or in case

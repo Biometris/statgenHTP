@@ -13,10 +13,11 @@
 #' are converted to numeric columns, all other renamed columns to factor
 #' columns. Columns other than the default columns, e.g. traits or other
 #' covariates will be included in the output unchanged.}
-#' \item{If \code{addCheck = TRUE}, add a column check with a value
+#' \item{If \code{addCheck = TRUE}, the genotypes listed in \code{checkGenotypes}
+#' are reference genotypes (or check). It will add a column check with a value
 #' "noCheck" for the genotypes that are not in \code{checkGenotypes} and
-#' the name of the genotype for the \code{checkGenotypes}. Also a column
-#' genoCheck is added with the names of the genotypes that are not in
+#' the name of the genotypes for the \code{checkGenotypes}. A column
+#' genoCheck is also added with the names of the genotypes that are not in
 #' \code{checkGenotypes} and \code{NA} for the \code{checkGenotypes}. These
 #' columns are necessary for fitting models on data that includes check
 #' genotypes, e.g. reference genotypes that are highly replicated or in case
@@ -31,13 +32,13 @@
 #'
 #' @param dat A data.frame.
 #' @param experimentName A character string, the name of the experiment. Stored
-#' with the data and used in default plot names.
+#' with the data and used in default plot titles.
 #' @param genotype A character string indicating the column in dat containing
 #' the genotypes.
 #' @param timePoint A character string indicating the column in dat containing
 #' the time points.
 #' @param plotId A character string indicating the column in dat containing
-#' the plotId. This has to be a unique identifier per plot/plant.
+#' the plotId. This has to be a unique identifier per plot/plant per time point.
 #' @param repId A character string indicating the column in dat containing
 #' the replicates.
 #' @param rowNum A character string indicating the column in dat containing
@@ -259,8 +260,8 @@ summary.TP <- function(object,
 #' }
 #'
 #' @section Box Plot:
-#' Creates a boxplot per selected trait grouped by time point. Extra parameter
-#' options:
+#' Creates a boxplot per selected trait grouped by time point (all available time
+#' points by  default). Extra parameter options:
 #' \describe{
 #' \item{groupBy}{A character string indicating a column in \code{TP} by which
 #' the boxes in the plot should be grouped.
@@ -276,7 +277,7 @@ summary.TP <- function(object,
 #' }
 #'
 #' @section Correlation Plot:
-#' Draws a heatmap of correlations between time points per selected trait
+#' Draws a heatmap of correlations of raw data between time points per selected trait
 #' for selected time points (all available time points by default).
 #'
 #' @section Raw data plot:
@@ -297,11 +298,11 @@ summary.TP <- function(object,
 #' section.
 #' @param plotType A single character string indicating which plot should be
 #' made. See the sections below for a detailed explanation of the plots.
-#' @param timePoints A character or numeric vector indicating the timePoints
-#' to be plotted. When using a character string to reference a timePoint, the
+#' @param timePoints A character or numeric vector indicating the time points
+#' to be plotted. When using a character string to reference a time point, the
 #' value has to be an exact match to one of the existing timePoints. When using
-#' a number it will be matched by its number in the timePoints attribute of the
-#' TP object.
+#' a number it will be matched by its number ("timeNumber") in the timePoints
+#' attribute of the TP object.
 #' @param traits A character vector indicating the traits to be plotted in
 #' a boxplot. Only used if \code{plotType} = "box" or "cor".
 #' @param title A character string used as title for the plot. If \code{NULL} a
@@ -314,8 +315,35 @@ summary.TP <- function(object,
 #' @param outFileOpts A named list of extra options for the pdf outfile, e.g.
 #' width and height. See \code{\link[grDevices]{pdf}} for all possible options.
 #'
-#' @return Depending on the plottype either a ggplot object or a list of ggplot
+#' @return Depending on the plot type, either a ggplot object or a list of ggplot
 #' objects is invisibly returned.
+#'
+#' @examples # Plot the layout for the third time point with the check
+#' genotypes highlighted
+#' plot(phenoTP,
+#'      plotType = "layout",
+#'      timePoints = c(3),
+#'      highlight = c("check1", "check2", "check3", "check4"))
+#'
+#' # Create a boxplot for "EffpsII" with 5 time points and boxes colored
+#' by "repId" within time point.
+#' plot(phenoTP,
+#'      plotType = "box",
+#'      traits = "EffpsII",
+#'      timePoints = c(1:5),
+#'      colorBy = "repId")
+#'
+#' # Create a correlation plot for "EffpsII" for a selection of time points.
+#' plot(phenoTP,
+#'      plotType = "cor",
+#'      traits = "EffpsII",
+#'      timePoints = seq(from=1,to=73,by=5))
+#'
+#' # Plot the raw data of four genotypes for the trait "EffpsII":
+#' plot(phenoTP,
+#'      traits = "EffpsII",
+#'      plotType = "raw",
+#'      genotypes = c("G1","G2","check1","check2"))
 #'
 #' @family functions for TP objects
 #'
