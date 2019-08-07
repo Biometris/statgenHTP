@@ -21,7 +21,6 @@
 #'   \item{pos}{Unique pot ID using rowcol coordinates}
 #' }
 #'
-#' @source \url{}
 #'
 #' @references Rooijen, Roxanne van, Willem Kruijer, René Boesten,
 #' Fred A. van Eeuwijk, Jeremy Harbinson, and Mark G. M. Aarts. 2017.
@@ -63,7 +62,6 @@
 #'   \item{pos}{Unique pot using rowcol coordinate}
 #' }
 #'
-#' @source \url{}
 #'
 #' @references Cabrera-Bosquet, Llorenç, Fournier Christian, Brichet Nicolas,
 #' Welcker Claude, Suard Benoît, and Tardieu François. 2016.

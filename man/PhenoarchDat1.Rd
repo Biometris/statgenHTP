@@ -17,9 +17,6 @@
   \item{Date}{Date of measurement}
   \item{pos}{Unique pot using rowcol coordinate}
 }}
-\source{
-\url{}
-}
 \usage{
 PhenoarchDat1
 }

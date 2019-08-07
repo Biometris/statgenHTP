@@ -17,9 +17,6 @@
   \item{EffpsII}{Efficiency of the photosystem II}
   \item{pos}{Unique pot ID using rowcol coordinates}
 }}
-\source{
-\url{}
-}
 \usage{
 PhenovatorDat1
 }
