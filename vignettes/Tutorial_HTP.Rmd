@@ -304,7 +304,7 @@ EffpsII = *genotype* + **rowId** + **colId** + $\epsilon$
 modPhenoSpFix <- fitModels(TP = phenoTP, 
                            trait = "EffpsII",
                            timePoints = 3,
-                           what="fixed")
+                           what = "fixed")
 ```
 
 We can extend the model by including covariates as main fixed effects:  
@@ -500,7 +500,7 @@ and 1, strong spatial trend (almost all the degrees of freedom are used to model
 
 When asreml is used for modeling and `spatial = TRUE`, four models are fitted with different 
 random terms and covariance structures. The best model is determined based on a 
-goodness-of-fit criterion, either AIC or BIC, on 20% on the time points or at least 10 
+goodness-of-fit criterion, AIC, on 20% on the time points or at least 10 
 time points. The best model is then run on all time points. Same as for SpATS, all the 
 asreml models can be extended by fitting fixed covariates using the option `covariates`.
 
