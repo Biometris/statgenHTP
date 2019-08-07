@@ -136,9 +136,14 @@ fitModels <- function(TP,
            "fitting spatial models.\n")
     }
   }
+  ## combination of what = fixed and use of geno.decomp gives inconsistent
+  ## results for both asreml and SpATS.
+  if (what == "fixed" && !is.null("geno.decomp")) {
+    stop("Fitting models with genotype as fixed effect and ",
+         "geno.decomp is not possible.\n")
+  }
   ## At the moment for SpATS
   ## combination of what = fixed and useCheck = TRUE crashes.
-  ## combination of what = fixed and use of geno.decomp crashes.
   if (engine == "SpATS" && what == "fixed" && useCheck) {
     stop("Using SpATs for fitting models with genotype as fixed effect and ",
          "useCheck = TRUE is not possible.\n")
@@ -164,11 +169,9 @@ fitModels <- function(TP,
     TP <- lapply(X = TP, FUN = function(timePoint) {
       timePoint[[genoCol]] <- interaction(timePoint[[geno.decomp]],
                                           timePoint[[genoCol]], sep = "_")
-      if (genoRand) {
-        for (covar in covariates) {
-          timePoint[[covar]] <- interaction(timePoint[[geno.decomp]],
-                                            timePoint[[covar]], sep = "_")
-        }
+      for (covar in covariates) {
+        timePoint[[covar]] <- interaction(timePoint[[geno.decomp]],
+                                          timePoint[[covar]], sep = "_")
       }
       if (useCheck) {
         timePoint[["check"]] <- interaction(timePoint[[geno.decomp]],
@@ -195,8 +198,7 @@ fitModels <- function(TP,
   if (useCheck) {
     fixedForm <- update(fixedForm, "~ . + check")
   }
-  if (genoRand && !is.null(geno.decomp) &&
-      is.null(covariates) && !useCheck) {
+  if (genoRand && !is.null(geno.decomp) && is.null(covariates) && !useCheck) {
     fixedForm <- update(fixedForm, "~ . + geno.decomp")
   }
   if (engine == "SpATS") {
@@ -238,9 +240,6 @@ fitModels <- function(TP,
     } else {
       ## For genotype fixed the base random formula is empty.
       ## Genotype is added to the fixedForm.
-      # fixedForm <- update(fixedForm,
-      #                     paste("~ . + ", if (is.null(geno.decomp)) genoCol else
-      #                       paste0("at(", geno.decomp, "):", genoCol)))
       fixedForm <- update(fixedForm,
                           paste("~ . + ", if (is.null(geno.decomp)) genoCol else
                             paste0(geno.decomp, ":", genoCol)))
