@@ -219,6 +219,8 @@ xyFacetPlot <- function(baseDat,
                         yLab = "Trait",
                         output = TRUE) {
   p <- ggplot(baseDat, aes_string(x = xVal, y = yVal)) +
+    scale_x_datetime(breaks = prettier(),
+                     labels = scales::date_format("%B %d")) +
   theme(panel.background = element_blank(),
         panel.spacing = unit(0, "cm"),
         panel.border = element_rect(color = "black", fill = "transparent"),
@@ -227,13 +229,10 @@ xyFacetPlot <- function(baseDat,
     labs(title = title, x = xLab, y = yLab)
   if (length(unique(baseDat[[xVal]])) > 1) {
     p <- p + geom_line(aes_string(group = groupVal, color = colVal),
-                       show.legend = FALSE, na.rm = TRUE) +
-      scale_x_datetime(breaks = scales::pretty_breaks(n = 3),
-                       minor_breaks = NULL)
+                       show.legend = FALSE, na.rm = TRUE)
   } else {
     p <- p + geom_point(aes_string(group = groupVal, color = colVal),
-                        show.legend = FALSE, na.rm = TRUE, size = 1) +
-      scale_x_datetime(expand = c(0, 0))
+                        show.legend = FALSE, na.rm = TRUE, size = 1)
   }
   if (!is.null(overlayDat)) {
     if (length(unique(baseDat[[xVal]])) > 1) {
@@ -346,4 +345,22 @@ dfBind <- function(dfList) {
           }), make.row.names = FALSE)
   )
 }
+
+#' @noRd
+#' @keywords internal
+prettier <- function() {
+  function(x) {
+    intStart <- lubridate::as_datetime(x[1])
+    intEnd <- lubridate::as_datetime(x[2])
+    int <- lubridate::interval(start = intStart, end = intEnd)
+    sec <- lubridate::int_length(int)
+    intStart + (sec / 4 * c(1, 2, 3))
+  }
+}
+
+
+
+
+
+
 

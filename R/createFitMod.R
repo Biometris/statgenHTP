@@ -283,13 +283,13 @@ plot.fitMod <- function(x,
     p <- ggplot(herit, aes_string(x = "timePoint", y = "h2",
                                   group = "herit", color = "herit")) +
       geom_point(size = 3, na.rm = TRUE) +
+      scale_x_datetime(breaks = prettier(),
+                       labels = scales::date_format("%B %d")) +
       plotTheme() +
       ylim(yLim) +
       labs(title = title)
     if (length(unique(herit[["timePoint"]])) > 1) {
       p <- p + geom_line(size = 0.5, na.rm = TRUE)
-    } else {
-      p <- p + scale_x_datetime(expand = c(0, 0))
     }
     if (output) {
       plot(p)
@@ -319,13 +319,13 @@ plot.fitMod <- function(x,
     p <- ggplot(effDim, aes_string(x = "timePoint", y = "ED",
                                    group = "effDim", color = "effDim")) +
       geom_point(size = 3, na.rm = TRUE) +
+      scale_x_datetime(breaks = prettier(),
+                       labels = scales::date_format("%B %d")) +
       plotTheme() +
       ylim(yLim) +
       labs(title = title, color = "Effective dimension")
     if (length(unique(effDim[["timePoint"]])) > 1) {
       p <- p + geom_line(size = 0.5, na.rm = TRUE)
-    } else {
-      p <- p + scale_x_datetime(expand = c(0, 0))
     }
     if (output) {
       plot(p)
@@ -345,14 +345,14 @@ plot.fitMod <- function(x,
                                      group = "var", color = "var")) +
       geom_point(size = 3, na.rm = TRUE) +
       scale_color_discrete(labels = c("Residual", "Columns", "Rows")) +
+      scale_x_datetime(breaks = prettier(),
+                       labels = scales::date_format("%B %d")) +
       plotTheme() +
       ylim(yLim) +
       labs(title = title, color = "variance",
            y = expression(sigma ^ 2))
     if (length(unique(variance[["timePoint"]])) > 1) {
       p <- p + geom_line(size = 0.5, na.rm = TRUE)
-    } else {
-      p <- p + scale_x_datetime(expand = c(0, 0))
     }
     if (output) {
       plot(p)
