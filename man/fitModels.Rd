@@ -110,12 +110,14 @@ modPhenoSpCheck <- fitModels(TP = phenoTP,
                              timePoints = 3)
 
 
+\dontrun{
 ## Fit a model with asreml on few time points with a spatial function:
 modPhenoSpAs <- fitModels(TP = phenoTP,
                           trait = "EffpsII",
                           timePoints = seq(1,73,by=5),
                           engine = "asreml",
                           spatial = TRUE)
+}
 
 ## Using the second example dataset (PhenoarchDat1):
 ## Fit a model with SpATS on few time points with two variables for geno.decomp:
