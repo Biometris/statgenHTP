@@ -55,9 +55,9 @@ R-devel:
     - rm -rf vignettes
     - Rscriptdevel -e 'd <- read.dcf("DESCRIPTION"); d[, colnames(d) == "VignetteBuilder"] <- NA; write.dcf(d, "DESCRIPTION")'
     ## Build package.
-    - Rdevel CMD build . --no-build-vignettes --no-manual
+    - Rdevel CMD build . --no-manual
     - PKG_FILE_NAME=$(ls -1t *.tar.gz | head -n 1)
-    - Rdevel CMD check "${PKG_FILE_NAME}" --no-build-vignettes --no-manual --as-cran
+    - Rdevel CMD check "${PKG_FILE_NAME}" --no-manual --as-cran
   artifacts:
     when: always
     paths:
@@ -84,6 +84,7 @@ coverage:
   only:
     - develop
     - master
+  before_script:
   script:
     - Rscript -e 'covr::package_coverage()'
   coverage: '/Coverage:\s*(\d+.\d+\%)/'

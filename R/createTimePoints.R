@@ -318,28 +318,39 @@ summary.TP <- function(object,
 #' @return Depending on the plot type, either a ggplot object or a list of ggplot
 #' objects is invisibly returned.
 #'
-#' @examples # Plot the layout for the third time point with the check
-#' genotypes highlighted
+#' @examples
+#' data("PhenovatorDat1")
+#' phenoTP <- createTimePoints(dat = PhenovatorDat1,
+#'                             experimentName = "Phenovator",
+#'                             genotype = "Genotype",
+#'                             timePoint = "timepoints",
+#'                             repId = "Replicate",
+#'                             plotId = "pos",
+#'                             rowNum = "y", colNum = "x",
+#'                             addCheck = TRUE,
+#'                             checkGenotypes = c("check1", "check2", "check3", "check4"))
+#'
+#' ## Plot the layout for the third time point with the check genotypes highlighted
 #' plot(phenoTP,
 #'      plotType = "layout",
 #'      timePoints = c(3),
 #'      highlight = c("check1", "check2", "check3", "check4"))
 #'
-#' # Create a boxplot for "EffpsII" with 5 time points and boxes colored
-#' by "repId" within time point.
+#' ## Create a boxplot for "EffpsII" with 5 time points and boxes colored
+#' ## by "repId" within time point.
 #' plot(phenoTP,
 #'      plotType = "box",
 #'      traits = "EffpsII",
 #'      timePoints = c(1:5),
 #'      colorBy = "repId")
 #'
-#' # Create a correlation plot for "EffpsII" for a selection of time points.
+#' ## Create a correlation plot for "EffpsII" for a selection of time points.
 #' plot(phenoTP,
 #'      plotType = "cor",
 #'      traits = "EffpsII",
 #'      timePoints = seq(from=1,to=73,by=5))
 #'
-#' # Plot the raw data of four genotypes for the trait "EffpsII":
+#' ## Plot the raw data of four genotypes for the trait "EffpsII":
 #' plot(phenoTP,
 #'      traits = "EffpsII",
 #'      plotType = "raw",

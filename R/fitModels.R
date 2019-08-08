@@ -62,8 +62,20 @@
 #'
 #' @return An object of class fitMod, a list of fitted models.
 #'
-#' @examples ## Using the first example dataset (PhenovatorDat1):
+#' @examples
+#' ## Using the first example dataset (PhenovatorDat1):
 #' ## Fit a SpATS model on few time points:
+#' data("PhenovatorDat1")
+#' phenoTP <- createTimePoints(dat = PhenovatorDat1,
+#'                             experimentName = "Phenovator",
+#'                             genotype = "Genotype",
+#'                             timePoint = "timepoints",
+#'                             repId = "Replicate",
+#'                             plotId = "pos",
+#'                             rowNum = "y", colNum = "x",
+#'                             addCheck = TRUE,
+#'                             checkGenotypes = c("check1", "check2", "check3", "check4"))
+#'
 #' modPhenoSp <- fitModels(TP = phenoTP,
 #'                         trait = "EffpsII",
 #'                         timePoints = seq(1,73,by=5))
@@ -86,6 +98,17 @@
 #'
 #' ## Using the second example dataset (PhenoarchDat1):
 #' ## Fit a model with SpATS on few time points with two variables for geno.decomp:
+#' data("PhenoarchDat1")
+#' phenoTParch <- createTimePoints(dat = PhenoarchDat1,
+#'                                 experimentName = "ZA17",
+#'                                 genotype = "geno",
+#'                                 timePoint = "Date",
+#'                                 repId = "Rep",
+#'                                 plotId = "pos",
+#'                                 rowNum = "Position",
+#'                                 colNum = "Line")
+#'
+#'
 #' modPhenoSpGD <- fitModels(TP = phenoTParch,
 #'                           trait = "LA_Estimated",
 #'                           geno.decomp = c("Scenario","population"),
