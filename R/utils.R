@@ -218,7 +218,7 @@ xyFacetPlot <- function(baseDat,
                         xLab = "Time",
                         yLab = "Trait",
                         output = TRUE) {
-  nBr <- min(length(unique(baseDat[["timePoint"]])) - 1, 3)
+  nBr <- min(length(unique(baseDat[["timePoint"]])), 3)
   p <- ggplot(baseDat, aes_string(x = xVal, y = yVal)) +
     scale_x_datetime(breaks = prettier(n = nBr),
                      labels = scales::date_format("%B %d")) +
@@ -355,7 +355,13 @@ prettier <- function(n = 3) {
     intEnd <- lubridate::as_datetime(x[2])
     int <- lubridate::interval(start = intStart, end = intEnd)
     sec <- lubridate::int_length(int)
-    intStart + (sec / (n + 1) * 1:n)
+    if (n == 1) {
+      intStart + sec / 2
+    } else if (n == 2) {
+      intStart + sec / 5 * c(1, 4)
+    } else {
+      intStart + sec / 8 * c(1, 4, 7)
+    }
   }
 }
 

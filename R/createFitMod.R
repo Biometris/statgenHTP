@@ -280,7 +280,7 @@ plot.fitMod <- function(x,
     ## Manually modify limit of y-axis.
     yLim <- c(min(dotArgs$yLim[1], herit[["h2"]]),
               max(dotArgs$yLim[2], herit[["h2"]]))
-    nBr <- min(length(unique(herit[["timePoint"]])) - 1, 3)
+    nBr <- min(length(unique(herit[["timePoint"]])), 3)
     p <- ggplot(herit, aes_string(x = "timePoint", y = "h2",
                                   group = "herit", color = "herit")) +
       geom_point(size = 3, na.rm = TRUE) +
@@ -317,7 +317,7 @@ plot.fitMod <- function(x,
     ## Manually modify limit of y-axis.
     yLim <- c(min(dotArgs$yLim[1], effDim[["ED"]]),
               max(dotArgs$yLim[2], effDim[["ED"]]))
-    nBr <- min(length(unique(effDim[["timePoint"]])) - 1, 3)
+    nBr <- min(length(unique(effDim[["timePoint"]])), 3)
     p <- ggplot(effDim, aes_string(x = "timePoint", y = "ED",
                                    group = "effDim", color = "effDim")) +
       geom_point(size = 3, na.rm = TRUE) +
@@ -343,7 +343,7 @@ plot.fitMod <- function(x,
     ## Manually modify limit of y-axis.
     yLim <- c(min(dotArgs$yLim[1], variance[["value"]]),
               max(dotArgs$yLim[2], variance[["value"]]))
-    nBr <- min(length(unique(variance[["timePoint"]])) - 1, 3)
+    nBr <- min(length(unique(variance[["timePoint"]])), 3)
     p <- ggplot(variance, aes_string(x = "timePoint", y = "value",
                                      group = "var", color = "var")) +
       geom_point(size = 3, na.rm = TRUE) +
