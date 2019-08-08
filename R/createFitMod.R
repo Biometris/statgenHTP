@@ -288,6 +288,8 @@ plot.fitMod <- function(x,
       labs(title = title)
     if (length(unique(herit[["timePoint"]])) > 1) {
       p <- p + geom_line(size = 0.5, na.rm = TRUE)
+    } else {
+      p <- p + scale_x_datetime(expand = c(0, 0))
     }
     if (output) {
       plot(p)
@@ -322,6 +324,8 @@ plot.fitMod <- function(x,
       labs(title = title, color = "Effective dimension")
     if (length(unique(effDim[["timePoint"]])) > 1) {
       p <- p + geom_line(size = 0.5, na.rm = TRUE)
+    } else {
+      p <- p + scale_x_datetime(expand = c(0, 0))
     }
     if (output) {
       plot(p)
@@ -347,6 +351,8 @@ plot.fitMod <- function(x,
            y = expression(sigma ^ 2))
     if (length(unique(variance[["timePoint"]])) > 1) {
       p <- p + geom_line(size = 0.5, na.rm = TRUE)
+    } else {
+      p <- p + scale_x_datetime(expand = c(0, 0))
     }
     if (output) {
       plot(p)

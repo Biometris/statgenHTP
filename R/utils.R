@@ -219,18 +219,21 @@ xyFacetPlot <- function(baseDat,
                         yLab = "Trait",
                         output = TRUE) {
   p <- ggplot(baseDat, aes_string(x = xVal, y = yVal)) +
-    theme(panel.background = element_blank(),
-          panel.spacing = unit(0, "cm"),
-          panel.border = element_rect(color = "black", fill = "transparent"),
-          strip.background = element_rect(color = "black", fill = "bisque"),
-          plot.title = element_text(hjust = 0.5)) +
+  theme(panel.background = element_blank(),
+        panel.spacing = unit(0, "cm"),
+        panel.border = element_rect(color = "black", fill = "transparent"),
+        strip.background = element_rect(color = "black", fill = "bisque"),
+        plot.title = element_text(hjust = 0.5)) +
     labs(title = title, x = xLab, y = yLab)
   if (length(unique(baseDat[[xVal]])) > 1) {
     p <- p + geom_line(aes_string(group = groupVal, color = colVal),
-                       show.legend = FALSE, na.rm = TRUE)
+                       show.legend = FALSE, na.rm = TRUE) +
+      scale_x_datetime(breaks = scales::pretty_breaks(n = 3),
+                       minor_breaks = NULL)
   } else {
     p <- p + geom_point(aes_string(group = groupVal, color = colVal),
-                        show.legend = FALSE, na.rm = TRUE, size = 1)
+                        show.legend = FALSE, na.rm = TRUE, size = 1) +
+      scale_x_datetime(expand = c(0, 0))
   }
   if (!is.null(overlayDat)) {
     if (length(unique(baseDat[[xVal]])) > 1) {
