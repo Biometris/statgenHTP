@@ -218,8 +218,9 @@ xyFacetPlot <- function(baseDat,
                         xLab = "Time",
                         yLab = "Trait",
                         output = TRUE) {
+  nBr <- min(length(unique(baseDat[["timePoint"]])) - 1, 3)
   p <- ggplot(baseDat, aes_string(x = xVal, y = yVal)) +
-    scale_x_datetime(breaks = prettier(),
+    scale_x_datetime(breaks = prettier(n = nBr),
                      labels = scales::date_format("%B %d")) +
   theme(panel.background = element_blank(),
         panel.spacing = unit(0, "cm"),
@@ -348,13 +349,13 @@ dfBind <- function(dfList) {
 
 #' @noRd
 #' @keywords internal
-prettier <- function() {
+prettier <- function(n = 3) {
   function(x) {
     intStart <- lubridate::as_datetime(x[1])
     intEnd <- lubridate::as_datetime(x[2])
     int <- lubridate::interval(start = intStart, end = intEnd)
     sec <- lubridate::int_length(int)
-    intStart + (sec / 4 * c(1, 2, 3))
+    intStart + (sec / (n + 1) * 1:n)
   }
 }
 
