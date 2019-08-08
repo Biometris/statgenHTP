@@ -1,17 +1,39 @@
-#' Extract genotypic predictions
+#' Extract genotypic predicted values
 #'
 #' Extract predictions of the genotypic value from an object of class fitMod.
 #'
 #' @param fitMod An object of class fitMod.
-#' @param timePoints A character or numeric vector indicating the timePoints
-#' to be modeled. When using a character string to reference a timePoint, the
-#' value has to be an exact match to one of the existing timePoints. When using
-#' a number it will be matched by its number in the timePoints attribute of the
-#' TP object.
+#' @param timePoints A character or numeric vector indicating the time point(s)
+#' to be modeled. When using a character string to reference a time point, the
+#' value has to be an exact match to one of the existing time points. When using
+#' a number it will be matched by its number ("timeNumber") in the timePoints
+#' attribute of the TP object.
 #' @param outFile A character string indicating the .csv file to which the
 #' results should be written. If \code{NULL} no file is written.
 #'
-#' @return A data.frame with genotypic predictions per time point.
+#' @return A data.frame with genotypic predicted values per time point.
+#'
+#' @examples
+#' ## Using the first example dataset (PhenovatorDat1):
+#' data("PhenovatorDat1")
+#' phenoTP <- createTimePoints(dat = PhenovatorDat1,
+#'                             experimentName = "Phenovator",
+#'                             genotype = "Genotype",
+#'                             timePoint = "timepoints",
+#'                             repId = "Replicate",
+#'                             plotId = "pos",
+#'                             rowNum = "y", colNum = "x",
+#'                             addCheck = TRUE,
+#'                             checkGenotypes = c("check1", "check2", "check3", "check4"))
+#'
+#' ## Fit a SpATS model on few time points:
+#' modPhenoSp <- fitModels(TP = phenoTP,
+#'                         trait = "EffpsII",
+#'                         timePoints = seq(1,73,by=5))
+#'
+#' ## Extract the genotypic predictions for one time point:
+#' genoPredSp <- getGenoPred(modPhenoSp, timePoints = 6)
+#'
 #'
 #' @export
 getGenoPred <- function(fitMod,
@@ -49,6 +71,27 @@ getGenoPred <- function(fitMod,
 #' @inheritParams getGenoPred
 #'
 #' @return A data.frame with spatially corrected values per time point.
+#'
+#' @examples
+#' ## Using the first example dataset (PhenovatorDat1):
+#' data("PhenovatorDat1")
+#' phenoTP <- createTimePoints(dat = PhenovatorDat1,
+#'                             experimentName = "Phenovator",
+#'                             genotype = "Genotype",
+#'                             timePoint = "timepoints",
+#'                             repId = "Replicate",
+#'                             plotId = "pos",
+#'                             rowNum = "y", colNum = "x",
+#'                             addCheck = TRUE,
+#'                             checkGenotypes = c("check1", "check2", "check3", "check4"))
+#'
+#' ## Fit a SpATS model on few time points:
+#' modPhenoSp <- fitModels(TP = phenoTP,
+#'                         trait = "EffpsII",
+#'                         timePoints = seq(1,73,by=5))
+#'
+#' ## Extract the corrected values for one time point:
+#' spatCorrSp <- getCorrected(modPhenoSp, timePoints = 6)
 #'
 #' @export
 getCorrected <- function(fitMod,
@@ -89,6 +132,27 @@ getCorrected <- function(fitMod,
 #'
 #' @return A data.frame with variances per time point.
 #'
+#' @examples
+#' ## Using the first example dataset (PhenovatorDat1):
+#' data("PhenovatorDat1")
+#' phenoTP <- createTimePoints(dat = PhenovatorDat1,
+#'                             experimentName = "Phenovator",
+#'                             genotype = "Genotype",
+#'                             timePoint = "timepoints",
+#'                             repId = "Replicate",
+#'                             plotId = "pos",
+#'                             rowNum = "y", colNum = "x",
+#'                             addCheck = TRUE,
+#'                             checkGenotypes = c("check1", "check2", "check3", "check4"))
+#'
+#' ## Fit a SpATS model on few time points:
+#' modPhenoSp <- fitModels(TP = phenoTP,
+#'                         trait = "EffpsII",
+#'                         timePoints = seq(1,73,by=5))
+#'
+#' ## Extract the variances for all available time points in the model object:
+#' varianceSp <- getVar(modPhenoSp)
+#'
 #' @export
 getVar <- function(fitMod,
                    timePoints = names(fitMod),
@@ -125,11 +189,34 @@ getVar <- function(fitMod,
 
 #' Extract heritabilities
 #'
-#' Extract heritabilities from an object of class fitMod.
+#' Extract heritabilities from an object of class fitMod. When
+#' \code{geno.decomp} is used, the heritabilities of each level
+#' of geno.decomp are stored in separate columns.
 #'
 #' @inheritParams getGenoPred
 #'
 #' @return A data.frame with heritabilities per time point.
+#'
+#' @examples
+#' ## Using the first example dataset (PhenovatorDat1):
+#' data("PhenovatorDat1")
+#' phenoTP <- createTimePoints(dat = PhenovatorDat1,
+#'                             experimentName = "Phenovator",
+#'                             genotype = "Genotype",
+#'                             timePoint = "timepoints",
+#'                             repId = "Replicate",
+#'                             plotId = "pos",
+#'                             rowNum = "y", colNum = "x",
+#'                             addCheck = TRUE,
+#'                             checkGenotypes = c("check1", "check2", "check3", "check4"))
+#'
+#' ## Fit a SpATS model on few time points:
+#' modPhenoSp <- fitModels(TP = phenoTP,
+#'                         trait = "EffpsII",
+#'                         timePoints = seq(1,73,by=5))
+#'
+#' ## Extract the heritabilities for all available time points in the model object:
+#' heritSp    <- getHerit(modPhenoSp)
 #'
 #' @export
 getHerit <- function(fitMod,
@@ -166,6 +253,27 @@ getHerit <- function(fitMod,
 #' returned.
 #'
 #' @return A data.frame with effective dimensions per time point.
+#'
+#' @examples
+#' ## Using the first example dataset (PhenovatorDat1):
+#' data("PhenovatorDat1")
+#' phenoTP <- createTimePoints(dat = PhenovatorDat1,
+#'                             experimentName = "Phenovator",
+#'                             genotype = "Genotype",
+#'                             timePoint = "timepoints",
+#'                             repId = "Replicate",
+#'                             plotId = "pos",
+#'                             rowNum = "y", colNum = "x",
+#'                             addCheck = TRUE,
+#'                             checkGenotypes = c("check1", "check2", "check3", "check4"))
+#'
+#' ## Fit a SpATS model on few time points:
+#' modPhenoSp <- fitModels(TP = phenoTP,
+#'                         trait = "EffpsII",
+#'                         timePoints = seq(1,73,by=5))
+#'
+#' ## Extract the effective dimensions for all available time points in the model object:
+#' effDimSp <- getEffDims(modPhenoSp)
 #'
 #' @export
 getEffDims <- function(fitMod,

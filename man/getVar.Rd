@@ -9,11 +9,11 @@ getVar(fitMod, timePoints = names(fitMod), outFile = NULL)
 \arguments{
 \item{fitMod}{An object of class fitMod.}
 
-\item{timePoints}{A character or numeric vector indicating the timePoints
-to be modeled. When using a character string to reference a timePoint, the
-value has to be an exact match to one of the existing timePoints. When using
-a number it will be matched by its number in the timePoints attribute of the
-TP object.}
+\item{timePoints}{A character or numeric vector indicating the time point(s)
+to be modeled. When using a character string to reference a time point, the
+value has to be an exact match to one of the existing time points. When using
+a number it will be matched by its number ("timeNumber") in the timePoints
+attribute of the TP object.}
 
 \item{outFile}{A character string indicating the .csv file to which the
 results should be written. If \code{NULL} no file is written.}
@@ -23,4 +23,26 @@ A data.frame with variances per time point.
 }
 \description{
 Extract variances from an object of class fitMod.
+}
+\examples{
+## Using the first example dataset (PhenovatorDat1):
+data("PhenovatorDat1")
+phenoTP <- createTimePoints(dat = PhenovatorDat1,
+                            experimentName = "Phenovator",
+                            genotype = "Genotype",
+                            timePoint = "timepoints",
+                            repId = "Replicate",
+                            plotId = "pos",
+                            rowNum = "y", colNum = "x",
+                            addCheck = TRUE,
+                            checkGenotypes = c("check1", "check2", "check3", "check4"))
+
+## Fit a SpATS model on few time points:
+modPhenoSp <- fitModels(TP = phenoTP,
+                        trait = "EffpsII",
+                        timePoints = seq(1,73,by=5))
+
+## Extract the variances for all available time points in the model object:
+varianceSp <- getVar(modPhenoSp)
+
 }

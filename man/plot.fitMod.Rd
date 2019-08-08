@@ -48,10 +48,11 @@ below.
 }
 \section{rawPred plot}{
 
-Plots the raw data overlayed with the predicted values from the fitted model.
-For each genotype a plot is made per plot/plant over time. These plots are
-put together in a 5x5 grid. By using the parameter \code{genotypes} a
-selection of genotypes can be plotted. Extra parameter options:
+Plots the raw data (coloured lines) overlayed with the predicted values from
+the fitted model (black line). For each genotype a plot is made per plot/plant
+over time. These plots are put together in a 5x5 grid. By using the parameter
+\code{genotypes} a selection of genotypes can be plotted. Extra parameter
+options:
 \describe{
 \item{genotypes}{A character vector indicating the genotypes to be plotted.}
 }
@@ -59,11 +60,11 @@ selection of genotypes can be plotted. Extra parameter options:
 
 \section{corrPred plot}{
 
-Plots the spatially corrected data overlayed with the predicted values from
-the fitted model. For each genotype a plot is made per plot/plant over time.
-These plots are put together in a 5x5 grid. By using the parameter
-\code{genotypes} a selection of genotypes can be plotted. Extra parameter
-options:
+Plots the spatially corrected data (coloured lines) overlayed with the predicted
+values from the fitted model(black line). For each genotype a plot is made
+per plot/plant over time. These plots are put together in a 5x5 grid.
+By using the parameter \code{genotypes} a selection of genotypes can be
+plotted. Extra parameter options:
 \describe{
 \item{genotypes}{A character vector indicating the genotypes to be plotted.}
 }
@@ -75,7 +76,7 @@ Plots the heritability over time. If \code{geno.decomp} is used when fitting
 the model, heritabilities are plotted for each level of geno.decomp in a
 single plot. Extra parameter options:
 \describe{
-\item{yLim}{A numerical vector of length two used for setting the limits of
+\item{yLim}{A numerical vector of length two, used for setting the limits of
 the y-axis of the plot. If values outside of the plotting range are given,
 then these are ignored.}
 }
@@ -88,8 +89,10 @@ Extra parameter options:
 \describe{
 \item{whichED}{A character vector indicating which effective dimensions
 shoul be plotted. This should be a subset of "colId", "rowId", "fCol",
-"fRow", "fColRow", "colfRow", "fColfRow" and "surface". Default all
-effective dimensions are plotted.}
+"fRow", "fColRow", "colfRow", "fColfRow" and "surface". When
+\code{useRepId = TRUE}, the effective dimensions of "colId" and "rowId"
+become "RepId:colId" and "RepId:rowId". Default all effective dimensions
+are plotted.}
 \item{EDType}{A character string specifying if the effective dimension
 ("dimension") or the ratio of effective dimensions ("ratio") should be
 plotted. Default the dimensions are plotted.}
@@ -101,7 +104,7 @@ given, then it is ignored.}
 
 \section{variance plot}{
 
-Plots the residual, column and row variance for the fitted model over time.
+Plots the residual, column and row variances for the fitted model over time.
 Extra parameter options:
 \describe{
 \item{yLim}{A numerical value used for setting the upper limit of the y-axis
@@ -126,3 +129,49 @@ as a percentage of the original phenotypic values.}
 }
 }
 
+\examples{
+## Using the first example dataset (PhenovatorDat1):
+data("PhenovatorDat1")
+phenoTP <- createTimePoints(dat = PhenovatorDat1,
+                            experimentName = "Phenovator",
+                            genotype = "Genotype",
+                            timePoint = "timepoints",
+                            repId = "Replicate",
+                            plotId = "pos",
+                            rowNum = "y", colNum = "x",
+                            addCheck = TRUE,
+                            checkGenotypes = c("check1", "check2", "check3", "check4"))
+
+## Fit a SpATS model on few time points:
+modPhenoSp <- fitModels(TP = phenoTP,
+                        trait = "EffpsII",
+                        timePoints = seq(1,73,by=5))
+
+## Plot the spatial trends of one time point:
+plot(modPhenoSp,
+     timePoints = 36,
+     plotType = "spatial",
+     spaTrend = "percentage")
+
+\dontrun{
+## Create a time lapse of all available time points:
+plot(modPhenoSp,
+     plotType = "timeLapse",
+     outFile = "TimeLapse_modPhenoSp.gif")
+}
+
+## Plot the corrected values for a subset of four genotypes:
+plot(modPhenoSp,
+     plotType = "corrPred",
+     genotypes = c("check1", "check2", "G7", "G58") )
+
+## Plot the variances of all available time points in the model
+## for a subset of effective dimensions:
+plot(modPhenoSp,
+     plotType = "effDim",
+     whichED = c("colId", "rowId", "fColRow","colfRow"),
+     EDType = "ratio")
+
+
+
+}
