@@ -1,18 +1,23 @@
 Package: statgenHTP
-Title: What the Package Does (One Line, Title Case)
+Title: High Throughput Phenotyping (HTP) Data Analysis
 Version: 0.0.0.9000
 Authors@R: 
     c(person(given = "Emilie",
              family = "Millet",
              role = c("aut", "cre"),
              email = "emilie.millet@wur.nl",
-             comment = c(ORCID = "YOUR-ORCID-ID")),
+             comment = c(ORCID = "0000-0002-2913-4892")),
       person(given = "Bart-Jan",
              family = "van Rossum",
              role = "aut",
-             email = "bart-jan.vanrossum@wur.nl",
-             comment = c(ORCID = "YOUR-ORCID-ID")))
-Description: What the package does (one paragraph).
+             email = "bart-jan.vanrossum@wur.nl"))
+Description: The statgenHTP package is being developed within the EPPN2020 
+    project (<https://eppn2020.plant-phenotyping.eu/>) to streamline the analysis 
+    of data coming from high throughput phenotyping platforms. It can be used 
+    for spatial analysis of time-series data. 
+    Some functions have been created to be used in conjunction with the R 
+    package 'asreml' for the 'ASReml' software, which can be obtained upon 
+    purchase from 'VSN' international (<http://www.vsni.co.uk/software/asreml>).
 License: GPL
 Encoding: UTF-8
 LazyData: true
