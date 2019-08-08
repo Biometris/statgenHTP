@@ -221,12 +221,13 @@ xyFacetPlot <- function(baseDat,
   nBr <- min(length(unique(baseDat[["timePoint"]])), 3)
   p <- ggplot(baseDat, aes_string(x = xVal, y = yVal)) +
     scale_x_datetime(breaks = prettier(n = nBr),
-                     labels = scales::date_format("%B %d")) +
+                     labels = scales::date_format("%B %d"),) +
   theme(panel.background = element_blank(),
         panel.spacing = unit(0, "cm"),
         panel.border = element_rect(color = "black", fill = "transparent"),
         strip.background = element_rect(color = "black", fill = "bisque"),
-        plot.title = element_text(hjust = 0.5)) +
+        plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(angle = 25, vjust = 1, hjust = 1)) +
     labs(title = title, x = xLab, y = yLab)
   if (length(unique(baseDat[[xVal]])) > 1) {
     p <- p + geom_line(aes_string(group = groupVal, color = colVal),
