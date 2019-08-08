@@ -28,26 +28,26 @@ from high throughput phenotyping (HTP) platform experiments. The package provide
 for plotting and exporting the results of the analyses. It was developed within the 
 EPPN^2020^ [project](https://eppn2020.plant-phenotyping.eu/) to meet the needs for automated analyses of HTP data.
 
-New phenotyping techniques enable measuring trait at high throughput, with traits being 
-measured at multiple time points for hundreds/thousands of plants. This requires an 
-automatic modeling of the data [@Tardieu2017] with a model that is robust and with 
+New phenotyping techniques enable measuring traits at high throughput, with traits being 
+measured at multiple time points for hundreds or thousands of plants. This requires  
+automatic modeling of the data [@Tardieu2017] with a model that is robust, flexible and has 
 easy selection steps.
 
 Phenotyping facilities display spatial heterogeneity. For example, the spatial variability
 of incident light can go up to 100% between pots within a greenhouse [@Cabrera2016]. 
 Taking into account these spatial trends is a prerequisite for precise estimation of 
-genetic and treatment effects. In the same way as in field trials, platform experiment 
+genetic and treatment effects. In the same way as in field trials, platform experiments 
 should obey standard principles for experimental design and statistical modeling.
 
-Popular mixed models to separate spatial trends from treatment and genetic effects rely 
+Popular mixed models to separate spatial trends from treatment and genetic effects, rely 
 on the use of autoregressive correlation functions defined on rows and columns (AR1×AR1) 
 to model the local trends [@Cullis2006]. These models are sometimes difficult to fit and 
-the selection of a best model is complicated therefore preventing from an automated 
+the selection of a best model is complicated, therefore preventing an automated 
 phenotypic analysis of series of trials. An attractive alternative is the use of 
 2-dimensional P-spline surfaces, the SpATS model (Spatial Analysis of Trials using Splines, 
 [@RodAlv2017]). This model corrects for spatial trends, row and column effects and has 
 the advantage of avoiding the model selection step. It also provides the user with 
-graphical output easy to interpret. It has proven to be a good alternative to the 
+graphical output that are easy to interpret. It has proven to be a good alternative to the 
 classical AR1×AR1 modeling in the field [@Velazco2017]. It is also suitable for 
 phenotyping platform data and has been tested on several datasets in the
 EPPN^2020^ project. 
@@ -63,14 +63,14 @@ in three main parts:
 3. Time course modeling - *extension of this package planned for 2020*  
 
 This tutorial describes in detail how to prepare data for analysis, perform analyses 
-to correct for spatial trends using different modeling engines (part I) and extract 
+to correct for spatial trends using different modeling engines and extract 
 the results from the models.
 
 ----
 
 # Data preparation
 
-The first step when modeling platform experiment data analysis with the statgenHTP package
+The first step when modeling platform experiment data with the statgenHTP package
 is creating an object of class `TP` (Time Points). In this object, the time points are
 split into single data frames. It is then used throughout the statgenHTP package as input 
 for analyses. 
@@ -80,11 +80,13 @@ for analyses.
 A `TP` object can be created from a `data.frame` with the function `createTimePoints`. 
 This function does a number of things:
 
-* Rename columns to default column names used by the functions in the statgenHTP package. For example, the column in the data containing variety/accession/genotype is renamed to "genotype". Original column names are stored as an attribute of the `TP` object.
-* Convert column types to the default column types. For example, the column "genotype" is converted to a factor and "rowCoord" to a numeric column.
-* Split the data into separate data.frames by time points. A `TP` object is a `list` of `data.frames` where each `data.frame` contains the data for a single time point. If there is only one time points or no column time is defined, the output will be a `list` with only one item.
-* Create a `data.frame` with columns `timeNumber` and `timePoint` is added as attribute 
-"timePoints" to the data. This data.frame can be used for referencing the time points by their number.
+* Check the input data.
+* Rename columns to default column names used by the functions in the statgenHTP package. For example, the column in the data containing variety/accession/genotype is renamed to "genotype". Original column names are stored as an attribute of the individual data frames in the `TP` object.
+* Convert column types to the default column types. For example, the column "genotype" is converted to a factor and "rowNum" to a numeric column.
+* Add columns `check` and `checkGenotypes` when `addCheck=TRUE`.
+* Split the data into separate data.frames by time points. A `TP` object is a `list` of `data.frames` where each `data.frame` contains the data for a single time point. If there is only one time points the output will be a `list` with only one item.
+* Add a `data.frame` with columns `timeNumber` and `timePoint` as attribute 
+"timePoints" to the `TP` object This data.frame can be used for referencing the time points by their number.
 
 
 
@@ -95,7 +97,7 @@ platform (WUR, Netherlands, [@Flood2016]) with Arabidopsis plants. It consists o
 with 1440 plants grown in a growth chamber. The number of tested genotypes is 192 with 6-7 
 replicates per genotype. Four reference genotypes were also tested with 15 or 30 replicates. 
 The studied trait is the photosystem II efficiency ("EffpsII") extracted from the pictures over time
-[@vanRooi2017].
+[@vanRooi2017]. The dataset called "PhenovatorDat1" is included in the package.
 
 For the example first a `TP` object is created containing all the time points. 
 ```{r createTP}
@@ -112,11 +114,11 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             checkGenotypes = c("check1", "check2", "check3", "check4"))
 summary(phenoTP)
 ```
-The `TP` object just created is a `list` with 73 items, one for each time points 
+The `TP` object just created is a `list` with 73 items, one for each time point 
 in the original `data.frame` (called "PhenovatorDat1"). The option `experimentName`
 is used for identifying the dataset and is a requirement. The column "Genotype" in the 
 original data is renamed to "genotype" and converted to a factor. The columns 
-"Sowing_Block" and "pos" are renamed and converted likewise. The newly created column 
+"Replicate" and "pos" are renamed and converted likewise. The newly created column 
 "plotID" needs to be a unique identifier for a plot or a plant. It cannot occur more 
 than once per time point. The columns "y" and "x" are renamed to "rowNum" and "colNum" 
 respectively. Simultaneously, two columns "rowId" and "colId" are created containing 
@@ -128,7 +130,7 @@ The option `addCheck` is set as `TRUE` to specify that the genotypes listed in
 "check" with a value "noCheck" for the genotypes that are not in `checkGenotypes` and
 the name of the genotype for the `checkGenotypes`. Also a column "genoCheck" is added with
 the names of the genotypes that are not in `checkGenotypes` and `NA` for the
-`checkGenotypes` (see section **3.1**). These columns are necessary for fitting models on 
+`checkGenotypes` (see section [**3.1**](#spats)). These columns are necessary for fitting models on 
 data in case of augmented design [@Piepho2016].
 
 ## Plotting a `TP` object
@@ -141,9 +143,10 @@ the `TP` object. This can be restricted to selected time points using their numb
 the option `timePoints`. If replicates ("repId") are available, a black line is plotted 
 between them. Missing plots are indicated in white.
 ```{r layoutPlot, fig.height=4, fig.width=5, fig.align = 'center'}
+## Plot the layout for the third time point.
 plot(phenoTP, 
      plotType = "layout",
-     timePoints = c(3))
+     timePoints = 3)
 ```
 
 Here, the third time point is displayed which corresponds to the 1^st^ of June at 11:37. Note
@@ -153,7 +156,7 @@ by highlighting interesting genotypes in the layout. Hereafter the check genotyp
 ## Plot the layout for the third time point with the check genotypes highlighted.
 plot(phenoTP, 
      plotType = "layout",
-     timePoints = c(3),  
+     timePoints = 3,  
      highlight = c("check1", "check2", "check3", "check4"))
 ```
 
@@ -162,17 +165,18 @@ It is possible to add the names of the genotypes to the layout.
 ## Plot the layout for the third time point.
 plot(phenoTP, 
      plotType = "layout",
-     timePoints = c(3),  
+     timePoints = 3,  
      highlight = c("check1", "check2", "check3", "check4"),
      showGeno = TRUE)
 ```
 
-Raw data can be displayed per genotype (by default all genotypes are used).
+Raw data can be displayed per genotype. By default all genotypes are used but it can be restricted using `genotypes` and a subset of genotypes.
 ```{r rawVator, include=TRUE, fig.height=2, fig.width=6, fig.align = 'center'}
+## Create the raw data time courses for four genotypes.
 plot(phenoTP, 
      traits = "EffpsII",
      plotType = "raw",
-     genotypes = c("G1","G2","check1","check2"))
+     genotypes = c("G1", "G2", "check1", "check2"))
 ```
 
 Boxplots can be made to get an idea of the total variability of the trait in the `TP` object.
@@ -186,14 +190,14 @@ plot(phenoTP,
 
 Colors can be applied to groups within time points using the option `colorBy`. The boxes 
 for the (groups of) time points can be ordered using `orderBy`. Boxes can be ordered by 
-external vector or by the group mean.
+alphabetical order ("alphabetic") or by the group mean ("ascending","descending").
 ```{r boxPlotCL, fig.height=4.5, fig.width=6, fig.align = 'center'}
 ## Create a boxplot for "EffpsII" with 5 time points and boxes colored by "repId" within
 ## time point.
 plot(phenoTP, 
      plotType = "box",
      traits = "EffpsII", 
-     timePoints = c(1:5),
+     timePoints = 1:5,
      colorBy = "repId")
 ```
 
@@ -203,7 +207,7 @@ The time points in the boxplot can be grouped using the option `groupBy`.
 plot(phenoTP, 
      plotType = "box",
      traits = "EffpsII", 
-     timePoints = c(1:5),
+     timePoints = 1:5,
      groupBy = "repId")
 ```
 
@@ -214,11 +218,11 @@ a specified trait. The order of the plot is the time and by default all time poi
 plot(phenoTP, 
      plotType = "cor",
      traits = "EffpsII",
-     timePoints = seq(from=1,to=73,by=5))
+     timePoints = seq(from = 1,to = 73,by = 5))
 ```
 
-When the number of time points is large, each plot can be exported to a pdf document by 
-using the `outFile` option containing the name of the document.
+Eeach plot can be exported to a pdf document by using the `outFile` option containing 
+the name of the document.
 
 
 ----
@@ -228,36 +232,37 @@ using the `outFile` option containing the name of the document.
 After creating a `TP` object, a model can be fitted on the data. This is done 
 using the function `fitModels`, which uses two different engines for fitting the models, namely
 *SpATS* [@RodAlv2017] and *ASReml* [@Gilmour2017]. For models with row and column coordinates,
-SpATS is the default engine (see part **3.1**). This can  be overruled by specifying the 
-function parameter `engine` and using asreml for spatial model (see part **3.2**). When the 
+SpATS is the default engine (see part [**3.1**](#spats)). This can  be overruled by specifying the 
+function parameter `engine` and using asreml for spatial models (see part [**3.2**](#asreml)). When the 
 row and column coordinates are not available, asreml is used for modeling without 
-spatial function (see part **3.3**). Finally, it is possible to decomposed the genotypic 
-variance using, for example, a treatment effect (see part **3.4**).
+spatial components (see part [**3.3**](#asremlnoSP)). Finally, it is possible to decompose the genotypic 
+variance using, for example, a treatment effect (see part [**3.4**](#genodecomp)).
 
 The output of `fitModels` is an object of class `fitMod`, a `list` of fitted models 
 with one item for each time point the model was fitted for. 
 
-## Spatial model using SpATS
+## Spatial model using SpATS {#spats}
 
 When SpATS is used for modeling, an extra spatial term is included in the model. This 
 spatial component is composed using the `PSANOVA` function in the SpATS package which 
 uses 2-dimensional smoothing with P-splines as described in @Lee2013 and in @RodAlv2017. 
 See `help(PSANOVA, SpATS)` for a detailed description. Extra fixed effects may be fitted 
 using the option `covariates`. The model can also be fitted following a resolvable 
-row-column design using `useRepId`. The model specifications are listed in the table below. 
+row-column design setting `useRepId` as `TRUE`. The model specifications are listed in 
+the table below. 
 
 option | model fitted | spatial term |
 --------------------|-----------------------------------------|-----------------|
-default | trait = **genotype** + $\epsilon$ | PSANOVA |
-covariates = c("A","B") | trait = *A* + *B* + **genotype** + $\epsilon$ | PSANOVA |
-useRepId = TRUE | trait = *repId* + **genotype** + **repId:rowId** + **repId:colId** +  $\epsilon$ | PSANOVA |
-useCheck = TRUE | trait = *check* + **genoCheck** +  $\epsilon$ | PSANOVA |
+default | trait = **genotype** + **$\epsilon$** | PSANOVA |
+covariates = c("A","B") | trait = *A* + *B* + **genotype** + **$\epsilon$** | PSANOVA |
+useRepId = TRUE | trait = *repId* + **genotype** + **repId:rowId** + **repId:colId** +  **$\epsilon$** | PSANOVA |
+useCheck = TRUE | trait = *check* + **genoCheck** +  **$\epsilon$** | PSANOVA |
 
 In the models above, fixed effects are indicated in *italics* whereas random effects are 
 indicated in **bold**. "genotype" can be fitted as **random** or *fixed* effect
 using the option `what`. The same model will run with genotype as fixed. The option 
 `useCheck` allows treating some genotypes as check: it splits the column "genotype"
-into two columns as follow:
+into two columns as follows:
 
 <center>
 
@@ -276,28 +281,28 @@ into two columns as follow:
 
 </center>
 
-> *Note that for the moment, it is not possible to use the check and genotype as fixed with SpATS.*
+> *Note that for the moment, it is not possible to use the combination of check and genotype as fixed with SpATS.*
 
 ### Calling SpATS
 
-Using the `TP` object "phenoTP" from the previous section, a model for few time points 
+Using the `TP` object "phenoTP" from the previous section, a model for a few time points 
 and trait "EffpsII" can now be fitted on the data as follows. Since `engine` is not supplied 
-as an option , SpATS is used for fitting the following model:  
-EffpsII = **genotype** + **rowId** + **colId** + $\epsilon$
+as an option, SpATS is used for fitting the following model:  
+EffpsII = **genotype** + **rowId** + **colId** + **$\epsilon$**
 
 ```{r fitSp, message=FALSE}
-## Fit a model few time points.
+## Fit a model for a few time points.
 modPhenoSp <- fitModels(TP = phenoTP, 
                         trait = "EffpsII",
-                        timePoints = seq(1,73,by=5)) 
+                        timePoints = seq(from = 1, to = 73, by = 5)) 
 summary(modPhenoSp)
 ```
 
-The output is a `fitMod`  object containing one list per time point. Note that by not 
+The output is a `fitMod` object, a list containing one fitted model per time point. Note that by not 
 supplying the `what` argument to the function, genotype is set as random. 
 
-We can run it again with genotype as fixed using `what`:  
-EffpsII = *genotype* + **rowId** + **colId** + $\epsilon$
+It can be run again with genotype as fixed using `what`:  
+EffpsII = *genotype* + **rowId** + **colId** + **$\epsilon$**
 
 ```{r fitSpFix, message=FALSE, eval=FALSE}
 ## Fit a model for a single time point.
@@ -307,8 +312,8 @@ modPhenoSpFix <- fitModels(TP = phenoTP,
                            what = "fixed")
 ```
 
-We can extend the model by including covariates as main fixed effects:  
-EffpsII = *repId* + *Image_pos* + **genotype** + **rowId** + **colId** + $\epsilon$
+The model can be extended by including covariates as main fixed effects:  
+EffpsII = *repId* + *Image_pos* + **genotype** + **rowId** + **colId** + **$\epsilon$**
 
 ```{r fitSpCov, message=FALSE, eval=FALSE}
 ## Fit a model for a single time point with covariates.
@@ -318,8 +323,8 @@ modPhenoSpCov <- fitModels(TP = phenoTP,
                            timePoints = 3)
 ```
 
-We can also extend this model by including check genotypes:  
-EffpsII = *repId* + *Image_pos* + *check* + **genoCheck** + **rowId** + **colId** + $\epsilon$
+It can also be extended by including check genotypes:  
+EffpsII = *repId* + *Image_pos* + *check* + **genoCheck** + **rowId** + **colId** + **$\epsilon$**
 
 ```{r fitSpCheck, message=FALSE, eval=FALSE}
 ## Fit a model for a single time point with covariates and check genotypes.
@@ -330,9 +335,9 @@ modPhenoSpCheck <- fitModels(TP = phenoTP,
                              timePoints = 3)
 ```
 
-We can finally fit the model following a resolvable row-column design: including the
+Finally, a model following a resolvable row-column design can be fitted: including the
 interactions between replicate and row-col.  
-EffpsII = *repId* + **genoCheck** + **repId:rowId** + **repId:colId** + $\epsilon$
+EffpsII = *repId* + **genoCheck** + **repId:rowId** + **repId:colId** + **$\epsilon$**
 
 ```{r fitSpRCD, message=FALSE, eval=FALSE, eval=FALSE}
 ## Fit a model for a single time point.
@@ -344,13 +349,13 @@ modPhenoSpRCD <- fitModels(TP = phenoTP,
 
 ### Model plots
 
-The first type of plot that can be made for fitted models is the spatial plots per time 
+The first type of plot that can be made for fitted models, is a spatial plot per time 
 point using `plotType = "spatial"`. It consists of five plots, spatial plots of the raw 
 data, fitted values, residuals and either BLUEs or BLUPs, and a histogram of the BLUEs or 
 BLUPs. When SpATS is used for modeling an extra plot with the fitted spatial trend is included. 
 
-Note that spatial plots can only be made if spatial information, i.e. "rowCoord" and
-"colCoord", is available in the `TP` object.
+Note that spatial plots can only be made if spatial information, i.e. "rowNum" and
+"colNum", is available in the `TP` object.
 
 ```{r plotSpatRaw,  fig.height=4, fig.width=7, message=FALSE, eval=TRUE}
 plot(modPhenoSp,
@@ -359,10 +364,10 @@ plot(modPhenoSp,
      spaTrend = "raw")
 ```
 For a straighforward interpretation of the fitted spatial trends and for comparison between
-time points, the plot of fitted spatial trend can be displayed as a ratio of the raw 
+time points, the plot of the fitted spatial trend can be displayed as a ratio of the raw 
 phenotypic mean: SpatTrend(proportion) = Estimated SpatTrend / mean(raw EffpsII). 
 In this case, the scale will be in percentage and the min/max will be adjusted based on 
-all the time points used but will be at least 10%. This arbitrary threshold allows 
+all the time points used but will be at least 10%. This empirical threshold allows 
 visualising fitted trends that have a relatively small to large importance.
 
 ```{r plotSpatPerc,  fig.height=4, fig.width=7, message=FALSE, eval=TRUE}
@@ -374,7 +379,8 @@ plot(modPhenoSp,
 
 
 It is also possible to create a time lapse of the ratio of spatial trends over time. The 
-scale is the same as previoulsy described.
+scale is the same as previoulsy described. The time lapse is always written to an
+ouput file. 
 ```{r plotTimeLapse,  fig.height=5, fig.width=6, message=FALSE, eval=FALSE}
 plot(modPhenoSp, 
      plotType = "timeLapse",
@@ -391,30 +397,30 @@ Here is an illustration with three time points:
 
 All results that can be extracted are shown in the table below. The first column
 shows what function needs to be called in order to be able to extract the result.
-The last column gives a short description of the result that will be extracted and, where
+The second column gives a short description of the result that will be extracted and, where
 needed, also states for which modeling engines it can be extracted.
 
 function |  description |
 ------------- | --------------------------------------------------------------- |
-getGenoPred() | Best Linear Unbiased Predictions (BLUPS, genotype as random) or Estimators (BLUEs, genotype as fixed) |
-getCorrected() | Spatially corrected values at the experimental unit level |
-getVar() | Variance components |
-getHerit() | Generalised heritabilities - only when genotype is random |
-getEffDims() | Extract effective dimensions - only for SpATS engine |
+getGenoPred | Best Linear Unbiased Predictions (BLUPS, genotype as random) or Estimators (BLUEs, genotype as fixed) |
+getCorrected | Spatially corrected values at the experimental unit level |
+getVar | Variance components |
+getHerit | Generalised heritabilities - only when genotype is random |
+getEffDims | Extract effective dimensions - only for SpATS engine |
 
+By default, all the functions run for all the time points. It is possible to select some 
+of them using `timePoints`. The ratio of the effective dimensions can also be extracted using 
+`EDType = "ratio"` in the `getEffDims` function.
 ```{r getFun, message=FALSE}
-# Extract the genotypic predictions: 
+## Extract the genotypic predictions for one time point: 
 genoPredSp <- getGenoPred(modPhenoSp, timePoints = 6)
-# Extract the corrected values: 
+## Extract the corrected values for one time point: 
 spatCorrSp <- getCorrected(modPhenoSp, timePoints = 6)
-# Extract model components: 
+## Extract model components: 
 varianceSp <- getVar(modPhenoSp)
 heritSp    <- getHerit(modPhenoSp)
 effDimSp   <- getEffDims(modPhenoSp)
 ```
-By default, all the functions run for all the time points. It is possible to select some 
-of them using `timePoints`. Effective dimensions ratio can also be extracted using 
-`EDType = "ratio"` in the `getEffDims()` function.
 
 The genotypic predictions of one time point are displayed in a table like the following:
 
@@ -422,14 +428,14 @@ The genotypic predictions of one time point are displayed in a table like the fo
 knitr::kable(head(genoPredSp), align=c('c','c','c','c','c'), padding = 0)
 ```
 
-> *TO NOTE: when covariates are used, the standard error from SpATS are wrong. We are waiting for an update of the package.*
+> *TO NOTE: when covariates are used, the standard errors from SpATS are wrong. We are waiting for an update of the package.*
 
 The corrected values are obtained by subtracting the estimated sources of variation which
 are of no interest to the raw data:  
-$CorrData = RawData - EstSpatial - EstRow - EstCol$  
+$CorrData = RawData - EstSpatial - EstRow - EstCol - EstCovar$  
 This allows keeping the data at the experimental unit level (plants) and having more 
-degrees of freedom for further modeling (e.g. time course modeling and estimation of 
-time course parameter). The corrected values of one time point are displayed in a table
+degrees of freedom for further modeling (e.g. time course modeling and estimation of the
+time course parameter(s)). The corrected values of one time point are displayed in a table
 like the following:
 
 ```{r getCorr, echo=FALSE, message=FALSE}
@@ -437,35 +443,35 @@ knitr::kable(head(spatCorrSp), align=c('c','c','c','c','c','c','c'), padding = 0
 ```
 
 
-### Ploting model results
+### Plotting model results
 
-Different plots can be displayed from the `fitMod` object. The first one is "rawPred", it
+Different plots can be displayed for the `fitMod` object. The first one is "rawPred", it
 plots the raw data (colored lines) overlayed with the predicted values (black line) from the 
 fitted model. For each genotype a plot is made per plot/plant over time. These plots are
-put together in a 5×5 grid. By using the option `genotypes`, only a subset of genotypes 
-can be plotted.
+put together in a 5×5 grid. By using the option `genotypes`, a subset of genotypes 
+will be plotted.
 
 ```{r plotSpPred, message=FALSE, fig.height=2, fig.width=6, fig.align = 'center'}
 plot(modPhenoSp, 
      plotType = "rawPred",
-     genotypes = c("check1","check2","G7","G58")) 
+     genotypes = c("check1", "check2", "G7", "G58")) 
 ```
 
 The second one is "corrPred", it plots the spatially corrected data (colored lines) 
 overlayed with the predicted values from the fitted model (black line). For each genotype 
 a plot is made per plot/plant over time. These plots are put together in a 5×5 grid. 
-By using the option `genotypes` a selection of genotypes can be plotted.
+By using the option `genotypes`, a subset of genotypes will be plotted.
 
 ```{r plotSpCorr, message=FALSE, fig.height=2, fig.width=6, fig.align = 'center', eval=TRUE}
 plot(modPhenoSp, 
      plotType = "corrPred",
-     genotypes = c("check1","check2","G7","G58") )
+     genotypes = c("check1", "check2", "G7", "G58") )
 ```
 
 The three last types of plot display different model parameters over time. Plot type "herit"
 plots the heritability over time. If `geno.decomp` is used when fitting
 the model, heritabilities are plotted for each level of variance decomposition in a
-single plot (see section **3.4**). Scale of the plot can be adjusted using `yLim`.
+single plot (see section **3.4**). The scale of the plot can be adjusted using `yLim`.
 
 ```{r plotSpHerit, message=FALSE, fig.height=2.5, fig.width=3.5, fig.align = 'center'}
 plot(modPhenoSp, 
@@ -496,34 +502,36 @@ in this direction. Here, for better comparison between components, the ratio of 
 dimensions vs. total dimensions can be used. It has a value between 0, no spatial trend, 
 and 1, strong spatial trend (almost all the degrees of freedom are used to model it).
 
-## Spatial model with ASReml
+## Spatial model with ASReml {#asreml}
 
 When asreml is used for modeling and `spatial = TRUE`, four models are fitted with different 
 random terms and covariance structures. The best model is determined based on a 
 goodness-of-fit criterion, AIC, on 20% on the time points or at least 10 
-time points. The best model is then run on all time points. Same as for SpATS, all the 
-asreml models can be extended by fitting fixed covariates using the option `covariates`.
+time points. The best model is then run on all time points. As for SpATS, all the 
+asreml models can be extended by fitting fixed covariates using the option `covariates`. 
+
+> *Note that for the moment, it is only running with ASReml-R version 4 only.*
 
 | option | model fitted | spatial term |
 |----------------------|------------------------------------------|-----------------|
-| spatial = TRUE | trait = **genotype** + **row** + **col** + $\epsilon$ | ar1(rowId):ar1(colId) |
-|                | trait = **genotype** + **row** + $\epsilon$ | ar1(rowId):colId |
-|                | trait = **genotype** + **col** + $\epsilon$ | rowId:ar1(colId) |
-|                | trait = **genotype** + **row** + **col** + $\epsilon$|    - |
-| spatial = TRUE, covariates = c("A","B") | trait = *A* + *B* + **genotype** + **row** + **col** + $\epsilon$ | ar1(rowId):ar1(colId) |
-|                                         | trait = *A* + *B* + **genotype** + **row** + $\epsilon$ | ar1(rowId):colId |
-|                                         | trait = *A* + *B* + **genotype** + **col** + $\epsilon$ | rowId:ar1(colId) |
-|                                         | trait = *A* + *B* + **genotype** + **row** + **col** + $\epsilon$ |  - |
-| spatial = TRUE, repID = TRUE | trait = *repId* + **genotype** + **repId:row** + **repId:col** + $\epsilon$ | ar1(rowId):ar1(colId) |
-|                              | trait = *repId* + **genotype** + **repId:row** + $\epsilon$ | ar1(rowId):colId |
-|                              | trait = *repId* + **genotype** + **repId:col** + $\epsilon$ | rowId:ar1(colId) |
-|                              | trait = *repId* + **genotype** + **repId:row** + **repId:col** + $\epsilon$ | - |
+| spatial = TRUE | trait = **genotype** + **row** + **col** + **$\epsilon$** | ar1(rowId):ar1(colId) |
+|                | trait = **genotype** + **row** + **$\epsilon$** | ar1(rowId):colId |
+|                | trait = **genotype** + **col** + **$\epsilon$** | rowId:ar1(colId) |
+|                | trait = **genotype** + **row** + **col** + **$\epsilon$**|    - |
+| spatial = TRUE, covariates = c("A","B") | trait = *A* + *B* + **genotype** + **row** + **col** + **$\epsilon$** | ar1(rowId):ar1(colId) |
+|                                         | trait = *A* + *B* + **genotype** + **row** + **$\epsilon$** | ar1(rowId):colId |
+|                                         | trait = *A* + *B* + **genotype** + **col** + **$\epsilon$** | rowId:ar1(colId) |
+|                                         | trait = *A* + *B* + **genotype** + **row** + **col** + **$\epsilon$** |  - |
+| spatial = TRUE, repID = TRUE | trait = *repId* + **genotype** + **repId:row** + **repId:col** + **$\epsilon$** | ar1(rowId):ar1(colId) |
+|                              | trait = *repId* + **genotype** + **repId:row** + **$\epsilon$** | ar1(rowId):colId |
+|                              | trait = *repId* + **genotype** + **repId:col** + **$\epsilon$** | rowId:ar1(colId) |
+|                              | trait = *repId* + **genotype** + **repId:row** + **repId:col** + **$\epsilon$** | - |
 
 In the models above, fixed effects are indicated in *italics* whereas random 
 effects are indicated in **bold**. "genotype" can be fitted as **random** or *fixed* effect
 using the option `what`. The same model will run with genotype as fixed. The option `useCheck` 
 is not displayed in the table but works the same as for SpATS: treating some genotypes 
-as check (see section **3.1** for details).
+as check (see section [**3.1**](#spats) for details).
 
 Calling asreml is done by changing the `engine` option in the `fitModels` function.
 
@@ -532,27 +540,27 @@ if (requireNamespace("asreml", quietly = TRUE)) {
 ## Fit a model on few time points with spatial function:
 modPhenoSpAs <- fitModels(TP = phenoTP, 
                           trait = "EffpsII",
-                          timePoints = seq(1,73,by=5),
+                          timePoints = seq(from = 1, to = 73, by = 5),
                           engine = "asreml",
                           spatial = TRUE) 
 summary(modPhenoSpAs)
 }
 ```
 
-Here the best spatial model is: trait = **genotype** + **row** + **col** + $\epsilon$, 
-with a spatial function: **ar1(rowId):ar1(colId)**. It has run on 10 time points to be selected. 
+Here the best spatial model is: trait = **genotype** + **row** + **col** + **$\epsilon$**, 
+with a spatial component: **ar1(rowId):ar1(colId)**. It has been selected using 10 time points. 
 
 Plotting and extracting results is then done the same way as for SpATS. Below are few examples.
 
 ```{r getFunAs, message=FALSE}
 if (requireNamespace("asreml", quietly = TRUE)) {
-spatCorrSpAs <- getCorrected(modPhenoSpAs, timePoints = 6)
+ spatCorrSpAs <- getCorrected(modPhenoSpAs, timePoints = 6)
 }
 ```
 
 ```{r getCorrAs, echo=FALSE, message=FALSE}
 if (requireNamespace("asreml", quietly = TRUE)) {
-knitr::kable(head(spatCorrSpAs), align=c('c','c','c','c','c','c','c'), padding = 0)
+ knitr::kable(head(spatCorrSpAs), align=c('c','c','c','c','c','c','c'), padding = 0)
 }
 ```
 
@@ -560,45 +568,45 @@ knitr::kable(head(spatCorrSpAs), align=c('c','c','c','c','c','c','c'), padding =
 if (requireNamespace("asreml", quietly = TRUE)) {
 plot(modPhenoSpAs, 
      plotType = "herit",
-     yLim = c(0.5,1))
+     yLim = c(0.5, 1))
 }
 ```
 
-Note that when the engine is asreml the heritability is calculating using the formula 
+Note that when the engine is asreml, the heritability is calculated using the formula 
 provided in [@Cullis2006].
 
-## Modeling without spatial terms with ASReml
+## Modeling without spatial terms with ASReml {#asremlnoSP}
 
-When the row and column coordinates are not available, asreml can be used for modeling.
+When the row and column coordinates are not available, only asreml can be used for modeling.
 In that case, the model simply uses the genotype and the covariates, if any.
 
 | option | model fitted | spatial term |
 |---------------|---------------------------------------------|-------------------|
-| spatial = FALSE | trait = **genotype** + $\epsilon$ |  - |
-| spatial = FALSE, covariates = c("A","B") | trait = *A* + *B* + **genotype** + $\epsilon$ | - |
+| spatial = FALSE | trait = **genotype** + **$\epsilon$** |  - |
+| spatial = FALSE, covariates = c("A","B") | trait = *A* + *B* + **genotype** + **$\epsilon$** | - |
 
 In the models above and below, fixed effects are indicated in *italics* whereas random 
 effects are indicated in **bold**. "genotype" can be fitted as **random** or *fixed* effect
 using the option `what`. The same model will run with genotype as fixed. The option 
-`useCheck` is not displayed in the table but works the same as for SpATS (see section **3.1**).
+`useCheck` is not displayed in the table, but works the same as for SpATS (see section [**3.1**](#spats)).
 
 ```{r asremlNoSpat, eval=FALSE }
 ## Fit a model on few time points without spatial function.
 modPhenoAs <- fitModels(TP = phenoTP, 
                         trait = "EffpsII",
-                        timePoints = seq(1,73,by=5),
+                        timePoints = seq(from = 1, to = 73, by = 5),
                         engine = "asreml",
                         spatial = FALSE)
 ```
 
-## Modeling with variance decomposition
+## Modeling with variance decomposition {#genodecomp}
 
 When an experimental treatment is applied, for example, a water scenario, it is required
 to decompose the genotypic variance into the levels of the treatment. In the following
-example, two water scenarios, well-watered (WW) and water deficit (WD), were applied. Thus
+example, two water scenarios, well-watered (WW) and water deficit (WD), were applied. Thus,
 instead of modeling one genotypic variance, there will be one genotypic variance per treatment.
-In this part, we will describe briefly what are the specificities of such a modeling 
-with the statgenHTP package using a another example dataset.
+In this part, we will describe briefly what is specific of such modeling with the 
+statgenHTP package using a another example dataset.
 
 ### Example 2
 
@@ -607,8 +615,8 @@ Phenoarch platform with maize plants (INRA, France, [@Cabrera2016]). It consists
 one experiment with 1671 plants grown in a greenhouse. There are two populations of 
 genotypes and two water scenarios, well-watered (WW) and water deficit (WD). 
 The first panel contains 60 genotypes with 14 replicates: 7 in WW and 7 in WD. 
-Note that there are more plants per replicates than one for the first panel 
-(about 24 plants per genotypes).
+Note that there are more plants per replicate than one for the first panel 
+(about 24 plants per genotype).
 The second population contains 30 genotypes with 8 replicates, 4 in WW and 4 in WD. 
 The studied trait is the leaf area ("LA_Estimated") extracted from the pictures over time. 
 Plants were pictured every day for 35 days.
@@ -617,7 +625,7 @@ A second `TP` object is created containing all the time points:
 ```{r createTP2}
 data("PhenoarchDat1")
 phenoTParch <- createTimePoints(dat = PhenoarchDat1,
-                                experimentName = "ZA17",
+                                experimentName = "Phenoarch",
                                 genotype = "geno",
                                 timePoint = "Date",
                                 repId = "Rep",
@@ -627,14 +635,14 @@ phenoTParch <- createTimePoints(dat = PhenoarchDat1,
 summary(phenoTParch)
 ```
 The "phenoTParch" object just created is a `list` with 35 items, one for each time points 
- in the original `data.frame` (called "PhenoarchDat1"). We can visualise the layout and the 
+ in the original `data.frame` (called "PhenoarchDat1"). We can visualize the layout and the 
  raw data the same way as for the Phenovator data.
 
 ```{r layoutArch, echo=FALSE, fig.align='center', fig.height=5, fig.width=6}
 plot(phenoTParch, 
      plotType = "layout",
      timePoints = c(3),
-     highlight = c("GenoA1","GenoA2","GenoB1","GenoB2"))
+     highlight = c("GenoA1", "GenoA2", "GenoB1", "GenoB2"))
 ```
 
 Note that for the raw data, we can already use the geno.decomp option to split 
@@ -643,7 +651,7 @@ the genotypes using the water scenario:
 plot(phenoTParch, 
      traits = "LA_Estimated",
      plotType = "raw",
-     genotypes = c("GenoA1","GenoA2"),
+     genotypes = c("GenoA1", "GenoA2"),
      geno.decomp = c("Scenario"))
 ```
 
@@ -651,15 +659,16 @@ plot(phenoTParch,
 
 Using the `geno.decomp` option when modeling will have two main consequences in the 
 model: the `geno.decomp` variable(s) will be added as main fixed effect(s) and also as 
-interaction(s) with the genotype effect. 
-The table below provides one example with two models, one per engine:
+interaction(s) with the genotype effect (and the covariates and/or check, if any, with spats only). 
+The table below provides one example with three models:
 
 | option | engine | model fitted | spatial term |
-|---------------|--------|-----------------------------------------|---------------|
-| spatial = TRUE, geno.decomp = c("variable") | spats | trait = *variable* + **variable:genotype** + **row** + **col** + $\epsilon$ |  PSANOVA |
-| spatial = FALSE, geno.decomp = c("variable") | asreml | trait = *variable* + **variable:genotype** + **row** + **col** + $\epsilon$ | ar1(row):ar1(col) |
+|--------------------|--------|-----------------------------------------|------------|
+| geno.decomp = c("treatment") | spats | trait = *treatment* + **treatment:genotype** + **row** + **col** + **$\epsilon$** |  PSANOVA |
+| geno.decomp = c("treatment"), useCheck = TRUE, covariates = "covar1" | spats | trait = *treatment* + *treatment:covar1* + *treatment:check* + **treatment:genoCheck** + **row** + **col** + **$\epsilon$** |  PSANOVA |
+| spatial = TRUE, geno.decomp = c("treatment") | asreml | trait = *treatment* + **treatment:genotype** + **row** + **col** + **$\epsilon$** | ar1(row):ar1(col) |
 
-> *Note that for the moment, it is not possible to use the geno.decomp and genotype as fixed.*
+> *Note that for the moment, it is not possible to use the combination of geno.decomp and genotype as fixed.*
 
 Using the Phenoarch example, we will apply a variance decomposition using the 
 variables "Scenario" and "population":
@@ -667,8 +676,8 @@ variables "Scenario" and "population":
 ```{r fitSpGD, message=FALSE, eval=TRUE}
 modPhenoSpGD <- fitModels(TP = phenoTParch,
                           trait = "LA_Estimated",
-                          geno.decomp = c("Scenario","population"),
-                          timePoints = seq(1,35,by=3))
+                          geno.decomp = c("Scenario", "population"),
+                          timePoints = seq(from = 1, to = 35, by = 3))
 ```
 
 ### Output
