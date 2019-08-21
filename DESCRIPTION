@@ -24,14 +24,15 @@ LazyData: true
 Depends: 
     R (>= 3.4)
 Imports:
+    animation,
     ggforce,
     ggplot2,
     gridExtra,
     lubridate,
+    mgcv,
     reshape2,
     scales,
-    SpATS,
-    animation
+    SpATS
 Suggests: 
     asreml (>= 4.0),
     covr,
