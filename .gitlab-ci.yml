@@ -14,8 +14,8 @@ before_script:
   - mkdir -p "${APT_STATE_LISTS}/partial" && mkdir -p "${APT_CACHE_ARCHIVES}/partial"
   ## install apt dependencies for packages.
   - apt-get update -qq
-  - apt-get update && apt-get install -y libxml2-dev libssl-dev libcurl4-openssl-dev zlib1g-dev libglu1-mesa-dev libfreetype6-dev > /dev/null
-  - apt-get update && apt-get install -y --no-install-recommends qpdf ghostscript > /dev/null
+  - apt-get update && apt-get install -y libxml2-dev libssl-dev libglu1-mesa-dev libfreetype6-dev > /dev/null
+ # - apt-get update && apt-get install -y --no-install-recommends qpdf ghostscript > /dev/null
   ## install pandoc - needed for checking readme.
   - apt-get update && apt-get install -y pandoc pandoc-citeproc > /dev/null
   ## install ImageMagick++ for timelapse.
@@ -25,6 +25,7 @@ before_script:
   - echo 'R_LIBS_USER='$R_LIBS_USER >> /usr/local/lib/R/etc/Renviron
   ## Set _R_CHECK_FORCE_SUGGESTS_ to FALSE so R check doesn't crash over asreml.
   - echo '_R_CHECK_FORCE_SUGGESTS_="false"' >> /usr/local/lib/R/etc/Renviron
+  - head /usr/local/lib/R/etc/Renviron
 
 R-release:
   stage: build

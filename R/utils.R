@@ -369,6 +369,8 @@ prettier <- function(n = 3) {
 #' Helper function for checking if asreml 4.0 or higher is installed and licence
 #' activated.
 #'
+#' @importFrom utils packageVersion
+#'
 #' @noRd
 #' @keywords internal
 checkAsreml <- function() {
