@@ -4,7 +4,7 @@
 \alias{fitSpline}
 \title{Fit Splines}
 \usage{
-fitSpline(corrDat, n = nlevels(corrDat[["plotId"]]), knots = 50)
+fitSpline(corrDat, trait, n = nlevels(corrDat[["plotId"]]), knots = 50)
 }
 \arguments{
 \item{corrDat}{A data.frame with corrected spatial data.}
