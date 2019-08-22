@@ -218,7 +218,7 @@ xyFacetPlot <- function(baseDat,
                         xLab = "Time",
                         yLab = "Trait",
                         output = TRUE) {
-  nBr <- min(length(unique(baseDat[["timePoint"]])), 3)
+  nBr <- min(length(unique(baseDat[[xVal]])), 3)
   p <- ggplot(baseDat, aes_string(x = xVal, y = yVal)) +
     scale_x_datetime(breaks = prettier(n = nBr),
                      labels = scales::date_format("%B %d"),) +
@@ -238,11 +238,11 @@ xyFacetPlot <- function(baseDat,
   }
   if (!is.null(overlayDat)) {
     if (length(unique(baseDat[[xVal]])) > 1) {
-      p <- p + geom_line(aes_string(x = "timePoint", y = yValOverlay),
+      p <- p + geom_line(aes_string(x = xVal, y = yValOverlay),
                          data = overlayDat, color = "black", size = 1,
                          show.legend = FALSE, na.rm = TRUE)
     } else {
-      p <- p + geom_point(aes_string(x = "timePoint", y = yValOverlay),
+      p <- p + geom_point(aes_string(x = xVal, y = yValOverlay),
                           data = overlayDat, color = "black", size = 1.5,
                           show.legend = FALSE, na.rm = TRUE)
     }
