@@ -22,10 +22,9 @@ before_script:
   - apt-get update && apt-get install -y libmagick++-6.q16-dev > /dev/null
   ## cache R packages.
   - mkdir -p $R_LIBS_USER
-  - echo 'R_LIBS_USER='$R_LIBS_USER >> /usr/local/lib/R/etc/Renviron
+  - echo 'R_LIBS_USER='$R_LIBS_USER > .Renviron
   ## Set _R_CHECK_FORCE_SUGGESTS_ to FALSE so R check doesn't crash over asreml.
-  - echo '_R_CHECK_FORCE_SUGGESTS_="false"' >> /usr/local/lib/R/etc/Renviron
-  - head /usr/local/lib/R/etc/Renviron
+  - echo '_R_CHECK_FORCE_SUGGESTS_="false"' >> .Renviron
 
 R-release:
   stage: build
