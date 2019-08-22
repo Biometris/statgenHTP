@@ -5,13 +5,11 @@
 #' @param corrDat A data.frame with corrected spatial data.
 #' @param trait A character string indicating the trait for which the spline
 #' should be fitted.
-#' @param n Just here for testing
 #' @param knots The number of knots to use when fitting the spline.
 #'
 #' @export
 fitSpline <- function(corrDat,
                       trait,
-                      n = nlevels(corrDat[["plotId"]]),
                       knots = 50) {
   ## Create data.frame with plants and genotypes for adding genotype to results.
   plantGeno <- unique(corrDat[c("plotId", "genotype")])
@@ -35,10 +33,9 @@ fitSpline <- function(corrDat,
                                           length.out = diff(timeNumRange) /
                                             timeNumStep + 1))
   ## Fit splines.
-  fitSp <- lapply(X = levels(corrDat[["plotId"]])[1:n], FUN = function(plant) {
+  fitSp <- lapply(X = levels(corrDat[["plotId"]]), FUN = function(plant) {
     ## Restrict data to current plant.
     dat <- corrDat[corrDat[["plotId"]] == plant, c("timeNumber", trait)]
-    dat <- droplevels(dat)
     ## Manually select minimum number of time points.
     if (length(unique(dat[["timeNumber"]])) >= minTP) {
       ## Fit the P-spline using gam() function in mgcv.
@@ -62,13 +59,17 @@ fitSpline <- function(corrDat,
   ## Remove brackets in coeffient names.
   coefTot[["type"]] <- gsub(pattern = "[()]", replacement = "",
                             x = row.names(coefTot))
-  ## Merge genotype.
-  coefTot <- merge(coefTot, plantGeno)
+  ## Add genotype.
+  coefTot[["genotype"]] <- plantGeno[match(coefTot[["plotId"]],
+                                           plantGeno[["plotId"]]), "genotype"]
   ## Bind all predictions into one data.frame.
   predTot <- do.call(rbind, lapply(fitSp, `[[`, 2))
-  ## Merge genotype.
-  predTot <- merge(predTot, plantGeno)
-  ## Merge timePoint.
-  predTot <- merge(predTot, timeRange)
+  ## Add genotype.
+  predTot[["genotype"]] <- plantGeno[match(predTot[["plotId"]],
+                                           plantGeno[["plotId"]]), "genotype"]
+  ## Add timePoint.
+  predTot[["timePoint"]] <- plantGeno[match(predTot[["timeNumber"]],
+                                            timeRange[["timeNumber"]]),
+                                      "timePoint"]
   return(list(coefs = coefTot, preds = predTot))
 }

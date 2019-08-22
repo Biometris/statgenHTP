@@ -4,15 +4,13 @@
 \alias{fitSpline}
 \title{Fit Splines}
 \usage{
-fitSpline(corrDat, trait, n = nlevels(corrDat[["plotId"]]), knots = 50)
+fitSpline(corrDat, trait, knots = 50)
 }
 \arguments{
 \item{corrDat}{A data.frame with corrected spatial data.}
 
 \item{trait}{A character string indicating the trait for which the spline
 should be fitted.}
-
-\item{n}{Just here for testing}
 
 \item{knots}{The number of knots to use when fitting the spline.}
 }
