@@ -188,6 +188,10 @@ fitModels <- function(TP,
     }
   }
   engine <- match.arg(engine)
+  ## When asreml is selected check installation.
+  if (engine == "asreml") {
+    checkAsreml()
+  }
   ## For spatial models spatial columns are required.
   if (engine == "SpATS" || (engine == "asreml" && spatial)) {
     spatCols <- c("rowId", "colId", "rowNum", "colNum")

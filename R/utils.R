@@ -366,9 +366,23 @@ prettier <- function(n = 3) {
   }
 }
 
-
-
-
-
-
+#' Helper function for checking if asreml 4.0 or higher is installed and licence
+#' activated.
+#'
+#' @noRd
+#' @keywords internal
+checkAsreml <- function() {
+  if (!requireNamespace("asreml", quietly = TRUE)) {
+    stop("No valid installation of asreml found.\n")
+  }
+  asremlVersion <- packageVersion("asreml")
+  if (asremlVersion[1] < 4) {
+    stop("asreml version 4.0 or higher is requiered.\n")
+  }
+  licenceStatus <- asreml::asreml.license.status(quiet = TRUE)
+  if (licenceStatus$status != 0) {
+    stop("Error checking asreml licence status:\n", licenceStatus$statusMessage)
+  }
+  invisible(TRUE)
+}
 
