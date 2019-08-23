@@ -348,19 +348,27 @@ dfBind <- function(dfList) {
   )
 }
 
+#' Helper function for creating a decent looking time scale on the x-axis of
+#' time series plots.
+#'
 #' @noRd
 #' @keywords internal
 prettier <- function(n = 3) {
   function(x) {
+    ## Get first and last time point.
     intStart <- lubridate::as_datetime(x[1])
     intEnd <- lubridate::as_datetime(x[2])
+    ## Compute interval and interval length in seconds.
     int <- lubridate::interval(start = intStart, end = intEnd)
     sec <- lubridate::int_length(int)
     if (n == 1) {
+      ## Just one time point. Label in the middle.
       intStart + sec / 2
     } else if (n == 2) {
+      ## Two time points, labels at 1/5 and 4/5.
       intStart + sec / 5 * c(1, 4)
     } else {
+      ## Three time points, labels at 1/8, 1/2 and 7/8.
       intStart + sec / 8 * c(1, 4, 7)
     }
   }
