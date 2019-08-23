@@ -89,7 +89,7 @@ coverage:
     - develop
     - master
   before_script:
-    - ''
+    - echo ''
   script:
     - Rscript -e 'covr::package_coverage()'
   coverage: '/Coverage:\s*(\d+.\d+\%)/'

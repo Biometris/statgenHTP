@@ -335,6 +335,7 @@ plot.fitMod <- function(x,
       scale_x_datetime(breaks = prettier(nBr),
                        labels = scales::date_format("%B %d")) +
       plotTheme() +
+      theme(axis.title.y = element_text(angle = 0, vjust = 0.5)) +
       ylim(yLim) +
       labs(title = title)
     if (length(unique(herit[["timePoint"]])) > 1) {
@@ -372,6 +373,7 @@ plot.fitMod <- function(x,
       scale_x_datetime(breaks = prettier(nBr),
                        labels = scales::date_format("%B %d")) +
       plotTheme() +
+      theme(axis.title.y = element_text(angle = 0, vjust = 0.5)) +
       ylim(yLim) +
       labs(title = title, color = "Effective dimension")
     if (length(unique(effDim[["timePoint"]])) > 1) {
@@ -399,6 +401,7 @@ plot.fitMod <- function(x,
       scale_x_datetime(breaks = prettier(nBr),
                        labels = scales::date_format("%B %d")) +
       plotTheme() +
+      theme(axis.title.y = element_text(angle = 0, vjust = 0.5)) +
       ylim(yLim) +
       labs(title = title, color = "variance",
            y = expression(sigma ^ 2))
@@ -419,19 +422,6 @@ plot.fitMod <- function(x,
   if (!plotType == "timeLapse") {
     invisible(p)
   }
-}
-
-#' Helper function for minimal plot theme.
-#'
-#' @noRd
-#' @keywords internal
-plotTheme <- function() {
-  theme(panel.grid = element_blank(),
-        panel.background = element_blank(),
-        legend.key = element_blank(),
-        axis.line = element_line(color = "black"),
-        plot.title = element_text(hjust = 0.5),
-        axis.title.y = element_text(angle = 0, vjust = 0.5))
 }
 
 #' Helper function for creating spatial plots.

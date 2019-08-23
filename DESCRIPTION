@@ -27,6 +27,7 @@ Imports:
     animation,
     ggforce,
     ggplot2,
+    grid,
     gridExtra,
     lubridate,
     mgcv,

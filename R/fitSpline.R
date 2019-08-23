@@ -71,5 +71,5 @@ fitSpline <- function(corrDat,
   predTot[["timePoint"]] <- plantGeno[match(predTot[["timeNumber"]],
                                             timeRange[["timeNumber"]]),
                                       "timePoint"]
-  return(list(coefs = coefTot, preds = predTot))
+  return(list(coefDat = coefTot, predDat = predTot))
 }

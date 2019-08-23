@@ -348,6 +348,18 @@ dfBind <- function(dfList) {
   )
 }
 
+#' Helper function for minimal plot theme.
+#'
+#' @noRd
+#' @keywords internal
+plotTheme <- function() {
+  theme(panel.grid = element_blank(),
+        panel.background = element_blank(),
+        legend.key = element_blank(),
+        axis.line = element_line(color = "black"),
+        plot.title = element_text(hjust = 0.5))
+}
+
 #' Helper function for creating a decent looking time scale on the x-axis of
 #' time series plots.
 #'
