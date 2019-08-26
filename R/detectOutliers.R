@@ -27,6 +27,8 @@ detectOutliers <- function(corrDat,
                            coefDat,
                            trait,
                            genotypes = unique(corrDat[["genotype"]]),
+                           thrCor = 0.9,
+                           thrPca = 1,
                            title = NULL,
                            outFile = NULL,
                            outFileOpts = NULL) {
@@ -42,86 +44,110 @@ detectOutliers <- function(corrDat,
       on.exit(dev.off(), add = TRUE)
     }, error = function(e) stop("Cannot open file", outFile, call. = FALSE))
   }
-  ## Prepare table for annotated plants.
-  annotatePlant <- data.frame()
-  for (geno in genotypes) {
-    ## Get corrected and predicted data for current genotype.
-    genoPred <- predDat[predDat[["genotype"]] == geno, ]
-    ## Restrict to corrected plots that are also in predictions.
-    ## Some plots are removed while predicting the splines.
-    genoDat <- corrDat[corrDat[["genotype"]] == geno &
-                         corrDat[["plotId"]] %in% genoPred[["plotId"]], ]
-    ## Reshape the spline coeficients per plant x geno.
-    plantDat <- reshape2::acast(coefDat[coefDat[["genotype"]] == geno, ],
-                                type ~ plotId, value.var = "obj.coefficients")
-    ## Compute correlation matrix, exclude intercept.
-    cormat <- round(cor(plantDat[-1, ]), 2)
+  ## Get corrected and predicted data per genotype.
+  predDat <- predDat[predDat[["genotype"]] %in% genotypes, ]
+  genoPreds <- split(x = predDat, f = predDat[["genotype"]], drop = TRUE)
+  ## Restrict to corrected plots that are also in predictions.
+  ## Some plots are removed while predicting the splines.
+  corrDatPred <- corrDat[corrDat[["plotId"]] %in% predDat[["plotId"]], ]
+  genoDats <- split(x = corrDatPred, f = corrDatPred[["genotype"]], drop = TRUE)
+  ## Reshape the spline coeficients per plant x geno.
+  coefDat <- coefDat[coefDat[["genotype"]] %in% genotypes, ]
+  plantDats <- lapply(X = split(x = coefDat, f = coefDat[["genotype"]],
+                                drop = TRUE),
+                      FUN = function(dat) {
+                        plantDat <- reshape2::acast(dat, formula = type ~ plotId,
+                                                    value.var = "obj.coefficients")
+                        ## Remove intercept.
+                        return(plantDat[-1, ])
+                      })
+  ## Compute correlation matrix.
+  cormats <- lapply(X = plantDats, FUN = function(plantDat) {
+    cormat <- round(cor(plantDat), 2)
     diag(cormat) <- NA
-    ## Annotate plants with average correl < 0.9.
-    ## (needs manual adjustment per dataset)
-    thrCor <- 0.9
-    ## Get avarage correlation per plant.
-    meanCor <- rowMeans(cormat, na.rm = TRUE)
+    return(cormat)
+  })
+  plantPcas <- lapply(X = plantDats, FUN = function(plantDat) {
+    ## Perform a PCA on the spline coefficients per genotype.
+    ## Run the PCA.
+    plantPca <- prcomp(plantDat, center = TRUE, scale. = TRUE)
+  })
+  annotatePlantsCor <- lapply(X = genotypes, FUN = function(geno) {
+    meanCor <- rowMeans(cormats[[geno]], na.rm = TRUE)
     if (any(meanCor < thrCor)) {
       ## Create data.frame with info on plants with average correlation
       ## below threshold.
       annPlotsCorr <- meanCor[meanCor < thrCor]
-      annotateCorr <- data.frame(genotype = geno, plotId = names(annPlotsCorr),
-                                 reason = "mean corr", value = annPlotsCorr)
-      annotatePlant <- rbind(annotatePlant, annotateCorr)
+      return(data.frame(genotype = geno, plotId = names(annPlotsCorr),
+                        reason = "mean corr", value = annPlotsCorr))
+    } else {
+      return(NULL)
     }
-    ## Perform a PCA on the spline coefficients per genotype.
-    ## Run the PCA.
-    plantPca <- prcomp(plantDat[-1, ], center = TRUE, scale. = TRUE)
+  })
+  cormats <- lapply(X = cormats, FUN = function(cormat) {
+    ## Set lower part of cormat to NA for plotting.
+    cormat[lower.tri(cormat)] <- NA
+    ## Melt to format used by ggplot.
+    meltedCormat <- reshape2::melt(cormat, na.rm = TRUE)
+  })
+  annotatePlantsPca <- lapply(X = genotypes, FUN = function(geno) {
     ## Calculate the pairwise difference of coordinates on the 2nd axis and
-    ## annotate plant with average diff > 1.
-    ## (manual adjustment of the threshold)
-    thrPca <- 1
-    diffPc2 <- as.matrix(dist(plantPca$rotation[, "PC2"]))
+    ## annotate plant with average diff larger than threshold.
+    diffPc2 <- as.matrix(dist(plantPcas[[geno]]$rotation[, "PC2"]))
     diag(diffPc2) <- NA
     meanPc2 <- rowMeans(diffPc2, na.rm = TRUE)
     ## Create shape for plotting.
-    plotShapes <- setNames(rep(1, times = nrow(cormat)), rownames(cormat))
     if (any(meanPc2 >= thrPca)) {
       ## Create data.frame with info on plants with avarage difference.
       ## above threshold.
       annPlotsPc2 <- meanPc2[meanPc2 >= thrPca]
-      annotatePc2 <- data.frame(genotype = geno, plotId = names(annPlotsPc2),
-                                reason = "pc2", value = annPlotsPc2)
-      ## Annotated plants get a filled circle.
-      plotShapes[names(plotShapes) %in% names(annPlotsPc2)] <- 19
-      annotatePlant <- rbind(annotatePlant, annotatePc2)
+      return(data.frame(genotype = geno, plotId = names(annPlotsPc2),
+                        reason = "pc2", value = annPlotsPc2))
+    } else {
+      return(NULL)
     }
+  })
+  ## Create full data.frame with annotated plants.
+  annotatePlants <- do.call(rbind, c(annotatePlantsCor, annotatePlantsPca))
+  annotatePlants <- with(annotatePlants,
+                         annotatePlants[order(genotype, plotId), ])
+  ## Get minimum correlation. Cannot be higher than 0.8.
+  minCor <- min(c(unlist(cormats, use.names = FALSE), 0.8), na.rm = TRUE)
+  ## Create plots.
+  for (geno in genotypes) {
+    ## Create shape for plotting.
+    plotShapes <- setNames(rep(1, times = ncol(plantDats[[geno]])),
+                           colnames(plantDats[[geno]]))
+    plotShapes[names(plotShapes) %in% annotatePlants[["plotId"]]] <- 19
     ## Plot of time course per genotype: corrected data + spline per plant.
-    kinetic <- ggplot(genoDat, aes_string(x = "timeNumber", y = trait,
-                                          color = "plotId")) +
+    kinetic <- ggplot(genoDats[[geno]], aes_string(x = "timeNumber", y = trait,
+                                                   color = "plotId")) +
       geom_point(aes_string(shape = "plotId"), size = 2) +
-      geom_line(data = genoPred, aes_string(y = "pred.value"), size = 0.5) +
+      geom_line(data = genoPreds[[geno]],
+                aes_string(y = "pred.value"), size = 0.5) +
       scale_shape_manual(values = plotShapes) +
       plotTheme() +
       theme(axis.text = element_text(size = 12),
             axis.title = element_text(size = 13))
     ## Correlation plot.
     ## maybe we need to adjust the scale limits per dataset)
-    ## Set lower part of cormat to NA for plotting.
-    cormat[lower.tri(cormat)] <- NA
-    ## Melt to format used by ggplot.
-    meltedCormat <- reshape2::melt(cormat, na.rm = TRUE)
-    correl <- ggplot(data = meltedCormat,
+    correl <- ggplot(data = cormats[[geno]],
                      aes_string("Var2", "Var1", fill = "value")) +
       geom_tile(color = "white") +
-      scale_fill_gradient2(low = "red", high = "blue", mid = "white",
-                           midpoint = 0.9, limit = c(0.8, 1), space = "Lab",
+      scale_fill_gradientn(colors = c("red", "white", "blue"),
+                           values = scales::rescale(c(minCor, thrCor, 1)),
+                           limits = c(minCor, 1),
                            name = "Pearson\nCorrelation") +
       coord_fixed() +
       theme(panel.background = element_rect(fill = "white"),
             panel.border = element_blank(),
             panel.grid = element_line(color = "grey92"),
+            plot.title = element_text(hjust = 0.5),
             axis.text.x = element_text(angle = 45, vjust = 1,
                                        size = 12, hjust = 1)) +
       labs(title = "Correl of coef", x = NULL, y = NULL)
     ## PCA biplot.
-    pcaplot <- ggbiplot::ggbiplot(plantPca, obs.scale = 1) +
+    pcaplot <- ggbiplot::ggbiplot(plantPcas[[geno]], obs.scale = 1) +
       plotTheme() +
       theme(aspect.ratio = 1) +
       labs(title = "PCA of coef")
@@ -136,7 +162,7 @@ detectOutliers <- function(corrDat,
                                                  gp = grid::gpar(fontsize = 15,
                                                                  fontface = 2)))
   }
-  return(annotatePlant)
+  return(annotatePlants)
 }
 
 
