@@ -5,7 +5,8 @@
 \title{Outlier detection}
 \usage{
 detectOutliers(corrDat, predDat, coefDat, trait,
-  genotypes = unique(corrDat[["genotype"]]))
+  genotypes = unique(corrDat[["genotype"]]), title = NULL,
+  outFile = NULL, outFileOpts = NULL)
 }
 \arguments{
 \item{corrDat}{A data.frame with corrected spatial data.}
@@ -19,6 +20,18 @@ outliers.}
 
 \item{genotypes}{A character vector indicating the genotypes for which to
 detect outliers.}
+
+\item{title}{A character string, the main title added to all plots in the
+output.}
+
+\item{outFile}{A character string indicating the .csv file to which the
+results should be written. If \code{NULL} no file is written and all plots
+are made within R. Warning: this is potentially very slow for large numbers
+of genotypes.}
+
+\item{outFileOpts}{A named list of extra options for the pdf output file,
+e.g. width and height. See \code{\link[grDevices]{pdf}} for all possible
+options.}
 }
 \description{
 Function for detecting outliers.

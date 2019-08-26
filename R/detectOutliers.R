@@ -9,6 +9,8 @@
 #' outliers.
 #' @param genotypes A character vector indicating the genotypes for which to
 #' detect outliers.
+#' @param title A character string, the main title added to all plots in the
+#' output.
 #' @param outFile A character string indicating the .csv file to which the
 #' results should be written. If \code{NULL} no file is written and all plots
 #' are made within R. Warning: this is potentially very slow for large numbers
@@ -25,6 +27,7 @@ detectOutliers <- function(corrDat,
                            coefDat,
                            trait,
                            genotypes = unique(corrDat[["genotype"]]),
+                           title = NULL,
                            outFile = NULL,
                            outFileOpts = NULL) {
   if (!is.null(outFile)) {
@@ -42,6 +45,8 @@ detectOutliers <- function(corrDat,
   for (geno in genotypes) {
     ## Get corrected and predicted data for current genotype.
     genoPred <- predDat[predDat[["genotype"]] == geno, ]
+    ## Restrict to corrected plots that are also in predictions.
+    ## Some plots are removed while predicting the splines.
     genoDat <- corrDat[corrDat[["genotype"]] == geno &
                          corrDat[["plotId"]] %in% genoPred[["plotId"]], ]
     ## Reshape the spline coeficients per plant x geno.
@@ -107,22 +112,27 @@ detectOutliers <- function(corrDat,
                            midpoint = 0.9, limit = c(0.8, 1), space = "Lab",
                            name = "Pearson\nCorrelation") +
       coord_fixed() +
-      theme_minimal() +
-      theme(axis.text.x = element_text(angle = 45, vjust = 1,
+      theme(panel.background = element_rect(fill = "white"),
+            panel.border = element_blank(),
+            panel.grid = element_line(color = "grey92"),
+            axis.text.x = element_text(angle = 45, vjust = 1,
                                        size = 12, hjust = 1)) +
       labs(title = "Correl of coef", x = NULL, y = NULL)
     ## PCA biplot.
     pcaplot <- ggbiplot::ggbiplot(plantPca, obs.scale = 1) +
       plotTheme() +
       theme(aspect.ratio = 1) +
-      ggtitle("PCA of coef")
+      labs(title = "PCA of coef")
     ## Arrange plots.
     lay <- rbind(c(1, 1), c(1, 1), c(1, 1), c(2, 3), c(2, 3))
     ## grid arrange always plots results.
+    titleGeno <- paste("Geno", geno,
+                       if (!is.null(title)) paste("-", title), "\n")
     gridExtra::grid.arrange(kinetic, correl, pcaplot,
                             layout_matrix = lay,
-                            top = grid::textGrob(paste0("Geno ", geno, " - Phenvator Rene - PAM\n"),
-                                                 gp = grid::gpar(fontsize = 15, fontface = 2)))
+                            top = grid::textGrob(label = titleGeno,
+                                                 gp = grid::gpar(fontsize = 15,
+                                                                 fontface = 2)))
   }
   return(annotatePlant)
 }
