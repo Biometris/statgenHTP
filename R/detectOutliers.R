@@ -35,10 +35,12 @@ detectOutliers <- function(corrDat,
     chkFile(outFile, fileType = "pdf")
     ## Add outFile to output file options.
     outFileOpts <- c(list(file = outFile), outFileOpts)
-    ## Turn off device when exiting function.
-    on.exit(dev.off(), add = TRUE)
-    ## Open pdf.
-    do.call(pdf, args = outFileOpts)
+    tryCatch({
+      ## Open pdf.
+      do.call(pdf, args = outFileOpts)
+      ## Turn off device when exiting function.
+      on.exit(dev.off(), add = TRUE)
+    }, error = function(e) stop("Cannot open file", outFile, call. = FALSE))
   }
   ## Prepare table for annotated plants.
   annotatePlant <- data.frame()

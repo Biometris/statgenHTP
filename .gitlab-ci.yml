@@ -89,7 +89,8 @@ coverage:
     - develop
     - master
   before_script:
-    - echo ''
+    ## Add R_LIBS_USER to libpaths.
+    - echo '.libPaths("'${R_LIBS_USER}'")' > .Rprofile
   script:
     - Rscript -e 'covr::package_coverage()'
   coverage: '/Coverage:\s*(\d+.\d+\%)/'
