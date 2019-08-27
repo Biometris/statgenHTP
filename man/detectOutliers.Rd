@@ -5,8 +5,8 @@
 \title{Outlier detection}
 \usage{
 detectOutliers(corrDat, predDat, coefDat, trait,
-  genotypes = unique(corrDat[["genotype"]]), title = NULL,
-  outFile = NULL, outFileOpts = NULL)
+  genotypes = unique(corrDat[["genotype"]]), thrCor = 0.9,
+  thrPca = 1, title = NULL, outFile = NULL, outFileOpts = NULL)
 }
 \arguments{
 \item{corrDat}{A data.frame with corrected spatial data.}
@@ -20,6 +20,12 @@ outliers.}
 
 \item{genotypes}{A character vector indicating the genotypes for which to
 detect outliers.}
+
+\item{thrCor}{A numerical value used as threshold for determining outliers
+based on correlation between plots.}
+
+\item{thrPca}{A numerical value used as threshold for determining outliers
+based on PCA scores.}
 
 \item{title}{A character string, the main title added to all plots in the
 output.}

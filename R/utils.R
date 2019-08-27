@@ -222,12 +222,12 @@ xyFacetPlot <- function(baseDat,
   p <- ggplot(baseDat, aes_string(x = xVal, y = yVal)) +
     scale_x_datetime(breaks = prettier(n = nBr),
                      labels = scales::date_format("%B %d"),) +
-  theme(panel.background = element_blank(),
-        panel.spacing = unit(0, "cm"),
-        panel.border = element_rect(color = "black", fill = "transparent"),
-        strip.background = element_rect(color = "black", fill = "bisque"),
-        plot.title = element_text(hjust = 0.5),
-        axis.text.x = element_text(angle = 25, vjust = 1, hjust = 1)) +
+    theme(panel.background = element_blank(),
+          panel.spacing = unit(0, "cm"),
+          panel.border = element_rect(color = "black", fill = "transparent"),
+          strip.background = element_rect(color = "black", fill = "bisque"),
+          plot.title = element_text(hjust = 0.5),
+          axis.text.x = element_text(angle = 25, vjust = 1, hjust = 1)) +
     labs(title = title, x = xLab, y = yLab)
   if (length(unique(baseDat[[xVal]])) > 1) {
     p <- p + geom_line(aes_string(group = groupVal, color = colVal),
@@ -268,6 +268,51 @@ xyFacetPlot <- function(baseDat,
     }
   }
   invisible(pPag)
+}
+
+#' @noRd
+#' @keywords internal
+ggbiplot <- function(pcobj, choices = 1:2, scale = 1,
+                     alpha = 1, varname.size = 3) {
+  ## Get scores and loadings from pcoject.
+  scores <- sweep(x = pcobj$x, MARGIN = 2, STATS = pcobj$sdev ^ (1 - scale),
+                  FUN = "*")
+  loadings <- sweep(x = pcobj$rotation, MARGIN = 2, STATS = pcobj$sdev ^ scale,
+                    FUN = "*")
+  ## Scale loadings.
+  radius <- sqrt(median(rowSums(scores ^ 2)) / max(colSums(loadings ^ 2)))
+  loadings <- loadings / radius
+  ## Convert to data.frames for ggplot.
+  u <- data.frame(scores[, choices])
+  v <- data.frame(loadings[, choices])
+  ## Add colnames for easy reference in plotting.
+  colnames(u) <- colnames(v) <- c("x", "y")
+  # Append the proportion of explained variance to the axis labels.
+  axisLabs <- paste(names(scores)[choices], sprintf('(%0.1f%% explained var.)',
+                                                    100 * pcobj$sdev[choices] ^ 2 /
+                                                      sum(pcobj$sdev ^ 2)))
+  ## Add extra columns to v for text labels, direction and position.
+  v[["name"]] <- rownames(v)
+  v[["angle"]] <- (180 / pi) * atan(v[["y"]] / v[["x"]])
+  v[["hjust"]] <- 0.5 * (1 - 1.25 * sign(v[["x"]]))
+  ## Create plot.
+  p <- ggplot(u, aes_string("x", "y")) +
+    ## Draw points for observations.
+    geom_point(alpha = alpha) +
+    ## Draw arrows for plotIds.
+    geom_segment(data = v, aes_string(x = 0, y = 0 , xend = "x", yend = "y"),
+                 arrow = grid::arrow(length = unit(1/3, "picas")),
+                 size = 0.5, color = "#832424FF") +
+    ## Annotate arrows.
+    geom_text(data = v, aes_string(label = "name", angle = "angle",
+                                   hjust = "hjust"),
+              size = varname.size, vjust = 0.5, color = "#832424FF") +
+    ## Set clip to off to allow labels overlapping axes.
+    coord_equal(clip = "off") +
+    plotTheme() +
+    theme(aspect.ratio = 1) +
+    labs(title = "PCA of coef", x = axisLabs[1], y = axisLabs[2])
+  return(p)
 }
 
 #' @noRd

@@ -9,6 +9,10 @@
 #' outliers.
 #' @param genotypes A character vector indicating the genotypes for which to
 #' detect outliers.
+#' @param thrCor A numerical value used as threshold for determining outliers
+#' based on correlation between plots.
+#' @param thrPca A numerical value used as threshold for determining outliers
+#' based on PCA scores.
 #' @param title A character string, the main title added to all plots in the
 #' output.
 #' @param outFile A character string indicating the .csv file to which the
@@ -109,6 +113,7 @@ detectOutliers <- function(corrDat,
   })
   ## Create full data.frame with annotated plants.
   annotatePlants <- do.call(rbind, c(annotatePlantsCor, annotatePlantsPca))
+  ## Order by genotype and plotId.
   annotatePlants <- with(annotatePlants,
                          annotatePlants[order(genotype, plotId), ])
   ## Get minimum correlation. Cannot be higher than 0.8.
@@ -116,8 +121,10 @@ detectOutliers <- function(corrDat,
   ## Create plots.
   for (geno in genotypes) {
     ## Create shape for plotting.
+    ## Defaults to open circle.
     plotShapes <- setNames(rep(1, times = ncol(plantDats[[geno]])),
                            colnames(plantDats[[geno]]))
+    ## Annotated plants get a closed circle.
     plotShapes[names(plotShapes) %in% annotatePlants[["plotId"]]] <- 19
     ## Plot of time course per genotype: corrected data + spline per plant.
     kinetic <- ggplot(genoDats[[geno]], aes_string(x = "timeNumber", y = trait,
@@ -147,10 +154,7 @@ detectOutliers <- function(corrDat,
                                        size = 12, hjust = 1)) +
       labs(title = "Correl of coef", x = NULL, y = NULL)
     ## PCA biplot.
-    pcaplot <- ggbiplot::ggbiplot(plantPcas[[geno]], obs.scale = 1) +
-      plotTheme() +
-      theme(aspect.ratio = 1) +
-      labs(title = "PCA of coef")
+    pcaplot <- ggbiplot(plantPcas[[geno]])
     ## Arrange plots.
     lay <- rbind(c(1, 1), c(1, 1), c(1, 1), c(2, 3), c(2, 3))
     ## grid arrange always plots results.
