@@ -218,10 +218,15 @@ xyFacetPlot <- function(baseDat,
                         xLab = "Time",
                         yLab = "Trait",
                         output = TRUE) {
+  ## Compute the number of breaks for the time scale.
+  ## If there are less than 3 time points use the number of time points.
+  ## Otherwise use 3.
   nBr <- min(length(unique(baseDat[[xVal]])), 3)
+  ## Create plot.
   p <- ggplot(baseDat, aes_string(x = xVal, y = yVal)) +
+    ## Format the time scale to Month + day.
     scale_x_datetime(breaks = prettier(n = nBr),
-                     labels = scales::date_format("%B %d"),) +
+                     labels = scales::date_format("%B %d")) +
     theme(panel.background = element_blank(),
           panel.spacing = unit(0, "cm"),
           panel.border = element_rect(color = "black", fill = "transparent"),
@@ -230,32 +235,45 @@ xyFacetPlot <- function(baseDat,
           axis.text.x = element_text(angle = 25, vjust = 1, hjust = 1)) +
     labs(title = title, x = xLab, y = yLab)
   if (length(unique(baseDat[[xVal]])) > 1) {
+    ## Multiple time points in data. Display a line.
     p <- p + geom_line(aes_string(group = groupVal, color = colVal),
                        show.legend = FALSE, na.rm = TRUE)
   } else {
+    ## Only one time point. Makes geom_line crash. Display as point.
     p <- p + geom_point(aes_string(group = groupVal, color = colVal),
                         show.legend = FALSE, na.rm = TRUE, size = 1)
   }
   if (!is.null(overlayDat)) {
-    if (length(unique(baseDat[[xVal]])) > 1) {
+    ## Add a second data set as overlay over the first plot.
+    if (length(unique(overlayDat[[xVal]])) > 1) {
+      ## Multiple time points in data. Display a line.
       p <- p + geom_line(aes_string(x = xVal, y = yValOverlay),
                          data = overlayDat, color = "black", size = 1,
                          show.legend = FALSE, na.rm = TRUE)
     } else {
+      ## Only one time point. Makes geom_line crash. Display as point.
       p <- p + geom_point(aes_string(x = xVal, y = yValOverlay),
                           data = overlayDat, color = "black", size = 1.5,
                           show.legend = FALSE, na.rm = TRUE)
     }
   }
+  ## Calculate the total number of plots.
+  ## facetVal is a vector so use interaction to get the number of levels.
   nPlots <- nlevels(interaction(baseDat[facetVal], drop = TRUE))
+  ## 25 Plots per page.
   nPag <- ceiling(nPlots / 25)
   if (nPlots >= 25) {
+    ## More than 25 plots.
+    ## For identical layout on all pages use 5 x 5 plots throughout.
     rowPag <- colPag <- rep(x = 5, times = nPag)
   } else {
+    ## Less than 25 plots.
+    ## Fill page by row of 5 plots.
     plotsPag <- nPlots %% 25
     rowPag <- min(plotsPag %/% 5 + 1, 5)
     colPag <- ifelse(plotsPag >= 5, 5, plotsPag)
   }
+  ## Build pages of plots.
   pPag <- vector(mode = "list", length = nPag)
   for (i in 1:nPag) {
     pPag[[i]] <- p +
@@ -275,10 +293,8 @@ xyFacetPlot <- function(baseDat,
 ggbiplot <- function(pcobj, choices = 1:2, scale = 1,
                      alpha = 1, varname.size = 3) {
   ## Get scores and loadings from pcoject.
-  scores <- sweep(x = pcobj$x, MARGIN = 2, STATS = pcobj$sdev ^ (1 - scale),
-                  FUN = "*")
-  loadings <- sweep(x = pcobj$rotation, MARGIN = 2, STATS = pcobj$sdev ^ scale,
-                    FUN = "*")
+  scores <- t(t(pcobj$x) * pcobj$sdev ^ (1 - scale))
+  loadings <- t(t(pcobj$rotation) * pcobj$sdev ^ scale)
   ## Scale loadings.
   radius <- sqrt(median(rowSums(scores ^ 2)) / max(colSums(loadings ^ 2)))
   loadings <- loadings / radius
@@ -287,10 +303,10 @@ ggbiplot <- function(pcobj, choices = 1:2, scale = 1,
   v <- data.frame(loadings[, choices])
   ## Add colnames for easy reference in plotting.
   colnames(u) <- colnames(v) <- c("x", "y")
-  # Append the proportion of explained variance to the axis labels.
-  axisLabs <- paste(names(scores)[choices], sprintf('(%0.1f%% explained var.)',
-                                                    100 * pcobj$sdev[choices] ^ 2 /
-                                                      sum(pcobj$sdev ^ 2)))
+  ## Append the proportion of explained variance to the axis labels.
+  axisLabs <- paste(names(scores)[choices],
+                    sprintf('(%0.1f%% explained var.)',
+                            100 * pcobj$sdev[choices] ^ 2 / sum(pcobj$sdev ^ 2)))
   ## Add extra columns to v for text labels, direction and position.
   v[["name"]] <- rownames(v)
   v[["angle"]] <- (180 / pi) * atan(v[["y"]] / v[["x"]])

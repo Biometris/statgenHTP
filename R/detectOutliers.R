@@ -56,6 +56,7 @@ detectOutliers <- function(corrDat,
   corrDatPred <- corrDat[corrDat[["plotId"]] %in% predDat[["plotId"]], ]
   genoDats <- split(x = corrDatPred, f = corrDatPred[["genotype"]], drop = TRUE)
   ## Reshape the spline coeficients per plant x geno.
+  ## First restrict to selected genotypes.
   coefDat <- coefDat[coefDat[["genotype"]] %in% genotypes, ]
   plantDats <- lapply(X = split(x = coefDat, f = coefDat[["genotype"]],
                                 drop = TRUE),
@@ -67,7 +68,7 @@ detectOutliers <- function(corrDat,
                       })
   ## Compute correlation matrix.
   cormats <- lapply(X = plantDats, FUN = function(plantDat) {
-    cormat <- round(cor(plantDat), 2)
+    cormat <- cor(plantDat)
     diag(cormat) <- NA
     return(cormat)
   })
@@ -145,11 +146,13 @@ detectOutliers <- function(corrDat,
                            values = scales::rescale(c(minCor, thrCor, 1)),
                            limits = c(minCor, 1),
                            name = "Pearson\nCorrelation") +
+      ## Use coord fixed to create a square shaped output.
       coord_fixed() +
       theme(panel.background = element_rect(fill = "white"),
             panel.border = element_blank(),
             panel.grid = element_line(color = "grey92"),
             plot.title = element_text(hjust = 0.5),
+            axis.ticks = element_blank(),
             axis.text.x = element_text(angle = 45, vjust = 1,
                                        size = 12, hjust = 1)) +
       labs(title = "Correl of coef", x = NULL, y = NULL)
