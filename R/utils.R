@@ -428,12 +428,10 @@ plotTheme <- function() {
 #' @keywords internal
 prettier <- function(n = 3) {
   function(x) {
-    ## Get first and last time point.
-    intStart <- lubridate::as_datetime(x[1])
-    intEnd <- lubridate::as_datetime(x[2])
-    ## Compute interval and interval length in seconds.
-    int <- lubridate::interval(start = intStart, end = intEnd)
-    sec <- lubridate::int_length(int)
+    ## Get first time point.
+    intStart <- x[1]
+    ## Compute interval length in seconds.
+    sec <- x[2] - x[1]
     if (n == 1) {
       ## Just one time point. Label in the middle.
       intStart + sec / 2
