@@ -7,7 +7,7 @@ correctSpatial <- function(fitMod) {
   ## separate functions.
   if (engine == "SpATS") {
     pred <- correctSpatialSpATS(fitMod)
-  } else {
+  } else if (engine == "asreml") {
     pred <- correctSpatialAsreml(fitMod)
   }
   ## return results.
@@ -121,16 +121,17 @@ correctSpatialAsreml <- function(fitMod) {
   pred[[newTrait]] <- pred[[trait]]
   ## Predict fixed effects.
   if (length(fixVars) > 0) {
-    predFix <- predict(fitMod, classify = paste0(fixVars, collapse = ":"),
-                       present = fixVars)$pvals
+    predFix <- predictAsreml(fitMod, classify = paste0(fixVars, collapse = ":"),
+                             vcov = FALSE, present = fixVars)$pvals
     pred <- merge(pred, predFix[c(fixVars, "predicted.value")])
     pred[[newTrait]] <- pred[[newTrait]] - pred[["predicted.value"]]
     pred[["predicted.value"]] <- NULL
   }
   ## Predict random effects.
   if (length(randVars) > 0) {
-    predRand <- predict(fitMod, classify = paste0(randVars, collapse = ":"),
-                        only = randVars)$pvals
+    predRand <- predictAsreml(fitMod,
+                              classify = paste0(randVars, collapse = ":"),
+                              vcov = FALSE, only = randVars)$pvals
     pred <- merge(pred, predRand[c(randVars, "predicted.value")])
     pred[[newTrait]] <- pred[[newTrait]] - pred[["predicted.value"]]
     pred[["predicted.value"]] <- NULL
@@ -138,13 +139,15 @@ correctSpatialAsreml <- function(fitMod) {
   ## Predict intercept.
   if (length(fixVars) > 0) {
     if (!is.null(geno.decomp)) {
-      predGD <- predict(fitMod, classify = "geno.decomp")$pvals
+      predGD <- predictAsreml(fitMod, classify = "geno.decomp",
+                              vcov = FALSE)$pvals
       pred <- merge(pred, predGD[c("geno.decomp", "predicted.value")])
       pred[[newTrait]] <- pred[[newTrait]] + pred[["predicted.value"]]
       pred[["predicted.value"]] <- NULL
     } else {
-      predInt <- predict(fitMod, classify = "(Intercept)",
-                         present = predVars)$pvals$predicted.value
+      predInt <- predictAsreml(fitMod, classify = "(Intercept)",
+                               vcov = FALSE,
+                               present = predVars)$pvals$predicted.value
       pred[[newTrait]] <- pred[[newTrait]] + predInt
     }
   }

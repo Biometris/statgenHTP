@@ -6,7 +6,7 @@ predictGeno <- function(fitMod) {
   ## separate functions.
   if (engine == "SpATS") {
     pred <- predictGenoSpATS(fitMod)
-  } else {
+  } else if (engine == "asreml") {
     pred <- predictGenoAsreml(fitMod)
   }
   ## return results.
@@ -94,8 +94,7 @@ predictGenoAsreml <- function(fitMod) {
   ## the intercept).
   classForm <- paste0(if (useGenoDecomp) "geno.decomp:", genoCol)
   predGeno <- predictAsreml(fitMod, classify = classForm,
-                            present = c(genoCol,
-                                        if (useCheck) "check"),
+                            present = c(genoCol, if (useCheck) "check"),
                             vcov = FALSE)$pvals
   genoGenoDecomp <- unique(fitMod$call$data[c(genoCol,
                                               if (useGenoDecomp) "geno.decomp")])
@@ -104,7 +103,8 @@ predictGenoAsreml <- function(fitMod) {
   if (useCheck) {
     ## Predict check genotypes.
     classFormChk <- paste0(if (useGenoDecomp) "geno.decomp:", "check")
-    predCheck <- predict(fitMod, classify = classFormChk, vcov = FALSE)$pvals
+    predCheck <- predictAsreml(fitMod, classify = classFormChk,
+                               vcov = FALSE)$pvals
     ## Rename check to genotype for merging with genotype predictions.
     predCheck[["genotype"]] <- predCheck[["check"]]
     ## Remove noCheck

@@ -52,8 +52,8 @@ heritabilityAsreml <- function(fitMod) {
     ## Get genetic variance.
     varGen <- fitMod$vparameters[genoCol] * fitMod$sigma2
     ## Obtain squared s.e.d. matrix.
-    vdBLUP <- predict(fitMod, classify = genoCol, only = genoCol,
-                      sed = TRUE)$sed^2
+    vdBLUP <- predictAsreml(fitMod, classify = genoCol, vcov = FALSE,
+                            only = genoCol, sed = TRUE)$sed^2
     ## Compute mean variance of a difference of two genotypic BLUPs.
     vdBLUPMean <- mean(as.numeric(vdBLUP), na.rm = TRUE)
     ## Compute heritability.
@@ -66,9 +66,11 @@ heritabilityAsreml <- function(fitMod) {
       ## Get genetic variance.
       levVarGen <- fitMod$vparameters[varName] * fitMod$sigma2
       ## Get predictions for genotype on current level of geno.decomp.
-      levPred <- predict(fitMod, classify = paste0("geno.decomp:", genoCol),
-                         present = c("geno.decomp", "genotype"),
-                         levels = list(geno.decomp = i), sed = TRUE)
+      levPred <- predictAsreml(fitMod,
+                               classify = paste0("geno.decomp:", genoCol),
+                               vcov = FALSE,
+                               present = c("geno.decomp", "genotype"),
+                               levels = list(geno.decomp = i), sed = TRUE)
       ## Compute mean variance of a difference of two genotypic BLUPs.
       levVdBLUP <- levPred$sed^2
       ## Only use values that were actually estimated and not aliased.
