@@ -23,7 +23,7 @@ Encoding: UTF-8
 LazyData: true
 Depends: 
     R (>= 3.4)
-Imports:
+Imports: 
     animation,
     ggforce,
     ggplot2,
@@ -35,9 +35,10 @@ Imports:
     scales,
     SpATS
 Suggests: 
-    asreml (>= 4.0),
-    covr,
-    knitr,
-    rmarkdown
+   asreml (>= 4.0), 
+   covr, 
+   knitr, 
+   rmarkdown, 
+   tinytest
 RoxygenNote: 6.1.1
 VignetteBuilder: knitr
