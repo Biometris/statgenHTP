@@ -38,4 +38,4 @@ testDat <- with(testDat, testDat[x <= 5 & y <= 5 &
 # Create an indicator for each plot (according to the row and column position).
 testDat$pos <- paste0("c", testDat[["x"]], "r", testDat[["y"]])
 # Export to package
-usethis::use_data(testDat, internal = TRUE, overwrite = TRUE)
+write.csv(testDat, file = "./inst/tinytest/testDat.csv", row.names = FALSE)
