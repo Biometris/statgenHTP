@@ -99,7 +99,7 @@ createTimePoints <- function(dat,
   for (param in c(genotype, timePoint, plotId, repId, rowNum, colNum)) {
     if (!is.null(param) && (!is.character(param) || length(param) > 1 ||
                             !hasName(dat, param))) {
-      stop(deparse(param), " has to be NULL or a column in dat.\n")
+      stop(substitute(param), " has to be NULL or a column in dat.\n")
     }
   }
   ## Check uniqueness of plotId.
@@ -175,15 +175,6 @@ createTimePoints <- function(dat,
   for (numCol in numCols) {
     if (hasName(dat, numCol) && !is.numeric(dat[cols == numCol])) {
       dat[cols == numCol] <- as.numeric(dat[, cols == numCol])
-    }
-  }
-  ## Check plotId for uniqueness.
-  if (is.null(plotId)) {
-    warning("No unique plot identifier supplied.\n")
-  } else {
-    if (max(by(data = dat[["plotId"]], INDICES = dat[["timePoint"]],
-               FUN = anyDuplicated) > 0)) {
-      warning("plotId should be unique per time point.\n")
     }
   }
   listData <- split(x = dat, f = dat[["timePoint"]])
@@ -714,7 +705,6 @@ plot.TP <- function(x,
     attr(r, "timePoints") <- timePointsR
     attr(r, "experimentName") <- attr(x, "experimentName")
     attr(r, "class") <- c("TP", "list")
-    attr(r, "timestamp") <- attr(x, "timestamp")
   } else {
     r <- NULL
   }
