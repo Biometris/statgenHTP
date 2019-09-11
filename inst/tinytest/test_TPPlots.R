@@ -16,8 +16,7 @@ testTP <- createTimePoints(dat = testDat, experimentName = "testExp",
                            colNum = "x")
 
 ## Check that general checks in plot.TP function correctly.
-expect_error(plot(testTP, plotType = "test"),
-             "should be one of \"layout\", \"box\", \"cor\", \"raw\"")
+expect_error(plot(testTP, plotType = "test"), "should be one of")
 
 ## Check that an outfile is actually created.
 tmpFile <- tempfile(fileext = ".pdf")

@@ -97,4 +97,42 @@ expect_equal(statgenHTP:::prettier(n = 2)(times),
 expect_equal(statgenHTP:::prettier(n = 3)(times),
              strptime(c("6sep2019", "21sep2019", "6oct2019"), "%d%b%Y"))
 
+### Test chkFile
+
+tmpFile <- tempfile(fileext = ".csv")
+
+expect_error(statgenHTP:::chkFile(1),
+             "outFile should be a single character string ending in .csv")
+expect_error(statgenHTP:::chkFile(tmpFile, fileType = "pdf"),
+             "outFile should be a single character string ending in .pdf")
+expect_silent(statgenHTP:::chkFile(tmpFile))
+
+### Test chkTimePoints
+
+## Read test data from .csv
+testDat <- read.csv("testDat.csv", stringsAsFactors = FALSE)
+## Create TP object.
+testTP <- createTimePoints(dat = testDat, experimentName = "testExp",
+                           genotype = "Genotype", timePoint = "timepoints",
+                           plotId = "pos", repId = "Replicate", rowNum = "y",
+                           colNum = "x")
+
+## Check that input checks function correctly.
+expect_error(statgenHTP:::chkTimePoints("testTP", 1),
+             "should be an object of class TP or fitMod")
+expect_error(statgenHTP:::chkTimePoints(testTP, strptime("1sep2019", "%d%b%Y")),
+             "timePoints should be a character or numeric vector")
+expect_error(statgenHTP:::chkTimePoints(testTP, 6),
+             "All timePoints should be in testTP")
+expect_error(statgenHTP:::chkTimePoints(testTP, c(1, 6)),
+             "All timePoints should be in testTP")
+expect_error(statgenHTP:::chkTimePoints(testTP, "2018-05-01 16:37:00"),
+             "All timePoints should be in testTP")
+
+## Check that integer subset is converted to character.
+expect_true(inherits(statgenHTP:::chkTimePoints(testTP, 1), "character"))
+expect_equal(statgenHTP:::chkTimePoints(testTP, 1),
+             statgenHTP:::chkTimePoints(testTP, "2018-06-01 16:37:00"))
+
+
 
