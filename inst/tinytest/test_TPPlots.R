@@ -142,3 +142,6 @@ expect_error(plot(testTP, plotType = "raw", traits = "t1",
 expect_silent(plot(testTP, plotType = "raw", traits = "t1",
                    geno.decomp = "Basin", outFile = tmpFile))
 
+## Remove tmpFile
+unlink(tmpFile)
+

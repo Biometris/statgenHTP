@@ -94,18 +94,18 @@ summary.fitMod <- function(object,
 #' \item{EDType}{A character string specifying if the effective dimension
 #' ("dimension") or the ratio of effective dimensions ("ratio") should be
 #' plotted. Default the dimensions are plotted.}
-#' \item{yLim}{A numerical value used for setting the upper limit of the y-axis
-#' of the plot. If a value lower than the highest value to be plotted is
-#' given, then it is ignored.}
+#' \item{yLim}{A numerical vector of length two, used for setting the limits of
+#' the y-axis of the plot. If values outside of the plotting range are given,
+#' then these are ignored.}
 #' }
 #'
 #' @section variance plot:
 #' Plots the residual, column and row variances for the fitted model over time.
 #' Extra parameter options:
 #' \describe{
-#' \item{yLim}{A numerical value used for setting the upper limit of the y-axis
-#' of the plot. If a value lower than the highest value to be plotted is
-#' given, then it is ignored.}
+#' \item{yLim}{A numerical vector of length two, used for setting the limits of
+#' the y-axis of the plot. If values outside of the plotting range are given,
+#' then these are ignored.}
 #' }
 #'
 #' @section timeLapse plot:
