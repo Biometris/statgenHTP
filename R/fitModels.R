@@ -165,7 +165,7 @@ fitModels <- function(TP,
     }
     for (covar in covariates) {
       if (!all(sapply(X = TP, FUN = hasName, name = covar))) {
-        stop(covar, " should be columns in TP for all timePoints.\n")
+        stop(covar, " should be a column in TP for all timePoints.\n")
       }
     }
   }
@@ -195,9 +195,9 @@ fitModels <- function(TP,
   ## For spatial models spatial columns are required.
   if (engine == "SpATS" || (engine == "asreml" && spatial)) {
     spatCols <- c("rowId", "colId", "rowNum", "colNum")
-    if (!all(sapply(X = TP, FUN = hasName, name = trait))) {
-      stop(spatCols, " should be a columns in TP for all timePoints when ",
-           "fitting spatial models.\n")
+    if (!all(sapply(X = TP, FUN = hasName, name = spatCols))) {
+      stop(paste(spatCols, collapse = ", "), " should be columns in TP for ",
+           "all timePoints when fitting spatial models.\n")
     }
   }
   ## combination of what = fixed and use of geno.decomp gives inconsistent

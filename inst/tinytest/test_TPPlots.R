@@ -64,42 +64,42 @@ expect_error(plot(testTP, plotType = "box", traits = 1),
              "traits should be a character vector")
 expect_warning(plot(testTP, plotType = "box", traits = "trait"),
                "trait isn't a column in any of the timePoints")
-p <- plot(testTP, plotType = "box", traits = "EffpsII", outFile = tmpFile)
+p <- plot(testTP, plotType = "box", traits = "t1", outFile = tmpFile)
 expect_true(inherits(p, "list"))
 expect_equal(length(p), 1)
 expect_true(inherits(p[[1]], "ggplot"))
 
 ## Check option groupBy for box plot.
 
-expect_error(plot(testTP, plotType = "box", traits = "EffpsII", groupBy = 1),
+expect_error(plot(testTP, plotType = "box", traits = "t1", groupBy = 1),
              "groupBy should be a single character string")
-expect_error(plot(testTP, plotType = "box", traits = "EffpsII", groupBy = "grp"),
+expect_error(plot(testTP, plotType = "box", traits = "t1", groupBy = "grp"),
              "groupBy should be a column in TP")
-p <- plot(testTP, plotType = "box", traits = "EffpsII", groupBy = "repId",
+p <- plot(testTP, plotType = "box", traits = "t1", groupBy = "repId",
           outFile = tmpFile)
-expect_true("~repId" %in% as.character(p$EffpsII$mapping))
+expect_true("~repId" %in% as.character(p$t1$mapping))
 
 ## Check option colorBy for box plot.
 
-expect_error(plot(testTP, plotType = "box", traits = "EffpsII", colorBy = 1),
+expect_error(plot(testTP, plotType = "box", traits = "t1", colorBy = 1),
              "colorBy should be a single character string")
-expect_error(plot(testTP, plotType = "box", traits = "EffpsII", colorBy = "grp"),
+expect_error(plot(testTP, plotType = "box", traits = "t1", colorBy = "grp"),
              "colorBy should be a column in TP")
-p <- plot(testTP, plotType = "box", traits = "EffpsII", colorBy = "repId",
+p <- plot(testTP, plotType = "box", traits = "t1", colorBy = "repId",
           outFile = tmpFile)
-expect_true(all(c("~repId", "~timePoint") %in% as.character(p$EffpsII$mapping)))
+expect_true(all(c("~repId", "~timePoint") %in% as.character(p$t1$mapping)))
 
 ## Check option orderBy for box plot.
 
-p0 <- plot(testTP, plotType = "box", traits = "EffpsII", outFile = tmpFile)
-p1 <- plot(testTP, plotType = "box", traits = "EffpsII",
+p0 <- plot(testTP, plotType = "box", traits = "t1", outFile = tmpFile)
+p1 <- plot(testTP, plotType = "box", traits = "t1",
            orderBy = "ascending", outFile = tmpFile)
-p2 <- plot(testTP, plotType = "box", traits = "EffpsII", orderBy = "descending",
+p2 <- plot(testTP, plotType = "box", traits = "t1", orderBy = "descending",
            outFile = tmpFile)
 ## This basically only checks that releveling took place.
-expect_equal(setdiff(names(p1$EffpsII$plot_env), names(p0$EffpsII$plot_env)),
+expect_equal(setdiff(names(p1$t1$plot_env), names(p0$t1$plot_env)),
              "levNw")
-expect_equal(setdiff(names(p2$EffpsII$plot_env), names(p0$EffpsII$plot_env)),
+expect_equal(setdiff(names(p2$t1$plot_env), names(p0$t1$plot_env)),
              "levNw")
 
 ### Check correlation plot.
@@ -110,7 +110,7 @@ expect_error(plot(testTP, plotType = "cor", traits = 1),
              "traits should be a character vector")
 expect_warning(plot(testTP, plotType = "cor", traits = "trait"),
                "trait isn't a column in any of the timePoints")
-p <- plot(testTP, plotType = "cor", traits = "EffpsII", outFile = tmpFile)
+p <- plot(testTP, plotType = "cor", traits = "t1", outFile = tmpFile)
 expect_true(inherits(p, "list"))
 expect_equal(length(p), 1)
 expect_true(inherits(p[[1]], "ggplot"))
@@ -121,24 +121,24 @@ expect_error(plot(testTP, plotType = "raw", traits = 1),
              "traits should be a character vector")
 expect_warning(plot(testTP, plotType = "raw", traits = "trait"),
                "trait isn't a column in any of the timePoints")
-p <- plot(testTP, plotType = "raw", traits = "EffpsII", outFile = tmpFile)
+p <- plot(testTP, plotType = "raw", traits = "t1", outFile = tmpFile)
 expect_true(inherits(p, "list"))
 expect_equal(length(p), 1)
 
 ## Check raw plot for single time point.
-expect_silent(plot(testTP[1], plotType = "raw", traits = "EffpsII",
+expect_silent(plot(testTP[1], plotType = "raw", traits = "t1",
                    outFile = tmpFile))
 
 ## Check option genotypes for raw plot.
 
-expect_silent(plot(testTP, plotType = "raw", traits = "EffpsII",
-                   genotypes = "G8", outFile = tmpFile))
+expect_silent(plot(testTP, plotType = "raw", traits = "t1",
+                   genotypes = "G12", outFile = tmpFile))
 
 ## Check option geno.decomp for raw plot.
 
-expect_error(plot(testTP, plotType = "raw", traits = "EffpsII",
+expect_error(plot(testTP, plotType = "raw", traits = "t1",
                   geno.decomp = "gd"),
              "geno.decomp should be a column in TP")
-expect_silent(plot(testTP, plotType = "raw", traits = "EffpsII",
+expect_silent(plot(testTP, plotType = "raw", traits = "t1",
                    geno.decomp = "Basin", outFile = tmpFile))
 

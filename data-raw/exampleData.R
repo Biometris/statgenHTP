@@ -32,9 +32,11 @@ testDat <- read.csv(system.file("extdata",
                                 "Phenovator_Data_Example1.csv",
                                 package = "statgenHTP"))
 # Restrict data.
-testDat <- with(testDat, testDat[x <= 5 & y <= 5 &
+testDat <- with(testDat, testDat[x >= 10 & x < 15 & y <= 5 &
                                    as.numeric(timepoints) >= 5 &
                                    as.numeric(timepoints) <= 9, ])
+# Rename trait column.
+colnames(testDat)[colnames(testDat) == "EffpsII"] <- "t1"
 # Create an indicator for each plot (according to the row and column position).
 testDat$pos <- paste0("c", testDat[["x"]], "r", testDat[["y"]])
 # Export to package
