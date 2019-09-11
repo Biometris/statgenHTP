@@ -89,6 +89,9 @@ coverage:
     - develop
     - master
   before_script:
+    ## Cache apt.
+    - export APT_DIR=$CI_PROJECT_DIR/.apt && export APT_STATE_LISTS=$APT_DIR/lists && export APT_CACHE_ARCHIVES=$APT_DIR/archives
+    - printf "dir::state::lists    ${APT_STATE_LISTS};\ndir::cache::archives    ${APT_CACHE_ARCHIVES};\n" > /etc/apt/apt.conf
     ## Add R_LIBS_USER to libpaths.
     - echo '.libPaths("'${R_LIBS_USER}'")' > .Rprofile
   script:
