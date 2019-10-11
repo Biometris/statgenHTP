@@ -168,17 +168,25 @@ getVar <- function(fitMod,
   colVarId <- ifelse(useRepId, "repId:colId", "colId")
   rowVarId <- ifelse(useRepId, "repId:rowId", "rowId")
   if (inherits(fitMod[[1]], "SpATS")) {
+    varGen <- sapply(X = fitMod, FUN = function(x) x$var.comp["genotype"])
     varRes <- sapply(X = fitMod, FUN = function(x) x$psi[1])
     varCol <- sapply(X = fitMod, FUN = function(x) x$var.comp[colVarId])
     varRow <- sapply(X = fitMod, FUN = function(x) x$var.comp[rowVarId])
   } else if (inherits(fitMod[[1]], "asreml")) {
+    varGen <- sapply(X = fitMod, FUN = function(x) {
+      x$vparameters["genotype"] * x$sigma2
+    })
     varRes <- sapply(X = fitMod, FUN = function(x) x$sigma2)
-    varCol <- sapply(X = fitMod, FUN = function(x) x$vparameters[colVarId])
-    varRow <- sapply(X = fitMod, FUN = function(x) x$vparameters[rowVarId])
+    varCol <- sapply(X = fitMod, FUN = function(x) {
+      x$vparameters[colVarId] * x$sigma2
+    })
+    varRow <- sapply(X = fitMod, FUN = function(x) {
+      x$vparameters[rowVarId] * x$sigma2
+    })
   }
   variance <- data.frame(timePoint = lubridate::as_datetime(names(varRes)),
-                         varRes = varRes, varCol = varCol, varRow = varRow,
-                         row.names = NULL)
+                         varGen = varGen, varRes = varRes, varCol = varCol,
+                         varRow = varRow, row.names = NULL)
   variance <- addTimeNumber(fitMod, variance)
   if (!is.null(outFile)) {
     chkFile(outFile, fileType = "csv")
