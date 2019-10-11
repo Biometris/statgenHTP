@@ -387,8 +387,8 @@ plot.fitMod <- function(x,
     ## Get variances.
     variance <- getVar(fitMods)
     ## Convert to long format needed by ggplot.
-    variance <- reshape2::melt(variance, measure.vars = c("varRes", "varCol",
-                                                          "varRow"),
+    variance <- reshape2::melt(variance, measure.vars = c("varGen", "varRes",
+                                                          "varCol", "varRow"),
                                variable.name = "var")
     ## Manually modify limit of y-axis.
     yLim <- c(min(dotArgs$yLim[1], variance[["value"]]),
@@ -397,7 +397,8 @@ plot.fitMod <- function(x,
     p <- ggplot(variance, aes_string(x = "timePoint", y = "value",
                                      group = "var", color = "var")) +
       geom_point(size = 3, na.rm = TRUE) +
-      scale_color_discrete(labels = c("Residual", "Columns", "Rows")) +
+      scale_color_discrete(labels = c("Genotypic", "Residual",
+                                      "Columns", "Rows")) +
       scale_x_datetime(breaks = prettier(nBr),
                        labels = scales::date_format("%B %d")) +
       plotTheme() +
