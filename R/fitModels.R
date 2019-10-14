@@ -59,6 +59,7 @@
 #' @param engine A character string indicating the engine used to fit the
 #' models.
 #' @param spatial Should a spatial model be fitted for asreml?
+#' @param parallel Should the model fitting be performed in parallel?
 #'
 #' @return An object of class fitMod, a list of fitted models.
 #'
@@ -136,7 +137,8 @@ fitModels <- function(TP,
                       useCheck = FALSE,
                       useRepId = FALSE,
                       engine = c("SpATS", "asreml"),
-                      spatial = FALSE) {
+                      spatial = FALSE,
+                      parallel = FALSE) {
   ## Checks.
   if (missing(TP) || !inherits(TP, "TP")) {
     stop("TP should be an object of class TP.\n")
@@ -265,15 +267,23 @@ fitModels <- function(TP,
   if (genoRand && !is.null(geno.decomp) && is.null(covariates) && !useCheck) {
     fixedForm <- update(fixedForm, "~ . + geno.decomp")
   }
+  if (parallel) {
+    clustType <- if (Sys.info()["sysname"] == "Windows") "PSOCK" else "FORK"
+    cl <- parallel::makeCluster(max(parallel::detectCores() - 1, 1,
+                                  na.rm = TRUE), type = clustType)
+    on.exit(parallel::stopCluster(cl), add = TRUE)
+    doParallel::registerDoParallel(cl)
+  }
+  `%parOp%` <- getOper(parallel && foreach::getDoParWorkers() > 1)
   if (engine == "SpATS") {
     if (useRepId) {
       randForm <- formula("~ repId:rowId + repId:colId")
     } else {
       randForm <- formula("~ rowId + colId")
     }
-    ## Loop on timepoint to run SpATS.
-    fitMods <- lapply(X = TP, function(timePoint) {
-      message(timePoint[["timePoint"]][1])
+    fitMods <- foreach::foreach(timePoint = TP, .final = function(x) {
+      setNames(x, nm = names(TP))
+    }) %parOp% {
       ## Only keep columns needed for analysis.
       modCols <- c("timePoint", "plotId", "genotype", "genoCheck", "check",
                    "colId", "rowId", "colNum", "rowNum", covariates,
@@ -283,15 +293,14 @@ fitModels <- function(TP,
       ## number of segments for SpATS.
       nseg = c(nlevels(modDat[["colId"]]), nlevels(modDat[["rowId"]])) / 2
       ## Fit and return the model.
-      SpATS::SpATS(response = trait, fixed = fixedForm,
-                   random = randForm,
+      SpATS::SpATS(response = trait, fixed = fixedForm, random = randForm,
                    spatial = ~ SpATS::PSANOVA(colNum, rowNum, nseg = nseg,
                                               nest.div = c(2, 2)),
                    genotype = genoCol, genotype.as.random = genoRand,
                    geno.decomp = geno.decomp, data = modDat,
                    control = list(maxit = 50, tolerance = 1e-03,
                                   monitoring = 0))
-    })
+    }
   } else if (engine == "asreml") {
     ## fixed in asreml needs response variable on lhs of formula.
     fixedForm <- update(fixedForm, paste(trait, "~ ."))
@@ -333,20 +342,21 @@ fitModels <- function(TP,
       ## First find the best spatial model over all timePoints by fitting
       ## all models for 20% of the time points (with a minimum of 10)
       bestNum <- min(max(length(TP) / 5, 10), length(TP))
-      bestMod <- character()
-      for (i in round(seq(1, length(TP), length.out = bestNum))) {
+      bestMod <- foreach::foreach(i = round(seq(1, length(TP),
+                                                length.out = bestNum)),
+                                  .combine = c) %parOp% {
         timePoint <- TP[[i]]
         ## Only keep columns needed for analysis.
         modDat <- droplevels(timePoint)
         asrFitSpat <- bestSpatMod(modDat = modDat, traits = trait,
                                   fixedForm = fixedForm, randomForm = randForm)
-        bestMod <- c(bestMod, attr(asrFitSpat[["sumTab"]][[trait]], "chosen"))
+        return(attr(asrFitSpat[["sumTab"]][[trait]], "chosen"))
       }
       bestMod <- names(which.max(table(bestMod)))
-      fitMods <- setNames(vector(mode = "list", length = length(TP)), names(TP))
-      for (i in seq_along(TP)) {
-        timePoint <- TP[[i]]
-        message(timePoint[["timePoint"]][1])
+      ## Loop on timepoint to run asreml.
+      fitMods <- foreach::foreach(timePoint = TP, .final = function(x) {
+        setNames(x, nm = names(TP))
+      }) %parOp% {
         ## Only keep columns needed for analysis.
         modDat <- droplevels(timePoint)
         asrFitSpat <- bestSpatMod(modDat = modDat, traits = trait,
@@ -362,7 +372,7 @@ fitModels <- function(TP,
         asrFit$call$fixed <- eval(asrFit$call$fixed)
         asrFit$call$random <- eval(asrFit$call$random)
         asrFit$call$data <- eval(asrFit$call$data)
-        fitMods[[i]] <- asrFit
+        return(asrFit)
       }
     }
   }

@@ -6,7 +6,8 @@
 \usage{
 fitModels(TP, trait, timePoints = names(TP), covariates = NULL,
   geno.decomp = NULL, what = c("random", "fixed"), useCheck = FALSE,
-  useRepId = FALSE, engine = c("SpATS", "asreml"), spatial = FALSE)
+  useRepId = FALSE, engine = c("SpATS", "asreml"), spatial = FALSE,
+  parallel = FALSE)
 }
 \arguments{
 \item{TP}{An object of class TP.}
@@ -41,6 +42,8 @@ rowId and colId in the random part of the model.}
 models.}
 
 \item{spatial}{Should a spatial model be fitted for asreml?}
+
+\item{parallel}{Should the model fitting be performed in parallel?}
 }
 \value{
 An object of class fitMod, a list of fitted models.

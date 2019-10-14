@@ -33,7 +33,10 @@ Imports:
     mgcv,
     reshape2,
     scales,
-    SpATS
+    SpATS,
+    doParallel,
+    foreach,
+    parallel
 Suggests: 
    asreml (>= 4.0), 
    covr, 

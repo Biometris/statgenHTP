@@ -467,3 +467,9 @@ checkAsreml <- function() {
   invisible(TRUE)
 }
 
+#' Helper function for selecting parallel operator for foreach.
+#'
+#' @noRd
+#' @importFrom foreach %do% %dopar%
+#' @keywords internal
+getOper <- function(x) if (x) `%dopar%` else `%do%`
