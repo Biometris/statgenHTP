@@ -83,7 +83,7 @@ correctSpatialSpATS <- function(fitMod) {
   if (!is.null(geno.decomp) && !hasName(pred , "geno.decomp")) {
     pred[[geno.decomp]] <- pred[[paste0(geno.decomp, ".y")]]
   }
-  pred <- pred[c(newTrait, "genotype", geno.decomp,
+  pred <- pred[c(newTrait, trait, "genotype", geno.decomp,
                  setdiff(predVars, c("rowNum", "colNum")), "plotId",
                  "timePoint")]
 }
@@ -157,6 +157,6 @@ correctSpatialAsreml <- function(fitMod) {
   ## Remove row/col combinations added when fitting models.
   pred <- pred[!is.na(pred[["plotId"]]), ]
   ## Select the variables needed for subsequent analyses.
-  pred <- pred[c(newTrait, "genotype", geno.decomp, fixVars, randVars,
+  pred <- pred[c(newTrait, trait, "genotype", geno.decomp, fixVars, randVars,
                  "plotId", "timePoint")]
 }
