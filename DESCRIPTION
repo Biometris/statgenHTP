@@ -36,7 +36,6 @@ Imports:
     SpATS
 Suggests: 
    asreml (>= 4.0), 
-   covr, 
    knitr, 
    rmarkdown, 
    tinytest
