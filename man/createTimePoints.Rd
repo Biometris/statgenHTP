@@ -4,9 +4,9 @@
 \alias{createTimePoints}
 \title{Create an object of class TP}
 \usage{
-createTimePoints(dat, experimentName, genotype, timePoint, plotId,
-  repId = NULL, rowNum = NULL, colNum = NULL, addCheck = FALSE,
-  checkGenotypes = NULL)
+createTimePoints(dat, experimentName, genotype, timePoint,
+  timeFormat = NULL, plotId, repId = NULL, rowNum = NULL,
+  colNum = NULL, addCheck = FALSE, checkGenotypes = NULL)
 }
 \arguments{
 \item{dat}{A data.frame.}
@@ -19,6 +19,12 @@ the genotypes.}
 
 \item{timePoint}{A character string indicating the column in dat containing
 the time points.}
+
+\item{timeFormat}{A character string indicating the input format of the time
+points. E.g. for a date/time input of the form day/month/year hour:minute, use
+\%d/\%m/\%Y \%H:\%M. For a full list of abbreviations see
+\code{\link[base]{strptime}}. If \code{NULL}, a best guess is performed
+based on the input.}
 
 \item{plotId}{A character string indicating the column in dat containing
 the plotId. This has to be a unique identifier per plot/plant per time point.}

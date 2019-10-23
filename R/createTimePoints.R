@@ -37,6 +37,11 @@
 #' the genotypes.
 #' @param timePoint A character string indicating the column in dat containing
 #' the time points.
+#' @param timeFormat A character string indicating the input format of the time
+#' points. E.g. for a date/time input of the form day/month/year hour:minute,
+#' use \%d/\%m/\%Y \%H:\%M. For a full list of abbreviations see
+#' \code{\link[base]{strptime}}. If \code{NULL}, a best guess is done based on
+#' the input.
 #' @param plotId A character string indicating the column in dat containing
 #' the plotId. This has to be a unique identifier per plot/plant per time point.
 #' @param repId A character string indicating the column in dat containing
@@ -77,6 +82,7 @@ createTimePoints <- function(dat,
                              experimentName,
                              genotype,
                              timePoint,
+                             timeFormat = NULL,
                              plotId,
                              repId = NULL,
                              rowNum = NULL,
@@ -149,7 +155,23 @@ createTimePoints <- function(dat,
   }
   colnames(dat) <- cols
   ## Convert timepoint to nice format.
-  dat[["timePoint"]] <- lubridate::as_datetime(dat[["timePoint"]])
+  if (is.numeric(dat[["timePoint"]])) {
+    warning("timePoint is a numeric column. It will be converted using ",
+            "1970-01-01 as 0.\n")
+    dateTime <- try(lubridate::as_datetime(dat[["timePoint"]]))
+  } else {
+    ## When using format an the output is of class POSIXlt.
+    ## This doesn't work with split later on and therefore is converted to
+    ## POSIXct.
+    dateTime <- try(as.POSIXct(lubridate::as_datetime(as.character(dat[["timePoint"]]),
+                                                      format = timeFormat)))
+  }
+  if (inherits(dateTime, "try-error") || all(is.na(dateTime))) {
+    stop("Error when converting timePoints to Date format. Please check the
+         input format of the timePoints and use the timeFormat argument.\n")
+  } else {
+    dat[["timePoint"]] <- dateTime
+  }
   ## Add check genotype.
   if (addCheck) {
     ## Add column check with genotype for check genotypes and noCheck for
