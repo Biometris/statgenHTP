@@ -17,3 +17,20 @@ time points in x
 Function for extracting a data.frame with timeNumbers and timePoints from
 an object of class TP or fitMod.
 }
+\examples{
+## Create an object of class TP
+data("PhenovatorDat1")
+phenoTP <- createTimePoints(dat = PhenovatorDat1,
+                            experimentName = "Phenovator",
+                            genotype = "Genotype",
+                            timePoint = "timepoints",
+                            repId = "Replicate",
+                            plotId = "pos",
+                            rowNum = "y", colNum = "x",
+                            addCheck = TRUE,
+                            checkGenotypes = c("check1", "check2", "check3", "check4"))
+
+## Extract the time points from the object.
+head(getTimePoints(phenoTP))
+
+}
