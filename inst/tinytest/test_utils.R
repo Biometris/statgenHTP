@@ -134,5 +134,11 @@ expect_true(inherits(statgenHTP:::chkTimePoints(testTP, 1), "character"))
 expect_equal(statgenHTP:::chkTimePoints(testTP, 1),
              statgenHTP:::chkTimePoints(testTP, "2018-06-01 16:37:00"))
 
+### Test getTimePoints
 
+expect_error(getTimePoints(x = 1:3),
+             "x should be an object of class TP or fitMod")
+## Create TP object.
+expect_true(inherits(getTimePoints(testTP), "data.frame"))
+expect_equal(getTimePoints(testTP), attr(x = testTP, which = "timePoints"))
 

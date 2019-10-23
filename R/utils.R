@@ -467,3 +467,22 @@ checkAsreml <- function() {
   invisible(TRUE)
 }
 
+#' Extract time points
+#'
+#' Function for extracting a data.frame with timeNumbers and timePoints from
+#' an object of class TP or fitMod.
+#'
+#' @param x An object of class TP or fitMod
+#'
+#' @return A data.frame with columns timeNumber and timePoint listing the
+#' time points in x
+#'
+#' @export
+getTimePoints <- function(x) {
+  ## Check input.
+  if (!inherits(x, "TP") && !inherits(x, "fitMod")) {
+    stop("x should be an object of class TP or fitMod")
+  }
+  return(attr(x = x, which = "timePoints"))
+}
+
