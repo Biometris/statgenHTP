@@ -33,7 +33,7 @@ correctSpatialSpATS <- function(fitMod) {
   }
   predVars <- setdiff(c(fixVars, "colNum", "rowNum", "colId", "rowId"),
                       c(geno.decomp, "check"))
-  pred <- predict(fitMod, which = predVars)
+  pred <- predict(fitMod, which = predVars, predFixed = "marginal")
   ## Merge genotype and timepoint to data
   pred <- merge(pred, fitMod$data[c("rowNum", "colNum", "genotype",
                                     "plotId", "timePoint", trait,
@@ -51,31 +51,15 @@ correctSpatialSpATS <- function(fitMod) {
                                                 first = genoStart))
 
   }
-  ## Temporary fix for difference between SpATS and asreml predictions.
-  ## asreml predicts marginal means whereas SpATS predicts conditional means.
-  ## By adding the means of the fixed effects to the conditional means the
-  ## marginal means are calculated.
-  ## Note that this means the standard errors are no longer correct.
-  corVars <- setdiff(fixVars, c(geno.decomp, "check"))
-  intercept <- fitMod$coeff["Intercept"]
-  if (length(corVars) > 0) {
-    ## Order in descreasing order so variables that are substrings of other
-    ## variables are treated correctly.
-    corVars <- corVars[order(nchar(corVars), decreasing = TRUE)]
-    ## Get coefficients for fixed variables.
-    coeffs <- fitMod$coeff[!attr(fitMod$coeff, "random")]
-    ## Loop over corVars and adjust predicted value by mean of fixed effects
-    ## for corVar. Then remove it from coeff so it isn't used again by a
-    ## shorter variable, i.e. repId1 and repId
-    for (corVar in corVars) {
-      corMean <- mean(c(0, coeffs[grepl(corVar, names(coeffs))]))
-      intercept <- intercept + corMean
-      coeffs <- coeffs[!grepl(corVar, names(coeffs))]
-    }
+  ## Predict intercept.
+  if (!is.null(geno.decomp)) {
+    predGD <- predict(fitMod, which = "geno.decomp")
+    intercept <- mean(predGD[["predicted.values"]])
+  } else {
+    intercept <- fitMod$coeff["Intercept"]
   }
   ## Obtain the corrected trait.
-  pred[[newTrait]] <- pred[[trait]] - pred[["predicted.values"]] +
-    intercept
+  pred[[newTrait]] <- pred[[trait]] - pred[["predicted.values"]] + intercept
   ## Select the variables needed for subsequent analyses.
   if (!useCheck) {
     pred[["genotype"]] <- pred[["genotype.y"]]
@@ -117,39 +101,28 @@ correctSpatialAsreml <- function(fitMod) {
   predVars <- c(fixVars, randVars)
   pred <- fitMod$call$data[union(c("genotype", if (useCheck) "check",
                                    "plotId", "timePoint", trait,
-                                   geno.decomp), c(randVars, fixVars))]
+                                   geno.decomp), predVars)]
   pred[[newTrait]] <- pred[[trait]]
-  ## Predict fixed effects.
+  ## Predict fixed + random effects.
   if (length(fixVars) > 0) {
-    predFix <- predictAsreml(fitMod, classify = paste0(fixVars, collapse = ":"),
-                             vcov = FALSE, present = fixVars)$pvals
-    pred <- merge(pred, predFix[c(fixVars, "predicted.value")])
-    pred[[newTrait]] <- pred[[newTrait]] - pred[["predicted.value"]]
-    pred[["predicted.value"]] <- NULL
-  }
-  ## Predict random effects.
-  if (length(randVars) > 0) {
-    predRand <- predictAsreml(fitMod,
-                              classify = paste0(randVars, collapse = ":"),
-                              vcov = FALSE, only = randVars)$pvals
-    pred <- merge(pred, predRand[c(randVars, "predicted.value")])
+    predFix <- predictAsreml(fitMod,
+                             classify = paste0(predVars, collapse = ":"),
+                             vcov = FALSE, present = predVars)$pvals
+    pred <- merge(pred, predFix[c(predVars, "predicted.value")])
     pred[[newTrait]] <- pred[[newTrait]] - pred[["predicted.value"]]
     pred[["predicted.value"]] <- NULL
   }
   ## Predict intercept.
-  if (length(fixVars) > 0) {
+  if (length(predVars) > 0) {
     if (!is.null(geno.decomp)) {
       predGD <- predictAsreml(fitMod, classify = "geno.decomp",
                               vcov = FALSE)$pvals
-      pred <- merge(pred, predGD[c("geno.decomp", "predicted.value")])
-      pred[[newTrait]] <- pred[[newTrait]] + pred[["predicted.value"]]
-      pred[["predicted.value"]] <- NULL
+      intercept <- mean(predGD[["predicted.value"]])
     } else {
-      predInt <- predictAsreml(fitMod, classify = "(Intercept)",
-                               vcov = FALSE,
-                               present = predVars)$pvals$predicted.value
-      pred[[newTrait]] <- pred[[newTrait]] + predInt
+      ## No predict here. Just get the intercept from the coefficients.
+      intercept <- fitMod$coefficients$fixed["(Intercept)", ]
     }
+    pred[[newTrait]] <- pred[[newTrait]] + intercept
   }
   if (length(predVars) == 0) {
     warning("No spatial or fixed effects to correct for. Returning raw data.\n")
