@@ -21,10 +21,10 @@ the genotypes.}
 the time points.}
 
 \item{timeFormat}{A character string indicating the input format of the time
-points. E.g. for a date/time input of the form day/month/year hour:minute, use
-\%d/\%m/\%Y \%H:\%M. For a full list of abbreviations see
-\code{\link[base]{strptime}}. If \code{NULL}, a best guess is performed
-based on the input.}
+points. E.g. for a date/time input of the form day/month/year hour:minute,
+use \%d/\%m/\%Y \%H:\%M. For a full list of abbreviations see
+\code{\link[base]{strptime}}. If \code{NULL}, a best guess is done based on
+the input.}
 
 \item{plotId}{A character string indicating the column in dat containing
 the plotId. This has to be a unique identifier per plot/plant per time point.}
