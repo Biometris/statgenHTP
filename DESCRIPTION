@@ -33,7 +33,7 @@ Imports:
     mgcv,
     reshape2,
     scales,
-    SpATS
+    SpATS (>= 1.0-10)
 Suggests: 
    asreml (>= 4.0), 
    knitr, 

@@ -25,18 +25,16 @@ predictGenoSpATS <- function(fitMod) {
   ## the intercept).
   predGeno <- predict(fitMod, which = c(genoCol,
                                         if (useGenoDecomp) "geno.decomp",
-                                        if (useCheck) "check"))
-  ## Repeat for the check genotypes.
+                                        if (useCheck) "check"),
+                      predFixed = "marginal")
+  ## Names of check genotypes should be in genoCol.
+  ## Now they are in check. Copy them.
   if (useCheck) {
-    ## Predict check genotypes.
-    predCheck <- predict(fitMod, which = "check")
-    ## Rename check to genotype for merging with genotype predictions.
-    predCheck[["genotype"]] <- predCheck[["check"]]
-    ## Remove noCheck
-    predCheck <- predCheck[predCheck[["genotype"]] != "noCheck", ]
-    ## Rename genoCol to genotype for merging with check predictions.
-    predGeno[["genotype"]] <- predGeno[[genoCol]]
-    predGeno <- rbind(predGeno, predCheck)
+    predGeno[[genoCol]] <- as.character(predGeno[[genoCol]])
+    predGeno[is.na(predGeno[[genoCol]]), genoCol] <-
+      as.character(predGeno[is.na(predGeno[[genoCol]]), "check"])
+    ## Rename genoCol to genotype for consistency with models without check.
+    predGeno[["genotype"]] <- as.factor(predGeno[[genoCol]])
   }
   if (useGenoDecomp) {
     if (!hasName(x = predGeno, name = "geno.decomp")) {
@@ -50,29 +48,6 @@ predictGenoSpATS <- function(fitMod) {
     genoStart <- nchar(as.character(predGeno[["geno.decomp"]])) + 2
     predGeno[["genotype"]] <- as.factor(substring(predGeno[["genotype"]],
                                                   first = genoStart))
-  }
-  ## Temporary fix for difference between SpATS and asreml predictions.
-  ## asreml predicts marginal means whereas SpATS predicts conditional means.
-  ## By adding the means of the fixed effects to the conditional means the
-  ## marginal means are calculated.
-  ## Note that this means the standard errors are no longer correct.
-  corVars <- setdiff(all.vars(fitMod$model$fixed),
-                     c(genoCol, "geno.decomp", "check"))
-  if (length(corVars) > 0) {
-    ## Order in descreasing order so variables that are substrings of other
-    ## variables are treated correctly.
-    corVars <- corVars[order(nchar(corVars), decreasing = TRUE)]
-    ## Get coefficients for fixed variables.
-    coeffs <- fitMod$coeff[!attr(fitMod$coeff, "random")]
-    ## Loop over corVars and adjust predicted value by mean of fixed effects
-    ## for corVar. Then remove it from coeff so it isn't used again by a
-    ## shorter variable, i.e. repId1 and repId
-    for (corVar in corVars) {
-      corMean <- mean(c(0, coeffs[grepl(corVar, names(coeffs))]))
-      predGeno[["predicted.values"]] <-
-        predGeno[["predicted.values"]] + corMean
-      coeffs <- coeffs[!grepl(corVar, names(coeffs))]
-    }
   }
   ## Include time point.
   predGeno[["timePoint"]] <- fitMod$data[["timePoint"]][1]
