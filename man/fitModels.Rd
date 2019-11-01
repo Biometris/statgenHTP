@@ -4,7 +4,7 @@
 \alias{fitModels}
 \title{Fit spatial models per time point}
 \usage{
-fitModels(TP, trait, timePoints = names(TP), covariates = NULL,
+fitModels(TP, trait, timePoints = names(TP), extraFixedFactors = NULL,
   geno.decomp = NULL, what = c("random", "fixed"), useCheck = FALSE,
   useRepId = FALSE, engine = c("SpATS", "asreml"), spatial = FALSE)
 }
@@ -20,7 +20,7 @@ value has to be an exact match to one of the existing time points. When using
 a number it will be matched by its number ("timeNumber") in the timePoints
 attribute of the TP object.}
 
-\item{covariates}{A character vector indicating the variables to use as
+\item{extraFixedFactors}{A character vector indicating the variables to use as extra
 fixed effects in the model.}
 
 \item{geno.decomp}{A character vector indicating the variables to use to
@@ -58,7 +58,7 @@ trait = \strong{genotype} + e\cr
 In case \code{useCheck = TRUE}, instead of genotype genoCheck is used as genotype
 and check is used as an extra fixed effect. So then the model becomes:\cr
 trait = \emph{check} + \strong{genoCheck} + e\cr
-Variables in \code{covariates} are fitted as extra fixed effects.\cr\cr
+Variables in \code{extraFixedFactors} are fitted as extra fixed effects.\cr\cr
 When \code{SpATS} is used for modeling, an extra spatial term is included
 in the model. This term is constructed using the function
 \code{\link[SpATS]{PSANOVA}} from the SpATS package as\cr
@@ -102,10 +102,11 @@ modPhenoSp <- fitModels(TP = phenoTP,
                         timePoints = seq(1,73,by=5))
 summary(modPhenoSp)
 
-## Fit a model with SpATS for a single time point with covariates and check genotypes:
+## Fit a model with SpATS for a single time point with extra fixed factors
+## and check genotypes:
 modPhenoSpCheck <- fitModels(TP = phenoTP,
                              trait = "EffpsII",
-                             covariates = c("repId", "Image_pos"),
+                             extraFixedFactors = c("repId", "Image_pos"),
                              useCheck = TRUE,
                              timePoints = 3)
 

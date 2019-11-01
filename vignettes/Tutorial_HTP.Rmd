@@ -273,14 +273,14 @@ When SpATS is used for modeling, an extra spatial term is included in the model.
 spatial component is composed using the `PSANOVA` function in the SpATS package which 
 uses 2-dimensional smoothing with P-splines as described in @Lee2013 and in @RodAlv2017. 
 See `help(PSANOVA, SpATS)` for a detailed description. Extra fixed effects may be fitted 
-using the option `covariates`. The model can also be fitted following a resolvable 
+using the option `extraFixedFactors`. The model can also be fitted following a resolvable 
 row-column design setting `useRepId` as `TRUE`. The model specifications are listed in 
 the table below. 
 
 option | model fitted | spatial term |
 --------------------|-----------------------------------------|-----------------|
 default | trait = **genotype** + **$\epsilon$** | PSANOVA |
-covariates = c("A","B") | trait = *A* + *B* + **genotype** + **$\epsilon$** | PSANOVA |
+extraFixedFactors = c("A","B") | trait = *A* + *B* + **genotype** + **$\epsilon$** | PSANOVA |
 useRepId = TRUE | trait = *repId* + **genotype** + **repId:rowId** + **repId:colId** +  **$\epsilon$** | PSANOVA |
 useCheck = TRUE | trait = *check* + **genoCheck** +  **$\epsilon$** | PSANOVA |
 
@@ -338,14 +338,14 @@ modPhenoSpFix <- fitModels(TP = phenoTP,
                            what = "fixed")
 ```
 
-The model can be extended by including covariates as main fixed effects:  
+The model can be extended by including extra main fixed effects:  
 EffpsII = *repId* + *Image_pos* + **genotype** + **rowId** + **colId** + **$\epsilon$**
 
 ```{r fitSpCov, message=FALSE, eval=FALSE}
-## Fit a model for a single time point with covariates.
+## Fit a model for a single time point with extra fixed factors.
 modPhenoSpCov <- fitModels(TP = phenoTP, 
                            trait = "EffpsII",
-                           covariates = c("repId", "Image_pos"), 
+                           extraFixedFactors = c("repId", "Image_pos"), 
                            timePoints = 3)
 ```
 
@@ -353,10 +353,10 @@ It can also be extended by including check genotypes:
 EffpsII = *repId* + *Image_pos* + *check* + **genoCheck** + **rowId** + **colId** + **$\epsilon$**
 
 ```{r fitSpCheck, message=FALSE, eval=FALSE}
-## Fit a model for a single time point with covariates and check genotypes.
+## Fit a model for a single time point with extra fixed effects and check   genotypes.
 modPhenoSpCheck <- fitModels(TP = phenoTP, 
                              trait = "EffpsII",
-                             covariates = c("repId", "Image_pos"),
+                             extraFixedFactors = c("repId", "Image_pos"),
                              useCheck = TRUE,
                              timePoints = 3)
 ```
@@ -454,7 +454,7 @@ The genotypic predictions of one time point are displayed in a table like the fo
 knitr::kable(head(genoPredSp), align=c('c','c','c','c','c'), padding = 0)
 ```
 
-> *TO NOTE: when covariates are used, the standard errors from SpATS are wrong. We are waiting for an update of the package.*
+> *TO NOTE: when extraFixedFactors are used, the standard errors from SpATS are wrong. We are waiting for an update of the package.*
 
 The corrected values are obtained by subtracting the estimated sources of variation which
 are of no interest to the raw data:  
@@ -463,7 +463,7 @@ This allows keeping the data at the experimental unit level (plants) and having 
 degrees of freedom for further modeling (e.g. time course modeling and estimation of the
 time course parameter(s)). 
 
-> *TO NOTE: all the estimated fixed effects included in `covariates` are removed from the corrected phenotype (EstCovar).* 
+> *TO NOTE: all the estimated fixed effects included in `extraFixedFactors` are removed from the corrected phenotype (EstCovar).* 
 
 The corrected values of one time point are displayed in a table
 like the following:
@@ -538,7 +538,7 @@ When asreml is used for modeling and `spatial = TRUE`, four models are fitted wi
 random terms and covariance structures. The best model is determined based on a 
 goodness-of-fit criterion, AIC, on 20% on the time points or at least 10 
 time points. The best model is then run on all time points. As for SpATS, all the 
-asreml models can be extended by fitting fixed covariates using the option `covariates`. 
+asreml models can be extended by fitting extra fixed factors using the option `extraFixedFactors`. 
 
 > *Note that for the moment, it is only running with ASReml-R version 4 only.*
 
@@ -548,7 +548,7 @@ asreml models can be extended by fitting fixed covariates using the option `cova
 |                | trait = **genotype** + **row** + **$\epsilon$** | ar1(rowId):colId |
 |                | trait = **genotype** + **col** + **$\epsilon$** | rowId:ar1(colId) |
 |                | trait = **genotype** + **row** + **col** + **$\epsilon$**|    - |
-| spatial = TRUE, covariates = c("A","B") | trait = *A* + *B* + **genotype** + **row** + **col** + **$\epsilon$** | ar1(rowId):ar1(colId) |
+| spatial = TRUE, extraFixedFactors = c("A","B") | trait = *A* + *B* + **genotype** + **row** + **col** + **$\epsilon$** | ar1(rowId):ar1(colId) |
 |                                         | trait = *A* + *B* + **genotype** + **row** + **$\epsilon$** | ar1(rowId):colId |
 |                                         | trait = *A* + *B* + **genotype** + **col** + **$\epsilon$** | rowId:ar1(colId) |
 |                                         | trait = *A* + *B* + **genotype** + **row** + **col** + **$\epsilon$** |  - |
@@ -608,12 +608,12 @@ provided in [@Cullis2006].
 ## Modeling without spatial terms with ASReml {#asremlnoSP}
 
 When the row and column coordinates are not available, only asreml can be used for modeling.
-In that case, the model simply uses the genotype and the covariates, if any.
+In that case, the model simply uses the genotype and the extraFixedFactors, if any.
 
 | option | model fitted | spatial term |
 |---------------|---------------------------------------------|-------------------|
 | spatial = FALSE | trait = **genotype** + **$\epsilon$** |  - |
-| spatial = FALSE, covariates = c("A","B") | trait = *A* + *B* + **genotype** + **$\epsilon$** | - |
+| spatial = FALSE, extraFixedFactors = c("A","B") | trait = *A* + *B* + **genotype** + **$\epsilon$** | - |
 
 In the models above and below, fixed effects are indicated in *italics* whereas random 
 effects are indicated in **bold**. "genotype" can be fitted as **random** or *fixed* effect
@@ -689,13 +689,13 @@ plot(phenoTParch,
 
 Using the `geno.decomp` option when modeling will have two main consequences in the 
 model: the `geno.decomp` variable(s) will be added as main fixed effect(s) and also as 
-interaction(s) with the genotype effect (and the covariates and/or check, if any, with spats only). 
+interaction(s) with the genotype effect (and the extraFixedFactors and/or check, if any, with spats only). 
 The table below provides one example with three models:
 
 | option | engine | model fitted | spatial term |
 |--------------------|--------|-----------------------------------------|------------|
 | geno.decomp = c("treatment") | spats | trait = *treatment* + **treatment:genotype** + **row** + **col** + **$\epsilon$** |  PSANOVA |
-| geno.decomp = c("treatment"), useCheck = TRUE, covariates = "covar1" | spats | trait = *treatment* + *treatment:covar1* + *treatment:check* + **treatment:genoCheck** + **row** + **col** + **$\epsilon$** |  PSANOVA |
+| geno.decomp = c("treatment"), useCheck = TRUE, extraFixedFactors = "covar1" | spats | trait = *treatment* + *treatment:covar1* + *treatment:check* + **treatment:genoCheck** + **row** + **col** + **$\epsilon$** |  PSANOVA |
 | spatial = TRUE, geno.decomp = c("treatment") | asreml | trait = *treatment* + **treatment:genotype** + **row** + **col** + **$\epsilon$** | ar1(row):ar1(col) |
 
 > *Note that for the moment, it is not possible to use the combination of geno.decomp and genotype as fixed.*

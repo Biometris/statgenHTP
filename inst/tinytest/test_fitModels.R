@@ -16,9 +16,9 @@ expect_error(fitModels(), "TP should be an object of class TP")
 expect_error(fitModels(testTP, trait = 1), "trait should be a character string")
 expect_error(fitModels(testTP, trait = "trait"),
              "trait should be a column in TP for all timePoints")
-expect_error(fitModels(testTP, trait = "t1", covariates = 1),
-             "covariates should be a character vector")
-expect_error(fitModels(testTP, trait = "t1", covariates = "c1"),
+expect_error(fitModels(testTP, trait = "t1", extraFixedFactors = 1),
+             "extraFixedFactors should be a character vector")
+expect_error(fitModels(testTP, trait = "t1", extraFixedFactors = "c1"),
              "c1 should be a column in TP for all timePoints")
 expect_error(fitModels(testTP, trait = "t1", geno.decomp = 1),
              "geno.decomp should be a character vector")
@@ -73,8 +73,8 @@ expect_equal(geno(testFitMod), c("genotype", "TRUE"))
 
 ## Repeat model check for different combinations of input variables.
 
-## Add covariates.
-testFitMod1 <- fitModels(testTP, trait = "t1", covariates = "Basin")
+## Add extra fixed factors.
+testFitMod1 <- fitModels(testTP, trait = "t1", extraFixedFactors = "Basin")
 
 expect_equal(fix(testFitMod1), formula("~Basin"))
 expect_equal(rand(testFitMod1), formula("~rowId + colId"))
@@ -87,9 +87,9 @@ expect_equal(fix(testFitMod2), formula("~geno.decomp"))
 expect_equal(rand(testFitMod2), formula("~rowId + colId"))
 expect_equal(geno(testFitMod2), c("genotype", "geno.decomp", "TRUE"))
 
-## Add covariates and geno.decomp
+## Add extra fixed factors and geno.decomp
 testFitMod3 <- fitModels(testTP, trait = "t1", geno.decomp = "repId",
-                         covariates = "Basin")
+                         extraFixedFactors = "Basin")
 
 expect_equal(fix(testFitMod3), formula("~Basin"))
 expect_equal(rand(testFitMod3), formula("~rowId + colId"))

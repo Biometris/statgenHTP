@@ -11,7 +11,7 @@
 #' In case \code{useCheck = TRUE}, instead of genotype genoCheck is used as genotype
 #' and check is used as an extra fixed effect. So then the model becomes:\cr
 #' trait = \emph{check} + \strong{genoCheck} + e\cr
-#' Variables in \code{covariates} are fitted as extra fixed effects.\cr\cr
+#' Variables in \code{extraFixedFactors} are fitted as extra fixed effects.\cr\cr
 #' When \code{SpATS} is used for modeling, an extra spatial term is included
 #' in the model. This term is constructed using the function
 #' \code{\link[SpATS]{PSANOVA}} from the SpATS package as\cr
@@ -44,7 +44,7 @@
 #' value has to be an exact match to one of the existing time points. When using
 #' a number it will be matched by its number ("timeNumber") in the timePoints
 #' attribute of the TP object.
-#' @param covariates A character vector indicating the variables to use as
+#' @param extraFixedFactors A character vector indicating the variables to use as extra
 #' fixed effects in the model.
 #' @param geno.decomp A character vector indicating the variables to use to
 #' group the genotypic variance in the model.
@@ -81,10 +81,11 @@
 #'                         timePoints = seq(1,73,by=5))
 #' summary(modPhenoSp)
 #'
-#' ## Fit a model with SpATS for a single time point with covariates and check genotypes:
+#' ## Fit a model with SpATS for a single time point with extra fixed factors
+#' ## and check genotypes:
 #' modPhenoSpCheck <- fitModels(TP = phenoTP,
 #'                              trait = "EffpsII",
-#'                              covariates = c("repId", "Image_pos"),
+#'                              extraFixedFactors = c("repId", "Image_pos"),
 #'                              useCheck = TRUE,
 #'                              timePoints = 3)
 #'
@@ -130,7 +131,7 @@
 fitModels <- function(TP,
                       trait,
                       timePoints = names(TP),
-                      covariates = NULL,
+                      extraFixedFactors = NULL,
                       geno.decomp = NULL,
                       what = c("random", "fixed"),
                       useCheck = FALSE,
@@ -154,18 +155,18 @@ fitModels <- function(TP,
   if (!all(sapply(X = TP, FUN = hasName, name = trait))) {
     stop(trait, " should be a column in TP for all timePoints.\n")
   }
-  ## Check covariates.
+  ## Check extra fixed factors.
   if (useRepId) {
-    ## Add repId to covariates so it is used as fixed effect.
-    covariates <- c(covariates, "repId")
+    ## Add repId to extraFixedFactors so it is used as fixed effect.
+    extraFixedFactors <- c(extraFixedFactors, "repId")
   }
-  if (!is.null(covariates)) {
-    if (!is.character(covariates)) {
-      stop("covariates should be a character vector.\n")
+  if (!is.null(extraFixedFactors)) {
+    if (!is.character(extraFixedFactors)) {
+      stop("extraFixedFactors should be a character vector.\n")
     }
-    for (covar in covariates) {
-      if (!all(sapply(X = TP, FUN = hasName, name = covar))) {
-        stop(covar, " should be a column in TP for all timePoints.\n")
+    for (extraFF in extraFixedFactors) {
+      if (!all(sapply(X = TP, FUN = hasName, name = extraFF))) {
+        stop(extraFF, " should be a column in TP for all timePoints.\n")
       }
     }
   }
@@ -214,8 +215,8 @@ fitModels <- function(TP,
   }
   ## Extract timepoints attribute for re-adding in the end.
   timePoints <- attr(TP, which = "timePoints")
-  ## If geno.decomp is used genotype and covariates have to be replaced by
-  ## an interaction of genotype and covariates with the geno.decomp variables.
+  ## If geno.decomp is used genotype and extraFixedFactors have to be replaced by
+  ## an interaction of genotype and extraFixedFactors with the geno.decomp variables.
   ## Construct an interaction of all variables in geno.decomp.
   if (length(geno.decomp) > 0) {
     TP <- lapply(X = TP, FUN = function(timePoint) {
@@ -228,14 +229,14 @@ fitModels <- function(TP,
   }
   ## Get column containing genotype.
   genoCol <- if (useCheck) "genoCheck" else "genotype"
-  ## Replace genotype and covariates by their interaction with geno.decomp.
+  ## Replace genotype and extraFixedFactors by their interaction with geno.decomp.
   if (!is.null(geno.decomp) && engine == "SpATS") {
     TP <- lapply(X = TP, FUN = function(timePoint) {
       timePoint[[genoCol]] <- interaction(timePoint[[geno.decomp]],
                                           timePoint[[genoCol]], sep = "_")
-      for (covar in covariates) {
-        timePoint[[covar]] <- interaction(timePoint[[geno.decomp]],
-                                          timePoint[[covar]], sep = "_")
+      for (extraFF in extraFixedFactors) {
+        timePoint[[extraFF]] <- interaction(timePoint[[geno.decomp]],
+                                          timePoint[[extraFF]], sep = "_")
       }
       if (useCheck) {
         timePoint[["check"]] <- interaction(timePoint[[geno.decomp]],
@@ -244,25 +245,25 @@ fitModels <- function(TP,
       return(timePoint)
     })
   }
-  ## All covariates should be factors. If not convert them to factor.
-  for (covar in covariates) {
+  ## All extraFixedFactors should be factors. If not convert them to factor.
+  for (extraFF in extraFixedFactors) {
     TP <- lapply(X = TP, FUN = function(timePoint) {
-      if (!is.factor(timePoint[[covar]])) {
-        timePoint[[covar]] <- as.factor(timePoint[[covar]])
+      if (!is.factor(timePoint[[extraFF]])) {
+        timePoint[[extraFF]] <- as.factor(timePoint[[extraFF]])
       }
       return(timePoint)
     })
   }
-  ## Fixed part consists of covariates, geno.decomp and check.
+  ## Fixed part consists of extraFixedFactors, geno.decomp and check.
   fixedForm <- formula("~ 1")
-  if (!is.null(covariates)) {
+  if (!is.null(extraFixedFactors)) {
     fixedForm <- update(fixedForm,
-                        paste("~ . +" , paste(c(covariates), collapse = "+")))
+                        paste("~ . +" , paste(c(extraFixedFactors), collapse = "+")))
   }
   if (useCheck) {
     fixedForm <- update(fixedForm, "~ . + check")
   }
-  if (genoRand && !is.null(geno.decomp) && is.null(covariates) && !useCheck) {
+  if (genoRand && !is.null(geno.decomp) && is.null(extraFixedFactors) && !useCheck) {
     fixedForm <- update(fixedForm, "~ . + geno.decomp")
   }
   if (engine == "SpATS") {
@@ -276,7 +277,7 @@ fitModels <- function(TP,
       message(timePoint[["timePoint"]][1])
       ## Only keep columns needed for analysis.
       modCols <- c("timePoint", "plotId", "genotype", "genoCheck", "check",
-                   "colId", "rowId", "colNum", "rowNum", covariates,
+                   "colId", "rowId", "colNum", "rowNum", extraFixedFactors,
                    geno.decomp, trait)
       modDat <- timePoint[colnames(timePoint) %in% modCols]
       modDat <- droplevels(modDat)
@@ -302,7 +303,7 @@ fitModels <- function(TP,
       randForm <- formula(paste("~ ", if (is.null(geno.decomp)) genoCol else
         paste0("at(", geno.decomp, "):", genoCol)))
       ## For SpATS geno.decomp is included by adding interaction within
-      ## covariates and check.
+      ## extraFixedFactors and check.
       ## For asreml this is done by explicitly adding interactions within
       ## model formulas.
       if (!is.null(geno.decomp)) {
@@ -311,11 +312,11 @@ fitModels <- function(TP,
       if (useCheck) {
         fixedForm <- update(fixedForm, "~ . - check + geno.decomp:check")
       }
-      if (!is.null(covariates)) {
+      if (!is.null(extraFixedFactors)) {
         fixedForm <- update(fixedForm,
-                            paste("~ . -" , paste(covariates, collapse = "-")))
+                            paste("~ . -" , paste(extraFixedFactors, collapse = "-")))
         fixedForm <- update(fixedForm, paste0("~ . + ",
-                                             paste0("geno.decomp:", covariates),
+                                             paste0("geno.decomp:", extraFixedFactors),
                                              collapse = "+"))
       }
     } else {
