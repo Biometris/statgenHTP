@@ -301,6 +301,23 @@ fitModels <- function(TP,
       ## Construct formula for random part of the model.
       randForm <- formula(paste("~ ", if (is.null(geno.decomp)) genoCol else
         paste0("at(", geno.decomp, "):", genoCol)))
+      ## For SpATS geno.decomp is included by adding interaction within
+      ## covariates and check.
+      ## For asreml this is done by explicitly adding interactions within
+      ## model formulas.
+      if (!is.null(geno.decomp)) {
+        fixedForm <- update(fixedForm, "~ . + geno.decomp")
+      }
+      if (useCheck) {
+        fixedForm <- update(fixedForm, "~ . - check + geno.decomp:check")
+      }
+      if (!is.null(covariates)) {
+        fixedForm <- update(fixedForm,
+                            paste("~ . -" , paste(covariates, collapse = "-")))
+        fixedForm <- update(fixedForm, paste0("~ . + ",
+                                             paste0("geno.decomp:", covariates),
+                                             collapse = "+"))
+      }
     } else {
       ## For genotype fixed the base random formula is empty.
       ## Genotype is added to the fixedForm.

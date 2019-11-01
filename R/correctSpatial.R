@@ -104,7 +104,7 @@ correctSpatialAsreml <- function(fitMod) {
                                    geno.decomp), predVars)]
   pred[[newTrait]] <- pred[[trait]]
   ## Predict fixed + random effects.
-  if (length(fixVars) > 0) {
+  if (length(predVars) > 0) {
     predFix <- predictAsreml(fitMod,
                              classify = paste0(predVars, collapse = ":"),
                              vcov = FALSE, present = predVars)$pvals
@@ -116,6 +116,7 @@ correctSpatialAsreml <- function(fitMod) {
   if (length(predVars) > 0) {
     if (!is.null(geno.decomp)) {
       predGD <- predictAsreml(fitMod, classify = "geno.decomp",
+                              present = c("geno.decomp", predVars),
                               vcov = FALSE)$pvals
       intercept <- mean(predGD[["predicted.value"]])
     } else {
