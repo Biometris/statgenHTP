@@ -34,7 +34,6 @@
 #' ## Extract the genotypic predictions for one time point:
 #' genoPredSp <- getGenoPred(modPhenoSp, timePoints = 6)
 #'
-#'
 #' @export
 getGenoPred <- function(fitMod,
                         timePoints = names(fitMod),
@@ -49,7 +48,15 @@ getGenoPred <- function(fitMod,
   ## Get predictions per time point.
   genoPred <- lapply(X = fitMod, FUN = predictGeno)
   ## Create one data.frame containing all time points.
-  genoPred <- Reduce(f = rbind, x = genoPred)
+  genoPred <- do.call(what = rbind, args = genoPred)
+  ## Create a data.frame with combinations of genotype and geno.decomp
+  ## Only combinations that are present in at least one of the timePoints are
+  ## included.
+  full <- unique(genoPred[colnames(genoPred) %in% c("genotype", "geno.decomp")])
+  full <- merge(unique(genoPred["timePoint"]), full)
+  ## Merge to the predictions to get NA predictions for genotypes that are
+  ## completely missing at a certain timepoint.
+  genoPred <- merge(full, genoPred, all.x = TRUE)
   ## Add time numbers.
   genoPred <- addTimeNumber(fitMod, genoPred)
   if (!is.null(outFile)) {

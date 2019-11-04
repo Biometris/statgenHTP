@@ -45,5 +45,4 @@ modPhenoSp <- fitModels(TP = phenoTP,
 ## Extract the genotypic predictions for one time point:
 genoPredSp <- getGenoPred(modPhenoSp, timePoints = 6)
 
-
 }
