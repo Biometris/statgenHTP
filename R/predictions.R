@@ -38,9 +38,18 @@ predictGenoSpATS <- function(fitMod) {
   }
   if (useGenoDecomp) {
     if (!hasName(x = predGeno, name = "geno.decomp")) {
-      genoGenoDecomp <- unique(fitMod$data[c(genoCol, "geno.decomp")])
-      predGeno <- merge(predGeno, genoGenoDecomp,
-                        by.x = "genotype", by.y = genoCol)
+      if (useCheck) {
+        genoGenoDecomp <- unique(fitMod$data[c(genoCol, "geno.decomp",
+                                               "check")])
+        genoGenoDecomp[[genoCol]] <- as.character(genoGenoDecomp[[genoCol]])
+        genoGenoDecomp[is.na(genoGenoDecomp[[genoCol]]), genoCol] <-
+          as.character(genoGenoDecomp[is.na(genoGenoDecomp[[genoCol]]), "check"])
+        ## Rename genoCol to genotype for consistency with models without check.
+        genoGenoDecomp[["genotype"]] <- as.factor(genoGenoDecomp[[genoCol]])
+      } else {
+        genoGenoDecomp <- unique(fitMod$data[c(genoCol, "geno.decomp")])
+      }
+      predGeno <- merge(predGeno, genoGenoDecomp, by = "genotype")
     }
     ## Genotype was converted to an interaction term of genotype and
     ## geno.decomp in the proces of fitting the model. That needs to be
