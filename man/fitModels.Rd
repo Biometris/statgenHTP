@@ -21,15 +21,16 @@ value has to be an exact match to one of the existing time points. When using
 a number it will be matched by its number ("timeNumber") in the timePoints
 attribute of the TP object.}
 
-\item{extraFixedFactors}{A character vector indicating the variables to use as extra
-fixed effects in the model.}
+\item{extraFixedFactors}{A character vector indicating the variables to use
+as extra fixed effects in the model.}
 
 \item{geno.decomp}{A character vector indicating the variables to use to
 group the genotypic variance in the model.}
 
 \item{what}{A character vector specifying whether "genotype" should
-be fitted as "random" or "fixed" effect. Note that when using \code{geno.decomp},
-fitting a model with genotype as "fixed" effect is not possible.}
+be fitted as "random" or "fixed" effect. Note that when using
+\code{geno.decomp}, fitting a model with genotype as "fixed" effect is not
+possible.}
 
 \item{useCheck}{Should check genotypes be used as an extra factor in the
 model?}
@@ -42,6 +43,8 @@ rowId and colId in the random part of the model.}
 models.}
 
 \item{spatial}{Should a spatial model be fitted for asreml?}
+
+\item{quiet}{Should printed progress messages be suppressed?}
 }
 \value{
 An object of class fitMod, a list of fitted models.
@@ -56,8 +59,9 @@ for the exact models fitted.
 The actual model fitted depends on the function parameters secified. The
 basic model is the following:\cr
 trait = \strong{genotype} + e\cr
-In case \code{useCheck = TRUE}, instead of genotype genoCheck is used as genotype
-and check is used as an extra fixed effect. So then the model becomes:\cr
+In case \code{useCheck = TRUE}, instead of genotype genoCheck is used as
+genotype and check is used as an extra fixed effect. So then the model
+becomes:\cr
 trait = \emph{check} + \strong{genoCheck} + e\cr
 Variables in \code{extraFixedFactors} are fitted as extra fixed effects.\cr\cr
 When \code{SpATS} is used for modeling, an extra spatial term is included
@@ -67,9 +71,9 @@ in the model. This term is constructed using the function
 where\cr \code{nSeg = (number of columns/2, number of rows/2)}.\cr\cr
 When \code{asreml} is used for modeling and \code{spatial = TRUE},
 four models are fitted with different random terms and covariance structures.
-The best model is determined based on a goodness-of-fit criterion, AIC, on 20% of
-the time points or at least 10 time points. The best model is then run on all
-time points.
+The best model is determined based on a goodness-of-fit criterion, AIC,
+on 20% of the time points or at least 10 time points. The best model is then
+run on all time points.
 The following combinations of random and spatial terms are fitted
 \itemize{
 \item{random = repId:rowId + repId:colId, spatial = NULL}
@@ -79,9 +83,9 @@ The following combinations of random and spatial terms are fitted
 }
 If there are no replicates in the model, repId is left out from the random
 parts above.\cr\cr
-When \code{geno.decomp} is specified, the genotypic variance is decomposed following
-the variable(s) chosen. For example, when a treatment is used in \code{geno.decomp},
-the initial model becomes:\cr
+When \code{geno.decomp} is specified, the genotypic variance is decomposed
+following the variable(s) chosen. For example, when a treatment is used in
+\code{geno.decomp}, the initial model becomes:\cr
 trait = \emph{treatment} + \strong{treatment:genotype} + e\cr
 }
 \examples{
