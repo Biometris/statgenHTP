@@ -137,7 +137,8 @@ fitModels <- function(TP,
                       useCheck = FALSE,
                       useRepId = FALSE,
                       engine = c("SpATS", "asreml"),
-                      spatial = FALSE) {
+                      spatial = FALSE,
+                      quiet = FALSE) {
   ## Checks.
   if (missing(TP) || !inherits(TP, "TP")) {
     stop("TP should be an object of class TP.\n")
@@ -274,7 +275,9 @@ fitModels <- function(TP,
     }
     ## Loop on timepoint to run SpATS.
     fitMods <- lapply(X = TP, function(timePoint) {
-      message(timePoint[["timePoint"]][1])
+      if (!quiet) {
+        message(timePoint[["timePoint"]][1])
+      }
       ## Only keep columns needed for analysis.
       modCols <- c("timePoint", "plotId", "genotype", "genoCheck", "check",
                    "colId", "rowId", "colNum", "rowNum", extraFixedFactors,
@@ -330,7 +333,9 @@ fitModels <- function(TP,
     if (!spatial) {
       ## Loop on timepoint to run asreml.
       fitMods <- lapply(X = TP, function(timePoint) {
-        message(timePoint[["timePoint"]][1])
+        if (!quiet) {
+          message(timePoint[["timePoint"]][1])
+        }
         ## Only keep columns needed for analysis.
         modDat <- droplevels(timePoint)
         ## Run model.
@@ -364,7 +369,9 @@ fitModels <- function(TP,
       fitMods <- setNames(vector(mode = "list", length = length(TP)), names(TP))
       for (i in seq_along(TP)) {
         timePoint <- TP[[i]]
-        message(timePoint[["timePoint"]][1])
+        if (!quiet) {
+          message(timePoint[["timePoint"]][1])
+        }
         ## Only keep columns needed for analysis.
         modDat <- droplevels(timePoint)
         asrFitSpat <- bestSpatMod(modDat = modDat, traits = trait,

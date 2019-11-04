@@ -6,7 +6,8 @@
 \usage{
 fitModels(TP, trait, timePoints = names(TP), extraFixedFactors = NULL,
   geno.decomp = NULL, what = c("random", "fixed"), useCheck = FALSE,
-  useRepId = FALSE, engine = c("SpATS", "asreml"), spatial = FALSE)
+  useRepId = FALSE, engine = c("SpATS", "asreml"), spatial = FALSE,
+  quiet = FALSE)
 }
 \arguments{
 \item{TP}{An object of class TP.}

@@ -15,9 +15,10 @@ testTP <- createTimePoints(dat = testDat, experimentName = "testExp",
                            plotId = "pos", repId = "Replicate", rowNum = "y",
                            colNum = "x")
 ## Create fitMod object.
-testFitMod <- fitModels(testTP, trait = "t1")
+testFitMod <- fitModels(testTP, trait = "t1", quiet = TRUE)
 ## Create another fitMod object for testing with geno.decomp.
-testFitMod2 <- fitModels(testTP, trait = "t1", geno.decomp = "repId")
+testFitMod2 <- fitModels(testTP, trait = "t1", geno.decomp = "repId",
+                         quiet = TRUE)
 
 ## Create a temporary outfile for writing plots.
 tmpFile <- tempfile(fileext = ".pdf")

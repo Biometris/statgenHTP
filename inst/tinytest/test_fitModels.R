@@ -43,7 +43,7 @@ expect_error(fitModels(testTP2, trait = "t1", useRepId = TRUE),
 expect_error(fitModels(testTP2, trait = "t1"),
              "columns in TP for all timePoints when fitting spatial")
 
-testFitMod <- fitModels(testTP, trait = "t1")
+testFitMod <- fitModels(testTP, trait = "t1", quiet = TRUE)
 expect_true(inherits(testFitMod, "fitMod"))
 
 ## Check that fitMod structure is correct.
@@ -74,14 +74,16 @@ expect_equal(geno(testFitMod), c("genotype", "TRUE"))
 ## Repeat model check for different combinations of input variables.
 
 ## Add extra fixed factors.
-testFitMod1 <- fitModels(testTP, trait = "t1", extraFixedFactors = "Basin")
+testFitMod1 <- fitModels(testTP, trait = "t1", extraFixedFactors = "Basin",
+                         quiet = TRUE)
 
 expect_equal(fix(testFitMod1), formula("~Basin"))
 expect_equal(rand(testFitMod1), formula("~rowId + colId"))
 expect_equal(geno(testFitMod1), c("genotype", "TRUE"))
 
 ## Add geno.decomp.
-testFitMod2 <- fitModels(testTP, trait = "t1", geno.decomp = "repId")
+testFitMod2 <- fitModels(testTP, trait = "t1", geno.decomp = "repId",
+                         quiet = TRUE)
 
 expect_equal(fix(testFitMod2), formula("~geno.decomp"))
 expect_equal(rand(testFitMod2), formula("~rowId + colId"))
@@ -89,14 +91,14 @@ expect_equal(geno(testFitMod2), c("genotype", "geno.decomp", "TRUE"))
 
 ## Add extra fixed factors and geno.decomp
 testFitMod3 <- fitModels(testTP, trait = "t1", geno.decomp = "repId",
-                         extraFixedFactors = "Basin")
+                         extraFixedFactors = "Basin", quiet = TRUE)
 
 expect_equal(fix(testFitMod3), formula("~Basin"))
 expect_equal(rand(testFitMod3), formula("~rowId + colId"))
 expect_equal(geno(testFitMod3), c("genotype", "geno.decomp", "TRUE"))
 
 ## Add repId.
-testfitMod4 <- fitModels(testTP, trait = "t1", useRepId = TRUE)
+testfitMod4 <- fitModels(testTP, trait = "t1", useRepId = TRUE, quiet = TRUE)
 
 expect_equal(fix(testfitMod4), formula("~repId"))
 expect_equal(rand(testfitMod4), formula("~repId:rowId + repId:colId"))
