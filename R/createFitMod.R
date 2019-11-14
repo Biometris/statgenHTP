@@ -535,10 +535,10 @@ spatPlot <- function(fitMod,
                         title = legends[3], colors = colors)
   ## Spatial plot only for SpATS.
   if (engine == "SpATS") {
+    ## Get tickmarks from first plot to be used as ticks.
+    ## Spatial plot tends to use different tickmarks by default.
+    xTicks <- ggplot_build(plots[[1]])$layout$panel_params[[1]]$x.major_source
     if (spaTrend == "raw") {
-      ## Get tickmarks from first plot to be used as ticks.
-      ## Spatial plot tends to use different tickmarks by default.
-      xTicks <- ggplot_build(plots[[1]])$layout$panel_params[[1]]$x.major_source
       plots$p4 <- fieldPlot(plotDat = plotDatSpat, fillVar = "value",
                             title = legends[4], colors = colors,
                             xTicks = xTicks)
@@ -549,7 +549,8 @@ spatPlot <- function(fitMod,
       plots$p4 <- fieldPlotPcts(plotDat = plotDatSpat, fillVar = "value",
                                 title = legends[4], zlim = zlim,
                                 colors = colorRampPalette(c("red", "yellow", "blue"),
-                                                          space = "Lab")(100))
+                                                          space = "Lab")(100),
+                                xTicks = xTicks)
     }
   }
   plots$p5 <- fieldPlot(plotDat = plotDat, fillVar = "predicted.values",
@@ -629,14 +630,12 @@ fieldPlotPcts <- function(plotDat,
     ## Adjust plot colors.
     scale_fill_gradientn(limits = zlim, colors = colors, name = NULL,
                          labels = scales::percent,
-                         breaks = seq(zlim[1], zlim[2],
-                                      length.out = 5)) +
+                         breaks = seq(zlim[1], zlim[2], length.out = 5)) +
     scale_color_manual(values = NA) +
-    guides(
-      fill = guide_colorbar(order = 1),
-      color = guide_legend("Larger than scale limit",
-                           override.aes = list(fill = "grey50",
-                                               color = "grey50"))) +
+    guides(fill = guide_colorbar(order = 1),
+           color = guide_legend("Larger than scale limit",
+                                override.aes = list(fill = "grey50",
+                                                    color = "grey50"))) +
     ## No background. Center and resize title. Resize axis labels.
     ## Remove legend title and resize legend entries.
     theme(panel.background = element_blank(),
