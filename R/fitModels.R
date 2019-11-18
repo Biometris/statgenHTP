@@ -159,6 +159,18 @@ fitModels <- function(TP,
   if (!all(sapply(X = TP, FUN = hasName, name = trait))) {
     stop(trait, " should be a column in TP for all timePoints.\n")
   }
+  missTraitTP <- names(TP)[sapply(X = TP, FUN = function(timePoint) {
+    all(is.na(timePoint[[trait]]))
+  })]
+  if (length(missTraitTP) > 0) {
+    warning(trait, "has only NA values for the following time points: \n",
+            paste0(missTraitTP, collapse = ", "), "\n",
+            "Model not fitted for those time points.", call. = FALSE)
+    TP <- TP[names(TP)[!names(TP) %in% missTraitTP]]
+    if (length(TP) == 0) {
+      stop("No time points left for fitting models.\n")
+    }
+  }
   ## Check extra fixed factors.
   if (useRepId) {
     ## Add repId to extraFixedFactors so it is used as fixed effect.
@@ -262,12 +274,14 @@ fitModels <- function(TP,
   fixedForm <- formula("~ 1")
   if (!is.null(extraFixedFactors)) {
     fixedForm <- update(fixedForm,
-                        paste("~ . +" , paste(c(extraFixedFactors), collapse = "+")))
+                        paste("~ . +" , paste(c(extraFixedFactors),
+                                              collapse = "+")))
   }
   if (useCheck) {
     fixedForm <- update(fixedForm, "~ . + check")
   }
-  if (genoRand && !is.null(geno.decomp) && is.null(extraFixedFactors) && !useCheck) {
+  if (genoRand && !is.null(geno.decomp) && is.null(extraFixedFactors) &&
+      !useCheck) {
     fixedForm <- update(fixedForm, "~ . + geno.decomp")
   }
   if (engine == "SpATS") {
@@ -319,12 +333,14 @@ fitModels <- function(TP,
         fixedForm <- update(fixedForm, "~ . - check + geno.decomp:check")
       }
       if (!is.null(extraFixedFactors)) {
+        # fixedForm <- update(fixedForm,
+        #                     paste("~ . -" , paste(extraFixedFactors,
+        #                                           collapse = "-")))
         fixedForm <- update(fixedForm,
-                            paste("~ . -" , paste(extraFixedFactors, collapse = "-")))
-        fixedForm <- update(fixedForm, paste0("~ . + ",
-                                             paste0("geno.decomp:", extraFixedFactors),
-                                             collapse = "+"))
-      }
+                            paste0("~ . + ",
+                                   paste0("geno.decomp:", extraFixedFactors),
+                                   collapse = "+"))
+        }
     } else {
       ## For genotype fixed the base random formula is empty.
       ## Genotype is added to the fixedForm.
