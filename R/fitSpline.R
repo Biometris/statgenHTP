@@ -44,6 +44,7 @@ fitSpline <- function(corrDat,
       obj <- mgcv::gam(modForm, data = dat, method = "REML")
       ## Extract the spline coefficients.
       coeff <- data.frame(obj$coefficients, plotId = plant)
+      coeff$type <- row.names(coeff)
       ## Predictions on a dense grid.
       ## check how to set the grid.
       x0 = seq(from = min(dat[["timeNumber"]]), to = max(dat[["timeNumber"]]),
@@ -58,7 +59,7 @@ fitSpline <- function(corrDat,
   coefTot <- do.call(rbind, lapply(fitSp, `[[`, 1))
   ## Remove brackets in coeffient names.
   coefTot[["type"]] <- gsub(pattern = "[()]", replacement = "",
-                            x = row.names(coefTot))
+                            x =  coefTot[["type"]])
   ## Add genotype.
   coefTot[["genotype"]] <- plantGeno[match(coefTot[["plotId"]],
                                            plantGeno[["plotId"]]), "genotype"]
