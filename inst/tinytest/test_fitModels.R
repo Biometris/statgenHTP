@@ -43,6 +43,18 @@ expect_error(fitModels(testTP2, trait = "t1", useRepId = TRUE),
 expect_error(fitModels(testTP2, trait = "t1"),
              "columns in TP for all timePoints when fitting spatial")
 
+## Create TP object with all NA for t1.
+## Time points with only NA should be skipped.
+## Error when there is nothing left.
+testTP3 <- testTP
+testTP3[[1]][["t1"]] <- NA
+expect_warning(fitModels(testTP3, trait = "t1", quiet = TRUE),
+               "t1 has only NA values for the following time points")
+expect_error(suppressWarnings(fitModels(testTP3, trait = "t1", timePoints = 1)),
+             "No time points left for fitting models")
+
+### Fit correct models and check that output is as expected.
+
 testFitMod <- fitModels(testTP, trait = "t1", quiet = TRUE)
 expect_true(inherits(testFitMod, "fitMod"))
 
