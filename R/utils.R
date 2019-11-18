@@ -467,38 +467,34 @@ checkAsreml <- function() {
   invisible(TRUE)
 }
 
-#' Extract time points
+#' Helper function for checking row and column information
 #'
-#' Function for extracting a data.frame with timeNumbers and timePoints from
-#' an object of class TP or fitMod.
+#' Check that row and column information is available in data.frame.
+#' Columns should be present and cannot contain NA values.
 #'
-#' @param x An object of class TP or fitMod
-#'
-#' @return A data.frame with columns timeNumber and timePoint listing the
-#' time points in x
-#'
-#' @examples
-#' ## Create an object of class TP
-#' data("PhenovatorDat1")
-#' phenoTP <- createTimePoints(dat = PhenovatorDat1,
-#'                             experimentName = "Phenovator",
-#'                             genotype = "Genotype",
-#'                             timePoint = "timepoints",
-#'                             repId = "Replicate",
-#'                             plotId = "pos",
-#'                             rowNum = "y", colNum = "x",
-#'                             addCheck = TRUE,
-#'                             checkGenotypes = c("check1", "check2", "check3", "check4"))
-#'
-#' ## Extract the time points from the object.
-#' head(getTimePoints(phenoTP))
-#'
-#' @export
-getTimePoints <- function(x) {
-  ## Check input.
-  if (!inherits(x, "TP") && !inherits(x, "fitMod")) {
-    stop("x should be an object of class TP or fitMod")
+#' @noRd
+#' @keywords internal
+chkRowCol <- function(dat) {
+  timePoint <- dat[["trial"]][1]
+  rowCol <- TRUE
+  if (!"rowNum" %in% colnames(dat)) {
+    rowCol <- FALSE
+    warning("rowNum should be a column in ", timePoint, ".\n",
+            "Plot skipped.\n", call. = FALSE)
+  } else if (sum(is.na(dat[["rowNum"]])) > 0) {
+    rowCol <- FALSE
+    warning("rowNum contains missing values for ", timePoint, ".\n",
+            "Plot skipped.\n", call. = FALSE)
   }
-  return(attr(x = x, which = "timePoints"))
+  if (!"colNum" %in% colnames(dat)) {
+    rowCol <- FALSE
+    warning("colNum should be a column in ", timePoint, ".\n",
+            "Plot skipped.\n", call. = FALSE)
+  } else if (sum(is.na(dat[["colNum"]])) > 0) {
+    rowCol <- FALSE
+    warning("colNum contains missing values for ", timePoint, ".\n",
+            "Plot skipped.\n", call. = FALSE)
+  }
+  return(rowCol)
 }
 

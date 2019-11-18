@@ -402,16 +402,7 @@ plot.TP <- function(x,
     for (timePoint in timePoints) {
       if (is.null(title)) title <- paste(experimentName, "-", timePoint)
       tpDat <- x[[timePoint]]
-      if (!hasName(tpDat, "rowNum")) {
-        warning(paste0("rowNum should be a column in ", timePoint, ".\n",
-                       "Plot skipped.\n"), call. = FALSE)
-        break
-      }
-      if (!hasName(tpDat, "colNum")) {
-        warning(paste0("colNum should be a column in ", timePoint, ".\n",
-                       "Plot skipped.\n"), call. = FALSE)
-        break
-      }
+      if (!chkRowCol(tpDat)) next
       if (length(highlight) > 0) {
         tpDat$highlight. <- ifelse(tpDat$genotype %in% highlight,
                                    as.character(tpDat$genotype), NA)
@@ -541,7 +532,7 @@ plot.TP <- function(x,
       if (is.null(plotDat)) {
         warning(paste0(trait, " isn't a column in any of the timePoints.\n",
                        "Plot skipped.\n"), call. = FALSE)
-        break
+        next
       }
       if (orderBy != "alphabetic") {
         ## Reorder levels in timePoint so plotting is done according to orderBy.
@@ -600,7 +591,7 @@ plot.TP <- function(x,
       if (is.null(plotDat)) {
         warning(paste0(trait, " isn't a column in any of the timePoints.\n",
                        "Plot skipped.\n"), call. = FALSE)
-        break
+        next
       }
       ## Create table with the value of trait per plotId per timePoint.
       plotTab <- tapply(plotDat[[trait]],
@@ -673,18 +664,20 @@ plot.TP <- function(x,
       ## Create a single data.frame from x with only columns timePoint and
       ## trait. timePoints where trait is not measured/available are removed
       ## by setting them to NULL.
-      plotDat <- Reduce(f = rbind, x = lapply(X = x[timePoints],
-                                              FUN = function(timePoint) {
-                                                if (!hasName(x = timePoint, name = trait)) {
-                                                  NULL
-                                                } else {
-                                                  timePoint[c("genotype", "timePoint", "plotId", trait, geno.decomp)]
-                                                }
-                                              }))
+      plotDat <- Reduce(f = rbind,
+                        x = lapply(X = x[timePoints],
+                                   FUN = function(timePoint) {
+                                     if (!hasName(x = timePoint, name = trait)) {
+                                       NULL
+                                       } else {
+                                         timePoint[c("genotype", "timePoint",
+                                                     "plotId", trait, geno.decomp)]
+                                         }
+                                     }))
       if (is.null(plotDat)) {
         warning(paste0(trait, " isn't a column in any of the timePoints.\n",
                        "Plot skipped.\n"), call. = FALSE)
-        break
+        next
       }
       ## Restrict genotypes.
       if (!is.null(genotypes)) {
