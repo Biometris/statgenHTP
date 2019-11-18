@@ -181,7 +181,9 @@ expect_silent(p3 <- plot(testFitMod2, plotType = "variance", outFile = tmpFile))
 expect_silent(p0 <- plot(testFitMod, plotType = "spatial", outFile = tmpFile))
 expect_true(inherits(p0, "list"))
 expect_equal(length(p0), 5)
-expect_true(inherits(p0[[1]], "gtable"))
+expect_true(inherits(p0[[1]], "list"))
+expect_equal(length(p0[[1]]), 6)
+expect_true(inherits(p0[[1]][[1]], "ggplot"))
 
 ## Check option spaTrend in spatial plots.
 
