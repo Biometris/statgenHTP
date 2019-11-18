@@ -475,7 +475,7 @@ checkAsreml <- function() {
 #' @noRd
 #' @keywords internal
 chkRowCol <- function(dat) {
-  timePoint <- dat[["trial"]][1]
+  timePoint <- dat[["timePoint"]][1]
   rowCol <- TRUE
   if (!"rowNum" %in% colnames(dat)) {
     rowCol <- FALSE

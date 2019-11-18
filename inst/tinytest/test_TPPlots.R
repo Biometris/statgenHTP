@@ -31,12 +31,18 @@ expect_true(inherits(p0, "list"))
 expect_equal(length(p0), 5)
 expect_true(inherits(p0[[1]], "ggplot"))
 
-## Create copy for testing row/column condition.
-testTP1a <- testTP1b <- testTP
+## Create copy for testing row/column conditions.
+testTP1a <- testTP1b <- testTP1c <- testTP
 testTP1a[[1]][["colNum"]] <- NULL
 expect_warning(plot(testTP1a, plotType = "layout"), "colNum should be")
 testTP1b[[1]][["rowNum"]] <- NULL
 expect_warning(plot(testTP1b, plotType = "layout"), "rowNum should be")
+testTP1c[[1]][["colNum"]][1] <- NA
+expect_warning(plot(testTP1c, plotType = "layout"),
+               "colNum contains missing values")
+testTP1c[[1]][["rowNum"]][1] <- NA
+expect_warning(plot(testTP1c, plotType = "layout"),
+               "rowNum contains missing values")
 
 ## Check option showGeno in layout plot.
 
