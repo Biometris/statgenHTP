@@ -4,10 +4,17 @@
 \alias{plot.fitMod}
 \title{Plot function for class fitMod}
 \usage{
-\method{plot}{fitMod}(x, ..., plotType = c("rawPred", "corrPred",
-  "herit", "effDim", "variance", "timeLapse", "spatial"),
-  timePoints = names(x), title = NULL, output = TRUE,
-  outFile = NULL, outFileOpts = NULL)
+\method{plot}{fitMod}(
+  x,
+  ...,
+  plotType = c("rawPred", "corrPred", "herit", "effDim", "variance", "timeLapse",
+    "spatial"),
+  timePoints = names(x),
+  title = NULL,
+  output = TRUE,
+  outFile = NULL,
+  outFileOpts = NULL
+)
 }
 \arguments{
 \item{x}{An object of class fitMod.}

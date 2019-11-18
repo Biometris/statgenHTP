@@ -3,7 +3,6 @@
 \docType{package}
 \name{statgenHTP}
 \alias{statgenHTP}
-\alias{statgenHTP-package}
 \title{\code{statgenHTP} package}
 \description{
 statgenHTP

@@ -4,9 +4,17 @@
 \alias{plot.TP}
 \title{Plot function for class TP}
 \usage{
-\method{plot}{TP}(x, ..., plotType = c("layout", "box", "cor", "raw"),
-  timePoints = names(x), title = NULL, traits = NULL,
-  output = TRUE, outFile = NULL, outFileOpts = NULL)
+\method{plot}{TP}(
+  x,
+  ...,
+  plotType = c("layout", "box", "cor", "raw"),
+  timePoints = names(x),
+  title = NULL,
+  traits = NULL,
+  output = TRUE,
+  outFile = NULL,
+  outFileOpts = NULL
+)
 }
 \arguments{
 \item{x}{An object of class TP.}
@@ -149,6 +157,7 @@ plot(phenoTP,
 
 }
 \seealso{
-Other functions for TP objects: \code{\link{createTimePoints}}
+Other functions for TP objects: 
+\code{\link{createTimePoints}()}
 }
 \concept{functions for TP objects}

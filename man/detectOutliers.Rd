@@ -4,9 +4,18 @@
 \alias{detectOutliers}
 \title{Outlier detection}
 \usage{
-detectOutliers(corrDat, predDat, coefDat, trait,
-  genotypes = unique(corrDat[["genotype"]]), thrCor = 0.9,
-  thrPca = 1, title = NULL, outFile = NULL, outFileOpts = NULL)
+detectOutliers(
+  corrDat,
+  predDat,
+  coefDat,
+  trait,
+  genotypes = unique(corrDat[["genotype"]]),
+  thrCor = 0.9,
+  thrPca = 1,
+  title = NULL,
+  outFile = NULL,
+  outFileOpts = NULL
+)
 }
 \arguments{
 \item{corrDat}{A data.frame with corrected spatial data.}

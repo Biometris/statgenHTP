@@ -4,9 +4,19 @@
 \alias{createTimePoints}
 \title{Create an object of class TP}
 \usage{
-createTimePoints(dat, experimentName, genotype, timePoint,
-  timeFormat = NULL, plotId, repId = NULL, rowNum = NULL,
-  colNum = NULL, addCheck = FALSE, checkGenotypes = NULL)
+createTimePoints(
+  dat,
+  experimentName,
+  genotype,
+  timePoint,
+  timeFormat = NULL,
+  plotId,
+  repId = NULL,
+  rowNum = NULL,
+  colNum = NULL,
+  addCheck = FALSE,
+  checkGenotypes = NULL
+)
 }
 \arguments{
 \item{dat}{A data.frame.}
@@ -98,6 +108,7 @@ summary(phenoTP)
 
 }
 \seealso{
-Other functions for TP objects: \code{\link{plot.TP}}
+Other functions for TP objects: 
+\code{\link{plot.TP}()}
 }
 \concept{functions for TP objects}

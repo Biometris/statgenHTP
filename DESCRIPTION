@@ -39,5 +39,5 @@ Suggests:
    knitr, 
    rmarkdown, 
    tinytest
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.0
 VignetteBuilder: knitr

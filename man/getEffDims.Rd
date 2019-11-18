@@ -4,8 +4,12 @@
 \alias{getEffDims}
 \title{Extract effective dimensions}
 \usage{
-getEffDims(fitMod, timePoints = names(fitMod), EDType = c("dimension",
-  "ratio"), outFile = NULL)
+getEffDims(
+  fitMod,
+  timePoints = names(fitMod),
+  EDType = c("dimension", "ratio"),
+  outFile = NULL
+)
 }
 \arguments{
 \item{fitMod}{An object of class fitMod.}
