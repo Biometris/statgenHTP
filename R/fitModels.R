@@ -163,7 +163,7 @@ fitModels <- function(TP,
     all(is.na(timePoint[[trait]]))
   })]
   if (length(missTraitTP) > 0) {
-    warning(trait, "has only NA values for the following time points: \n",
+    warning(trait, " has only NA values for the following time points: \n",
             paste0(missTraitTP, collapse = ", "), "\n",
             "Model not fitted for those time points.", call. = FALSE)
     TP <- TP[names(TP)[!names(TP) %in% missTraitTP]]

@@ -445,6 +445,10 @@ spatPlot <- function(fitMod,
   } else if (engine == "asreml") {
     modDat <- fitMod$call$data
   }
+  ## Check spatial information in modDat.
+  if (!chkRowCol(modDat)) {
+    return(NULL)
+  }
   ## Extract time point from model data.
   timePoint <- modDat[["timePoint"]][1]
   ## Extract raw data.
@@ -573,6 +577,7 @@ spatPlot <- function(fitMod,
             args = c(Filter(f = Negate(f = is.null), x = plots),
                      list(ncol = 3, top = plotTitle)))
   }
+  return(plots)
 }
 
 #' Helper function for creating field plots.
