@@ -157,7 +157,7 @@ detectOutliers <- function(corrDat,
                                        size = 12, hjust = 1)) +
       labs(title = "Correl of coef", x = NULL, y = NULL)
     ## PCA biplot.
-    pcaplot <- ggbiplot(plantPcas[[geno]])
+    pcaplot <- factoextra::fviz_pca_var(plantPcas[[geno]])
     ## Arrange plots.
     lay <- rbind(c(1, 1), c(1, 1), c(1, 1), c(2, 3), c(2, 3))
     ## grid arrange always plots results.

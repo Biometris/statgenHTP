@@ -2,22 +2,26 @@
 title: "statgenHTP tutorial"
 author: "Emilie Millet, Bart-Jan van Rossum"
 date: "`r Sys.Date()`"
-output: 
+output:
+  html_document:
+    df_print: paged
+    toc: no
+  pdf_document:
+    number_sections: yes
+    toc: no
   rmarkdown::html_vignette:
-    toc: false
-    number_sections: true
+    number_sections: yes
+    toc: no
 bibliography: bibliography.bib
-vignette: >
-  %\VignetteIndexEntry{Tutorial}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+vignette: |
+  %\VignetteIndexEntry{Tutorial} %\VignetteEncoding{UTF-8} %\VignetteEngine{knitr::rmarkdown}
 ---
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
-)
+  )
 library(statgenHTP)
 ```
 
@@ -415,7 +419,7 @@ plot(modPhenoSp,
 
 Here is an illustration with three time points:
 <center>
-![Timelapse1](timelapse_nogif.png){width=80%}
+![Timelapse1](figures/timelapse_nogif.png){width=80%}
 </center>
 
 

@@ -9,17 +9,50 @@ library(statgenHTP)
 #####
 data("PhenovatorDat1")
 phenoTP <- createTimePoints(dat = PhenovatorDat1,
+                            experimentName = "Phenovator",
                             genotype = "Genotype",
                             timePoint = "timepoints",
-                            repId = "Sowing_Block",
+                            repId = "Replicate",
                             plotId = "pos",
                             rowNum = "y", colNum = "x",
                             addCheck = TRUE,
-                            checkGenotypes = c("col", "ely", "evo1", "ler"))
+                            checkGenotypes = c("check1", "check2", "check3", "check4"))
 
 ### Extract the time points table
-timepoint <- data.frame(attr(phenoTP,"timePoints"))
+timepoint <- attr(phenoTP,"timePoints")
 timepoint$timePoint <- lubridate::ymd_hms(timepoint$timePoint)
+### Summary of the TP object
+# TO DO TO DO TO DO TO DO TO DO TO DO TO DO TO DO TO DO TO DO TO DO TO DO TO DO
+scales::pretty_breaks(n=2,
+                      min.n=1,
+                      shrink.sml = 10)(timepoint$timeNumber)
+
+floor(max(timepoint$timeNumber)/3)*c(1,2,3)
+max(timepoint$timePoint)/3*c(1,2,3)
+
+int <- lubridate::interval(timepoint$timePoint[1], timepoint$timePoint[max(timepoint$timeNumber)])
+sec <- lubridate::int_length(int)
+sec/4
+timepoint$timePoint[1]+(sec/4*c(1,2,3))
+
+
+#----------------------------------------------------------------------------------------
+#####
+##### Create a TP object containing the data from the Phenoarch #######################
+#####
+data("PhenoarchDat1")
+phenoTParch <- createTimePoints(dat = PhenoarchDat1,
+                                experimentName = "Phenoarch",
+                                genotype = "geno",
+                                timePoint = "Date",
+                                repId = "Rep",
+                                plotId = "pos",
+                                rowNum = "Position",
+                                colNum = "Line")
+
+### Extract the time points table
+timepointArch <- data.frame(attr(phenoTParch,"timePoints"))
+timepointArch$timePoint <- lubridate::ymd(timepointArch$timePoint)
 ### Summary of the TP object
 # TO DO TO DO TO DO TO DO TO DO TO DO TO DO TO DO TO DO TO DO TO DO TO DO TO DO
 
@@ -82,8 +115,8 @@ plot(phenoTP,
 ##### ------ Fit a model few time points with geno = R ----------------------------------#
 #####
 modPhenoSp <- fitModels(TP = phenoTP,
-                        trait = "pheno",
-                        timePoints = seq(1,73,by=5)) #c(3,10,20,30,60)
+                        trait = "EffpsII",
+                        timePoints = seq(from = 1, to = 73, by = 5))
 
 obj <- modPhenoSp
 # Extract the genotypic predictions:
@@ -113,7 +146,52 @@ plot(obj,
 ## plot Var
 plot(obj,
      plotType = "variance")
+# plot Spat
+plot(modPhenoSp,
+     timePoints = 36,
+     plotType = "spatial",
+     spaTrend = "percentage")
+plot(modPhenoSp,
+     timePoints = 36,
+     plotType = "spatial",
+     spaTrend = "raw")
 
+# plot(modPhenoSp,
+#      plotType = "spatial",
+#      spaTrend = "percentage",
+#      outFile = "spatial_percentage.pdf",
+#      outFileOpts = c(width = 8.5, height = 5))
+
+#####
+##### ------ splines and outliers ------------------------#
+#####
+modPhenoSp <- fitModels(TP = phenoTP,
+                        trait = "EffpsII",
+                        useCheck = TRUE)
+
+spatCorr <- getCorrected(modPhenoSp)
+write.table(spatCorr,
+            "~/Documents/PostDoc/EPPN2020/Outliers/Doc_Git/time-course/Corrected_EffPsII.csv",
+            sep=",", row.names=F)
+
+fit.spline <- fitSpline(corrDat = spatCorr,
+                        trait = "EffpsII",
+                        knots = 50)
+
+pred.Dat <- fit.spline$predDat
+
+coef.Dat <- fit.spline$coefDat
+
+
+out1 <- detectOutliers(corrDat = spatCorr,
+                       predDat = pred.Dat,
+                       coefDat = coef.Dat,
+                       trait = "EffpsII",
+                       genotypes =  c("G15","G121","G31","check2","check3","check4" ),# unique(spatCorr[["genotype"]]),
+                       thrCor = 0.9,
+                       thrPca = 1,
+                       title = "Phenovator",
+                       outFile = "testOutliers.pdf")
 
 #####
 ##### ------ Fit a model few time points with geno = R and Covar ------------------------#
@@ -197,9 +275,9 @@ plot(obj,
 ##### ------ Fit a model few time points with geno = R and rowcol design ----------------#
 #####
 modPhenoSpRCD <- fitModels(TP = phenoTP,
-                            trait = "pheno",
-                            timePoints = seq(1,73,by=20),
-                            useRepId = TRUE)
+                           trait = "pheno",
+                           timePoints = seq(1,73,by=20),
+                           useRepId = TRUE)
 obj <- modPhenoSpRCD
 # Extract the genotypic predictions:
 genoPred <- getGenoPred(obj, timePoints = 21)
@@ -223,7 +301,8 @@ plot(obj,
 ## plot ED
 plot(obj,
      plotType = "effDim",
-     whichED = c("colId", "rowId", "fColRow","colfRow", "surface"))
+     whichED = c("repId:colId", "rowId", "fColRow","colfRow", "surface"),
+     EDType = "ratio")
 ## plot Var
 plot(obj,
      plotType = "variance")
@@ -288,10 +367,10 @@ modPhenoSpFix <- fitModels(TP = phenoTP,
                            what="fixed")
 ##### geno = F, cov = image
 modPhenoSpFix2 <- fitModels(TP = phenoTP,
-                           trait = "pheno",
-                           covariates = c("Image_pos"),
-                           timePoints = seq(1,73,by=10),
-                           what="fixed")
+                            trait = "pheno",
+                            covariates = c("Image_pos"),
+                            timePoints = seq(1,73,by=10),
+                            what="fixed")
 ##### geno = F, cov = image, useRepId = T
 modPhenoSpFix3 <- fitModels(TP = phenoTP,
                             trait = "pheno",
@@ -329,6 +408,15 @@ plot(obj,
 ## plot Var
 plot(obj,
      plotType = "variance")
+## plot Spat
+plot(obj,
+     timePoints = 41,
+     plotType = "spatial",
+     spaTrend = "raw") #"raw" #"percentage"
+plot(obj,
+     timePoints = 41,
+     plotType = "spatial",
+     spaTrend = "percentage") #"raw" #"percentage"
 
 
 #----------------------------------------------------------------------------------------
@@ -336,6 +424,119 @@ plot(obj,
 ##### Fitting ASReml models on the Phenovator data #######################################-
 #####-
 
+#####
+##### ------ Fit a model few time points with geno = R ----------------------------------#
+#####
+modPhenoSpAs <- fitModels(TP = phenoTP,
+                          trait = "pheno",
+                          timePoints = seq(1,73,by=5),
+                          engine = "asreml",
+                          spatial = TRUE)
+
+obj <- modPhenoSpAs
+# Extract the genotypic predictions:
+genoPred <- getGenoPred(obj, timePoints = 6)
+# Extract the corrected values:
+spatCorr <- getCorrected(obj, timePoints = 6)
+# Extract model components:
+variance <- getVar(obj)
+herit    <- getHerit(obj)
+## plot Pred
+plot(obj,
+     plotType = "rawPred",
+     genotypes = c("col", "ler", "ely", "evo1")) #levels(factor(PhenovatorDat1$Genotype))[1:28] )
+# genotypes = c("toto", "tutu", "tata"))
+## plot Corr
+plot(obj,
+     plotType = "corrPred",
+     genotypes = c("col", "ler", "ely", "evo1") )
+## plot Herit
+plot(obj,
+     plotType = "herit", yLim = c(0,1))
+## plot Var
+plot(obj,
+     plotType = "variance")
+# plot Spat
+plot(obj,
+     timePoints = 36,
+     plotType = "spatial")
+
+
+#####
+##### ------ Fit a model few time points with geno = R and Covar ------------------------#
+#####
+modPhenoSpAsCov <- fitModels(TP = phenoTP,
+                             trait = "pheno",
+                             covariates = c("repId","Image_pos"),
+                             timePoints = seq(1,73,by=10),
+                             engine = "asreml",
+                             spatial = TRUE)
+
+obj <- modPhenoSpAsCov
+# Extract the genotypic predictions:
+genoPred <- getGenoPred(obj, timePoints = 11)
+# Extract the corrected values:
+spatCorr <- getCorrected(obj, timePoints = 11)
+# Extract model components:
+variance <- getVar(obj)
+herit    <- getHerit(obj)
+## plot Pred
+plot(obj,
+     plotType = "rawPred",
+     genotypes = c("col", "ler", "ely", "evo1")) #levels(factor(PhenovatorDat1$Genotype))[1:28] )
+# genotypes = c("toto", "tutu", "tata"))
+## plot Corr
+plot(obj,
+     plotType = "corrPred",
+     genotypes = c("col", "ler", "ely", "evo1") )
+## plot Herit
+plot(obj,
+     plotType = "herit", yLim = c(0,1))
+## plot Var
+plot(obj,
+     plotType = "variance")
+# plot Spat
+plot(obj,
+     timePoints = 36,
+     plotType = "spatial")
+
+#####
+##### ------ Fit a model few time points with geno = R and check ------------------------#
+#####
+modPhenoSpAsCheck <- fitModels(TP = phenoTP,
+                               trait = "pheno",
+                               useCheck = TRUE,
+                               timePoints = seq(1,73,by=10),
+                               engine = "asreml",
+                               spatial = TRUE)
+
+obj <- modPhenoSpAsCheck
+# Extract the genotypic predictions:
+genoPred <- getGenoPred(obj, timePoints = 6)
+# Extract the corrected values:
+spatCorr <- getCorrected(obj, timePoints = 6)
+# Extract model components:
+variance <- getVar(obj)
+herit    <- getHerit(obj)
+## plot Pred
+plot(obj,
+     plotType = "rawPred",
+     genotypes = c("col", "ler", "ely", "evo1")) #levels(factor(PhenovatorDat1$Genotype))[1:28] )
+# genotypes = c("toto", "tutu", "tata"))
+## plot Corr
+plot(obj,
+     plotType = "corrPred",
+     genotypes = c("col", "ler", "ely", "evo1") )
+## plot Herit
+plot(obj,
+     plotType = "herit", yLim = c(0,1))
+## plot Var
+plot(obj,
+     plotType = "variance")
+# plot Spat
+plot(obj,
+     timePoints = 36,
+     plotType = "spatial")
 
 
 
@@ -343,130 +544,80 @@ plot(obj,
 
 #####
 
-#_________________ EXAMPLE 2 _____________________________________________________________
-
-#### DATASET-SPECIFIC FORMATING #######
-
-inDat2 <- data.table::fread("./data-raw/Data_modif_ZA17_anonymous.csv",
-                            data.table = FALSE)
-# Create an indicator for each plot (according to the row and column position)
-inDat2$pos <- paste0("c", inDat2$Line, "r", inDat2$Position)
-
-#### BEGINING FUNCTION USE #######
-
-inTP2 <- createTimePoints(dat = inDat2,
-                          genotype = "geno",
-                          timePoint = "Date",
-                          plotId = "pos",
-                          rowNum = "Position",
-                          colNum = "Line") #,
-                          # repId = "Rep")
-
-plot(inTP2, plotType = "layout",
-     timePoints = c(4),
-     highlight = c("GenoA1", "GenoA50", "GenoB1", "GenoB2") )
-
-plot(inTP2, plotType = "cor",
-     traits = "LA_Estimated")
-
-plot(inTP2, plotType = "box",
-     traits = "LA_Estimated",
-     # timePoints = c(1:3),
-     colorBy = "Scenario")
-
-plot(inTP2, plotType = "raw",
-     traits = "LA_Estimated",
-     geno.decomp = "Scenario",
-     timePoints = c(8,20,30),
-     genotypes = c("GenoA4", "GenoA32", "GenoB32", "GenoB3"))
-
-plot(inTP2, plotType = "raw",
-     traits = "LA_Estimated",
-     geno.decomp = "Scenario",
-     timePoints = c(1:4),
-     genotypes = c("GenoA4", "GenoA32", "GenoB32", "GenoB3"))
 
 
-pdf("Phenovator_ZA17_raw_data_na.pdf", height = 8, width = 12)
-plot(inTP2, plotType = "raw", traits = "LA_Estimated", geno.decomp = "Scenario")
-dev.off()
+#####-
+##### Fitting ASReml models on the Phenoarch data #######################################-
+#####-
 
-fitMods2 <- fitModels(TP = inTP2[10:15],
-                      trait = "LA_Estimated",
-                      geno.decomp = c("Scenario", "population"))
+data("PhenoarchDat1")
+phenoTParch <- createTimePoints(dat = PhenoarchDat1,
+                                experimentName = "ZA17",
+                                genotype = "geno",
+                                timePoint = "Date",
+                                repId = "Rep",
+                                plotId = "pos",
+                                rowNum = "Position",
+                                colNum = "Line")
 
-is.null(fitMods2[[1]]$call$data$genotype)
-is.null(fitMods2[[1]]$data$genotype)
-is.null(fitMods2[[1]]$data)
-fitMods2[[1]]
-
-fitMods2b <- fitModels(TP = inTP2[10:15],
-                       trait = "LA_Estimated",
-                       geno.decomp = c("Scenario", "population"),
-                       engine = "asreml")
-
-
-fitMods2c <- fitModels(TP = inTP2[10:15],
-                       trait = "LA_Estimated",
-                       geno.decomp = c("Scenario", "population"),
-                       engine = "asreml",
-                       spatial = TRUE)
-
-is.null(fitMods2c[[1]]$call$data$genotype)
-
-is.null(fitMods2c[[1]]$data)
-
-any(grep("SpATS",fitMods2[[1]]$call))
-any(grep("SpATS",fitMods2c[[1]]$call))
-
-fitMods2[[1]]$model$geno$geno.decomp
-fitMods2c[[1]]$factor.names[1]
-fitMods2[[1]]$model$geno$geno.decomp
-fitMods2c[[1]]$factor.names[1]
-
-## This crashes:
-fitMods2crash <- fitModels(TP = inTP2[1:3],
+modPhenoSpCov <- fitModels(TP = phenoTParch,
                            trait = "LA_Estimated",
-                           geno.decomp = "Scenario",
-                           covariates = "population")
+                           # geno.decomp = c("Scenario","population"),
+                           covariates = "Scenario",
+                           timePoints = seq(1,35,by=10),
+                           spatial = TRUE,
+                           what = "fixed")
 
-genoPreds2 <- getGenoPred(fitMods2, outFile = "BLUPs_ZA17_LeafArea.csv")
-genoPreds2b <- getGenoPred(fitMods2b)
-genoPreds2c <- getGenoPred(fitMods2c)
+modPhenoSpAsGD <- fitModels(TP = phenoTParch,
+                            trait = "LA_Estimated",
+                            geno.decomp = c("Scenario","population"),
+                            # covariates = "Image_pos",
+                            timePoints = seq(1,35,by=10),
+                            spatial = TRUE,
+                            engine = "asreml",
+                            what = "fixed")
 
-genoBLUPs2 <- getBLUPsGeno(fitMods2)
-rowPreds2c <- getRowPred(fitMods2c)
-
-spatCorr2 <- getCorrected(fitMods2, outFile = "Corrected_ZA17_LeafArea.csv")
-variance2 <- getVar(fitMods2)
-h22 <- getHerit(fitMods2)
-
-#### doesn't work because the match is made for the geno while the objects use geno.decomp
-#### work now !
-
-plot(fitMods2,
-     plotType = "corrPred",
-     genotypes = c("GenoA4", "GenoA32", "GenoB32", "GenoB3"))
-
-plot(fitMods2,
+obj <- modPhenoSpAsGD
+obj <- modPhenoSpCov
+# Extract the genotypic predictions:
+genoPred <- getGenoPred(obj, timePoints = 11)
+# Extract the corrected values:
+spatCorr <- getCorrected(obj, timePoints = 11)
+# Extract model components:
+variance <- getVar(obj)
+herit    <- getHerit(obj)
+## plot Pred
+plot(obj,
      plotType = "rawPred",
-     genotypes = c("GenoA4", "GenoA32", "GenoB32", "GenoB3"))
-
-
-## still not working because of other functions...
-plot(fitMods2c,
-     plotType = "rawPred",
-     genotypes = c("GenoA4", "GenoA32", "GenoB32", "GenoB3"))
-
-plot(fitMods2c,
+     genotypes = c("GenoA1","GenoA2","GenoB1","GenoB2") )
+## plot Corr
+plot(obj,
      plotType = "corrPred",
-     genotypes = c("GenoA4", "GenoA32", "GenoB32", "GenoB3"))
+     genotypes = c("GenoA1","GenoA2","GenoB1","GenoB2")  )
+## plot Herit
+plot(obj,
+     plotType = "herit", yLim = c(0,1))
+## plot Var
+plot(obj,
+     plotType = "variance")
+# plot Spat
+plot(obj,
+     timePoints = 11,
+     plotType = "spatial")
 
 
-plot(fitMods2, plotType = "herit")
+#####-
+##### Spline and outlier on Phenovator data #######################################-
+#####-
 
-plot(fitMods2, plotType = "variance")
-plot(fitMods2, plotType = "effDim")
-plot(fitMods2, plotType = "timeLapse",
-     outFile = "spatialtrends2.gif")
+modPhenoSp <- fitModels(TP = phenoTP,
+                        trait = "EffpsII",
+                        timePoints = seq(from = 1, to = 73, by = 5))
+
+# Extract the corrected values:
+spatCorr <- getCorrected(modPhenoSp)
+
+splineSp <- fitSpline(spatCorr,
+                      "EffpsII_corr",
+                      knots = 5)
 
