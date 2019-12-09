@@ -59,6 +59,7 @@ summary.fitMod <- function(object,
 #' options:
 #' \describe{
 #' \item{genotypes}{A character vector indicating the genotypes to be plotted.}
+#' \item{plotChecks}{Should the check genotypes be included in the plot?}
 #' }
 #'
 #' @section corrPred plot:
@@ -69,6 +70,7 @@ summary.fitMod <- function(object,
 #' plotted. Extra parameter options:
 #' \describe{
 #' \item{genotypes}{A character vector indicating the genotypes to be plotted.}
+#' \item{plotChecks}{Should the check genotypes be included in the plot?}
 #' }
 #'
 #' @section herit plot:
@@ -246,8 +248,18 @@ plot.fitMod <- function(x,
     }
     if (is.null(title)) title <-
         paste(experimentName, "- genotypic prediction + raw data")
-    ## Get genotypic predictions.
-    preds <- getGenoPred(fitMods)
+    if (isTRUE(dotArgs$plotChecks) && useCheck) {
+      totPred <- getGenoPred(fitMods, predictChecks = TRUE)
+      ## Get check predictions.
+      genoPred <- totPred$genoPred
+      checkPred <- totPred$checkPred
+      ## Rename check column to genotype so rbinding is possible.
+      colnames(checkPred)[colnames(checkPred) == "check"] <- "genotype"
+      preds <- rbind(genoPred, checkPred)
+    } else {
+      ## Get genotypic predictions.
+      preds <- getGenoPred(fitMods)$genoPred
+    }
     ## Construct full raw data from models.
     if (engine == "SpATS") {
       raw <- Reduce(f = rbind, x = lapply(X = fitMods, FUN = `[[`, "data"))
@@ -256,7 +268,11 @@ plot.fitMod <- function(x,
         fitMod$call$data
       }))
     }
-    if (!is.null(geno.decomp) && engine == "SpATS") {
+    ## Remove observations from raw where genotype is missing.
+    ## These where included when fitting spatial asreml models to create
+    ## a full grid.
+    raw <- raw[!is.na(raw[["genotype"]]), ]
+    if (!is.null(geno.decomp) && engine == "SpATS" && !useCheck) {
       ## Genotype was converted to an interaction term of genotype and
       ## geno.decomp in the proces of fitting the model. That needs to be
       ## undone to get the genotype back in the output again.
@@ -264,10 +280,14 @@ plot.fitMod <- function(x,
       raw[["genotype"]] <- as.factor(substring(raw[["genotype"]],
                                                first = genoStart))
     }
+    ## Remove check genotypes from raw data.
+    if (!isTRUE(dotArgs$plotChecks) && useCheck) {
+      raw <- droplevels(raw[!is.na(raw[["genoCheck"]]), ])
+    }
     ## Restrict genotypes.
     if (!is.null(genotypes)) {
       if (!all(genotypes %in% preds[["genotype"]])) {
-        stop("All genotypes should be in ", deparse(substitute(x)))
+        stop("All genotypes should be in ", deparse(substitute(x)), ".\n")
       }
       preds <- preds[preds[["genotype"]] %in% genotypes, ]
       preds <- droplevels(preds)
@@ -293,14 +313,24 @@ plot.fitMod <- function(x,
     }
     if (is.null(title))
       title <- paste(experimentName, "- genotypic prediction + corrected data")
-    ## Get genotypic predictions.
-    preds <- getGenoPred(fitMods)
+    if (isTRUE(dotArgs$plotChecks) && useCheck) {
+      totPred <- getGenoPred(fitMods, predictChecks = TRUE)
+      ## Get check predictions.
+      genoPred <- totPred$genoPred
+      checkPred <- totPred$checkPred
+      ## Rename check column to genotype so rbinding is possible.
+      colnames(checkPred)[colnames(checkPred) == "check"] <- "genotype"
+      preds <- rbind(genoPred, checkPred)
+    } else {
+      ## Get genotypic predictions.
+      preds <- getGenoPred(fitMods)$genoPred
+    }
     ## Get spatial corrected values.
     corrected <- suppressWarnings(getCorrected(fitMods))
-    ## Restrict genotypes.
+    ## Restrict genotypes.,
     if (!is.null(genotypes)) {
       if (!all(genotypes %in% preds[["genotype"]])) {
-        stop("All genotypes should be in ", deparse(substitute(x)))
+        stop("All genotypes should be in ", deparse(substitute(x)), ".\n")
       }
       preds <- preds[preds[["genotype"]] %in% genotypes, ]
       preds <- droplevels(preds)

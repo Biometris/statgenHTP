@@ -62,6 +62,7 @@ over time. These plots are put together in a 5x5 grid. By using the parameter
 options:
 \describe{
 \item{genotypes}{A character vector indicating the genotypes to be plotted.}
+\item{plotChecks}{Should the check genotypes be included in the plot?}
 }
 }
 
@@ -74,6 +75,7 @@ By using the parameter \code{genotypes} a selection of genotypes can be
 plotted. Extra parameter options:
 \describe{
 \item{genotypes}{A character vector indicating the genotypes to be plotted.}
+\item{plotChecks}{Should the check genotypes be included in the plot?}
 }
 }
 

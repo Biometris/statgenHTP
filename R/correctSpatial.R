@@ -1,13 +1,11 @@
 #' Correct for spatial effects and other unnecesary factors.
 #' @keywords internal
 correctSpatial <- function(fitMod) {
-  ## Get engine from fitted model.
-  engine <- class(fitMod)
   ## All steps are different for SpATS and asreml so just move them to
   ## separate functions.
-  if (engine == "SpATS") {
+  if (inherits(fitMod, "SpATS")) {
     pred <- correctSpatialSpATS(fitMod)
-  } else if (engine == "asreml") {
+  } else if (inherits(fitMod, "asreml")) {
     pred <- correctSpatialAsreml(fitMod)
   }
   ## return results.
@@ -39,7 +37,7 @@ correctSpatialSpATS <- function(fitMod) {
                                     "plotId", "timePoint", trait,
                                     geno.decomp)],
                 by = c("rowNum", "colNum"))
-  if (!is.null(geno.decomp)) {
+  if (!is.null(geno.decomp) && !useCheck) {
     if (!hasName(x = pred, name = "geno.decomp.y")) {
       pred[["geno.decomp.y"]] <- pred[["geno.decomp"]]
     }
@@ -52,7 +50,7 @@ correctSpatialSpATS <- function(fitMod) {
 
   }
   ## Predict intercept.
-  if (!is.null(geno.decomp)) {
+  if (!is.null(geno.decomp) && !useCheck) {
     predGD <- predict(fitMod, which = "geno.decomp")
     intercept <- mean(predGD[["predicted.values"]])
   } else {
@@ -94,8 +92,7 @@ correctSpatialAsreml <- function(fitMod) {
   } else {
     fixVars <- NULL
   }
-  fixVars <- setdiff(fixVars, c("genotype", "genoCheck", geno.decomp,
-                                if (useCheck) "check"))
+  fixVars <- setdiff(fixVars, c("genotype", "genoCheck", geno.decomp))
   randVars <- all.vars(fitMod$formulae$random)
   randVars <- setdiff(randVars, c("genotype", "genoCheck", geno.decomp))
   predVars <- c(fixVars, randVars)
