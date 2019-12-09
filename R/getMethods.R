@@ -8,10 +8,17 @@
 #' value has to be an exact match to one of the existing time points. When using
 #' a number it will be matched by its number ("timeNumber") in the timePoints
 #' attribute of the TP object.
+#' @param predictChecks Should predictions of the check genotypes be included
+#' in the ouptut. If \code{TRUE} a list of two data.frames is returned from the
+#' function, one with the predictions for the regular genotypes and one with
+#' the predictions for the checks.
 #' @param outFile A character string indicating the .csv file to which the
 #' results should be written. If \code{NULL} no file is written.
 #'
-#' @return A data.frame with genotypic predicted values per time point.
+#' @return A list of two data.frames with genotypic predicted values per time
+#' point. \code{genoPred} with the predicted values for the genotypes and
+#' \code{checkPred} with the predicted values for the check. If
+#' \code{predictChecks = FALSE} the latter will be \code{NULL}.
 #'
 #' @examples
 #' ## Using the first example dataset (PhenovatorDat1):
@@ -37,6 +44,7 @@
 #' @export
 getGenoPred <- function(fitMod,
                         timePoints = names(fitMod),
+                        predictChecks = FALSE,
                         outFile = NULL) {
   ## Checks.
   if (missing(fitMod) || !inherits(fitMod, "fitMod")) {
@@ -46,17 +54,21 @@ getGenoPred <- function(fitMod,
   ## Restrict fitMod to selected timePoints.
   fitMod <- fitMod[timePoints]
   ## Get predictions per time point.
-  genoPred <- lapply(X = fitMod, FUN = predictGeno)
-  ## Create one data.frame containing all time points.
-  genoPred <- do.call(what = rbind, args = genoPred)
-  ## Create a data.frame with combinations of genotype and geno.decomp
+  totPred <- lapply(X = fitMod, FUN = predictGeno,
+                     predictChecks = predictChecks)
+  ## Create one data.frame containing all genotypes for all time points.
+  genoPred <- do.call(what = rbind, args = lapply(totPred, `[[`, "predGeno"))
+  ## Create one data.frame containing all checks for all time points.
+  checkPred <- do.call(what = rbind, args = lapply(totPred, `[[`, "predCheck"))
+  ## Create a data.frame with combinations of genotype and geno.decomp.
   ## Only combinations that are present in at least one of the timePoints are
   ## included.
-  full <- unique(genoPred[colnames(genoPred) %in% c("genotype", "geno.decomp")])
-  full <- merge(unique(genoPred["timePoint"]), full)
-  ## Merge to the predictions to get NA predictions for genotypes that are
-  ## completely missing at a certain timepoint.
-  genoPred <- merge(full, genoPred, all.x = TRUE)
+  genoFull <- unique(genoPred[colnames(genoPred) %in%
+                                c("genotype", "geno.decomp")])
+  genoFull <- merge(unique(genoPred["timePoint"]), genoFull)
+  ## Merge to the predictions to get NA predictions for genotypes and checks
+  ## that are completely missing at a certain timepoint.
+  genoPred <- merge(genoFull, genoPred, all.x = TRUE)
   ## Add time numbers.
   genoPred <- addTimeNumber(fitMod, genoPred)
   if (!is.null(outFile)) {
@@ -64,7 +76,26 @@ getGenoPred <- function(fitMod,
     chkFile(outFile, fileType = "csv")
     write.csv(genoPred, file = outFile, row.names = FALSE)
   }
-  return(genoPred)
+  if (!is.null(checkPred)) {
+    ## Repeat actions for checkPred.
+    checkFull <- unique(checkPred[colnames(checkPred) %in%
+                                    c("check", "geno.decomp")])
+    checkFull <- merge(unique(checkPred["timePoint"]), checkFull)
+    checkPred <- merge(checkFull, checkPred, all.x = TRUE)
+    checkPred <- addTimeNumber(fitMod, checkPred)
+    if (!is.null(outFile)) {
+      ## Construct name for outfile.
+      outFileCheck <- paste0(substring(outFile, first = 1,
+                                       last = nchar(outFile) - 4),
+                             "Check.csv")
+      ## Check if file exists and is writable.
+      chkFile(outFileCheck, fileType = "csv")
+      write.csv(checkPred, file = outFileCheck, row.names = FALSE)
+    }
+  } else {
+    checkPred <- NULL
+  }
+  return(list(genoPred = genoPred, checkPred = checkPred))
 }
 
 #' Extract corrected phenotypic values

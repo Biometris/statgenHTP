@@ -4,7 +4,12 @@
 \alias{getGenoPred}
 \title{Extract genotypic predicted values}
 \usage{
-getGenoPred(fitMod, timePoints = names(fitMod), outFile = NULL)
+getGenoPred(
+  fitMod,
+  timePoints = names(fitMod),
+  predictChecks = FALSE,
+  outFile = NULL
+)
 }
 \arguments{
 \item{fitMod}{An object of class fitMod.}
@@ -15,11 +20,19 @@ value has to be an exact match to one of the existing time points. When using
 a number it will be matched by its number ("timeNumber") in the timePoints
 attribute of the TP object.}
 
+\item{predictChecks}{Should predictions of the check genotypes be included
+in the ouptut. If \code{TRUE} a list of two data.frames is returned from the
+function, one with the predictions for the regular genotypes and one with
+the predictions for the checks.}
+
 \item{outFile}{A character string indicating the .csv file to which the
 results should be written. If \code{NULL} no file is written.}
 }
 \value{
-A data.frame with genotypic predicted values per time point.
+A list of two data.frames with genotypic predicted values per time
+point. \code{genoPred} with the predicted values for the genotypes and
+\code{checkPred} with the predicted values for the check. If
+\code{predictChecks = FALSE} the latter will be \code{NULL}.
 }
 \description{
 Extract predictions of the genotypic value from an object of class fitMod.
