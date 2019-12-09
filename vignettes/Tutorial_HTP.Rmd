@@ -268,18 +268,12 @@ row and column coordinates are not available, asreml is used for modeling withou
 spatial components (see part [**4.3**](#asremlnoSP)). Finally, it is possible to decompose the genotypic 
 variance using, for example, a treatment effect (see part [**4.4**](#genodecomp)).
 
-The output of `fitModels` is an object of class `fitMod`, a list of fitted models 
-with one item for each time point the model was fitted for. 
+The output of `fitModels` is an object of class `fitMod`, a list of fitted models with one item for each time point the model was fitted for. 
 
 ## Spatial model using SpATS {#spats}
 
-When SpATS is used for modeling, an extra spatial term is included in the model. This 
-spatial component is composed using the `PSANOVA` function in the SpATS package which 
-uses 2-dimensional smoothing with P-splines as described in @Lee2013 and in @RodAlv2017. 
-See `help(PSANOVA, SpATS)` for a detailed description. Extra fixed effects may be fitted 
-using the option `extraFixedFactors`. The model can also be fitted following a resolvable 
-row-column design setting `useRepId` as `TRUE`. The model specifications are listed in 
-the table below. 
+When SpATS is used for modeling, an extra spatial term is included in the model. This spatial component is composed using the `PSANOVA` function in the SpATS package which uses 2-dimensional smoothing with P-splines as described in @Lee2013 and in @RodAlv2017. 
+See `help(PSANOVA, SpATS)` for a detailed description. Extra fixed effects may be fitted using the option `extraFixedFactors`. The model can also be fitted following a resolvable row-column design setting `useRepId` as `TRUE`. The model specifications are listed in the table below. 
 
 option | model fitted | spatial term |
 --------------------|-----------------------------------------|-----------------|
@@ -288,11 +282,7 @@ extraFixedFactors = c("A","B") | trait = *A* + *B* + **genotype** + **$\epsilon$
 useRepId = TRUE | trait = *repId* + **genotype** + **repId:rowId** + **repId:colId** +  **$\epsilon$** | PSANOVA |
 useCheck = TRUE | trait = *check* + **genoCheck** +  **$\epsilon$** | PSANOVA |
 
-In the models above, fixed effects are indicated in *italics* whereas random effects are 
-indicated in **bold**. "genotype" can be fitted as **random** or *fixed* effect
-using the option `what`. The same model will run with genotype as fixed. The option 
-`useCheck` allows treating some genotypes as check: it splits the column "genotype"
-into two columns as follows:
+In the models above, fixed effects are indicated in *italics* whereas random effects are indicated in **bold**. "genotype" can be fitted as **random** or *fixed* effect using the option `what`. The same model will run with genotype as fixed. The option `useCheck` allows treating some genotypes as check: it splits the column "genotype" into two columns as follows:
 
 <center>
 
@@ -312,6 +302,8 @@ into two columns as follows:
 </center>
 
 > *Note that for the moment, it is not possible to use the combination of check and genotype as fixed with SpATS.*
+
+ADD EXPLANATION + ALSO NOT POSSIBLE WITH ASREML
 
 ### Calling SpATS
 
@@ -438,9 +430,10 @@ getVar | Variance components |
 getHerit | Generalised heritabilities - only when genotype is random |
 getEffDims | Extract effective dimensions - only for SpATS engine |
 
-By default, all the functions run for all the time points. It is possible to select some 
-of them using `timePoints`. The ratio of the effective dimensions can also be extracted using 
-`EDType = "ratio"` in the `getEffDims` function.
+By default, all the functions run for all the time points. It is possible to select some of them using `timePoints`. The ratio of the effective dimensions can also be extracted using `EDType = "ratio"` in the `getEffDims` function.
+
+DESCRIBE OPTION predictChecks FOR PREDICTING CHECK GENOTYPES
+
 ```{r getFun, message=FALSE}
 ## Extract the genotypic predictions for one time point: 
 genoPredSp <- getGenoPred(modPhenoSp, timePoints = 6)
@@ -455,17 +448,12 @@ effDimSp   <- getEffDims(modPhenoSp)
 The genotypic predictions of one time point are displayed in a table like the following:
 
 ```{r getPred, echo=FALSE, message=FALSE}
-knitr::kable(head(genoPredSp), align=c('c','c','c','c','c'), padding = 0)
+knitr::kable(head(genoPredSp), align = c('c','c','c','c','c'), padding = 0)
 ```
 
-> *TO NOTE: when extraFixedFactors are used, the standard errors from SpATS are wrong. We are waiting for an update of the package.*
-
-The corrected values are obtained by subtracting the estimated sources of variation which
-are of no interest to the raw data:  
+The corrected values are obtained by subtracting the estimated sources of variation which are of no interest to the raw data:  
 $CorrData = RawData - EstSpatial - EstRow - EstCol - EstCovar$  
-This allows keeping the data at the experimental unit level (plants) and having more 
-degrees of freedom for further modeling (e.g. time course modeling and estimation of the
-time course parameter(s)). 
+This allows keeping the data at the experimental unit level (plants) and having more degrees of freedom for further modeling (e.g. time course modeling and estimation of the time course parameter(s)). 
 
 > *TO NOTE: all the estimated fixed effects included in `extraFixedFactors` are removed from the corrected phenotype (EstCovar).* 
 
@@ -473,17 +461,15 @@ The corrected values of one time point are displayed in a table
 like the following:
 
 ```{r getCorr, echo=FALSE, message=FALSE}
-knitr::kable(head(spatCorrSp), align=c('c','c','c','c','c','c','c'), padding = 0)
+knitr::kable(head(spatCorrSp), align = c('c','c','c','c','c','c','c'), padding = 0)
 ```
-
 
 ### Plotting model results
 
-Different plots can be displayed for the `fitMod` object. The first one is "rawPred", it
-plots the raw data (colored lines) overlayed with the predicted values (black line) from the 
-fitted model. For each genotype a plot is made per plot/plant over time. These plots are
-put together in a 5×5 grid. By using the option `genotypes`, a subset of genotypes 
-will be plotted.
+Different plots can be displayed for the `fitMod` object. The first one is "rawPred", it plots the raw data (colored lines) overlayed with the predicted values (black line) from the fitted model. For each genotype a plot is made per plot/plant over time. These plots are put together in a 5×5 grid.   
+By using the option `genotypes`, a subset of genotypes will be plotted.
+
+DESCRIBE OPTION plotChecks FOR PLOTTING CHECK GENOTYPES
 
 ```{r plotSpPred, message=FALSE, fig.height=2, fig.width=6, fig.align = 'center'}
 plot(modPhenoSp, 
@@ -491,10 +477,10 @@ plot(modPhenoSp,
      genotypes = c("check1", "check2", "G7", "G58")) 
 ```
 
-The second one is "corrPred", it plots the spatially corrected data (colored lines) 
-overlayed with the predicted values from the fitted model (black line). For each genotype 
-a plot is made per plot/plant over time. These plots are put together in a 5×5 grid. 
+The second one is "corrPred", it plots the spatially corrected data (colored lines) overlayed with the predicted values from the fitted model (black line). For each genotype a plot is made per plot/plant over time. These plots are put together in a 5×5 grid. 
 By using the option `genotypes`, a subset of genotypes will be plotted.
+
+DESCRIBE OPTION plotChecks FOR PLOTTING CHECK GENOTYPES
 
 ```{r plotSpCorr, message=FALSE, fig.height=2, fig.width=6, fig.align = 'center', eval=TRUE}
 plot(modPhenoSp, 
@@ -562,10 +548,7 @@ asreml models can be extended by fitting extra fixed factors using the option `e
 |                              | trait = *repId* + **genotype** + **repId:row** + **repId:col** + **$\epsilon$** | - |
 
 In the models above, fixed effects are indicated in *italics* whereas random 
-effects are indicated in **bold**. "genotype" can be fitted as **random** or *fixed* effect
-using the option `what`. The same model will run with genotype as fixed. The option `useCheck` 
-is not displayed in the table but works the same as for SpATS: treating some genotypes 
-as check (see section [**3.1**](#spats) for details).
+effects are indicated in **bold**. "genotype" can be fitted as **random** or *fixed* effect using the option `what`. The same model will run with genotype as fixed. The option `useCheck` is not displayed in the table but works the same as for SpATS: treating some genotypes as check (see section [**3.1**](#spats) for details).
 
 Calling asreml is done by changing the `engine` option in the `fitModels` function.
 
@@ -729,23 +712,20 @@ plot(modPhenoSpGD,
 There are some significant differences in the display of some results and plots. 
 They are highlighted below.
 
-The predictions have two values per genotype, one per combined level of `geno.decomp`, 
-here "Scenario_population", as illustrated in the table below for three genotypes 
-predicted from the SpATS model `modPhenoSpGD`.
+The predictions have two values per genotype, one per combined level of `geno.decomp`, here "Scenario_population", as illustrated in the table below for three genotypes predicted from the SpATS model `modPhenoSpGD`.
 
 ```{r getPredSpGD, echo=FALSE, message=FALSE, eval=TRUE}
 genoPredSpGD <- getGenoPred(modPhenoSpGD, timePoints = 16)
-toto <- head(genoPredSpGD[genoPredSpGD$genotype%in%c("GenoA1","GenoA2","GenoB1","GenoB2"),],8)
+toto <- head(genoPredSpGD[genoPredSpGD$genotype %in% c("GenoA1","GenoA2","GenoB1","GenoB2"),], 8)
 row.names(toto) <- 1:nrow(toto)
-knitr::kable(toto, align=c('c','c','c','c','c','c'), padding = 0)
+knitr::kable(toto, align = c('c','c','c','c','c','c'), padding = 0)
 ```
 
-The heritabilities are now split into `geno.decomp` levels and their plot now displays
-one line per level.
+The heritabilities are now split into `geno.decomp` levels and their plot now displays one line per level.
 
 ```{r getHeritSpGD, echo=FALSE, message=FALSE}
 genoHeritSpGD <- getHerit(modPhenoSpGD)
-knitr::kable(head(genoHeritSpGD),align=c('c','c','c','c'), padding = 0)
+knitr::kable(head(genoHeritSpGD), align = c('c','c','c','c'), padding = 0)
 ```
 
 ```{r plotSpHeritGD, echo=FALSE, fig.align='center', fig.height=3, fig.width=5, message=FALSE}
@@ -761,8 +741,6 @@ plot(modPhenoSpGD,
      plotType = "rawPred",
      genotypes = c("GenoA1","GenoA2","GenoA3","GenoB1","GenoB2") )
 ```
-
-
 
 ----
 
