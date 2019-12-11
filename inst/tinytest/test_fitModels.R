@@ -79,8 +79,8 @@ randPart <- function(fitMod) {fitMod[[1]]$terms$random}
 ## genotype, geno.decomp and as.random -> all converted to character.
 geno <- function(fitMod) {unlist(fitMod[[1]]$model$geno, use.names = FALSE)}
 
-expect_equal(fix(testFitMod), formula("~1"))
-expect_equal(rand(testFitMod), formula("~rowId + colId"))
+expect_equal(fixPart(testFitMod), formula("~1"))
+expect_equal(randPart(testFitMod), formula("~rowId + colId"))
 expect_equal(geno(testFitMod), c("genotype", "TRUE"))
 
 ## Repeat model check for different combinations of input variables.
