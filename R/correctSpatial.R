@@ -1,4 +1,5 @@
 #' Correct for spatial effects and other unnecesary factors.
+#'
 #' @keywords internal
 correctSpatial <- function(fitMod) {
   ## All steps are different for SpATS and asreml so just move them to
@@ -26,45 +27,33 @@ correctSpatialSpATS <- function(fitMod) {
   ## interested in removing.
   if (!is.null(fitMod$model$fixed)) {
     fixVars <- attr(terms(fitMod$model$fixed), "term.labels")
+    ## Subset on order = 1 to remove interaction terms.
+    fixVars <- fixVars[attr(terms(fitMod$model$fixed), "order") == 1]
   } else {
     fixVars <- NULL
   }
   predVars <- setdiff(c(fixVars, "colNum", "rowNum", "colId", "rowId"),
                       c(geno.decomp, "check"))
   pred <- predict(fitMod, which = predVars, predFixed = "marginal")
+  pred <- pred[, !colnames(pred) %in% c("genotype", geno.decomp)]
   ## Merge genotype and timepoint to data
   pred <- merge(pred, fitMod$data[c("rowNum", "colNum", "genotype",
                                     "plotId", "timePoint", trait,
                                     geno.decomp)],
                 by = c("rowNum", "colNum"))
   if (!is.null(geno.decomp) && !useCheck) {
-    if (!hasName(x = pred, name = "geno.decomp.y")) {
-      pred[["geno.decomp.y"]] <- pred[["geno.decomp"]]
-    }
     ## Genotype was converted to an interaction term of genotype and
     ## geno.decomp in the proces of fitting the model. That needs to be
     ## undone to get the genotype back in the output again.
-    genoStart <- nchar(as.character(pred[["geno.decomp.y"]])) + 2
-    pred[["genotype.y"]] <- as.factor(substring(pred[["genotype.y"]],
+    genoStart <- nchar(as.character(pred[["geno.decomp"]])) + 2
+    pred[["genotype"]] <- as.factor(substring(pred[["genotype"]],
                                                 first = genoStart))
-
   }
-  ## Predict intercept.
-  if (!is.null(geno.decomp) && !useCheck) {
-    predGD <- predict(fitMod, which = "geno.decomp")
-    intercept <- mean(predGD[["predicted.values"]])
-  } else {
-    intercept <- fitMod$coeff["Intercept"]
-  }
+  ## Get the intercept from the coefficients.
+  intercept <- fitMod$coeff["Intercept"]
   ## Obtain the corrected trait.
   pred[[newTrait]] <- pred[[trait]] - pred[["predicted.values"]] + intercept
   ## Select the variables needed for subsequent analyses.
-  if (!useCheck) {
-    pred[["genotype"]] <- pred[["genotype.y"]]
-  }
-  if (!is.null(geno.decomp) && !hasName(pred , "geno.decomp")) {
-    pred[[geno.decomp]] <- pred[[paste0(geno.decomp, ".y")]]
-  }
   pred <- pred[c(newTrait, trait, "genotype", geno.decomp,
                  setdiff(predVars, c("rowNum", "colNum")), "plotId",
                  "timePoint")]
@@ -111,15 +100,8 @@ correctSpatialAsreml <- function(fitMod) {
   }
   ## Predict intercept.
   if (length(predVars) > 0) {
-    if (!is.null(geno.decomp)) {
-      predGD <- predictAsreml(fitMod, classify = "geno.decomp",
-                              present = c("geno.decomp", predVars),
-                              vcov = FALSE)$pvals
-      intercept <- mean(predGD[["predicted.value"]])
-    } else {
-      ## No predict here. Just get the intercept from the coefficients.
-      intercept <- fitMod$coefficients$fixed["(Intercept)", ]
-    }
+    ## Get the intercept from the coefficients.
+    intercept <- fitMod$coefficients$fixed["(Intercept)", ]
     pred[[newTrait]] <- pred[[newTrait]] + intercept
   }
   if (length(predVars) == 0) {

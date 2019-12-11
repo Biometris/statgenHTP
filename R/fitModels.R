@@ -244,19 +244,19 @@ fitModels <- function(TP,
   }
   ## Get column containing genotype.
   genoCol <- if (useCheck) "genoCheck" else "genotype"
-  ## Replace genotype and extraFixedFactors by their interaction with geno.decomp.
   if (!is.null(geno.decomp) && engine == "SpATS") {
+    ## Replace genotype by its interaction with geno.decomp.
     TP <- lapply(X = TP, FUN = function(timePoint) {
       timePoint[[genoCol]] <- interaction(timePoint[[geno.decomp]],
                                           timePoint[[genoCol]], sep = "_")
-      for (extraFF in extraFixedFactors) {
-        timePoint[[extraFF]] <- interaction(timePoint[[geno.decomp]],
-                                            timePoint[[extraFF]], sep = "_")
-      }
-      if (useCheck) {
-        timePoint[["check"]] <- interaction(timePoint[[geno.decomp]],
-                                            timePoint[["check"]], sep = "_")
-      }
+      # for (extraFF in extraFixedFactors) {
+      #   timePoint[[extraFF]] <- interaction(timePoint[[geno.decomp]],
+      #                                       timePoint[[extraFF]], sep = "_")
+      # }
+      # if (useCheck) {
+      #   timePoint[["check"]] <- interaction(timePoint[[geno.decomp]],
+      #                                       timePoint[["check"]], sep = "_")
+      # }
       return(timePoint)
     })
   }
@@ -279,9 +279,17 @@ fitModels <- function(TP,
   if (useCheck) {
     fixedForm <- update(fixedForm, "~ . + check")
   }
-  if (genoRand && !is.null(geno.decomp) && is.null(extraFixedFactors) &&
-      !useCheck) {
+  if (genoRand && !is.null(geno.decomp)) {
     fixedForm <- update(fixedForm, "~ . + geno.decomp")
+    if (useCheck) {
+      fixedForm <- update(fixedForm, "~ . + geno.decomp:check")
+    }
+    if (!is.null(extraFixedFactors)) {
+      fixedForm <- update(fixedForm,
+                          paste0("~ . + ",
+                                 paste0("geno.decomp:", extraFixedFactors),
+                                 collapse = "+"))
+    }
   }
   if (engine == "SpATS") {
     if (useRepId) {
@@ -325,21 +333,18 @@ fitModels <- function(TP,
       ## extraFixedFactors and check.
       ## For asreml this is done by explicitly adding interactions within
       ## model formulas.
-      if (!is.null(geno.decomp)) {
-        fixedForm <- update(fixedForm, "~ . + geno.decomp")
-        if (useCheck) {
-          fixedForm <- update(fixedForm, "~ . - check + geno.decomp:check")
-        }
-      }
-      if (!is.null(extraFixedFactors)) {
-        # fixedForm <- update(fixedForm,
-        #                     paste("~ . -" , paste(extraFixedFactors,
-        #                                           collapse = "-")))
-        fixedForm <- update(fixedForm,
-                            paste0("~ . + ",
-                                   paste0("geno.decomp:", extraFixedFactors),
-                                   collapse = "+"))
-      }
+      # if (!is.null(geno.decomp)) {
+      #   fixedForm <- update(fixedForm, "~ . + geno.decomp")
+      #   if (useCheck) {
+      #     fixedForm <- update(fixedForm, "~ . - check + geno.decomp:check")
+      #   }
+      # }
+      # if (!is.null(extraFixedFactors)) {
+      #   fixedForm <- update(fixedForm,
+      #                       paste0("~ . + ",
+      #                              paste0("geno.decomp:", extraFixedFactors),
+      #                              collapse = "+"))
+      # }
     } else {
       ## For genotype fixed the base random formula is empty.
       ## Genotype is added to the fixedForm.

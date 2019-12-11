@@ -88,7 +88,9 @@ predictGenoAsreml <- function(fitMod,
   ## the intercept).
   classForm <- paste0(if (useGenoDecomp) "geno.decomp:", genoCol)
   predGeno <- predictAsreml(fitMod, classify = classForm,
-                            present = c(genoCol, if (useCheck) "check"),
+                            present = c(genoCol,
+                                        if (useGenoDecomp) "geno.decomp",
+                                        if (useCheck) "check"),
                             vcov = FALSE)$pvals
   genoGenoDecomp <- unique(fitMod$call$data[c(genoCol,
                                               if (useGenoDecomp) "geno.decomp")])
