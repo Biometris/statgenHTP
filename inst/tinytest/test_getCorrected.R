@@ -126,3 +126,11 @@ expect_equal(corr6[["t1_corr"]], corr6Orig[["t1_corr"]])
 expect_equal(as.character(corr6[["plotId"]]),
              as.character(corr6Orig[["plotId"]]))
 
+## Check that results can be written to a file.
+tmpFile <- tempfile(fileext = ".csv")
+
+expect_error(getCorrected(testFitMod1, outFile = "outfile"),
+             "a single character string ending in .csv")
+corrOut <- getCorrected(testFitMod1, outFile = tmpFile)
+corrIn <- read.csv(tmpFile)
+expect_equal(corrOut[["t1_corr"]], corrIn[["t1_corr"]])

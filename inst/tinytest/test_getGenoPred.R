@@ -157,3 +157,21 @@ expect_equal(as.character(gp6Check[["check"]]),
 expect_equal(gp6Check[["predicted.values"]], gp6CheckOrig[["predicted.values"]])
 expect_equal(gp6Check[["standard.errors"]], gp6CheckOrig[["standard.errors"]])
 
+## Check that results can be written to a file.
+tmpFile <- tempfile(fileext = ".csv")
+
+expect_error(getGenoPred(testFitMod4, outFile = "outfile"),
+             "a single character string ending in .csv")
+gpOut <- getGenoPred(testFitMod4, outFile = tmpFile)$genoPred
+gpIn <- read.csv(tmpFile)
+expect_equal(gpOut[["predicted.values"]], gpIn[["predicted.values"]])
+
+# Checks should be written to a separate file.
+tmpFile2 <- tempfile(fileext = ".csv")
+
+gpOut2 <- getGenoPred(testFitMod4, predictChecks = TRUE, outFile = tmpFile2)
+gpIn2 <- read.csv(tmpFile)
+expect_equal(gpIn2, gpIn)
+cpIn <- read.csv(gsub(pattern = ".csv", replacement = "Check.csv",
+                      x = tmpFile2))
+expect_equal(gpOut2$checkPred[["predicted.values"]], cpIn[["predicted.values"]])
