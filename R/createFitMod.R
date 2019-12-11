@@ -444,8 +444,9 @@ plot.fitMod <- function(x,
     }
   } else if (plotType == "spatial") {
     p <- lapply(X = fitMods, FUN = spatPlot, trait = trait, what = what,
-                geno.decomp = geno.decomp, engine = engine, output = output,
-                ... = ..., experimentName = experimentName, title = title)
+                geno.decomp = geno.decomp, useCheck = useCheck, engine = engine,
+                output = output, ... = ..., experimentName = experimentName,
+                title = title)
   } else if (plotType == "timeLapse") {
     chkFile(outFile, fileType = "gif")
     timeLapsePlot(fitMods, outFile = outFile, ...)
@@ -463,6 +464,7 @@ spatPlot <- function(fitMod,
                      trait,
                      what,
                      geno.decomp,
+                     useCheck,
                      engine,
                      output = TRUE,
                      ...) {
@@ -486,7 +488,19 @@ spatPlot <- function(fitMod,
   ## Extract fitted values from model.
   fitted <- fitted(fitMod)
   ## Extract predictions (BLUEs or BLUPs) from model.
-  pred <- predictGeno(fitMod)[c("genotype", "predicted.values", geno.decomp)]
+  if (useCheck) {
+    totPred <- predictGeno(fitMod, predictChecks = TRUE)
+    ## Get check predictions.
+    genoPred <- totPred$predGeno
+    checkPred <- totPred$predCheck
+    ## Rename check column to genotype so rbinding is possible.
+    colnames(checkPred)[colnames(checkPred) == "check"] <- "genotype"
+    pred <- rbind(genoPred, checkPred)
+  } else {
+    ## Get genotypic predictions.
+    pred <- predictGeno(fitMod)$predGeno
+  }
+  pred <- pred[c("genotype", "predicted.values", geno.decomp)]
   if (!is.null(geno.decomp) && engine == "SpATS") {
     ## Genotype was converted to an interaction term of genotype and
     ## geno.decomp in the proces of fitting the model. That needs to be
