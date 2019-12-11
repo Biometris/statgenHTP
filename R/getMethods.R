@@ -55,7 +55,7 @@ getGenoPred <- function(fitMod,
   fitMod <- fitMod[timePoints]
   ## Get predictions per time point.
   totPred <- lapply(X = fitMod, FUN = predictGeno,
-                     predictChecks = predictChecks)
+                    predictChecks = predictChecks)
   ## Create one data.frame containing all genotypes for all time points.
   genoPred <- do.call(what = rbind, args = lapply(totPred, `[[`, "predGeno"))
   ## Create one data.frame containing all checks for all time points.
