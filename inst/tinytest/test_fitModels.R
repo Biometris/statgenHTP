@@ -105,7 +105,7 @@ expect_equal(geno(testFitMod2), c("genotype", "geno.decomp", "TRUE"))
 testFitMod3 <- fitModels(testTP, trait = "t1", geno.decomp = "repId",
                          extraFixedFactors = "Basin", quiet = TRUE)
 
-expect_equal(fix(testFitMod3), formula("~Basin"))
+expect_equal(fix(testFitMod3), formula("~Basin + geno.decomp + Basin:geno.decomp"))
 expect_equal(rand(testFitMod3), formula("~rowId + colId"))
 expect_equal(geno(testFitMod3), c("genotype", "geno.decomp", "TRUE"))
 
