@@ -73,8 +73,8 @@ expect_false(attr(testFitMod, "useRepId"))
 expect_false(attr(testFitMod, "spatial"))
 
 ## Check that correct models are fitted.
-fix <- function(fitMod) {fitMod[[1]]$terms$fixed}
-rand <- function(fitMod) {fitMod[[1]]$terms$random}
+fixPart <- function(fitMod) {fitMod[[1]]$terms$fixed}
+randPart <- function(fitMod) {fitMod[[1]]$terms$random}
 ## genVar gives a vector of length 2 or 3:
 ## genotype, geno.decomp and as.random -> all converted to character.
 geno <- function(fitMod) {unlist(fitMod[[1]]$model$geno, use.names = FALSE)}
@@ -89,29 +89,47 @@ expect_equal(geno(testFitMod), c("genotype", "TRUE"))
 testFitMod1 <- fitModels(testTP, trait = "t1", extraFixedFactors = "Basin",
                          quiet = TRUE)
 
-expect_equal(fix(testFitMod1), formula("~Basin"))
-expect_equal(rand(testFitMod1), formula("~rowId + colId"))
+expect_equal(fixPart(testFitMod1), formula("~Basin"))
+expect_equal(randPart(testFitMod1), formula("~rowId + colId"))
 expect_equal(geno(testFitMod1), c("genotype", "TRUE"))
 
 ## Add geno.decomp.
 testFitMod2 <- fitModels(testTP, trait = "t1", geno.decomp = "repId",
                          quiet = TRUE)
 
-expect_equal(fix(testFitMod2), formula("~geno.decomp"))
-expect_equal(rand(testFitMod2), formula("~rowId + colId"))
+expect_equal(fixPart(testFitMod2), formula("~geno.decomp"))
+expect_equal(randPart(testFitMod2), formula("~rowId + colId"))
 expect_equal(geno(testFitMod2), c("genotype", "geno.decomp", "TRUE"))
 
 ## Add extra fixed factors and geno.decomp
 testFitMod3 <- fitModels(testTP, trait = "t1", geno.decomp = "repId",
                          extraFixedFactors = "Basin", quiet = TRUE)
 
-expect_equal(fix(testFitMod3), formula("~Basin + geno.decomp + Basin:geno.decomp"))
-expect_equal(rand(testFitMod3), formula("~rowId + colId"))
+expect_equal(fixPart(testFitMod3),
+             formula("~Basin + geno.decomp + Basin:geno.decomp"))
+expect_equal(randPart(testFitMod3), formula("~rowId + colId"))
 expect_equal(geno(testFitMod3), c("genotype", "geno.decomp", "TRUE"))
 
 ## Add repId.
 testfitMod4 <- fitModels(testTP, trait = "t1", useRepId = TRUE, quiet = TRUE)
 
-expect_equal(fix(testfitMod4), formula("~repId"))
-expect_equal(rand(testfitMod4), formula("~repId:rowId + repId:colId"))
+expect_equal(fixPart(testfitMod4), formula("~repId"))
+expect_equal(randPart(testfitMod4), formula("~repId:rowId + repId:colId"))
 expect_equal(geno(testfitMod4), c("genotype", "TRUE"))
+
+## use check.
+testfitMod5 <- fitModels(testTP, trait = "t1", useCheck = TRUE, quiet = TRUE)
+
+expect_equal(fixPart(testfitMod5), formula("~check"))
+expect_equal(randPart(testfitMod5), formula("~rowId + colId"))
+expect_equal(geno(testfitMod5), c("genoCheck", "TRUE"))
+
+# Use check + geno.decomp.
+testfitMod6 <- fitModels(testTP, trait = "t1", geno.decomp = "repId",
+                         useCheck = TRUE, quiet = TRUE)
+
+expect_equal(fixPart(testfitMod6),
+             formula("~check + geno.decomp + check:geno.decomp"))
+expect_equal(randPart(testfitMod6), formula("~rowId + colId"))
+expect_equal(geno(testfitMod5), c("genoCheck", "TRUE"))
+

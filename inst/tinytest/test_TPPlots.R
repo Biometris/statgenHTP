@@ -62,7 +62,7 @@ geoms1 <- sapply(p1[[1]]$layers, function(x) class(x$geom)[1])
 ## Two plots should be highlighted as defined in variable highlight..
 expect_equal(as.character(p1[[1]]$layers[geoms1 == "GeomTile"][[1]]$mapping),
              "~highlight.")
-expect_equal(sum(!is.na(p1[[1]]$data$highlight.)), 2)
+expect_equal(sum(!is.na(p1[[1]]$data$highlight.)), 4)
 
 ### Check box plot.
 
