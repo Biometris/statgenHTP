@@ -3,6 +3,7 @@ createFitMod <- function(models,
                          experimentName,
                          what,
                          useRepId,
+                         useCheck,
                          spatial,
                          timePoints) {
   fitMod <- structure(models,
@@ -10,6 +11,7 @@ createFitMod <- function(models,
                       timePoints = timePoints,
                       what = what,
                       useRepId = useRepId,
+                      useCheck = useCheck,
                       spatial = spatial,
                       class = c("fitMod", "list"),
                       timestamp = Sys.time())
@@ -803,6 +805,7 @@ timeLapsePlot <- function(fitMods,
     attr(r, "experimentName") <- attr(x, "experimentName")
     attr(r, "what") <- attr(x, "what")
     attr(r, "useRepId") <- attr(x, "useRepId")
+    attr(r, "useCheck") <- attr(x, "useCheck")
     attr(r, "spatial") <- attr(x, "spatial")
     attr(r, "class") <- c("fitMod", "list")
     attr(r, "timestamp") <- attr(x, "timestamp")

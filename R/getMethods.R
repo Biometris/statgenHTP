@@ -203,16 +203,18 @@ getVar <- function(fitMod,
   ## Restrict fitMod to selected timePoints.
   fitMod <- fitMod[timePoints]
   useRepId <- attr(x = fitMod, which = "useRepId")
+  useCheck <- attr(x = fitMod, which = "useCheck")
   colVarId <- ifelse(useRepId, "repId:colId", "colId")
   rowVarId <- ifelse(useRepId, "repId:rowId", "rowId")
+  genoCol <- if (useCheck) "genoCheck" else "genotype"
   if (inherits(fitMod[[1]], "SpATS")) {
-    varGen <- sapply(X = fitMod, FUN = function(x) x$var.comp["genotype"])
+    varGen <- sapply(X = fitMod, FUN = function(x) x$var.comp[genoCol])
     varRes <- sapply(X = fitMod, FUN = function(x) x$psi[1])
     varCol <- sapply(X = fitMod, FUN = function(x) x$var.comp[colVarId])
     varRow <- sapply(X = fitMod, FUN = function(x) x$var.comp[rowVarId])
   } else if (inherits(fitMod[[1]], "asreml")) {
     varGen <- sapply(X = fitMod, FUN = function(x) {
-      x$vparameters["genotype"] * x$sigma2
+      x$vparameters[genoCol] * x$sigma2
     })
     varRes <- sapply(X = fitMod, FUN = function(x) x$sigma2)
     varCol <- sapply(X = fitMod, FUN = function(x) {

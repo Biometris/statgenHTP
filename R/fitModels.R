@@ -418,6 +418,7 @@ fitModels <- function(TP,
                       experimentName = experimentName,
                       what = what,
                       useRepId = useRepId,
+                      useCheck = useCheck,
                       spatial = spatial,
                       timePoints = timePoints))
 }
