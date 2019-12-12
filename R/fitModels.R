@@ -362,9 +362,35 @@ fitModels <- function(TP,
         ## Only keep columns needed for analysis.
         modDat <- droplevels(timePoint)
         ## Run model.
-        asrFit <- asreml::asreml(fixed = fixedForm, random = randForm,
-                                 data = modDat, trace = FALSE, maxiter = 200,
-                                 na.action = asreml::na.method(x = "include"))
+        ## Put everything in tryCatchExt.
+        ## This gives the option to remove some redundant wanrnings and
+        ## convert so warnings that are actually errors to error.
+        asrFit <- tryCatchExt({
+          asreml::asreml(fixed = fixedForm, random = randForm, data = modDat,
+                         trace = FALSE, maxiter = 200,
+                         na.action = asreml::na.method(x = "include"))
+        })
+        if (!is.null(asrFit$warning)) {
+          ## Remove warnings about 1% change in last iter when irrelevant.
+          asrFit <- chkLastIter(asrFit)
+          ## Convert some warnings to errors.
+          asrFit <- wrnToErr(asrFit)
+        }
+        if (length(asrFit$warning) != 0) {
+          ## Throw warnings that are left.
+          warning("Warning in asreml for genotype random, trait ", trait,
+                  " in time point ", timePoint[["timePoint"]][1], ":\n",
+                  asrFit$warning, "\n", call. = FALSE)
+        }
+        if (is.null(asrFit$error)) {
+          ## Set output to value.
+          asrFit <- asrFit$value
+        } else {
+          warning("Error in asreml for genotype random, trait ", trait,
+                  " in trial ", timePoint[["timePoint"]][1], ":\n",
+                  asrFit$error, "\n", call. = FALSE)
+          asrFit <- NULL
+        }
         ## evaluate call terms so predict can be run.
         ## The first (unnamed) item in call contains the full asreml function.
         ## This is replaced by a named reference to drastically reduce output
@@ -491,20 +517,28 @@ bestSpatMod <- function(modDat,
       if (!is.na(spatTerm[i])) {
         asrArgs[["residual"]] <- formula(spatTerm[i])
       }
+      ## Fit the actual model.
+      ## Put everything in tryCatchExt.
+      ## This gives the option to remove some redundant wanrnings and
+      ## convert so warnings that are actually errors to error.
       capture.output(fitMod <- tryCatchExt(do.call(what = asreml::asreml,
                                                    args = asrArgs)),
                      file = tempfile())
       if (!is.null(fitMod$warning)) {
+        ## Remove warnings about 1% change in last iter when irrelevant.
         fitMod <- chkLastIter(fitMod)
+        ## Convert some warnings to errors.
         fitMod <- wrnToErr(fitMod)
       }
       if (length(fitMod$warning) != 0) {
+        ## Throw warnings that are left.
         warning(paste0("Warning in asreml for model ", spatCh[i],
                        " genotype random, trait ", trait, " in timePoint ",
                        modDat[["timePoint"]][1], ":\n", fitMod$warning,
                        "\n"), call. = FALSE)
       }
       if (is.null(fitMod$error)) {
+        ## Set output to value.
         fitMod <- fitMod$value
       } else {
         warning(paste0("Error in asreml for model ", spatCh[i],
