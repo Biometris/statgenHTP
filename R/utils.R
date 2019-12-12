@@ -290,49 +290,6 @@ xyFacetPlot <- function(baseDat,
 
 #' @noRd
 #' @keywords internal
-ggbiplot <- function(pcobj, choices = 1:2, scale = 1,
-                     alpha = 1, varname.size = 3) {
-  ## Get scores and loadings from pcoject.
-  scores <- t(t(pcobj$x) * pcobj$sdev ^ (1 - scale))
-  loadings <- t(t(pcobj$rotation) * pcobj$sdev ^ scale)
-  ## Scale loadings.
-  radius <- sqrt(median(rowSums(scores ^ 2)) / max(colSums(loadings ^ 2)))
-  loadings <- loadings / radius
-  ## Convert to data.frames for ggplot.
-  u <- data.frame(scores[, choices])
-  v <- data.frame(loadings[, choices])
-  ## Add colnames for easy reference in plotting.
-  colnames(u) <- colnames(v) <- c("x", "y")
-  ## Append the proportion of explained variance to the axis labels.
-  axisLabs <- paste(names(scores)[choices],
-                    sprintf('(%0.1f%% explained var.)',
-                            100 * pcobj$sdev[choices] ^ 2 / sum(pcobj$sdev ^ 2)))
-  ## Add extra columns to v for text labels, direction and position.
-  v[["name"]] <- rownames(v)
-  v[["angle"]] <- (180 / pi) * atan(v[["y"]] / v[["x"]])
-  v[["hjust"]] <- 0.5 * (1 - 1.25 * sign(v[["x"]]))
-  ## Create plot.
-  p <- ggplot(u, aes_string("x", "y")) +
-    ## Draw points for observations.
-    geom_point(alpha = alpha) +
-    ## Draw arrows for plotIds.
-    geom_segment(data = v, aes_string(x = 0, y = 0 , xend = "x", yend = "y"),
-                 arrow = grid::arrow(length = unit(1/3, "picas")),
-                 size = 0.5, color = "#832424FF") +
-    ## Annotate arrows.
-    geom_text(data = v, aes_string(label = "name", angle = "angle",
-                                   hjust = "hjust"),
-              size = varname.size, vjust = 0.5, color = "#832424FF") +
-    ## Set clip to off to allow labels overlapping axes.
-    coord_equal(clip = "off") +
-    plotTheme() +
-    theme(aspect.ratio = 1) +
-    labs(title = "PCA of coef", x = axisLabs[1], y = axisLabs[2])
-  return(p)
-}
-
-#' @noRd
-#' @keywords internal
 chkFile <- function(outFile,
                     fileType = "csv") {
   if (!is.character(outFile) || length(outFile) > 1 ||
