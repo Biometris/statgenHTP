@@ -179,3 +179,108 @@ expect_equal(gpIn2, gpIn)
 cpIn <- read.csv(gsub(pattern = ".csv", replacement = "Check.csv",
                       x = tmpFile2))
 expect_equal(gpOut2$checkPred[["predicted.values"]], cpIn[["predicted.values"]])
+
+## Test for models fitted using asreml.
+## Limited set of tests, focused on diferences between SpATS and asreml.
+
+## Fit some models with different options that influence output
+## of getGenoPred function.
+testFitModAs1 <- fitModels(testTP, trait = "t1", engine = "asreml", quiet = TRUE)
+testFitModAs2 <- fitModels(testTP, trait = "t1", extraFixedFactors = "Basin",
+                           engine = "asreml", quiet = TRUE)
+testFitModAs3 <- fitModels(testTP, trait = "t1", geno.decomp = "repId",
+                           engine = "asreml", quiet = TRUE)
+testFitModAs4 <- fitModels(testTP, trait = "t1", useCheck = TRUE,
+                           engine = "asreml", quiet = TRUE)
+testFitModAs5 <- fitModels(testTP, trait = "t1", extraFixedFactors = "Basin",
+                           useCheck = TRUE, engine = "asreml", quiet = TRUE)
+testFitModAs6 <- fitModels(testTP, trait = "t1", geno.decomp = "repId",
+                           useCheck = TRUE, engine = "asreml", quiet = TRUE)
+
+gpAs1 <- getGenoPred(testFitModAs1)
+gpAs2 <- getGenoPred(testFitModAs2)
+gpAs3 <- getGenoPred(testFitModAs3)
+gpAs4a <- getGenoPred(testFitModAs4)
+gpAs4b <- getGenoPred(testFitModAs4, predictChecks = TRUE)
+gpAs5 <- getGenoPred(testFitModAs5)
+gpAs6a <- getGenoPred(testFitModAs6)
+gpAs6b <- getGenoPred(testFitModAs6, predictChecks = TRUE)
+
+# Extract genotype and check predictions.
+gpAs1 <- gpAs1$genoPred
+gpAs2 <- gpAs2$genoPred
+gpAs3 <- gpAs3$genoPred
+gpAs4 <- gpAs4a$genoPred
+gpAs4Check <- gpAs4b$checkPred
+gpAs5 <- gpAs5$genoPred
+gpAs6 <- gpAs6a$genoPred
+gpAs6Check <- gpAs6b$checkPred
+
+# Output structure should be identical to SpATS output.
+expect_equal(dim(gpAs1), dim(gp1))
+expect_equal(dim(gpAs2), dim(gp2))
+expect_equal(dim(gpAs3), dim(gp3))
+expect_equal(dim(gpAs4), dim(gp4))
+expect_equal(dim(gpAs4Check), dim(gp4Check))
+expect_equal(dim(gpAs5), dim(gp5))
+expect_equal(dim(gpAs6), dim(gp6))
+expect_equal(dim(gpAs6Check), dim(gp6Check))
+
+expect_equal(colnames(gpAs1), colnames(gp1))
+expect_equal(colnames(gpAs6), colnames(gp6))
+expect_equal(colnames(gpAs6Check), colnames(gp6Check))
+
+# Read expected results.
+gpAs1Orig <- read.csv("gpAs1")
+gpAs2Orig <- read.csv("gpAs2")
+gpAs3Orig <- read.csv("gpAs3")
+gpAs4Orig <- read.csv("gpAs4")
+gpAs4CheckOrig <- read.csv("gpAs4c")
+gpAs5Orig <- read.csv("gpAs5")
+gpAs6Orig <- read.csv("gpAs6")
+gpAs6CheckOrig <- read.csv("gpAs6c")
+
+# Ignoring timePoint and timeNumber since there is no difference with SpATS.
+expect_equal(as.character(gpAs1[["genotype"]]),
+             as.character(gpAs1Orig[["genotype"]]))
+expect_equal(gpAs1[["predicted.values"]], gpAs1Orig[["predicted.values"]])
+expect_equal(gpAs1[["standard.errors"]], gpAs1Orig[["standard.errors"]])
+
+expect_equal(as.character(gpAs2[["genotype"]]),
+             as.character(gpAs2Orig[["genotype"]]))
+expect_equal(gpAs2[["predicted.values"]], gpAs2Orig[["predicted.values"]])
+expect_equal(gpAs2[["standard.errors"]], gpAs2Orig[["standard.errors"]])
+
+expect_equal(as.character(gpAs3[["geno.decomp"]]),
+             as.character(gpAs3Orig[["geno.decomp"]]))
+expect_equal(as.character(gpAs3[["genotype"]]),
+             as.character(gpAs3Orig[["genotype"]]))
+expect_equal(gpAs3[["predicted.values"]], gpAs3Orig[["predicted.values"]])
+expect_equal(gpAs3[["standard.errors"]], gpAs3Orig[["standard.errors"]])
+
+expect_equal(as.character(gpAs4[["genotype"]]),
+             as.character(gpAs4Orig[["genotype"]]))
+expect_equal(gpAs4[["predicted.values"]], gpAs4Orig[["predicted.values"]])
+expect_equal(gpAs4[["standard.errors"]], gpAs4Orig[["standard.errors"]])
+
+expect_equal(as.character(gpAs4Check[["check"]]),
+             as.character(gpAs4CheckOrig[["check"]]))
+expect_equal(gpAs4Check[["predicted.values"]], gpAs4CheckOrig[["predicted.values"]])
+expect_equal(gpAs4Check[["standard.errors"]], gpAs4CheckOrig[["standard.errors"]])
+
+expect_equal(as.character(gpAs5[["genotype"]]),
+             as.character(gpAs5Orig[["genotype"]]))
+expect_equal(gpAs5[["predicted.values"]], gpAs5Orig[["predicted.values"]])
+expect_equal(gpAs5[["standard.errors"]], gpAs5Orig[["standard.errors"]])
+
+expect_equal(as.character(gpAs6[["geno.decomp"]]),
+             as.character(gpAs6Orig[["geno.decomp"]]))
+expect_equal(as.character(gpAs6[["genotype"]]),
+             as.character(gpAs6Orig[["genotype"]]))
+expect_equal(gpAs6[["predicted.values"]], gpAs6Orig[["predicted.values"]])
+expect_equal(gpAs6[["standard.errors"]], gpAs6Orig[["standard.errors"]])
+
+expect_equal(as.character(gpAs6Check[["check"]]),
+             as.character(gpAs6CheckOrig[["check"]]))
+expect_equal(gpAs6Check[["predicted.values"]], gpAs6CheckOrig[["predicted.values"]])
+expect_equal(gpAs6Check[["standard.errors"]], gpAs6CheckOrig[["standard.errors"]])
