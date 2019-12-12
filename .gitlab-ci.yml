@@ -90,7 +90,7 @@ coverage:
     ## Add R_LIBS_USER to libpaths.
     - echo '.libPaths("'${R_LIBS_USER}'")' > .Rprofile
     ## Add TT_AT_HOME to system environments to enable at_home() tests.
-    - echo 'Sys.setenv(TT_AT_HOME = "TRUE")' >> . Rprofile
+    - echo 'Sys.setenv(TT_AT_HOME = "TRUE")' >> .Rprofile
   script:
     - Rscript -e 'covr::package_coverage(type = "none", code = "tinytest::run_test_dir()")'
   coverage: '/Coverage:\s*(\d+.\d+\%)/'
