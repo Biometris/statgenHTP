@@ -16,20 +16,6 @@ tryCatchExt <- function(expr) {
   list(value = value, warning = warn, error = err)
 }
 
-#' Helper function for suppressing a single warning message.
-#'
-#' @noRd
-#' @keywords internal
-supprWarn <- function(expression,
-                      message) {
-  withCallingHandlers(expression,
-                      warning = function(w) {
-                        if (grepl(message, w$message)) {
-                          invokeRestart("muffleWarning")
-                        }
-                      })
-}
-
 #' Helper function for checking whether error message about 1% change on
 #' last iteration for asreml is worth mentioning as a warning.
 #' If the corresponding parameter is close to zero then changes of 1%
