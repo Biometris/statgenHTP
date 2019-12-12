@@ -572,25 +572,25 @@ bestSpatMod <- function(modDat,
           } else {
             criterionCur <- modSum[i, "BIC"]
           }
-        }
-        if (criterionCur < criterionBest) {
-          bestModTr <- fitMod
-          ## Evaluate call terms in bestModTr so predict can be run.
-          ## The first (unnamed) item in call contains the full asreml function.
-          ## This is replaced by a named reference to drastically reduce output
-          ## size.
-          ## Needs to be called in every iteration to prevent final result
-          ## from always having the values of the last iteration.
-          bestModTr$call[[1]] <- quote(asreml::asreml)
-          bestModTr$call$fixed <- eval(bestModTr$call$fixed)
-          bestModTr$call$random <- eval(bestModTr$call$random)
-          bestModTr$call$residual <- eval(bestModTr$call$residual)
-          bestModTr$call$data <- substitute(modDat)
-          criterionBest <- criterionCur
-          bestMod <- spatCh[i]
-        }
-      }
-    }
+          if (criterionCur < criterionBest) {
+            bestModTr <- fitMod
+            ## Evaluate call terms in bestModTr so predict can be run.
+            ## The first (unnamed) item in call contains the full asreml function.
+            ## This is replaced by a named reference to drastically reduce output
+            ## size.
+            ## Needs to be called in every iteration to prevent final result
+            ## from always having the values of the last iteration.
+            bestModTr$call[[1]] <- quote(asreml::asreml)
+            bestModTr$call$fixed <- eval(bestModTr$call$fixed)
+            bestModTr$call$random <- eval(bestModTr$call$random)
+            bestModTr$call$residual <- eval(bestModTr$call$residual)
+            bestModTr$call$data <- substitute(modDat)
+            criterionBest <- criterionCur
+            bestMod <- spatCh[i]
+          } # End better model.
+        } # End converge
+      } # Not NULL fitMod
+    } # End for loop spatial terms.
     fitMods[[trait]] <- bestModTr
     spatial[[trait]] <- spatCh[bestMod]
     attr(x = modSum, which = "chosen") <- bestMod
