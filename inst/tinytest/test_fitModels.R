@@ -133,3 +133,66 @@ expect_equal(fixPart(testfitMod6),
 expect_equal(randPart(testfitMod6), formula("~rowId + colId"))
 expect_equal(geno(testfitMod5), c("genoCheck", "TRUE"))
 
+
+## Repeat model checks for models fitted using asreml.
+
+if (at_home()) {
+
+  fixPartAs <- function(fitMod) {fitMod[[1]]$formulae$fixed}
+  randPartAs <- function(fitMod) {fitMod[[1]]$formulae$random}
+
+  testFitModAs <- fitModels(testTP, trait = "t1", engine = "asreml",
+                            quiet = TRUE)
+
+  expect_equal(fixPartAs(testFitModAs), formula("t1~1"))
+  expect_equal(randPartAs(testFitModAs), formula("~genotype"))
+
+  ## Repeat model check for different combinations of input variables.
+
+  ## Add extra fixed factors.
+  testFitModAs1 <- fitModels(testTP, trait = "t1", extraFixedFactors = "Basin",
+                             engine = "asreml", quiet = TRUE)
+
+  expect_equal(fixPartAs(testFitModAs1), formula("t1~Basin"))
+  expect_equal(randPartAs(testFitModAs1), formula("~genotype"))
+
+  ## Add geno.decomp.
+  testFitModAs2 <- fitModels(testTP, trait = "t1", geno.decomp = "repId",
+                             engine = "asreml", quiet = TRUE)
+
+  expect_equal(fixPartAs(testFitModAs2), formula("t1~geno.decomp"))
+  expect_equal(randPartAs(testFitModAs2), formula("~at(geno.decomp):genotype"))
+
+  ## Add extra fixed factors and geno.decomp
+  # testFitModAs3 <- fitModels(testTP, trait = "t1", geno.decomp = "repId",
+  #                            extraFixedFactors = "Basin", engine = "asreml",
+  #                            quiet = TRUE)
+  #
+  # expect_equal(fixPartAs(testFitModAs3),
+  #              formula("~Basin + geno.decomp + Basin:geno.decomp"))
+  # expect_equal(randPartAs(testFitModAs3), formula("~rowId + colId"))
+  # expect_equal(geno(testFitModAs3), c("genotype", "geno.decomp", "TRUE"))
+
+  ## Add repId.
+  testFitModAs4 <- fitModels(testTP, trait = "t1", useRepId = TRUE,
+                             engine = "asreml", quiet = TRUE)
+
+  expect_equal(fixPartAs(testFitModAs4), formula("t1~repId"))
+  expect_equal(randPartAs(testFitModAs4), formula("~genotype"))
+
+  ## use check.
+  testFitModAs5 <- fitModels(testTP, trait = "t1", useCheck = TRUE,
+                             engine = "asreml", quiet = TRUE)
+
+  expect_equal(fixPartAs(testFitModAs5), formula("t1~check"))
+  expect_equal(randPartAs(testFitModAs5), formula("~genoCheck"))
+
+  # Use check + geno.decomp.
+  testFitModAs6 <- fitModels(testTP, trait = "t1", geno.decomp = "repId",
+                             useCheck = TRUE, engine = "asreml", quiet = TRUE)
+
+  expect_equal(fixPartAs(testFitModAs6),
+               formula("t1~check + geno.decomp + check:geno.decomp"))
+  expect_equal(randPartAs(testFitModAs6), formula("~at(geno.decomp):genoCheck"))
+
+}
