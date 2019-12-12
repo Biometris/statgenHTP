@@ -62,3 +62,12 @@ effDimsIn <- read.csv(tmpFile)
 # Ignore timePoint
 # It is imported as factor, but is a date in the original data.
 expect_equal(effDimsOut[, -2], effDimsIn[, -2])
+
+## Test that eff dims cannot be computed for asreml models.
+
+if (at_home()) {
+  testFitModAs1 <- fitModels(testTP, trait = "t1", engine = "asreml",
+                             quiet = TRUE)
+  expect_error(getEffDims(testFitModAs1),
+               "Models in testFitModAs1 should be fitted using SpATS")
+}

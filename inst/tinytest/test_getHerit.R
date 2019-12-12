@@ -49,3 +49,36 @@ heritIn <- read.csv(tmpFile)
 # Ignore timePoint
 # It is imported as factor, but is a date in the original data.
 expect_equal(heritOut[, -2], heritIn[, -2])
+
+## Test for models fitted using asreml.
+## Limited set of tests, focused on diferences between SpATS and asreml.
+
+if (at_home()) {
+  ## Fit models.
+  testFitModAs1 <- fitModels(testTP, trait = "t1", engine = "asreml",
+                             quiet = TRUE)
+  testFitModAs2 <- fitModels(testTP, trait = "t1", geno.decomp = "repId",
+                             engine = "asreml", quiet = TRUE)
+  testFitModAs3 <- fitModels(testTP, trait = "t1", what = "fixed",
+                             engine = "asreml", quiet = TRUE)
+
+  expect_error(getHerit(testFitModAs3),
+               "Heritability can only be calculated when genotype is random")
+
+  heritAs1 <- getHerit(testFitModAs1)
+  heritAs2 <- getHerit(testFitModAs2)
+
+  expect_equal(heritAs1[["h2"]],
+               c(-2.02929559081078e-05, 0.167450198761112, -4.37458765323306e-06,
+                 0.650245799271745, 0.999982638701502))
+  expect_equal(heritAs2[["1"]],
+               c(-1.8990975917399e-05, 0.937541193808098, 0.886355776919209,
+                 0.286419906650437, 8.85836689556996e-08))
+  expect_equal(heritAs2[["2"]],
+               c(-1.9124297023998e-05, 0.951117118858154, 0.941710391410272,
+                 0.767914363565008, 0.646403039223904))
+}
+
+
+
+

@@ -58,3 +58,53 @@ varIn <- read.csv(tmpFile)
 # It is imported as factor, but is a date in the original data.
 expect_equal(varOut[, -2], varIn[, -2])
 
+## Test for models fitted using asreml.
+## Limited set of tests, focused on diferences between SpATS and asreml.
+
+if (at_home()) {
+  ## Fit models.
+  testFitModAs1 <- fitModels(testTP, trait = "t1", engine = "asreml",
+                             quiet = TRUE)
+  testFitModAs2 <- fitModels(testTP, trait = "t1", engine = "asreml",
+                             geno.decomp = "repId", quiet = TRUE)
+  testFitModAs3 <- fitModels(testTP, trait = "t1", useCheck = TRUE,
+                             engine = "asreml", quiet = TRUE)
+  ## This gives a lot of warnings about oscillating parameters.
+  expect_warning(testFitModAs4 <-
+                   fitModels(testTP, trait = "t1", useRepId = TRUE,
+                             engine = "asreml", spatial = TRUE, quiet = TRUE),
+                 "Oscillating parameter")
+
+  varAs1 <- getVar(testFitModAs1)
+  varAs2 <- getVar(testFitModAs2)
+  varAs3 <- getVar(testFitModAs3)
+  varAs4 <- getVar(testFitModAs4)
+
+  expect_equal(varAs1[["varGen"]],
+               c(1.65268879494901e-09, 5.64519368545327e-05, 3.15261383070164e-10,
+                 0.000612456995455758, 2.03348262780288e-05))
+  expect_equal(varAs1[["varRes"]],
+               c(0.00103293042234413, 0.000719166385240099, 0.00095329228503577,
+                 0.000342990030581744, 0.000639896746661389))
+  expect_equal(varAs1[["varCol"]], rep(NA_real_, times = 5))
+  expect_equal(varAs1[["varRow"]], rep(NA_real_, times = 5))
+
+  expect_equal(varAs3[["varGen"]],
+               c(1.27155338625288e-09, 0.000319265101756853, 1.14364124067873e-09,
+                 0.000600635211857471, 0.000489856464945024))
+  expect_equal(varAs3[["varRes"]],
+               c(0.000794720809089666, 0.000516941433348486, 0.000714775723871777,
+                 0.000348842294942067, 0.000290678907005537))
+
+  expect_equal(varAs4[["varGen"]],
+               c(1.38646720134564e-09, 1.00887137199698e-09, 0.000147384723762021,
+                 0.000730185616933471, 0.000373421169180005))
+  expect_equal(varAs4[["varRes"]],
+               c(0.000866541938342623, 0.000630544562020765, 0.000456828756445013,
+                 0.000175763890272973, 0.000389710248716934))
+}
+
+
+
+
+
