@@ -122,7 +122,7 @@ expect_equal(as.character(corr6[["geno.decomp"]]),
 expect_equal(as.character(corr6[["genotype"]]),
              as.character(corr6Orig[["genotype"]]))
 expect_equal(corr6[["t1"]], corr6Orig[["t1"]])
-expect_equal(corr6[["t1_corr"]], corr6Orig[["t1_corr"]])
+expect_equal(corr6[["t1_corr"]], corr6Orig[["t1_corr"]], tol = 1e-6)
 expect_equal(as.character(corr6[["plotId"]]),
              as.character(corr6Orig[["plotId"]]))
 

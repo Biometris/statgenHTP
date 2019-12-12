@@ -146,16 +146,20 @@ expect_equal(as.character(gp6[["geno.decomp"]]),
              as.character(gp6Orig[["geno.decomp"]]))
 expect_equal(as.character(gp6[["genotype"]]),
              as.character(gp6Orig[["genotype"]]))
-expect_equal(gp6[["predicted.values"]], gp6Orig[["predicted.values"]])
-expect_equal(gp6[["standard.errors"]], gp6Orig[["standard.errors"]])
+expect_equal(gp6[["predicted.values"]], gp6Orig[["predicted.values"]],
+             tol = 1e-6)
+expect_equal(gp6[["standard.errors"]], gp6Orig[["standard.errors"]],
+             tol = 1e-6)
 
 expect_equal(gp6Check[["timeNumber"]], gp6CheckOrig[["timeNumber"]])
 expect_equal(as.character(gp6Check[["timePoint"]]),
              as.character(gp6CheckOrig[["timePoint"]]))
 expect_equal(as.character(gp6Check[["check"]]),
              as.character(gp6CheckOrig[["check"]]))
-expect_equal(gp6Check[["predicted.values"]], gp6CheckOrig[["predicted.values"]])
-expect_equal(gp6Check[["standard.errors"]], gp6CheckOrig[["standard.errors"]])
+expect_equal(gp6Check[["predicted.values"]], gp6CheckOrig[["predicted.values"]],
+             tol = 1e-6)
+expect_equal(gp6Check[["standard.errors"]], gp6CheckOrig[["standard.errors"]],
+             tol = 1e-6)
 
 ## Check that results can be written to a file.
 tmpFile <- tempfile(fileext = ".csv")
