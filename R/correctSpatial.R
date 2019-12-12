@@ -33,7 +33,7 @@ correctSpatialSpATS <- function(fitMod) {
     fixVars <- NULL
   }
   predVars <- setdiff(c(fixVars, "colNum", "rowNum", "colId", "rowId"),
-                      c(geno.decomp, "check"))
+                      geno.decomp)
   pred <- predict(fitMod, which = predVars, predFixed = "marginal")
   pred <- pred[, !colnames(pred) %in% c("genotype", geno.decomp)]
   ## Merge genotype and timepoint to data
