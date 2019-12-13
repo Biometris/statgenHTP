@@ -35,12 +35,10 @@ summary.fitMod <- function(object,
     tpUsed <- min(max(noTP / 5, 10), noTP)
     bestSpat <- attr(x = object[[1]], which = "sumTab")[[1]][, "spatial"]
   }
-
   cat("Models in ", deparse(substitute(object)), " where fitted for experiment ",
       experimentName, ".\n\n", sep = "")
   cat("It contains", noTP, "time points.\n")
   cat("The models were fitted using ", engine, ".\n\n", sep = "")
-
   if (engine == "asreml" && attr(x = object, which = "spatial")) {
     cat("The selected spatial model is ", bestSpat, ".\n", sep = "")
     cat(tpUsed, "time points were used to select the best spatial model.\n")
