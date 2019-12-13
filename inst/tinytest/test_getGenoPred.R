@@ -26,6 +26,8 @@ testFitMod6 <- fitModels(testTP, trait = "t1", geno.decomp = "repId",
 
 expect_error(getGenoPred("fitMod"),
              "fitMod should be an object of class fitMod")
+expect_warning(getGenoPred(testFitMod1, predictChecks = TRUE),
+               "check was not used when fitting the model")
 
 gp1 <- getGenoPred(testFitMod1)
 gp2 <- getGenoPred(testFitMod2)
@@ -185,7 +187,8 @@ expect_equal(gpOut2$checkPred[["predicted.values"]], cpIn[["predicted.values"]])
 
 ## Fit some models with different options that influence output
 ## of getGenoPred function.
-testFitModAs1 <- fitModels(testTP, trait = "t1", engine = "asreml", quiet = TRUE)
+testFitModAs1 <- fitModels(testTP, trait = "t1", engine = "asreml",
+                           quiet = TRUE)
 testFitModAs2 <- fitModels(testTP, trait = "t1", extraFixedFactors = "Basin",
                            engine = "asreml", quiet = TRUE)
 testFitModAs3 <- fitModels(testTP, trait = "t1", geno.decomp = "repId",
@@ -265,8 +268,10 @@ expect_equal(gpAs4[["standard.errors"]], gpAs4Orig[["standard.errors"]])
 
 expect_equal(as.character(gpAs4Check[["check"]]),
              as.character(gpAs4CheckOrig[["check"]]))
-expect_equal(gpAs4Check[["predicted.values"]], gpAs4CheckOrig[["predicted.values"]])
-expect_equal(gpAs4Check[["standard.errors"]], gpAs4CheckOrig[["standard.errors"]])
+expect_equal(gpAs4Check[["predicted.values"]],
+             gpAs4CheckOrig[["predicted.values"]])
+expect_equal(gpAs4Check[["standard.errors"]],
+             gpAs4CheckOrig[["standard.errors"]])
 
 expect_equal(as.character(gpAs5[["genotype"]]),
              as.character(gpAs5Orig[["genotype"]]))
@@ -282,5 +287,7 @@ expect_equal(gpAs6[["standard.errors"]], gpAs6Orig[["standard.errors"]])
 
 expect_equal(as.character(gpAs6Check[["check"]]),
              as.character(gpAs6CheckOrig[["check"]]))
-expect_equal(gpAs6Check[["predicted.values"]], gpAs6CheckOrig[["predicted.values"]])
-expect_equal(gpAs6Check[["standard.errors"]], gpAs6CheckOrig[["standard.errors"]])
+expect_equal(gpAs6Check[["predicted.values"]],
+             gpAs6CheckOrig[["predicted.values"]])
+expect_equal(gpAs6Check[["standard.errors"]],
+             gpAs6CheckOrig[["standard.errors"]])
