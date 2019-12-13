@@ -9,7 +9,7 @@ Authors@R:
              comment = c(ORCID = "0000-0002-2913-4892")),
       person(given = "Maria Xose",
              family = "Rodriguez Alvarez",
-             role = c("aut", "cre")),
+             role = c("aut")),
       person(given = "Bart-Jan",
              family = "van Rossum",
              role = "aut",
