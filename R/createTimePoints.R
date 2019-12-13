@@ -410,16 +410,9 @@ plot.TP <- function(x,
         tpDat$highlight. <- ifelse(tpDat$genotype %in% highlight,
                                    as.character(tpDat$genotype), NA)
       }
-      ylen <- attr(tpDat, "trPlLength")
-      xlen <- attr(tpDat, "trPlWidth")
-      ## Compute aspect for proper depiction of field size. If no information
-      ## is available plots are assumed to be square.
-      if (is.null(ylen) || is.null(xlen)) {
-        aspect <- length(unique(tpDat$colNum)) /
-          length(unique(tpDat$rowNum))
-      } else {
-        aspect <- ylen / xlen
-      }
+      ## Compute aspect for proper depiction of field size.
+      ## Plots are assumed to be square.
+      aspect <- length(unique(tpDat$colNum)) / length(unique(tpDat$rowNum))
       plotRep <- hasName(x = tpDat, name = "repId")
       ## Create data for lines between replicates.
       if (plotRep) {
