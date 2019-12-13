@@ -343,6 +343,9 @@ plot.fitMod <- function(x,
       corrected <- droplevels(corrected)
     }
     newTrait <- paste0(trait, "_corr")
+    corrected <- corrected[c("timeNumber", "timePoint", "genotype",
+                             newTrait, "plotId",
+                             if (!is.null(geno.decomp)) "geno.decomp")]
     ## Add combinations missing in data to corrected.
     corrected <- addMissVals(dat = corrected, trait = newTrait)
     p <- xyFacetPlot(baseDat = corrected, overlayDat = preds, yVal = newTrait,

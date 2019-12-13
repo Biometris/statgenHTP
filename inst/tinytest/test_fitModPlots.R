@@ -123,8 +123,8 @@ expect_silent(p3 <- plot(testFitMod2, plotType = "corrPred", outFile = tmpFile))
 expect_silent(p4 <- plot(testFitMod3, plotType = "corrPred", outFile = tmpFile))
 expect_silent(p5 <- plot(testFitMod3, plotType = "corrPred", plotChecks = TRUE,
                          outFile = tmpFile))
-expect_equal(nrow(p4[[1]]$data), 510)
-expect_equal(nrow(p5[[1]]$data), 590)
+expect_equal(nrow(p4[[1]]$data), 105)
+expect_equal(nrow(p5[[1]]$data), 125)
 
 if (at_home()) {
   ## Check that rawPred plot functions for asreml.
