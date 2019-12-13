@@ -202,7 +202,8 @@ plot.fitMod <- function(x,
   ## Get engine from fitted models.
   engine <- class(fitMods[[1]])
   if (engine == "asreml" && plotType == "effDim") {
-    stop("Effective dimensions can only be plotted for models fitted with SpATS")
+    stop("Effective dimensions can only be plotted for models fitted ",
+         "with SpATS.\n")
   }
   if (engine == "asreml" && plotType == "spatial" &&
       !attr(x = fitMods, which = "spatial")) {
@@ -327,6 +328,10 @@ plot.fitMod <- function(x,
     }
     ## Get spatial corrected values.
     corrected <- suppressWarnings(getCorrected(fitMods))
+    ## Remove check genotypes from corrected data.
+    if (!isTRUE(dotArgs$plotChecks) && useCheck) {
+      corrected <- droplevels(corrected[corrected[["check"]] == "noCheck", ])
+    }
     ## Restrict genotypes.,
     if (!is.null(genotypes)) {
       if (!all(genotypes %in% preds[["genotype"]])) {

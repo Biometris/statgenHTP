@@ -13,12 +13,24 @@ testDat <- read.csv("testDat.csv", stringsAsFactors = FALSE)
 testTP <- createTimePoints(dat = testDat, experimentName = "testExp",
                            genotype = "Genotype", timePoint = "timepoints",
                            plotId = "pos", repId = "Replicate", rowNum = "y",
-                           colNum = "x")
+                           colNum = "x", addCheck = TRUE,
+                           checkGenotypes = "check1")
+
 ## Create fitMod object.
 testFitMod <- fitModels(testTP, trait = "t1", quiet = TRUE)
 ## Create another fitMod object for testing with geno.decomp.
 testFitMod2 <- fitModels(testTP, trait = "t1", geno.decomp = "repId",
                          quiet = TRUE)
+## Create another fitMod object for testing with check.
+testFitMod3 <- fitModels(testTP, trait = "t1", useCheck = TRUE, quiet = TRUE)
+
+if (at_home()) {
+  ## Create fitMods for additional testing with asreml.
+  testFitModAs <- fitModels(testTP, trait = "t1", engine = "asreml",
+                            quiet = TRUE)
+  testFitModAs2 <- fitModels(testTP, trait = "t1", engine = "asreml",
+                             spatial = TRUE, quiet = TRUE)
+}
 
 ## Create a temporary outfile for writing plots.
 tmpFile <- tempfile(fileext = ".pdf")
@@ -61,6 +73,18 @@ expect_equal(nCol, 1)
 ## Check that rawPred plot functions for model with geno.decomp.
 expect_silent(p3 <- plot(testFitMod2, plotType = "rawPred", outFile = tmpFile))
 
+## Check that rawPred plot functions for model with check.
+expect_silent(p4 <- plot(testFitMod3, plotType = "rawPred", outFile = tmpFile))
+expect_silent(p5 <- plot(testFitMod3, plotType = "rawPred", plotChecks = TRUE,
+                         outFile = tmpFile))
+expect_equal(nrow(p4[[1]]$data), 105)
+expect_equal(nrow(p5[[1]]$data), 125)
+
+if (at_home()) {
+  ## Check that rawPred plot functions for asreml.
+  expect_silent(plot(testFitModAs, plotType = "rawPred"))
+}
+
 ### Check corrPred plot.
 
 expect_error(plot(testFitMod, plotType = "corrPred", genotypes = 1),
@@ -94,6 +118,18 @@ expect_equal(nCol, 1)
 
 ## Check that corrPred plot functions for model with geno.decomp.
 expect_silent(p3 <- plot(testFitMod2, plotType = "corrPred", outFile = tmpFile))
+
+## Check that rawPred plot functions for model with check.
+expect_silent(p4 <- plot(testFitMod3, plotType = "corrPred", outFile = tmpFile))
+expect_silent(p5 <- plot(testFitMod3, plotType = "corrPred", plotChecks = TRUE,
+                         outFile = tmpFile))
+expect_equal(nrow(p4[[1]]$data), 510)
+expect_equal(nrow(p5[[1]]$data), 590)
+
+if (at_home()) {
+  ## Check that rawPred plot functions for asreml.
+  expect_silent(plot(testFitModAs, plotType = "corrPred"))
+}
 
 ### Check heritability plot.
 
@@ -152,6 +188,12 @@ expect_silent(p4 <- plot(testFitMod, plotType = "effDim", whichED = "colId",
 ## Check that effDim plot functions for model with geno.decomp.
 expect_silent(p5 <- plot(testFitMod2, plotType = "effDim", outFile = tmpFile))
 
+## Check that plotting is not possible with models fitted with asreml.
+if (at_home()) {
+  expect_error(plot(testFitModAs, plotType = "effDim"),
+               "only be plotted for models fitted with SpATS")
+}
+
 ### Check variance plot.
 
 expect_silent(p0 <- plot(testFitMod, plotType = "variance", outFile = tmpFile))
@@ -192,8 +234,21 @@ expect_error(plot(testFitMod, plotType = "spatial", spaTrend = "sTr"),
 expect_silent(p1 <- plot(testFitMod, plotType = "spatial",
                          spaTrend = "percentage", outFile = tmpFile))
 
+## Check that spatial plot functions for model with check.
+expect_silent(plot(testFitMod3, plotType = "spatial", outFile = tmpFile))
+
 ## Check that effDim plot functions for model with geno.decomp.
 expect_silent(p2 <- plot(testFitMod2, plotType = "spatial", outFile = tmpFile))
+
+if (at_home()) {
+  ## Check that spatial plots cannot be made for asreml when spatial = FALSE.
+  expect_error(plot(testFitModAs, plotType = "spatial"),
+               "only be made when setting spatial = TRUE when ",
+               "fitting the asreml models")
+
+  p3 <- plot(testFitModAs2, plotType = "spatial")
+  expect_equal(length(p3), 5)
+}
 
 ### Check time lapse plots.
 

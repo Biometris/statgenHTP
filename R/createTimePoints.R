@@ -529,8 +529,8 @@ plot.TP <- function(x,
                                      }
                                    }))
       if (is.null(plotDat)) {
-        warning(paste0(trait, " isn't a column in any of the timePoints.\n",
-                       "Plot skipped.\n"), call. = FALSE)
+        warning(trait, " isn't a column in any of the timePoints.\n",
+                "Plot skipped.\n", call. = FALSE)
         next
       }
       if (orderBy != "alphabetic") {
@@ -591,8 +591,8 @@ plot.TP <- function(x,
                                                 }
                                               }))
       if (is.null(plotDat)) {
-        warning(paste0(trait, " isn't a column in any of the timePoints.\n",
-                       "Plot skipped.\n"), call. = FALSE)
+        warning(trait, " isn't a column in any of the timePoints.\n",
+                "Plot skipped.\n", call. = FALSE)
         next
       }
       ## Create table with the value of trait per plotId per timePoint.
@@ -679,8 +679,8 @@ plot.TP <- function(x,
                                          }
                                      }))
       if (is.null(plotDat)) {
-        warning(paste0(trait, " isn't a column in any of the timePoints.\n",
-                       "Plot skipped.\n"), call. = FALSE)
+        warning(trait, " isn't a column in any of the timePoints.\n",
+                "Plot skipped.\n", call. = FALSE)
         next
       }
       ## Restrict genotypes.

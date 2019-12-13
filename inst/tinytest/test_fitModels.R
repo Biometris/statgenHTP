@@ -163,16 +163,6 @@ if (at_home()) {
   expect_equal(fixPartAs(testFitModAs2), formula("t1~geno.decomp"))
   expect_equal(randPartAs(testFitModAs2), formula("~at(geno.decomp):genotype"))
 
-  ## Add extra fixed factors and geno.decomp
-  # testFitModAs3 <- fitModels(testTP, trait = "t1", geno.decomp = "repId",
-  #                            extraFixedFactors = "Basin", engine = "asreml",
-  #                            quiet = TRUE)
-  #
-  # expect_equal(fixPartAs(testFitModAs3),
-  #              formula("~Basin + geno.decomp + Basin:geno.decomp"))
-  # expect_equal(randPartAs(testFitModAs3), formula("~rowId + colId"))
-  # expect_equal(geno(testFitModAs3), c("genotype", "geno.decomp", "TRUE"))
-
   ## Add repId.
   testFitModAs4 <- fitModels(testTP, trait = "t1", useRepId = TRUE,
                              engine = "asreml", quiet = TRUE)
@@ -195,4 +185,13 @@ if (at_home()) {
                formula("t1~check + geno.decomp + check:geno.decomp"))
   expect_equal(randPartAs(testFitModAs6), formula("~at(geno.decomp):genoCheck"))
 
+  ## Check that missing plots are added when fitting spatial models.
+
+  # Remove observation from testTP.
+  testTP4 <- testTP
+  testTP4[[1]] <- testTP4[[1]][1:24, ]
+  testFitModAs7 <- fitModels(testTP4, trait = "t1", engine = "asreml",
+                             spatial = TRUE, quiet = TRUE)
+  # Check that row is added again to the data.
+  expect_equal(nrow(testFitModAs7[[1]]$call$data), 25)
 }

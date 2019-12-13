@@ -378,17 +378,17 @@ fitModels <- function(TP,
         }
         if (length(asrFit$warning) != 0) {
           ## Throw warnings that are left.
-          warning("Warning in asreml for genotype random, trait ", trait,
-                  " in time point ", timePoint[["timePoint"]][1], ":\n",
-                  asrFit$warning, "\n", call. = FALSE)
+          warning("Warning in asreml for trait ", trait, " in time point ",
+                  timePoint[["timePoint"]][1], ":\n", asrFit$warning, "\n",
+                  call. = FALSE)
         }
         if (is.null(asrFit$error)) {
           ## Set output to value.
           asrFit <- asrFit$value
         } else {
-          warning("Error in asreml for genotype random, trait ", trait,
-                  " in trial ", timePoint[["timePoint"]][1], ":\n",
-                  asrFit$error, "\n", call. = FALSE)
+          warning("Error in asreml for trait ", trait, " in trial ",
+                  timePoint[["timePoint"]][1], ":\n", asrFit$error, "\n",
+                  call. = FALSE)
           asrFit <- NULL
         }
         ## evaluate call terms so predict can be run.
@@ -532,19 +532,17 @@ bestSpatMod <- function(modDat,
       }
       if (length(fitMod$warning) != 0) {
         ## Throw warnings that are left.
-        warning(paste0("Warning in asreml for model ", spatCh[i],
-                       " genotype random, trait ", trait, " in timePoint ",
-                       modDat[["timePoint"]][1], ":\n", fitMod$warning,
-                       "\n"), call. = FALSE)
+        warning("Warning in asreml for model ", spatCh[i], " trait ",
+                trait, " in timePoint ", modDat[["timePoint"]][1], ":\n",
+                fitMod$warning, "\n", call. = FALSE)
       }
       if (is.null(fitMod$error)) {
         ## Set output to value.
         fitMod <- fitMod$value
       } else {
-        warning(paste0("Error in asreml for model ", spatCh[i],
-                       " genotype random, trait ", trait, " in timePoint ",
-                       modDat[["timePoint"]][1], ":\n", fitMod$error,
-                       "\n"), call. = FALSE)
+        warning("Error in asreml for model ", spatCh[i], " trait ", trait,
+                " in timePoint ", modDat[["timePoint"]][1], ":\n",
+                fitMod$error, "\n", call. = FALSE)
         fitMod <- NULL
       }
       ## Fill model summary table.
