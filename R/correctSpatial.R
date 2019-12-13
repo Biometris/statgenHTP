@@ -25,13 +25,9 @@ correctSpatialSpATS <- function(fitMod) {
   geno.decomp <- fitMod$model$geno$geno.decomp
   ## Include in the prediction the factors (variables) whose effect we are
   ## interested in removing.
-  if (!is.null(fitMod$model$fixed)) {
-    fixVars <- attr(terms(fitMod$model$fixed), "term.labels")
-    ## Subset on order = 1 to remove interaction terms.
-    fixVars <- fixVars[attr(terms(fitMod$model$fixed), "order") == 1]
-  } else {
-    fixVars <- NULL
-  }
+  fixVars <- attr(terms(fitMod$model$fixed), "term.labels")
+  ## Subset on order = 1 to remove interaction terms.
+  fixVars <- fixVars[attr(terms(fitMod$model$fixed), "order") == 1]
   predVars <- setdiff(c(fixVars, "colNum", "rowNum", "colId", "rowId"),
                       geno.decomp)
   pred <- predict(fitMod, which = predVars, predFixed = "marginal")
@@ -76,11 +72,7 @@ correctSpatialAsreml <- function(fitMod) {
   }
   ## Include in the prediction the factors (variables) whose effect we are
   ## interested in removing.
-  if (!is.null(fitMod$formulae$fixed)) {
-    fixVars <- all.vars(update(fitMod$formulae$fixed, 0~.))
-  } else {
-    fixVars <- NULL
-  }
+  fixVars <- all.vars(update(fitMod$formulae$fixed, 0~.))
   fixVars <- setdiff(fixVars, c("genotype", "genoCheck", geno.decomp))
   randVars <- all.vars(fitMod$formulae$random)
   randVars <- setdiff(randVars, c("genotype", "genoCheck", geno.decomp))
