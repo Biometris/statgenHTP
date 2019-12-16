@@ -217,14 +217,45 @@ getVar <- function(fitMod,
   rowVarId <- ifelse(useRepId, "repId:rowId", "rowId")
   genoCol <- if (useCheck) "genoCheck" else "genotype"
   if (inherits(fitMod[[1]], "SpATS")) {
-    varGen <- sapply(X = fitMod, FUN = function(x) x$var.comp[genoCol])
+    geno.decomp <- fitMod[[1]]$model$geno$geno.decomp
+    if (!is.null(geno.decomp)) {
+      varGen <- t(sapply(X = fitMod, FUN = function(x) {
+        levGD <- levels(x$data[["geno.decomp"]])
+        varGD <- x$var.comp[paste0("geno.decomp", levGD)]
+        names(varGD) <- paste0("var_geno.decomp_", levGD)
+        return(varGD)
+      }))
+    } else {
+      varGen <- sapply(X = fitMod, FUN = function(x) {
+        x$var.comp[genoCol]
+      })
+      varGen <- matrix(varGen, dimnames = list(NULL,"varGen"))
+    }
     varRes <- sapply(X = fitMod, FUN = function(x) x$psi[1])
     varCol <- sapply(X = fitMod, FUN = function(x) x$var.comp[colVarId])
     varRow <- sapply(X = fitMod, FUN = function(x) x$var.comp[rowVarId])
   } else if (inherits(fitMod[[1]], "asreml")) {
-    varGen <- sapply(X = fitMod, FUN = function(x) {
-      x$vparameters[genoCol] * x$sigma2
-    })
+    ## Get geno.decomp from fitted models.
+    if ("geno.decomp" %in% all.vars(fitMod[[1]]$formulae$random) ||
+        "geno.decomp" %in% all.vars(fitMod[[1]]$formulae$fixed)) {
+      geno.decomp <- "geno.decomp"
+    } else {
+      geno.decomp <- NULL
+    }
+    if (!is.null(geno.decomp)) {
+      varGen <- t(sapply(X = fitMod, FUN = function(x) {
+        levGD <- levels(x$call$data[["geno.decomp"]])
+        varGD <- x$vparameters[paste0("at(geno.decomp, ", levGD, "):",
+                                      genoCol)] * x$sigma2
+        names(varGD) <- paste0("var_geno.decomp_", levGD)
+        return(varGD)
+      }))
+    } else {
+      varGen <- sapply(X = fitMod, FUN = function(x) {
+        x$vparameters[genoCol] * x$sigma2
+      })
+      varGen <- matrix(varGen, dimnames = list(NULL,"varGen"))
+    }
     varRes <- sapply(X = fitMod, FUN = function(x) x$sigma2)
     varCol <- sapply(X = fitMod, FUN = function(x) {
       x$vparameters[colVarId] * x$sigma2
@@ -234,7 +265,7 @@ getVar <- function(fitMod,
     })
   }
   variance <- data.frame(timePoint = lubridate::as_datetime(names(varRes)),
-                         varGen = varGen, varRes = varRes, varCol = varCol,
+                         varGen, varRes = varRes, varCol = varCol,
                          varRow = varRow, row.names = NULL)
   variance <- addTimeNumber(fitMod, variance)
   if (!is.null(outFile)) {

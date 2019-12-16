@@ -34,6 +34,12 @@ expect_equal(dim(var1), c(5, 6))
 expect_equal(colnames(var1), c("timeNumber", "timePoint", "varGen", "varRes",
                                "varCol", "varRow"))
 
+# Extra column for 2 levels in geno.decomp.
+expect_equal(dim(var2), c(5, 7))
+expect_equal(colnames(var2), c("timeNumber", "timePoint", "var_geno.decomp_1",
+                               "var_geno.decomp_2", "varRes", "varCol",
+                               "varRow"))
+
 # Read expected results.
 var1Orig <- read.csv("var1")
 var2Orig <- read.csv("var2")
@@ -42,7 +48,7 @@ var4Orig <- read.csv("var4")
 
 # Compare results.
 expect_equal(var1[, 3:6], var1Orig[, 3:6])
-#expect_equal(var2[, 3:6], var2Orig[, 3:6])
+expect_equal(var2[, 3:7], var2Orig[, 3:7])
 expect_equal(var3[, 3:6], var3Orig[, 3:6])
 expect_equal(var4[, 3:6], var4Orig[, 3:6])
 
@@ -88,6 +94,16 @@ if (at_home()) {
                  0.000342990030581744, 0.000639896746661389))
   expect_equal(varAs1[["varCol"]], rep(NA_real_, times = 5))
   expect_equal(varAs1[["varRow"]], rep(NA_real_, times = 5))
+
+  expect_equal(varAs2[["var_geno.decomp_1"]],
+               c(1.72671949906827e-09, 0.000593631973665045, 0.000566468562072854,
+                 0.000130418179182102, 5.90967913706669e-10))
+  expect_equal(varAs2[["var_geno.decomp_2"]],
+               c(1.72671949906827e-09, 0.000807184697098741, 0.00123225562394439,
+                 0.00114757984666827, 0.000675211544349767))
+  expect_equal(varAs2[["varRes"]],
+               c(0.00107919960908156, 4.15070259538522e-05, 7.62725046737966e-05,
+                 0.000346567980990889, 0.000369354919427342))
 
   expect_equal(varAs3[["varGen"]],
                c(1.65397675029422e-09, 0.000312114772570697, 3.1433085674295e-05,
