@@ -424,9 +424,15 @@ plot.fitMod <- function(x,
     if (is.null(title)) title <- paste(experimentName, "- Variances")
     ## Get variances.
     variance <- getVar(fitMods)
+    ## Get variance columns from variance, i.e. all columns starting with var.
+    varCols <- colnames(variance)[grepl(pattern = "^var",
+                                        x = colnames(variance))]
+    ## Construct labels for variances.
+    varLabs <- c(if ("varGen" %in% varCols) "Genotypic" else
+      substring(varCols[1:(length(varCols) - 3)], first = 17),
+      "Residual", "Columns", "Rows")
     ## Convert to long format needed by ggplot.
-    variance <- reshape2::melt(variance, measure.vars = c("varGen", "varRes",
-                                                          "varCol", "varRow"),
+    variance <- reshape2::melt(variance, measure.vars = varCols,
                                variable.name = "var")
     ## Manually modify limit of y-axis.
     yLim <- c(min(dotArgs$yLim[1], variance[["value"]]),
@@ -435,15 +441,13 @@ plot.fitMod <- function(x,
     p <- ggplot(variance, aes_string(x = "timePoint", y = "value",
                                      group = "var", color = "var")) +
       geom_point(size = 3, na.rm = TRUE) +
-      scale_color_discrete(labels = c("Genotypic", "Residual",
-                                      "Columns", "Rows")) +
+      scale_color_discrete(labels = varLabs) +
       scale_x_datetime(breaks = prettier(nBr),
                        labels = scales::date_format("%B %d")) +
       plotTheme() +
       theme(axis.title.y = element_text(angle = 0, vjust = 0.5)) +
       ylim(yLim) +
-      labs(title = title, color = "variance",
-           y = expression(sigma ^ 2))
+      labs(title = title, color = "variance", y = expression(sigma ^ 2))
     if (length(unique(variance[["timePoint"]])) > 1) {
       p <- p + geom_line(size = 0.5, na.rm = TRUE)
     }
