@@ -2,15 +2,20 @@
 title: "Getting started"
 author: "Emilie Millet, Bart-Jan van Rossum"
 date: "`r Sys.Date()`"
-output: 
+output:
+  pdf_document:
+    number_sections: yes
+    toc: no
+    fig_caption: false
+  html_document:
+    df_print: paged
+    toc: no
   rmarkdown::html_vignette:
-    toc: false
-    number_sections: true
+    number_sections: yes
+    toc: no
 bibliography: bibliography.bib
-vignette: >
-  %\VignetteIndexEntry{Getting_started}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+vignette: |
+  %\VignetteIndexEntry{Getting_started} %\VignetteEncoding{UTF-8} %\VignetteEngine{knitr::rmarkdown}
 ---
 
 ```{r setup, include=FALSE}
@@ -26,12 +31,19 @@ This document describes how to install R and RStudio and the statgen packages. T
 
 To install R go to https://cloud.r-project.org and click the links indicated in the screenshots.
 
-![](./figures/R1.png)
+<center>
+![](./figures/R1.png){width=80%}
+</center>
 
+
+<center>
 ![](./figures/R2.png)
+</center>
 
 
+<center>
 ![](./figures/R3.png)
+</center>
 
 This will download the installer for the latest version of R (at the time of writing R 3.6.1). After downloading run the installer and follow the steps to install R. All installation settings can be left at their default values. 
 
@@ -39,9 +51,14 @@ This will download the installer for the latest version of R (at the time of wri
 
 RStudio is an interface to simplify the use of R. Before installing RStudio make sure R is installed as described above. To install RStudio go to https://www.rstudio.com/products/rstudio/download/ and click the links indicated below.
 
-![](./figures/RStudio1.png)
 
+<center>
+![](./figures/RStudio1.png)
+</center>
+
+<center>
 ![](./figures/RStudio2.png)
+</center>
 
 This will download the installer for the latest version of RStudio (at the time of writing 1.2.50001). After downloading the installer, run it to install RStudio.
 All installation settings can be left at their default values.
@@ -50,13 +67,19 @@ All installation settings can be left at their default values.
 
 A lot of R packages are available on CRAN (https://cran.r-project.org/). Installation of those packages can be done as follows from within RStudio.
 
-![](./figures/pkg1.png)
+<center>
+![](./figures/pkg1.png){width=80%}
+</center>
 
+<center>
 ![](./figures/pkg2.png)
+</center>
 
 This example will install the lme4 package from CRAN. Multiple packages can be installed at once by supplying them as a comma separated list at the third step.    
 
 Some of the statgen packages are not yet available on CRAN, but are distributed as a zip file. To install those packages, follow the steps below. At the second step after clicking browse, select the zip file containing the package.
 
+<center>
 ![](./figures/pkg3.png)
+</center>
 

@@ -4,3 +4,7 @@
 .Ruserdata
 output
 inst/doc
+doc
+Meta
+vignettes/Tutorial_HTP_pdf.Rmd
+testScripts/testScript_Emilie_general.R

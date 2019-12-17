@@ -11,4 +11,4 @@ testScript*
 ^README\.Rmd$
 ^.apt$
 ^ci
-
+R\outliers
