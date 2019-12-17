@@ -3,19 +3,14 @@ title: "Getting started"
 author: "Emilie Millet, Bart-Jan van Rossum"
 date: "`r Sys.Date()`"
 output:
-  pdf_document:
-    number_sections: yes
-    toc: no
-    fig_caption: false
-  html_document:
-    df_print: paged
-    toc: no
   rmarkdown::html_vignette:
     number_sections: yes
     toc: no
 bibliography: bibliography.bib
-vignette: |
-  %\VignetteIndexEntry{Getting_started} %\VignetteEncoding{UTF-8} %\VignetteEngine{knitr::rmarkdown}
+vignette: >
+  %\VignetteIndexEntry{Getting_started} 
+  %\VignetteEncoding{UTF-8} 
+  %\VignetteEngine{knitr::rmarkdown}
 ---
 
 ```{r setup, include=FALSE}
