@@ -60,6 +60,7 @@ summary.fitMod <- function(object,
 #' \describe{
 #' \item{genotypes}{A character vector indicating the genotypes to be plotted.}
 #' \item{plotChecks}{Should the check genotypes be included in the plot?}
+#' \item{plotLine}{Should the data be displayed as lines? Default is FALSE.}
 #' }
 #'
 #' @section corrPred plot:
@@ -71,6 +72,7 @@ summary.fitMod <- function(object,
 #' \describe{
 #' \item{genotypes}{A character vector indicating the genotypes to be plotted.}
 #' \item{plotChecks}{Should the check genotypes be included in the plot?}
+#' \item{plotLine}{Should the data be displayed as lines? Default is FALSE.}
 #' }
 #'
 #' @section herit plot:
@@ -244,6 +246,7 @@ plot.fitMod <- function(x,
   }
   if (plotType == "rawPred") {
     genotypes <- dotArgs$genotypes
+    plotLine <- isTRUE(dotArgs$plotLine)
     if (!is.null(genotypes) && !is.character(genotypes)) {
       stop("genotypes should be NULL or a character vector.\n")
     }
@@ -306,9 +309,10 @@ plot.fitMod <- function(x,
                      yValOverlay = "predicted.values",
                      facetVal = c("genotype",
                                   if (!is.null(geno.decomp)) "geno.decomp"),
-                     title = title, yLab = trait, output = output)
+                     title = title, yLab = trait, output = output, plotLine = plotLine)
   } else if (plotType == "corrPred") {
     genotypes <- dotArgs$genotypes
+    plotLine <- isTRUE(dotArgs$plotLine)
     if (!is.null(genotypes) && !is.character(genotypes)) {
       stop("genotypes should be NULL or a character vector.\n")
     }
@@ -353,7 +357,7 @@ plot.fitMod <- function(x,
                      facetVal = c("genotype",
                                   if (!is.null(geno.decomp)) "geno.decomp"),
                      title = title,
-                     yLab = trait, output = output)
+                     yLab = trait, output = output, plotLine = plotLine)
   } else if (plotType == "herit") {
     if (is.null(title)) title <- paste(experimentName, "- Heritability")
     ## Get heritabilities.

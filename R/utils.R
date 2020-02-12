@@ -203,7 +203,8 @@ xyFacetPlot <- function(baseDat,
                         title,
                         xLab = "Time",
                         yLab = "Trait",
-                        output = TRUE) {
+                        output = TRUE,
+                        plotLine = FALSE) {
   ## Compute the number of breaks for the time scale.
   ## If there are less than 3 time points use the number of time points.
   ## Otherwise use 3.
@@ -220,27 +221,27 @@ xyFacetPlot <- function(baseDat,
           plot.title = element_text(hjust = 0.5),
           axis.text.x = element_text(angle = 25, vjust = 1, hjust = 1)) +
     labs(title = title, x = xLab, y = yLab)
-  if (length(unique(baseDat[[xVal]])) > 1) {
+  if (!plotLine || length(unique(baseDat[[xVal]])) == 1) {
     ## Multiple time points in data. Display a line.
-    p <- p + geom_line(aes_string(group = groupVal, color = colVal),
-                       show.legend = FALSE, na.rm = TRUE)
-  } else {
-    ## Only one time point. Makes geom_line crash. Display as point.
     p <- p + geom_point(aes_string(group = groupVal, color = colVal),
                         show.legend = FALSE, na.rm = TRUE, size = 1)
+  } else {
+    ## Only one time point. Makes geom_line crash. Display as point.
+    p <- p + geom_line(aes_string(group = groupVal, color = colVal),
+                       show.legend = FALSE, na.rm = TRUE)
   }
   if (!is.null(overlayDat)) {
     ## Add a second data set as overlay over the first plot.
-    if (length(unique(overlayDat[[xVal]])) > 1) {
+    if (!plotLine || length(unique(baseDat[[xVal]])) == 1) {
       ## Multiple time points in data. Display a line.
+      p <- p + geom_point(aes_string(x = xVal, y = yValOverlay),
+                          data = overlayDat, color = "black", size = 2,
+                          show.legend = FALSE, na.rm = TRUE)
+    } else {
+      ## Only one time point. Makes geom_line crash. Display as point.
       p <- p + geom_line(aes_string(x = xVal, y = yValOverlay),
                          data = overlayDat, color = "black", size = 1,
                          show.legend = FALSE, na.rm = TRUE)
-    } else {
-      ## Only one time point. Makes geom_line crash. Display as point.
-      p <- p + geom_point(aes_string(x = xVal, y = yValOverlay),
-                          data = overlayDat, color = "black", size = 1.5,
-                          show.legend = FALSE, na.rm = TRUE)
     }
   }
   ## Calculate the total number of plots.

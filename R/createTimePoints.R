@@ -304,6 +304,7 @@ summary.TP <- function(object,
 #' \item{genotypes}{A character vector indicating the genotypes to be plotted.}
 #' \item{geno.decomp}{A character vector indicating the grouping of the
 #' genotypes to be plotted.}
+#' \item{plotLine}{Should the data be displayed as lines? Default is FALSE.}
 #' }
 #'
 #' @param x An object of class TP.
@@ -653,6 +654,7 @@ plot.TP <- function(x,
       stop("traits should be a character vector.\n")
     }
     genotypes <- dotArgs$genotypes
+    plotLine  <- isTRUE(dotArgs$plotLine)
     geno.decomp <- dotArgs$geno.decomp
     if (!is.null(geno.decomp) && !all(sapply(X = x, FUN = function(timePoint) {
       hasName(x = timePoint, name = geno.decomp)
@@ -697,7 +699,7 @@ plot.TP <- function(x,
       plotDat <- addMissVals(dat = plotDat, trait = trait)
       ## Create actual plots.
       xyFacetPlot(baseDat = plotDat, yVal = trait,
-                  title = plotTitle, yLab = trait, output = output)
+                  title = plotTitle, yLab = trait, output = output, plotLine = plotLine)
     }
   }
   if (!is.null(outFile)) {

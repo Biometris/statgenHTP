@@ -196,7 +196,7 @@ plot(phenoTP,
      showGeno = TRUE)
 ```
 
-Raw data can be displayed per genotype. By default all genotypes are used but it can be restricted using `genotypes` and a subset of genotypes.
+Raw data can be displayed per genotype. By default all genotypes are used but it can be restricted using `genotypes` and a subset of genotypes. By default, data are plotted as point but this can be changed by setting `plotLine = TRUE`.
 ```{r rawVator, include=TRUE, fig.height=2, fig.width=6, fig.align = 'center'}
 ## Create the raw data time courses for four genotypes.
 plot(phenoTP, 
@@ -464,7 +464,7 @@ knitr::kable(head(spatCorrSp), align = c('c','c','c','c','c','c','c'), padding =
 ### Plotting model results
 
 Different plots can be displayed for the `fitMod` object. The first one is "rawPred", it plots the raw data (colored lines) overlayed with the predicted values (black line) from the fitted model. For each genotype a plot is made per plot/plant over time. These plots are put together in a 5×5 grid.   
-By using the option `genotypes`, a subset of genotypes will be plotted.
+By using the option `genotypes`, a subset of genotypes will be plotted. By default, data are plotted as point but this can be changed by setting `plotLine = TRUE`.
 
 ```{r plotSpPred, message=FALSE, fig.height=2, fig.width=6, fig.align = 'center'}
 plot(modPhenoSp, 
@@ -473,7 +473,7 @@ plot(modPhenoSp,
 ```
 
 The second one is "corrPred", it plots the spatially corrected data (colored lines) overlayed with the predicted values from the fitted model (black line). For each genotype a plot is made per plot/plant over time. These plots are put together in a 5×5 grid. 
-By using the option `genotypes`, a subset of genotypes will be plotted.
+By using the option `genotypes`, a subset of genotypes will be plotted. By default, data are plotted as point but this can be changed by setting `plotLine = TRUE`.
 
 ```{r plotSpCorr, message=FALSE, fig.height=2, fig.width=6, fig.align = 'center', eval=TRUE}
 plot(modPhenoSp, 

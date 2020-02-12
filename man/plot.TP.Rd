@@ -114,6 +114,7 @@ Extra parameter options:
 \item{genotypes}{A character vector indicating the genotypes to be plotted.}
 \item{geno.decomp}{A character vector indicating the grouping of the
 genotypes to be plotted.}
+\item{plotLine}{Should the data be displayed as lines? Default is FALSE.}
 }
 }
 

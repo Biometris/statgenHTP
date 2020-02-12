@@ -63,6 +63,7 @@ options:
 \describe{
 \item{genotypes}{A character vector indicating the genotypes to be plotted.}
 \item{plotChecks}{Should the check genotypes be included in the plot?}
+\item{plotLine}{Should the data be displayed as lines? Default is FALSE.}
 }
 }
 
@@ -76,6 +77,7 @@ plotted. Extra parameter options:
 \describe{
 \item{genotypes}{A character vector indicating the genotypes to be plotted.}
 \item{plotChecks}{Should the check genotypes be included in the plot?}
+\item{plotLine}{Should the data be displayed as lines? Default is FALSE.}
 }
 }
 
