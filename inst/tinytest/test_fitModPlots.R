@@ -52,7 +52,7 @@ expect_equal(length(p0), 1)
 expect_true(inherits(p0[[1]], "ggplot"))
 
 geoms0 <- sapply(p0[[1]]$layers, function(x) class(x$geom)[1])
-expect_equal(geoms0, c("GeomLine", "GeomLine"))
+expect_equal(geoms0, c("GeomPoint", "GeomPoint"))
 
 ## Check that rawPred plots function correctly for single timePoints.
 expect_silent(p1 <- plot(testFitMod[1], plotType = "rawPred",
@@ -98,7 +98,7 @@ expect_equal(length(p0), 1)
 expect_true(inherits(p0[[1]], "ggplot"))
 
 geoms0 <- sapply(p0[[1]]$layers, function(x) class(x$geom)[1])
-expect_equal(geoms0, c("GeomLine", "GeomLine"))
+expect_equal(geoms0, c("GeomPoint", "GeomPoint"))
 
 ## Check that corrPred plots function correctly for single timePoints.
 expect_silent(p1 <- plot(testFitMod[1], plotType = "corrPred",
