@@ -199,6 +199,14 @@ createTimePoints <- function(dat,
       dat[cols == numCol] <- as.numeric(dat[, cols == numCol])
     }
   }
+  if (all(hasName(dat, c("rowNum", "colNum")))) {
+    ## Check that row column combinations are unique within time points.
+    rowColTab <- table(dat[["timePoint"]], dat[["rowNum"]], dat[["colNum"]])
+    if (any(rowColTab > 1)) {
+      stop("Combinations of row and column coordinates should be unique ",
+           "within time points.\n")
+    }
+  }
   listData <- split(x = dat, f = dat[["timePoint"]])
   ## Set meta for all timePoints in dat.
   for (tr in names(listData)) {
