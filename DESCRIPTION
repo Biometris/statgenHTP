@@ -29,7 +29,7 @@ Depends:
 Imports: 
     animation,
     ggforce,
-    ggplot2,
+    ggplot2 (>= 3.3.0),
     grid,
     gridExtra,
     lubridate,
@@ -42,5 +42,5 @@ Suggests:
    knitr, 
    rmarkdown, 
    tinytest
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 VignetteBuilder: knitr

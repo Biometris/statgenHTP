@@ -601,7 +601,7 @@ spatPlot <- function(fitMod,
   if (engine == "SpATS") {
     ## Get tickmarks from first plot to be used as ticks.
     ## Spatial plot tends to use different tickmarks by default.
-    xTicks <- ggplot_build(plots[[1]])$layout$panel_params[[1]]$x.major_source
+    xTicks <- ggplot_build(plots[[1]])$layout$panel_params[[1]]$x$breaks
     if (spaTrend == "raw") {
       plots$p4 <- fieldPlot(plotDat = plotDatSpat, fillVar = "value",
                             title = legends[4], colors = colors,

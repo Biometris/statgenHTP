@@ -62,14 +62,14 @@ dfOut1 <- statgenHTP:::addMissVals(df1, "trait")
 expect_true(inherits(dfOut1, "data.frame"))
 expect_true(inherits(dfOut1[["timePoint"]], "POSIXct"))
 expect_equal(nrow(dfOut1), 4)
-expect_equivalent(unlist(dfOut1[4, ]), c(2, 1567382400, NA))
+expect_equivalent(unlist(dfOut1[4, ]), c("p2", "1567382400", NA))
 
 ## Check that multiple missing values are added when no extra columns present.
 df2 <- df1[-1, ]
 dfOut2 <- statgenHTP:::addMissVals(df2, "trait")
 expect_equal(nrow(dfOut2), 4)
-expect_equivalent(unlist(dfOut2[1, ]), c(1, 1567296000, NA))
-expect_equivalent(unlist(dfOut2[4, ]), c(2, 1567382400, NA))
+expect_equivalent(unlist(dfOut2[1, ]), c("p1", "1567296000", NA))
+expect_equivalent(unlist(dfOut2[4, ]), c("p2", "1567382400", NA))
 
 ## Check that single missing value is added when extra columns present.
 df3 <- df1
