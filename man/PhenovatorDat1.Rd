@@ -4,7 +4,8 @@
 \name{PhenovatorDat1}
 \alias{PhenovatorDat1}
 \title{Growth chamber data for an Arabidopsis experiment in the Phenovator platform.}
-\format{A data.frame with 103,839 rows and 10 columns:
+\format{
+A data.frame with 103,839 rows and 10 columns:
 \describe{
   \item{Genotype}{Genotypes}
   \item{Basin}{Table of experiment}
@@ -16,7 +17,8 @@
   \item{timepoints}{time of picture}
   \item{EffpsII}{Efficiency of the photosystem II}
   \item{pos}{Unique pot ID using rowcol coordinates}
-}}
+}
+}
 \usage{
 PhenovatorDat1
 }

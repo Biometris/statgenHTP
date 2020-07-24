@@ -1,0 +1,173 @@
+#-------------------------------------------------------------------------------
+# Program: pointCleaning.R
+# Objective: detection of outlier points for time courses using a
+#            locfit smoothing and an interval of prediction
+# Author: I.Sanchez
+# Creation: 13/04/2018
+# Update  : 17/07/2020
+#-------------------------------------------------------------------------------
+
+#' FuncDetectPointOutlierLocFit
+#'
+#' Function to model each curve of a dataset using a local regression
+#'
+#' see locfit() help function from the locfit R library. The user can act on:
+#' \describe{
+#'   \item{mylocfit}{the constant of the smoothing parameter. Increase mylocfit
+#'   to have a very smooth curve}
+#'   \item{confIntSize}{the level to calculate the confidence interval. Increase
+#'   confIntSize to exclude less outliers}
+#' }
+#' to produce the grahics of the prediction and detected outliers, please use
+#' plotDetectPointOutlierLocFit() function.
+#'
+#' @param datain input dataframe. This dataframe contains a set of time courses
+#' @param trait character, name of the variable to model in datain (for example,
+#' Biomass, PH or LA and so on)
+#' @param plotIds A character vector of plotIds for which the outliers should be
+#' detected. If \code{NULL}
+#' @param confIntSize numeric, factor to calculate the confidence interval
+#' @param mylocfit numeric, The constant component of the smoothing parameter.
+#' (see the locfit())
+#'
+#' @return An object of class pointOutliers, a data.frame with the following
+#' columns.
+#' \describe{
+#'   \item{plotId}{the id variable}
+#'   \item{timePoint}{time variable in datain}
+#'   \item{trait}{name of the modeled variable in datain}
+#'   \item{yPred}{the locfit prediction}
+#'   \item{sd_yPred}{standard deviation of the prediction}
+#'   \item{lwr}{lower bound of the confidence interval}
+#'   \item{upr}{upper bound of the confidence interval}
+#'   \item{outlier}{flag of detected outlier (0 is outlier, 1 is not)}
+#' }
+#'
+#' @seealso plot.pointOutliers
+#'
+#' @export
+detectPointOutliers <- function(TP,
+                                trait,
+                                plotIds = NULL,
+                                confIntSize = 5,
+                                mylocfit = 0.5) {
+  TPTot <- do.call(rbind, TP)
+  if (!is.null(plotIds)) {
+    if (!all(plotIds %in% TPTot[["plotId"]])) {
+      stop("All plotIds should be in TP.\n")
+    }
+    TPTot <- TPTot[TPTot[["plotId"]] %in% plotIds, ]
+  }
+  TPTotRest <- na.omit(TPTot[c("plotId", "timePoint", trait)])
+  TPPlot <- split(x = TPTotRest, f = TPTotRest[["plotId"]], drop = TRUE)
+  plotPreds <- lapply(X = TPPlot, FUN = function(plotDat) {
+    if (nrow(plotDat) <= 6) {
+      warning("Not enough data points (<= 6) to fit a model for: ",
+              plotDat[1, "plotId"], ".\n", call. = FALSE)
+      return(NULL)
+    }
+    y <- plotDat[[trait]]
+    x <- plotDat[["timePoint"]]
+    fitMod <- locfit::locfit(y ~ lp(x, nn = mylocfit, deg = 2))
+    ## Retrieving predictions for the x input interval.
+    yPred <- predict(fitMod, newdata = x, se.fit = TRUE)
+    lwr <- yPred$fit - confIntSize * yPred$se.fit
+    upr <- yPred$fit + confIntSize * yPred$se.fit
+    ## Add results to plotDat.
+    plotDat[["yPred"]] <- yPred$fit
+    plotDat[["sd_yPred"]] <- yPred$se.fit
+    plotDat[["lwr"]] <- lwr
+    plotDat[["upr"]] <- upr
+    plotDat[["outlier"]] <- ifelse(y < upr & y > lwr, 0, 1)
+    return(plotDat)
+  })
+  plotPred <- do.call(rbind, plotPreds)
+  rownames(plotPred) <- NULL
+  class(plotPred) <- c("pointOutliers", class(plotPred))
+  attr(plotPred, which = "trait") <- trait
+  return(plotPred)
+}
+
+#------------------------------------------------------------------
+# Program: graphicalFunctions.R
+# Objective: graphical functions for lattice experiment data analysis
+# Author: I.Sanchez
+# Creation: 27/07/2016
+# Update: 17/07/2020
+#------------------------------------------------------------------
+
+#' plotDetectPointOutlierLocFit
+#'
+#' graphical function to produce the modeled smoothing and detected outliers
+#' for each curve of a dataset using a local regression
+#'
+#' @inheritParams detectPointOutliers
+#' @inheritParams plot.TP
+#'
+#' @param x An object of class pointOutliers.
+#'
+#' @export
+plot.pointOutliers <- function(x,
+                               ...,
+                               plotIds = NULL,
+                               output = TRUE) {
+  plotDat <- x
+  if (!is.null(plotIds)) {
+    if (!all(plotIds %in% plotDat[["plotId"]])) {
+      stop("All plotIds should be in x\n")
+    }
+    plotDat <- plotDat[plotDat[["plotId"]] %in% plotIds, ]
+  }
+  trait <- attr(x = x, which = "trait")
+  ## Select outliers.
+  outliers <- plotDat[plotDat[["outlier"]] == 1, ]
+  ## Compute the number of breaks for the time scale.
+  ## If there are less than 3 time points use the number of time points.
+  ## Otherwise use 3.
+  nBr <- min(length(unique(plotDat[["timePoint"]])), 3)
+  p <- ggplot2::ggplot(plotDat,
+                       ggplot2::aes_string(x = "timePoint", y = trait)) +
+    ggplot2::geom_point(na.rm = TRUE)  +
+    ggplot2::geom_line(mapping = ggplot2::aes_string(y = "lwr"),
+                       col = "green", size = .8) +
+    ggplot2::geom_line(mapping = ggplot2::aes_string(y = "upr"),
+                       col = "green", size = .8) +
+    ggplot2::geom_line(mapping = ggplot2::aes_string(y = "yPred"),
+                       col = "red", size = .8) +
+    ggplot2::geom_point(data = outliers, col = "blue", size = 2) +
+    ggplot2::theme(legend.position = "none") +
+    ## Format the time scale to Month + day.
+    ggplot2::scale_x_datetime(breaks = prettier(n = nBr),
+                              labels = scales::date_format("%B %d"))
+  ## Calculate the total number of plots.
+  nPlots <- length(unique(plotDat[["plotId"]]))
+  ## 25 Plots per page.
+  nPag <- ceiling(nPlots / 25)
+  if (nPlots >= 25) {
+    ## More than 25 plots.
+    ## For identical layout on all pages use 5 x 5 plots throughout.
+    rowPag <- colPag <- rep(x = 5, times = nPag)
+  } else {
+    ## Less than 25 plots.
+    ## Fill page by row of 5 plots.
+    plotsPag <- nPlots %% 25
+    rowPag <- min(plotsPag %/% 5 + 1, 5)
+    colPag <- ifelse(plotsPag >= 5, 5, plotsPag)
+  }
+  ## Build pages of plots.
+  pPag <- vector(mode = "list", length = nPag)
+  for (i in 1:nPag) {
+    pPag[[i]] <- p +
+      ggforce::facet_wrap_paginate(facets = "plotId",
+                                   nrow = rowPag[i], ncol = colPag[i],
+                                   labeller = ggplot2::label_wrap_gen(multi_line = FALSE),
+                                   page = i)
+    if (output) {
+      suppressMessages(plot(pPag[[i]]))
+    }
+  }
+  invisible(pPag)
+}
+
+
+

@@ -4,7 +4,8 @@
 \name{PhenoarchDat1}
 \alias{PhenoarchDat1}
 \title{Greenhouse data for a maize experiment in the Phenoarch platform.}
-\format{A data.frame with 50,405 rows and 10 columns:
+\format{
+A data.frame with 50,405 rows and 10 columns:
 \describe{
   \item{geno}{Genotype}
   \item{population}{Panel 1 or 2}
@@ -16,7 +17,8 @@
   \item{LA_Estimated}{Leaf area from the picture}
   \item{Date}{Date of measurement}
   \item{pos}{Unique pot using rowcol coordinate}
-}}
+}
+}
 \usage{
 PhenoarchDat1
 }
