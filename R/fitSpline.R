@@ -6,15 +6,17 @@
 #' @param trait A character string indicating the trait for which the spline
 #' should be fitted.
 #' @param knots The number of knots to use when fitting the spline.
+#' @param PerMinTP The percentage of minimum number of time points to use.
 #'
 #' @export
 fitSpline <- function(corrDat,
                       trait,
-                      knots = 50) {
+                      knots = 50,
+                      PerMinTP = 0.8) {
   ## Create data.frame with plants and genotypes for adding genotype to results.
   plantGeno <- unique(corrDat[c("plotId", "genotype")])
-  ## Determine minimum number of time points requiered.
-  minTP <- 0.8 * length(unique(corrDat[["timeNumber"]]))
+  ## Determine minimum number of time points required.
+  minTP <- PerMinTP * length(unique(corrDat[["timeNumber"]])) # 0.8
   ## Construct formula for fitting model.
   modForm <- as.formula(paste(trait, "~s(timeNumber, bs = 'ps', k = ",
                               knots, ")"))

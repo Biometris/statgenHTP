@@ -26,19 +26,19 @@
 #' @importFrom stats dist
 #'
 #' @export
-detectOutliers <- function(corrDat,
-                           predDat,
-                           coefDat,
-                           trait,
-                           genotypes = unique(corrDat[["genotype"]]),
-                           thrCor = 0.9,
-                           thrPca = 1,
-                           title = NULL,
-                           outFile = NULL,
-                           outFileOpts = NULL) {
+FuncDetectTimeCourseOutlier <- function(corrDat,
+                                        predDat,
+                                        coefDat,
+                                        trait,
+                                        genotypes = unique(corrDat[["genotype"]]),
+                                        thrCor = 0.9,
+                                        thrPca = 1,
+                                        title = NULL,
+                                        outFile = NULL,
+                                        outFileOpts = NULL) {
   if (!is.null(outFile)) {
     ## Check if file exists and is writable.
-    chkFile(outFile, fileType = "pdf")
+    # chkFile(outFile, fileType = "pdf")
     ## Add outFile to output file options.
     outFileOpts <- c(list(file = outFile), outFileOpts)
     tryCatch({
@@ -68,17 +68,31 @@ detectOutliers <- function(corrDat,
                       })
   ## Compute correlation matrix.
   cormats <- lapply(X = plantDats, FUN = function(plantDat) {
-    cormat <- cor(plantDat)
-    diag(cormat) <- NA
-    return(cormat)
+    # if there are plants, estimate the correlation...
+    if(!is.null(dim(plantDat))) {
+      cormat <- cor(plantDat)
+      diag(cormat) <- NA
+      return(cormat)
+    # ... if not, return a null matrix
+    } else {
+      cormat <- NULL
+      return(cormat)    }
   })
   plantPcas <- lapply(X = plantDats, FUN = function(plantDat) {
     ## Perform a PCA on the spline coefficients per genotype.
     ## Run the PCA.
-    plantPca <- prcomp(plantDat, center = TRUE, scale. = TRUE)
+    # if there are plants, perform the PCA...
+    if(!is.null(dim(plantDat))) {
+      plantPca <- prcomp(plantDat, center = TRUE, scale. = TRUE)
+      # ... if not, return a null object
+    } else {
+      plantPca <- NULL }
   })
   annotatePlantsCor <- lapply(X = genotypes, FUN = function(geno) {
-    meanCor <- rowMeans(cormats[[geno]], na.rm = TRUE)
+    if(!is.null(cormats[[geno]])) {
+      meanCor <- rowMeans(cormats[[geno]], na.rm = TRUE)
+    } else {
+      meanCor <- NULL }
     if (any(meanCor < thrCor)) {
       ## Create data.frame with info on plants with average correlation
       ## below threshold.
@@ -134,7 +148,7 @@ detectOutliers <- function(corrDat,
       geom_line(data = genoPreds[[geno]],
                 aes_string(y = "pred.value"), size = 0.5) +
       scale_shape_manual(values = plotShapes) +
-      plotTheme() +
+      theme_light() +
       theme(axis.text = element_text(size = 12),
             axis.title = element_text(size = 13))
     ## Correlation plot.
@@ -157,7 +171,8 @@ detectOutliers <- function(corrDat,
                                        size = 12, hjust = 1)) +
       labs(title = "Correl of coef", x = NULL, y = NULL)
     ## PCA biplot.
-    pcaplot <- factoextra::fviz_pca_var(plantPcas[[geno]])
+     pcaplot <- factoextra::fviz_pca_var(plantPcas[[geno]])
+
     ## Arrange plots.
     lay <- rbind(c(1, 1), c(1, 1), c(1, 1), c(2, 3), c(2, 3))
     ## grid arrange always plots results.
