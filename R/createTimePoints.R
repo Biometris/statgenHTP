@@ -94,7 +94,7 @@ createTimePoints <- function(dat,
     stop("dat has to be a data.frame.\n")
   }
   if (missing(experimentName) || !is.character(experimentName) ||
-              length(experimentName) > 1) {
+      length(experimentName) > 1) {
     stop("experimentName should be a character string of length one.\n")
   }
   ## Convert input to data.frame. This needs to be done to be able to handle
@@ -116,7 +116,12 @@ createTimePoints <- function(dat,
   plotTab <- table(dat[[plotId]])
   nTimePoints <- length(unique(dat[[timePoint]]))
   plotLimObs <- names(plotTab[plotTab < 0.5 * nTimePoints])
-  if (length(plotLimObs) > 0) {
+  if (length(plotLimObs) > 5) {
+    warning("More than 5 plotIds have observations for less than 50% of ",
+            "the time points. The first 5 are printed, to see them all run
+              attr(..., 'plotLimObs') on the output\n",
+            paste(plotLimObs[1:5], collapse = ", "), "\n", call. = FALSE)
+  } else if (length(plotLimObs) > 0) {
     warning("The following plotIds have observations for less than 50% of ",
             "the time points:\n", paste(plotLimObs, collapse = ", "), "\n",
             call. = FALSE)
@@ -231,6 +236,7 @@ createTimePoints <- function(dat,
                   experimentName = experimentName,
                   timePoints = timePoints,
                   checkGenotypes = checkGenotypes,
+                  plotLimObs = plotLimObs,
                   class = c("TP", "list"))
   return(TP)
 }
@@ -257,8 +263,8 @@ summary.TP <- function(object,
   cat("First time point:", firstTP, "\n")
   cat("Last time point:", lastTP, "\n\n")
   if (!is.null(checkGenotypes)) {
-  cat("The following genotypes are defined as check genotypes: " ,
-      paste(checkGenotypes, collapse = ", "), ".\n", sep = "")
+    cat("The following genotypes are defined as check genotypes: " ,
+        paste(checkGenotypes, collapse = ", "), ".\n", sep = "")
   } else {
     cat("No check genotypes are defined.\n")
   }
@@ -474,7 +480,7 @@ plot.TP <- function(x,
           geom_segment(aes_string(x = "x - 0.5", xend = "x - 0.5",
                                   y = "y - 0.5", yend = "y + 0.5",
                                   linetype = "'replicates'"),
-            data = repBord$vertW, size = 1) +
+                       data = repBord$vertW, size = 1) +
           geom_segment(aes_string(x = "x - 0.5", xend = "x + 0.5",
                                   y = "y - 0.5", yend = "y - 0.5"),
                        data = repBord$horW, size = 1)
@@ -692,11 +698,11 @@ plot.TP <- function(x,
                                    FUN = function(timePoint) {
                                      if (!hasName(x = timePoint, name = trait)) {
                                        NULL
-                                       } else {
-                                         timePoint[c("genotype", "timePoint",
-                                                     "plotId", trait, geno.decomp)]
-                                         }
-                                     }))
+                                     } else {
+                                       timePoint[c("genotype", "timePoint",
+                                                   "plotId", trait, geno.decomp)]
+                                     }
+                                   }))
       if (is.null(plotDat)) {
         warning(trait, " isn't a column in any of the timePoints.\n",
                 "Plot skipped.\n", call. = FALSE)
