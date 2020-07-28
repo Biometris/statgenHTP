@@ -4,7 +4,7 @@
 \alias{plot.pointOutliers}
 \title{plotDetectPointOutlierLocFit}
 \usage{
-\method{plot}{pointOutliers}(x, ..., plotIds = NULL, output = TRUE)
+\method{plot}{pointOutliers}(x, ..., plotIds = NULL, outOnly = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{An object of class pointOutliers.}
@@ -14,6 +14,8 @@ section.}
 
 \item{plotIds}{A character vector of plotIds for which the outliers should be
 detected. If \code{NULL}}
+
+\item{outOnly}{Should only plots containing outliers be plotted?}
 
 \item{output}{Should the plot be output to the current device? If
 \code{FALSE} only a list of ggplot objects is invisibly returned. Ignored if

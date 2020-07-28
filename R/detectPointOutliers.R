@@ -68,7 +68,7 @@ detectPointOutliers <- function(TP,
     }
     y <- plotDat[[trait]]
     x <- plotDat[["timePoint"]]
-    fitMod <- locfit::locfit(y ~ lp(x, nn = mylocfit, deg = 2))
+    fitMod <- locfit::locfit(y ~ locfit::lp(x, nn = mylocfit, deg = 2))
     ## Retrieving predictions for the x input interval.
     yPred <- predict(fitMod, newdata = x, se.fit = TRUE)
     lwr <- yPred$fit - confIntSize * yPred$se.fit
@@ -105,11 +105,13 @@ detectPointOutliers <- function(TP,
 #' @inheritParams plot.TP
 #'
 #' @param x An object of class pointOutliers.
+#' @param outOnly Should only plots containing outliers be plotted?
 #'
 #' @export
 plot.pointOutliers <- function(x,
                                ...,
                                plotIds = NULL,
+                               outOnly = TRUE,
                                output = TRUE) {
   plotDat <- x
   if (!is.null(plotIds)) {
@@ -118,9 +120,16 @@ plot.pointOutliers <- function(x,
     }
     plotDat <- plotDat[plotDat[["plotId"]] %in% plotIds, ]
   }
-  trait <- attr(x = x, which = "trait")
   ## Select outliers.
   outliers <- plotDat[plotDat[["outlier"]] == 1, ]
+  if (outOnly) {
+    plotDat <- plotDat[plotDat[["plotId"]] %in% outliers[["plotId"]], ]
+    if (nrow(plotDat) == 0) {
+      stop("No outliers present for selected plotIds.\n")
+    }
+  }
+  plotDat <- droplevels(plotDat)
+  trait <- attr(x = x, which = "trait")
   ## Compute the number of breaks for the time scale.
   ## If there are less than 3 time points use the number of time points.
   ## Otherwise use 3.
@@ -146,7 +155,16 @@ plot.pointOutliers <- function(x,
   if (nPlots >= 25) {
     ## More than 25 plots.
     ## For identical layout on all pages use 5 x 5 plots throughout.
-    rowPag <- colPag <- rep(x = 5, times = nPag)
+    #rowPag <- colPag <- rep(x = 5, times = nPag)
+
+    # 28-7-2020. ggforce has a bug that prevents this identical layout
+    # https://github.com/thomasp85/ggforce/issues/201
+    # When fixed the code above can be reactivated and the three lines below
+    # removed.
+    plotsLastPag <- nPlots %% 25
+    rowPag <- c(rep(x = 5, times = nPag - 1), min(plotsLastPag %/% 5 + 1, 5))
+    colPag <- c(rep(x = 5, times = nPag - 1),
+                ifelse(plotsLastPag >= 5, 5, plotsLastPag))
   } else {
     ## Less than 25 plots.
     ## Fill page by row of 5 plots.
@@ -158,10 +176,8 @@ plot.pointOutliers <- function(x,
   pPag <- vector(mode = "list", length = nPag)
   for (i in 1:nPag) {
     pPag[[i]] <- p +
-      ggforce::facet_wrap_paginate(facets = "plotId",
-                                   nrow = rowPag[i], ncol = colPag[i],
-                                   labeller = ggplot2::label_wrap_gen(multi_line = FALSE),
-                                   page = i)
+      ggforce::facet_wrap_paginate(facets = "plotId", nrow = rowPag[i],
+                                   ncol = colPag[i], page = i)
     if (output) {
       suppressMessages(plot(pPag[[i]]))
     }
