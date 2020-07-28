@@ -112,6 +112,15 @@ createTimePoints <- function(dat,
   if (max(table(dat[[plotId]], dat[[timePoint]])) > 1) {
     stop("plotId has to be unique within each time point.\n")
   }
+  ## Check for plotIds that have a limited amount of observations.
+  plotTab <- table(dat[[plotId]])
+  nTimePoints <- length(unique(dat[[timePoint]]))
+  plotLimObs <- names(plotTab[plotTab < 0.5 * nTimePoints])
+  if (length(plotLimObs) > 0) {
+    warning("The following plotIds have observations for less than 50% of ",
+            "the time points:\n", paste(plotLimObs, collapse = ", "), "\n",
+            call. = FALSE)
+  }
   ## Check presence of check genotypes.
   if (addCheck) {
     if (is.null(checkGenotypes) || !is.character(checkGenotypes)) {
