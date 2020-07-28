@@ -213,6 +213,9 @@ removePointOutliers <- function(TP,
     stop("pointOutliers should at least contain the columns plotId ",
          "and timePoint.\n")
   }
+  if (!all(as.character(pointOutliers[["timePoint"]]) %in% names(TP))) {
+    stop("All time points in pointOutliers should be in TP.\n")
+  }
   if (hasName(x = pointOutliers, "outlier")) {
     ## Remove observations that are not actually outliers.
     pointOutliers <- pointOutliers[pointOutliers[["outlier"]] == 1, ]
@@ -220,6 +223,9 @@ removePointOutliers <- function(TP,
   for (i in 1:nrow(pointOutliers)) {
     plotI <- pointOutliers[i, "plotId"]
     timeI <- as.character(pointOutliers[i, "timePoint"])
+    if (!plotI %in% TP[[timeI]][["plotId"]]) {
+      warning(plotI, " not present in timePoint ", timeI, ".\n", call. = FALSE)
+    }
     TP[[timeI]][TP[[timeI]][["plotId"]] == plotI, trait] <- NA
   }
   return(TP)
