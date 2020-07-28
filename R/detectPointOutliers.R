@@ -185,5 +185,43 @@ plot.pointOutliers <- function(x,
   invisible(pPag)
 }
 
-
+#' Remove point outliers
+#'
+#' Function for setting point outliers to NA.
+#'
+#' @param TP An object of class TP.
+#' @param pointOutliers A data.frame with at least the columns plotId and
+#' timePoint with values corresponding to those in TP. If a column outlier is
+#' present, as in the output of \code{detectPointOutliers}, only plot x time
+#' combinations for which outlier = 1 will be set to NA. If no column outlier is
+#' present, all observations in pointOutliers will be set to NA.
+#' @param trait The trait that should be set to NA. Can be ignored when using
+#' the output of \code{detectPointOutliers} as input.
+#'
+#' @export
+removePointOutliers <- function(TP,
+                                pointOutliers,
+                                trait = attr(x = pointOutliers,
+                                             which = "trait")) {
+  if (!inherits(TP, "TP")) {
+    stop("TP should be an object of class TP.\n")
+  }
+  if (!inherits(pointOutliers, "data.frame")) {
+    stop("pointOutliers should be a data.frame.\n")
+  }
+  if (!all(hasName(pointOutliers, c("plotId", "timePoint")))) {
+    stop("pointOutliers should at least contain the columns plotId ",
+         "and timePoint.\n")
+  }
+  if (hasName(x = pointOutliers, "outlier")) {
+    ## Remove observations that are not actually outliers.
+    pointOutliers <- pointOutliers[pointOutliers[["outlier"]] == 1, ]
+  }
+  for (i in 1:nrow(pointOutliers)) {
+    plotI <- pointOutliers[i, "plotId"]
+    timeI <- as.character(pointOutliers[i, "timePoint"])
+    TP[[timeI]][TP[[timeI]][["plotId"]] == plotI, trait] <- NA
+  }
+  return(TP)
+}
 
