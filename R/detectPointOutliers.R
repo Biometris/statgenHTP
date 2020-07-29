@@ -216,6 +216,9 @@ removePointOutliers <- function(TP,
   if (!all(as.character(pointOutliers[["timePoint"]]) %in% names(TP))) {
     stop("All time points in pointOutliers should be in TP.\n")
   }
+  if (!any(pointOutliers[["outlier"]] == 1)) {
+    stop("There are no outlying points in TP.\n")
+  }
   if (hasName(x = pointOutliers, "outlier")) {
     ## Remove observations that are not actually outliers.
     pointOutliers <- pointOutliers[pointOutliers[["outlier"]] == 1, ]
