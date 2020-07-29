@@ -4,7 +4,7 @@
 \alias{fitSpline}
 \title{Fit Splines}
 \usage{
-fitSpline(corrDat, trait, knots = 50, PerMinTP = 0.8)
+fitSpline(corrDat, trait, knots = 50, PerMinTP = 0.8, timeNumStep = 0.1)
 }
 \arguments{
 \item{corrDat}{A data.frame with corrected spatial data.}
@@ -15,6 +15,8 @@ should be fitted.}
 \item{knots}{The number of knots to use when fitting the spline.}
 
 \item{PerMinTP}{The percentage of minimum number of time points to use.}
+
+\item{timeNumStep}{Time step of the time scale for the prediction.}
 }
 \description{
 Function for fitting splines.

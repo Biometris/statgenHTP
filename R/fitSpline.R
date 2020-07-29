@@ -7,22 +7,22 @@
 #' should be fitted.
 #' @param knots The number of knots to use when fitting the spline.
 #' @param PerMinTP The percentage of minimum number of time points to use.
+#' @param timeNumStep Time step of the time scale for the prediction.
 #'
 #' @export
 fitSpline <- function(corrDat,
                       trait,
                       knots = 50,
-                      PerMinTP = 0.8) {
+                      PerMinTP = 0.8,
+                      timeNumStep = 0.1) {
   ## Create data.frame with plants and genotypes for adding genotype to results.
   plantGeno <- unique(corrDat[c("plotId", "genotype")])
   ## Determine minimum number of time points required.
-  minTP <- PerMinTP * length(unique(corrDat[["timeNumber"]])) # 0.8
+  minTP <- PerMinTP * length(unique(corrDat[["timePoint"]])) # 0.8
   ## Construct formula for fitting model.
   modForm <- as.formula(paste(trait, "~s(timeNumber, bs = 'ps', k = ",
                               knots, ")"))
   ## Create time range for prediction.
-  ## Set step for time number.
-  timeNumStep <- 0.1
   ## Get range for time number and time point from data.
   timeNumRange <- range(corrDat[["timeNumber"]])
   timePointRange <- range(corrDat[["timePoint"]])
@@ -33,13 +33,14 @@ fitSpline <- function(corrDat,
                           timePoint = seq(from = timePointRange[1],
                                           to = timePointRange[2],
                                           length.out = diff(timeNumRange) /
-                                            timeNumStep + 1))
+                                          timeNumStep )) # + 1
   ## Fit splines.
-  fitSp <- lapply(X = levels(corrDat[["plotId"]]), FUN = function(plant) {
+  fitSp <- lapply(X = levels(plantGeno[["plotId"]]), FUN = function(plant) {
     ## Restrict data to current plant.
     dat <- corrDat[corrDat[["plotId"]] == plant, c("timeNumber", trait)]
     ## Manually select minimum number of time points.
     if (length(unique(dat[["timeNumber"]])) >= minTP) {
+
       ## Fit the P-spline using gam() function in mgcv.
       ## Manually set the number of knots.
       ## Depends on the number of time points and shape of the curve.
@@ -48,14 +49,17 @@ fitSpline <- function(corrDat,
       coeff <- data.frame(obj$coefficients, plotId = plant)
       coeff$type <- row.names(coeff)
       ## Predictions on a dense grid.
-      ## check how to set the grid.
-      x0 = seq(from = min(dat[["timeNumber"]]), to = max(dat[["timeNumber"]]),
-               by = timeNumStep)
+      # x0 = seq(from = min(dat[["timeNumber"]]), to = max(dat[["timeNumber"]]),
+      #          by = timeNumStep)
+      x0 = timeRange$timeNumbe
       dfX0 = data.frame(timeNumber = x0)
       yPred = predict(obj, newdata = dfX0)
-      predDat <- data.frame(timeNumber = x0, pred.value = yPred, plotId = plant)
-      return(list(coeff, predDat))
+      predDat <- data.frame(timeNumber = x0,
+                            pred.value = yPred,
+                            plotId = plant,
+                            timePoint = timeRange$timePoint[timeRange$timeNumber %in% x0])
     }
+      return(list(coeff, predDat))
   })
   ## Bind all coefficients into one data.frame.
   coefTot <- do.call(rbind, lapply(fitSp, `[[`, 1))
@@ -71,8 +75,8 @@ fitSpline <- function(corrDat,
   predTot[["genotype"]] <- plantGeno[match(predTot[["plotId"]],
                                            plantGeno[["plotId"]]), "genotype"]
   ## Add timePoint.
-  predTot[["timePoint"]] <- plantGeno[match(predTot[["timeNumber"]],
-                                            timeRange[["timeNumber"]]),
-                                      "timePoint"]
+  # predTot[["timePoint"]] <- plantGeno[match(predTot[["timeNumber"]],
+  #                                           timeRange[["timeNumber"]]),
+  #                                     "timePoint"]
   return(list(coefDat = coefTot, predDat = predTot))
 }
