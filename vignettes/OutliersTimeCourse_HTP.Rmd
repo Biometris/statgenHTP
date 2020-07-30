@@ -1,0 +1,130 @@
+---
+title: "statgenHTP tutorial: 4. Outlier detection Time courses"
+author: "Emilie Millet, Bart-Jan van Rossum, Isabelle Sanchez, Nadine Hilgert"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    number_sections: yes
+    toc: no
+bibliography: bibliography.bib
+vignette: >
+  %\VignetteIndexEntry{Tutorial} 
+  %\VignetteEncoding{UTF-8} 
+  %\VignetteEngine{knitr::rmarkdown}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+  )
+library(statgenHTP)
+```
+
+# Introduction 
+
+It consists in detecting outliers in a set of time courses resulting from the observation of one single trait. 
+The detection procedure is applied to each trait individually without considering other traits, meaning that distinct outlier datasets are associated with each considered trait. 
+
+## A nonparametric smoothing associated with a PCA
+
+Each time course is modelled by a nonparametric smoothing spline with a fixed number of 
+knots. This is a piecewise cubic polynomial (Eubank, 1999, Eilers et al. 2015) fitted with
+the ‘gam’ function of the R-package ‘mgcv’. The estimates of the spline coefficients are 
+then extracted per time course (typically per plant) and correlations between those 
+coefficient vectors are calculated to identify outlying time courses. 
+An outlying time course will have low correlation with the majority of the other time courses. 
+To support the analysis by correlations, a principal component analysis can be done on 
+the plant (time course) by spline coefficient matrix. A PCA plot of the plant scores will 
+show the outlying plant. 
+
+
+This documents describes the procedures to detect outlying time course with examples on experimental data sets (see *Intro_HTP*). The data on which the procedures apply are the variables of interest. They may be variables measured directly or indirectly (through image analysis for example). The way they were obtained doesn't matter. 
+
+
+----
+
+# Illustration of the non-parametric smoothing associated with a PCA
+
+The function `fitSpline()` fits a p-spline per plant for the selected trait using the number of knots
+chosen by the user. In P-spline, the knots are equally spaced and their number can be large. The user should also chose an appropriate proportion of minimum number of time points that should be in the 
+dataset per plant. When a plant has less time point than the minimum, it will be skipped from the analysis.
+
+
+The functions are illustrated with the three example data sets. For more information about the data, see *Intro_HTP*.
+
+## Example 1
+
+```{r fitSpline, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE, eval=FALSE}
+######### Phenovator dataset
+spatCorrVator <- read.csv("PhenovatorDat1_corr_outPoint.csv",
+                          stringsAsFactors = TRUE)
+
+spatCorrVator <- spatCorrVator[order(spatCorrVator$plotId,spatCorrVator$timePoint),]
+## Format the timepoint
+spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
+## Deal with numerical time
+spatCorrVator$timeNumber <- as.numeric(spatCorrVator$timePoint) #/60000
+#spatCorrVator$timeNumber <- spatCorrVator$timeNumber-(min(spatCorrVator$timeNumber)-1)
+
+## Run the function to fit spline using the mgcv package on a subset of genotypes
+subGeno <- c("G70","G160","G151","G179","G175","G4","G55")
+subcorrdat <- spatCorrVator[spatCorrVator$genotype %in% subGeno,]
+subcorrdat <- droplevels(subcorrdat)
+
+fit.spline <- fitSpline(corrDat = subcorrdat,
+                        trait = "EffpsII_corr",
+                        knots = 50,
+                        perMinTP = 0.8,
+                        timeNumStep = 0.01)
+
+pred.Dat <- fit.spline$predDat
+coef.Dat <- fit.spline$coefDat
+row.names(coef.Dat) <- 1:nrow(coef.Dat)
+```
+
+The object `fit.spline` contains the predicted value (`pred.value` in the table below), i.e the values predicted using the P-spline model coefficients. 
+
+```{r headpredDat, echo=FALSE, message=FALSE, eval=FALSE}
+knitr::kable(head(pred.Dat), align=c('c','c'), booktabs = TRUE)
+```
+
+The object `fit.spline` also contains the values of the P-splines coefficients:
+
+```{r headcoefDat, echo=FALSE, message=FALSE, eval=FALSE}
+knitr::kable(head(coef.Dat), align=c('c','c'), booktabs = TRUE)
+```
+
+The coefficients are then used to tag suspect time courses with the function _detectOutliers()_. This function performs a PCA on the coefficients (from data frame `coef.Dat`) per `genotype` and tags the plants that have a coordinate on the second PC axis above a threshold (`thrPca`), see the lines 'reason = pc2' in the table below. The function also calculates the pairwise-correlation of the coefficients per genotype. Plants are tagged when the correlation is below a given threshold (`thrCor`), see the lines 'reason = mean corr' in the table below. 
+
+```{r OutVator, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE, eval=FALSE}
+outVator <-
+  detectTimeCourseOutlier(corrDat = spatCorrVator,
+                          predDat = pred.Dat,
+                          coefDat = coef.Dat,
+                          trait = "EffpsII_corr",
+                          genotypes = subGeno,
+                          thrCor = 0.9,
+                          thrPca = 1,
+                          title = "Phenovator",
+                          outFile = "Phenovator_testOutliers.pdf")
+```
+
+```{r headOutPoint, echo=FALSE, message=FALSE, eval=FALSE}
+knitr::kable(head(out1), align=c('c','c'), booktabs = TRUE, row.names=F)
+```
+ 
+
+
+## Example 2
+
+
+
+## Example 3
+
+
+
+----
+
+## References
+

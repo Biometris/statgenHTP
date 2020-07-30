@@ -1,5 +1,5 @@
 ---
-title: "statgenHTP tutorial"
+title: "statgenHTP tutorial: 1. Introduction, data description and preparation"
 author: "Emilie Millet, Bart-Jan van Rossum"
 date: "`r Sys.Date()`"
 output:
@@ -40,11 +40,14 @@ effects at each time point and (3) estimate relevant parameters from a modeled t
 It will provide user with either genotypic values or corrected values that can be used 
 for further modeling, e.g. extract responses to environment [@vanEeuw2019]. 
 
-The overall structure of the package is in 4 main parts:  
-1. Outliers detection: time points -  *Tutorial_HTP_xxx*
-2. Correction for spatial trends - *Tutorial_HTP_xxx* 
-3. Outliers detection: time course - *Tutorial_HTP_xxx*
-4. Parameter extraction - *Tutorial_HTP_xxx*  
+**Structure of the package**
+
+The overall structure of the package is in 5 main parts:  
+1. Data description and preparation - *statgenHTP tutorial: 1. Introduction, data description and preparation*
+2. Outliers detection: time points -  *statgenHTP tutorial: 2. Outlier detection Time points*  
+3. Correction for spatial trends - *statgenHTP tutorial: 3. Correction for spatial trends*   
+4. Outliers detection: time course - *statgenHTP tutorial: 4. Outlier detection Time course*  
+5. Parameter extraction - *statgenHTP tutorial: 5. Parameters extraction*  
 
 This documents describes in detail three datasets which are used to example the functions. 
 It also contains description on how to prepare the data for analysis and how to visualise them.
@@ -110,7 +113,7 @@ The leaf area and the biomass of individual plants are estimated from images tak
 
 The unique ID of the plant is recorded (`plantId`), together with the pot position in row (`Row`) and in column (`Col`).
 
-```{r headdatagh, echo=FALSE, message=FALSE, eval=FALSE}
+```{r headdatagh, echo=FALSE, message=FALSE}
 knitr::kable(PhenoarchDat1[PhenoarchDat1$pos=="c15r1",1:8][5:10,], 
              align=c('c','c'), row.names = FALSE,  booktabs = TRUE)
 knitr::kable(PhenoarchDat1[PhenoarchDat1$pos=="c16r1",1:8][5:10,], 
@@ -134,7 +137,7 @@ This data set consists of two experiments (`Block`) of root growth. For each gen
 data("RootPhAirDat1")
 ```
 
-```{r headdataroot, echo=FALSE, message=FALSE, eval=FALSE}
+```{r headdataroot, echo=FALSE, message=FALSE, eval=TRUE}
 knitr::kable(head(RootDat1), align=c('c','c'), booktabs = TRUE)
 ```
 
@@ -155,7 +158,7 @@ for analyses.
 A `TP` object can be created from a `data.frame` with the function `createTimePoints`. 
 This function does a number of things:
 
-* Check the input data.
+* Check the input data. For example, the plants containing less than 50% of the maximum number of time points will be displayed as warning.
 * Rename columns to default column names used by the functions in the statgenHTP package. For example, the column in the data containing variety/accession/genotype is renamed to "genotype". Original column names are stored as an attribute of the individual data frames in the `TP` object.
 * Convert column types to the default column types. For example, the column "genotype" is converted to a factor and "rowNum" to a numeric column.
 * Convert the column containing time into time format. If needed, the time format can be provided in `timeFormat`. For example, with a date/time input of the form "day/month/year hour:minute", use %d/\%m/\%Y \%H:\%M. For a full list of abbreviations see the R package strptime. *TO NOTE* when the input time is just a numeric, the function will convert it to time from 01-01-1970 (origin time of the package lubridate).
@@ -181,6 +184,7 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             checkGenotypes = c("check1", "check2", "check3", "check4"))
 summary(phenoTP)
 ```
+In this dataset, 3 plants contain less thant 50% of the 73 time points. The user may choose to check the data for these plant and eventually to remove them from the dataset.
 
 The function getTimePoints allows to generate a data frame containing the time points and 
 their numbers in the `TP` object. Below is a example with the first 6 time points of the `phenoTP`:
