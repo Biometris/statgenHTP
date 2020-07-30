@@ -6,19 +6,19 @@
 #' @param trait A character string indicating the trait for which the spline
 #' should be fitted.
 #' @param knots The number of knots to use when fitting the spline.
-#' @param PerMinTP The percentage of minimum number of time points to use.
+#' @param perMinTP The percentage of minimum number of time points to use.
 #' @param timeNumStep Time step of the time scale for the prediction.
 #'
 #' @export
 fitSpline <- function(corrDat,
                       trait,
                       knots = 50,
-                      PerMinTP = 0.8,
+                      perMinTP = 0.8,
                       timeNumStep = 0.1) {
   ## Create data.frame with plants and genotypes for adding genotype to results.
   plantGeno <- unique(corrDat[c("plotId", "genotype")])
   ## Determine minimum number of time points required.
-  minTP <- PerMinTP * length(unique(corrDat[["timePoint"]])) # 0.8
+  minTP <- perMinTP * length(unique(corrDat[["timePoint"]])) # 0.8
   ## Construct formula for fitting model.
   modForm <- as.formula(paste(trait, "~s(timeNumber, bs = 'ps', k = ",
                               knots, ")"))
@@ -32,8 +32,8 @@ fitSpline <- function(corrDat,
                                            by = timeNumStep),
                           timePoint = seq(from = timePointRange[1],
                                           to = timePointRange[2],
-                                          length.out = diff(timeNumRange) /
-                                          timeNumStep )) # + 1
+                                          by = timeNumStep * diff(timePointRange) /
+                                            diff(timeNumRange)))
   ## Fit splines.
   fitSp <- lapply(X = levels(plantGeno[["plotId"]]), FUN = function(plant) {
     ## Restrict data to current plant.
@@ -49,17 +49,14 @@ fitSpline <- function(corrDat,
       coeff <- data.frame(obj$coefficients, plotId = plant)
       coeff$type <- row.names(coeff)
       ## Predictions on a dense grid.
-      # x0 = seq(from = min(dat[["timeNumber"]]), to = max(dat[["timeNumber"]]),
-      #          by = timeNumStep)
-      x0 = timeRange$timeNumbe
-      dfX0 = data.frame(timeNumber = x0)
-      yPred = predict(obj, newdata = dfX0)
-      predDat <- data.frame(timeNumber = x0,
-                            pred.value = yPred,
-                            plotId = plant,
-                            timePoint = timeRange$timePoint[timeRange$timeNumber %in% x0])
-    }
+      dfX0 <- timeRange[, "timeNumber", drop = FALSE]
+      yPred <- predict(obj, newdata = dfX0)
+      ## Merge time, predictions and plotId.
+      predDat <- data.frame(timeRange, pred.value = yPred, plotId = plant)
       return(list(coeff, predDat))
+    } else {
+      return(list(coeff = NULL, predDat = NULL))
+    }
   })
   ## Bind all coefficients into one data.frame.
   coefTot <- do.call(rbind, lapply(fitSp, `[[`, 1))
@@ -74,9 +71,5 @@ fitSpline <- function(corrDat,
   ## Add genotype.
   predTot[["genotype"]] <- plantGeno[match(predTot[["plotId"]],
                                            plantGeno[["plotId"]]), "genotype"]
-  ## Add timePoint.
-  # predTot[["timePoint"]] <- plantGeno[match(predTot[["timeNumber"]],
-  #                                           timeRange[["timeNumber"]]),
-  #                                     "timePoint"]
   return(list(coefDat = coefTot, predDat = predTot))
 }

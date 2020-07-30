@@ -26,16 +26,16 @@
 #' @importFrom stats dist
 #'
 #' @export
-FuncDetectTimeCourseOutlier <- function(corrDat,
-                                        predDat,
-                                        coefDat,
-                                        trait,
-                                        genotypes = unique(corrDat[["genotype"]]),
-                                        thrCor = 0.9,
-                                        thrPca = 1,
-                                        title = NULL,
-                                        outFile = NULL,
-                                        outFileOpts = NULL) {
+detectTimeCourseOutlier <- function(corrDat,
+                                    predDat,
+                                    coefDat,
+                                    trait,
+                                    genotypes = unique(as.character(predDat[["genotype"]])),
+                                    thrCor = 0.9,
+                                    thrPca = 1,
+                                    title = NULL,
+                                    outFile = NULL,
+                                    outFileOpts = NULL) {
   if (!is.null(outFile)) {
     ## Check if file exists and is writable.
     # chkFile(outFile, fileType = "pdf")
@@ -68,31 +68,33 @@ FuncDetectTimeCourseOutlier <- function(corrDat,
                       })
   ## Compute correlation matrix.
   cormats <- lapply(X = plantDats, FUN = function(plantDat) {
-    # if there are plants, estimate the correlation...
-    if(!is.null(dim(plantDat))) {
+    if (!is.null(dim(plantDat))) {
+      ## if there are plants, estimate the correlation...
       cormat <- cor(plantDat)
       diag(cormat) <- NA
       return(cormat)
-    # ... if not, return a null matrix
     } else {
-      cormat <- NULL
-      return(cormat)    }
+      ## ... if not, return a null matrix
+      return(NULL)
+    }
   })
   plantPcas <- lapply(X = plantDats, FUN = function(plantDat) {
     ## Perform a PCA on the spline coefficients per genotype.
     ## Run the PCA.
-    # if there are plants, perform the PCA...
-    if(!is.null(dim(plantDat))) {
-      plantPca <- prcomp(plantDat, center = TRUE, scale. = TRUE)
-      # ... if not, return a null object
+    if (!is.null(dim(plantDat))) {
+      ## if there are plants, perform the PCA...
+      return(prcomp(plantDat, center = TRUE, scale. = TRUE))
     } else {
-      plantPca <- NULL }
+      ## ... if not, return a null object
+      return(NULL)
+    }
   })
   annotatePlantsCor <- lapply(X = genotypes, FUN = function(geno) {
-    if(!is.null(cormats[[geno]])) {
+    if (!is.null(cormats[[geno]])) {
       meanCor <- rowMeans(cormats[[geno]], na.rm = TRUE)
     } else {
-      meanCor <- NULL }
+      meanCor <- NULL
+    }
     if (any(meanCor < thrCor)) {
       ## Create data.frame with info on plants with average correlation
       ## below threshold.
@@ -129,8 +131,10 @@ FuncDetectTimeCourseOutlier <- function(corrDat,
   ## Create full data.frame with annotated plants.
   annotatePlants <- do.call(rbind, c(annotatePlantsCor, annotatePlantsPca))
   ## Order by genotype and plotId.
-  annotatePlants <- with(annotatePlants,
-                         annotatePlants[order(genotype, plotId), ])
+  if (!is.null(annotatePlants)) {
+    annotatePlants <- with(annotatePlants,
+                           annotatePlants[order(genotype, plotId), ])
+  }
   ## Get minimum correlation. Cannot be higher than 0.8.
   minCor <- min(c(unlist(cormats, use.names = FALSE), 0.8), na.rm = TRUE)
   ## Create plots.
@@ -171,7 +175,7 @@ FuncDetectTimeCourseOutlier <- function(corrDat,
                                        size = 12, hjust = 1)) +
       labs(title = "Correl of coef", x = NULL, y = NULL)
     ## PCA biplot.
-     pcaplot <- factoextra::fviz_pca_var(plantPcas[[geno]])
+    pcaplot <- factoextra::fviz_pca_var(plantPcas[[geno]])
 
     ## Arrange plots.
     lay <- rbind(c(1, 1), c(1, 1), c(1, 1), c(2, 3), c(2, 3))

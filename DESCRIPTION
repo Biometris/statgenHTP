@@ -28,6 +28,7 @@ Depends:
     R (>= 3.4)
 Imports: 
     animation,
+    factoextra,
     ggforce,
     ggplot2 (>= 3.3.0),
     grid,
