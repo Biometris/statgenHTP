@@ -8,7 +8,8 @@
 #' @param trait A character string indicating the trait for which to detect
 #' outliers.
 #' @param genotypes A character vector indicating the genotypes for which to
-#' detect outliers.
+#' detect outliers. If \code{NULL}, outlier detection will be done for all
+#' genotypes.
 #' @param thrCor A numerical value used as threshold for determining outliers
 #' based on correlation between plots.
 #' @param thrPca A numerical value used as threshold for determining outliers
@@ -30,15 +31,65 @@ detectTimeCourseOutlier <- function(corrDat,
                                     predDat,
                                     coefDat,
                                     trait,
-                                    genotypes = unique(as.character(predDat[["genotype"]])),
+                                    genotypes = NULL,
                                     thrCor = 0.9,
                                     thrPca = 1,
                                     title = NULL,
                                     outFile = NULL,
                                     outFileOpts = NULL) {
+  ## Checks.
+  if (!is.character(trait) || length(trait) > 1) {
+    stop("trait should be a character string of length 1.\n")
+  }
+  if (!inherits(corrDat, "data.frame")) {
+    stop("corrDat should be a data.frame.\n")
+  }
+  corrCols <- c("plotId", "genotype", trait)
+  if (!all(hasName(x = corrDat, name = corrCols))) {
+    stop("corrDat should at least contain the following columns: ",
+         paste(corrCols, collapse = ", "))
+  }
+  if (!inherits(predDat, "data.frame")) {
+    stop("predDat should be a data.frame.\n")
+  }
+  predCols <- c("plotId", "genotype", "pred.value")
+  if (!all(hasName(x = predDat, name = predCols))) {
+    stop("predDat should at least contain the following columns: ",
+         paste(predCols, collapse = ", "))
+  }
+  if (!inherits(coefDat, "data.frame")) {
+    stop("coefDat should be a data.frame.\n")
+  }
+  coefCols <- c("plotId", "genotype", "type", "obj.coefficients")
+  if (!all(hasName(x = coefDat, name = coefCols))) {
+    stop("coefDat should at least contain the following columns: ",
+         paste(coefCols, collapse = ", "))
+  }
+  if (is.null(genotypes)) {
+    genotypes = unique(as.character(predDat[["genotype"]]))
+  } else {
+    if (!is.character(genotypes)) {
+      stop("genotypes should be a character vector.\n")
+    }
+    if (!all(genotypes %in% predDat[["genotype"]])) {
+      stop("all genotypes should be in predDat")
+    }
+  }
+  if (!all(genotypes %in% coefDat[["genotype"]])) {
+    stop("all genotypes should be in coefDat")
+  }
+  if (!all(genotypes %in% corrDat[["genotype"]])) {
+    stop("all genotypes should be in corrDat")
+  }
+  if (!is.numeric(thrCor) || length(thrCor) > 1 || thrCor < 0 || thrCor > 1) {
+    stop("thrCor should be a numerical value between 0 and 1.\n")
+  }
+  if (!is.numeric(thrPca) || length(thrPca) > 1 || thrPca < 0) {
+    stop("thrPca should be a positive numerical value.\n")
+  }
   if (!is.null(outFile)) {
     ## Check if file exists and is writable.
-    # chkFile(outFile, fileType = "pdf")
+    chkFile(outFile, fileType = "pdf")
     ## Add outFile to output file options.
     outFileOpts <- c(list(file = outFile), outFileOpts)
     tryCatch({
@@ -48,8 +99,9 @@ detectTimeCourseOutlier <- function(corrDat,
       on.exit(dev.off(), add = TRUE)
     }, error = function(e) stop("Cannot open file", outFile, call. = FALSE))
   }
+  ## Restrict corrDat, predDat and coefDat to genotypes.
+  corrDat <- corrDat[corrDat[["genotype"]] %in% genotypes, ]
   ## Get corrected and predicted data per genotype.
-  predDat <- predDat[predDat[["genotype"]] %in% genotypes, ]
   genoPreds <- split(x = predDat, f = predDat[["genotype"]], drop = TRUE)
   ## Restrict to corrected plots that are also in predictions.
   ## Some plots are removed while predicting the splines.
@@ -148,7 +200,7 @@ detectTimeCourseOutlier <- function(corrDat,
     ## Plot of time course per genotype: corrected data + spline per plant.
     kinetic <- ggplot(genoDats[[geno]], aes_string(x = "timeNumber", y = trait,
                                                    color = "plotId")) +
-      geom_point(aes_string(shape = "plotId"), size = 2) +
+      geom_point(aes_string(shape = "plotId"), size = 2, na.rm = TRUE) +
       geom_line(data = genoPreds[[geno]],
                 aes_string(y = "pred.value"), size = 0.5) +
       scale_shape_manual(values = plotShapes) +

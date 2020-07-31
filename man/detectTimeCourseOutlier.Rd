@@ -9,7 +9,7 @@ detectTimeCourseOutlier(
   predDat,
   coefDat,
   trait,
-  genotypes = unique(as.character(predDat[["genotype"]])),
+  genotypes = NULL,
   thrCor = 0.9,
   thrPca = 1,
   title = NULL,
@@ -28,7 +28,8 @@ detectTimeCourseOutlier(
 outliers.}
 
 \item{genotypes}{A character vector indicating the genotypes for which to
-detect outliers.}
+detect outliers. If \code{NULL}, outlier detection will be done for all
+genotypes.}
 
 \item{thrCor}{A numerical value used as threshold for determining outliers
 based on correlation between plots.}
