@@ -4,7 +4,7 @@
 \alias{plot.HTPSpline}
 \title{Plot the results of a fitted spline.}
 \usage{
-\method{plot}{HTPSpline}(x, ..., output = TRUE)
+\method{plot}{HTPSpline}(x, ..., genotypes = NULL, plotIds = NULL, output = TRUE)
 }
 \arguments{
 \item{x}{An object of class HTPSpline.}

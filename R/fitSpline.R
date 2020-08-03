@@ -152,11 +152,34 @@ fitSpline <- function(corrDat,
 #' @export
 plot.HTPSpline <- function(x,
                            ...,
+                           genotypes = NULL,
+                           plotIds = NULL,
                            output = TRUE) {
   modDat <- attr(x, which = "modDat")
   trait <- attr(x, which = "trait")
   useTimePoint <- attr(x, which = "useTimePoint")
   predDat <- x$predDat
+  if (!is.null(genotypes) &&
+      (!is.character(genotypes) && !all(genotypes %in% predDat[["genotype"]]))) {
+    stop("genotypes should be a character vector of genotypes in predDat.\n")
+  }
+  if (!is.null(plotIds) &&
+      (!is.character(plotIds) && !all(plotIds %in% predDat[["genotype"]]))) {
+    stop("plotIds should be a character vector of plotIds in predDat.\n")
+  }
+  ## Restrict predDat and modDat to selected genotypes and plotIds.
+  if (!is.null(genotypes)) {
+    predDat <- predDat[predDat[["genotype"]] %in% genotypes, ]
+    modDat <- modDat[modDat[["genotype"]] %in% genotypes, ]
+  }
+  if (!is.null(plotIds)) {
+    predDat <- predDat[predDat[["plotId"]] %in% plotIds, ]
+    modDat <- modDat[modDat[["plotId"]] %in% plotIds, ]
+  }
+  if (nrow(predDat) == 0) {
+    stop("At least one valid combination of genotype and plotId should be ",
+         "selected.\n")
+  }
   timeVar <- if (useTimePoint) "timePoint" else "timeNumber"
   p <- ggplot(modDat, aes_string(x = timeVar, y = trait)) +
     geom_point(na.rm = TRUE) +
