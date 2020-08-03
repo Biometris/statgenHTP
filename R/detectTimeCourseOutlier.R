@@ -189,6 +189,12 @@ detectTimeCourseOutlier <- function(corrDat,
   }
   ## Get minimum correlation. Cannot be higher than 0.8.
   minCor <- min(c(unlist(cormats, use.names = FALSE), 0.8), na.rm = TRUE)
+  ## Compute the number of breaks for the time scale based on all plants.
+  ## If there are less than 3 time points use the number of time points.
+  ## Otherwise use 3.
+  useTimePoint <- hasName(x = predDat, name = "timePoint")
+  timeVar <- if (useTimePoint) "timePoint" else "timeNumber"
+  nBr <- min(length(unique(predDat[[timeVar]])), 3)
   ## Create plots.
   for (geno in genotypes) {
     ## Create shape for plotting.
@@ -198,7 +204,7 @@ detectTimeCourseOutlier <- function(corrDat,
     ## Annotated plants get a closed circle.
     plotShapes[names(plotShapes) %in% annotatePlants[["plotId"]]] <- 19
     ## Plot of time course per genotype: corrected data + spline per plant.
-    kinetic <- ggplot(genoDats[[geno]], aes_string(x = "timeNumber", y = trait,
+    kinetic <- ggplot(genoDats[[geno]], aes_string(x = timeVar, y = trait,
                                                    color = "plotId")) +
       geom_point(aes_string(shape = "plotId"), size = 2, na.rm = TRUE) +
       geom_line(data = genoPreds[[geno]],
@@ -207,6 +213,12 @@ detectTimeCourseOutlier <- function(corrDat,
       theme_light() +
       theme(axis.text = element_text(size = 12),
             axis.title = element_text(size = 13))
+    if (useTimePoint) {
+      ## Format the time scale to Month + day.
+      kinetic <- kinetic +
+        ggplot2::scale_x_datetime(breaks = prettier(n = nBr),
+                                  labels = scales::date_format("%B %d"))
+    }
     ## Correlation plot.
     ## maybe we need to adjust the scale limits per dataset).
     correl <- ggplot(data = cormats[[geno]],
