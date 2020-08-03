@@ -208,7 +208,7 @@ detectTimeCourseOutlier <- function(corrDat,
       theme(axis.text = element_text(size = 12),
             axis.title = element_text(size = 13))
     ## Correlation plot.
-    ## maybe we need to adjust the scale limits per dataset)
+    ## maybe we need to adjust the scale limits per dataset).
     correl <- ggplot(data = cormats[[geno]],
                      aes_string("Var2", "Var1", fill = "value")) +
       geom_tile(color = "white") +
@@ -216,6 +216,8 @@ detectTimeCourseOutlier <- function(corrDat,
                            values = scales::rescale(c(minCor, thrCor, 1)),
                            limits = c(minCor, 1),
                            name = "Pearson\nCorrelation") +
+      ## Move y-axis to the right.
+      scale_y_discrete(position = "right") +
       ## Use coord fixed to create a square shaped output.
       coord_fixed() +
       theme(panel.background = element_rect(fill = "white"),
@@ -224,11 +226,11 @@ detectTimeCourseOutlier <- function(corrDat,
             plot.title = element_text(hjust = 0.5),
             axis.ticks = element_blank(),
             axis.text.x = element_text(angle = 45, vjust = 1,
-                                       size = 12, hjust = 1)) +
+                                       size = 12, hjust = 1),
+            legend.position = "left") +
       labs(title = "Correl of coef", x = NULL, y = NULL)
     ## PCA biplot.
     pcaplot <- factoextra::fviz_pca_var(plantPcas[[geno]])
-
     ## Arrange plots.
     lay <- rbind(c(1, 1), c(1, 1), c(1, 1), c(2, 3), c(2, 3))
     ## grid arrange always plots results.
