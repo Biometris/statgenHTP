@@ -81,10 +81,14 @@ fitSpline <- function(corrDat,
       ## Extract the spline coefficients.
       coeff <- data.frame(obj$coefficients, plotId = plant)
       coeff$type <- row.names(coeff)
+      ## Restrict dense grid to points within observation range.
+      timeRangePl <- timeRange[timeRange[["timeNumber"]] >= min(dat[["timeNumber"]]) &
+                               timeRange[["timeNumber"]] <= max(dat[["timeNumber"]]),
+                             , drop = FALSE]
       ## Predictions on a dense grid.
-      yPred <- predict(obj, newdata = timeRange)
+      yPred <- predict(obj, newdata = timeRangePl)
       ## Merge time, predictions and plotId.
-      predDat <- data.frame(timeRange, pred.value = yPred, plotId = plant)
+      predDat <- data.frame(timeRangePl, pred.value = yPred, plotId = plant)
       return(list(coeff, predDat))
     } else {
       return(list(coeff = NULL, predDat = NULL))
