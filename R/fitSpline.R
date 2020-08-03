@@ -32,8 +32,10 @@ fitSpline <- function(corrDat,
       perMinTP > 1) {
     stop("perMinTP should be a numerical value between 0 and 1.\n")
   }
+  useTimePoint <- FALSE
   if (!hasName(x = corrDat, name = "timeNumber")) {
     if (hasName(x = corrDat, name = "timePoint")) {
+      useTimePoint <- TRUE
       corrDat[["timeNumber"]] <- as.numeric(corrDat[["timePoint"]])
     } else {
       stop("corrDat should contain at least one of the colums timeNumber and ",
@@ -90,7 +92,7 @@ fitSpline <- function(corrDat,
   })
   ## Bind all coefficients into one data.frame.
   coefTot <- do.call(rbind, lapply(fitSp, `[[`, 1))
-  ## Remove brackets in coeffient names.
+  ## Remove brackets in coefficient names.
   coefTot[["type"]] <- gsub(pattern = "[()]", replacement = "",
                             x =  coefTot[["type"]])
   ## Add genotype.
@@ -101,5 +103,80 @@ fitSpline <- function(corrDat,
   ## Add genotype.
   predTot[["genotype"]] <- plantGeno[match(predTot[["plotId"]],
                                            plantGeno[["plotId"]]), "genotype"]
-  return(list(coefDat = coefTot, predDat = predTot))
+
+  ## Create output.
+  res <- structure(list(coefDat = coefTot, predDat = predTot),
+                   modDat = corrDat,
+                   trait = trait,
+                   useTimePoint = useTimePoint,
+                   class = c("HTPSpline", "list"))
+  return(res)
 }
+
+#' Plot the results of a fitted spline.
+#'
+#' @inheritParams plot.TP
+#'
+#' @param x An object of class HTPSpline.
+#'
+#' @export
+plot.HTPSpline <- function(x,
+                           ...,
+                           output = TRUE) {
+  modDat <- attr(x, which = "modDat")
+  trait <- attr(x, which = "trait")
+  useTimePoint <- attr(x, which = "useTimePoint")
+  predDat <- x$predDat
+  timeVar <- if (useTimePoint) "timePoint" else "timeNumber"
+  p <- ggplot(modDat, aes_string(x = timeVar, y = trait)) +
+    geom_point(na.rm = TRUE) +
+    geom_line(data = predDat,
+              aes_string(x = timeVar, y = "pred.value"), col = "blue") +
+    labs(title = "Corrected data and Pspline prediction", y = trait, x = "Time")
+  if (useTimePoint) {
+    ## Compute the number of breaks for the time scale.
+    ## If there are less than 3 time points use the number of time points.
+    ## Otherwise use 3.
+    nBr <- min(length(unique(modDat[["timePoint"]])), 3)
+    ## Format the time scale to Month + day.
+    p <- p + ggplot2::scale_x_datetime(breaks = prettier(n = nBr),
+                                       labels = scales::date_format("%B %d"))
+  }
+  ## Calculate the total number of plots.
+  nPlots <- length(unique(modDat[["plotId"]]))
+  ## 25 Plots per page.
+  nPag <- ceiling(nPlots / 25)
+  if (nPlots >= 25) {
+    ## More than 25 plots.
+    ## For identical layout on all pages use 5 x 5 plots throughout.
+    #rowPag <- colPag <- rep(x = 5, times = nPag)
+
+    # 28-7-2020. ggforce has a bug that prevents this identical layout
+    # https://github.com/thomasp85/ggforce/issues/201
+    # When fixed the code above can be reactivated and the three lines below
+    # removed.
+    plotsLastPag <- nPlots %% 25
+    rowPag <- c(rep(x = 5, times = nPag - 1), min(plotsLastPag %/% 5 + 1, 5))
+    colPag <- c(rep(x = 5, times = nPag - 1),
+                ifelse(plotsLastPag >= 5, 5, plotsLastPag))
+  } else {
+    ## Less than 25 plots.
+    ## Fill page by row of 5 plots.
+    plotsPag <- nPlots %% 25
+    rowPag <- min(plotsPag %/% 5 + 1, 5)
+    colPag <- ifelse(plotsPag >= 5, 5, plotsPag)
+  }
+  ## Build pages of plots.
+  pPag <- vector(mode = "list", length = nPag)
+  for (i in 1:nPag) {
+    pPag[[i]] <- p +
+      ggforce::facet_wrap_paginate(facets = "plotId", nrow = rowPag[i],
+                                   ncol = colPag[i], page = i)
+    if (output) {
+      suppressMessages(plot(pPag[[i]]))
+    }
+  }
+  invisible(pPag)
+
+}
+
