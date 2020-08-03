@@ -109,8 +109,8 @@ fitSpline <- function(corrDat,
       coeff$type <- row.names(coeff)
       ## Restrict dense grid to points within observation range.
       timeRangePl <- timeRange[timeRange[["timeNumber"]] >= min(dat[["timeNumber"]]) &
-                               timeRange[["timeNumber"]] <= max(dat[["timeNumber"]]),
-                             , drop = FALSE]
+                                 timeRange[["timeNumber"]] <= max(dat[["timeNumber"]]),
+                               , drop = FALSE]
       ## Predictions on a dense grid.
       yPred <- predict(obj, newdata = timeRangePl)
       yDeriv <- gratia::derivatives(obj, newdata = timeRangePl,
@@ -155,9 +155,12 @@ fitSpline <- function(corrDat,
 #' @export
 plot.HTPSpline <- function(x,
                            ...,
+                           plotType = c("predictions", "derivatives"),
                            genotypes = NULL,
                            plotIds = NULL,
                            output = TRUE) {
+  plotType <- match.arg(plotType)
+  plotVar <- if (plotType == "predictions") "pred.value" else "deriv"
   modDat <- attr(x, which = "modDat")
   trait <- attr(x, which = "trait")
   useTimePoint <- attr(x, which = "useTimePoint")
@@ -185,10 +188,15 @@ plot.HTPSpline <- function(x,
   }
   timeVar <- if (useTimePoint) "timePoint" else "timeNumber"
   p <- ggplot(modDat, aes_string(x = timeVar, y = trait)) +
-    geom_point(na.rm = TRUE) +
     geom_line(data = predDat,
-              aes_string(x = timeVar, y = "pred.value"), col = "blue") +
-    labs(title = "Corrected data and Pspline prediction", y = trait, x = "Time")
+              aes_string(x = timeVar, y = plotVar), col = "blue") +
+    labs(y = trait, x = timeVar)
+  if (plotType == "predictions") {
+    p <- p + geom_point(na.rm = TRUE) +
+      ggtitle("Corrected data and Pspline prediction")
+  } else {
+    p <- p + ggtitle("Pspline first derivatives")
+  }
   if (useTimePoint) {
     ## Compute the number of breaks for the time scale.
     ## If there are less than 3 time points use the number of time points.

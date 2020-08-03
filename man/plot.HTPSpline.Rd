@@ -4,13 +4,23 @@
 \alias{plot.HTPSpline}
 \title{Plot the results of a fitted spline.}
 \usage{
-\method{plot}{HTPSpline}(x, ..., genotypes = NULL, plotIds = NULL, output = TRUE)
+\method{plot}{HTPSpline}(
+  x,
+  ...,
+  plotType = c("predictions", "derivatives"),
+  genotypes = NULL,
+  plotIds = NULL,
+  output = TRUE
+)
 }
 \arguments{
 \item{x}{An object of class HTPSpline.}
 
 \item{...}{Extra plot options. Described per plotType in their respective
 section.}
+
+\item{plotType}{A single character string indicating which plot should be
+made. See the sections below for a detailed explanation of the plots.}
 
 \item{output}{Should the plot be output to the current device? If
 \code{FALSE} only a list of ggplot objects is invisibly returned. Ignored if
