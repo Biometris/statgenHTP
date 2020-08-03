@@ -113,8 +113,12 @@ fitSpline <- function(corrDat,
                              , drop = FALSE]
       ## Predictions on a dense grid.
       yPred <- predict(obj, newdata = timeRangePl)
+      yDeriv <- gratia::derivatives(obj, newdata = timeRangePl,
+                                    eps = 1e-7 * timeNumRange[1])
       ## Merge time, predictions and plotId.
-      predDat <- data.frame(timeRangePl, pred.value = yPred, plotId = plant)
+      predDat <- data.frame(timeRangePl, pred.value = yPred,
+                            deriv = yDeriv[["derivative"]],
+                            plotId = plant)
       return(list(coeff, predDat))
     } else {
       return(list(coeff = NULL, predDat = NULL))
@@ -133,7 +137,6 @@ fitSpline <- function(corrDat,
   ## Add genotype.
   predTot[["genotype"]] <- plantGeno[match(predTot[["plotId"]],
                                            plantGeno[["plotId"]]), "genotype"]
-
   ## Create output.
   res <- structure(list(coefDat = coefTot, predDat = predTot),
                    modDat = corrDat,
@@ -230,6 +233,5 @@ plot.HTPSpline <- function(x,
     }
   }
   invisible(pPag)
-
 }
 
