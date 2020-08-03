@@ -5,12 +5,18 @@
 #' @param corrDat A data.frame with corrected spatial data.
 #' @param trait A character string indicating the trait for which the spline
 #' should be fitted.
+#' @param genotypes A character vector indicating the genotypes for which
+#' splines are fitted. If \code{NULL}, splines will be fitted for all genotypes.
+#' @param plotIds A character vector indicating the plotIds for which splines
+#' are fitted. If \code{NULL}, splines will be fitted for all plotIds.
 #' @param knots The number of knots to use when fitting the spline.
 #' @param perMinTP The percentage of minimum number of time points to use.
 #'
 #' @export
 fitSpline <- function(corrDat,
                       trait,
+                      genotypes = NULL,
+                      plotIds = NULL,
                       knots = 50,
                       perMinTP = 0.8) {
   ## Checks.
@@ -24,6 +30,14 @@ fitSpline <- function(corrDat,
   if (!all(hasName(x = corrDat, name = corrCols))) {
     stop("corrDat should at least contain the following columns: ",
          paste(corrCols, collapse = ", "))
+  }
+  if (!is.null(genotypes) &&
+      (!is.character(genotypes) && !all(genotypes %in% corrDat[["genotype"]]))) {
+    stop("genotypes should be a character vector of genotypes in corrDat.\n")
+  }
+  if (!is.null(plotIds) &&
+      (!is.character(plotIds) && !all(plotIds %in% corrDat[["genotype"]]))) {
+    stop("plotIds should be a character vector of plotIds in corrDat.\n")
   }
   if (!is.numeric(knots) || length(knots) > 1 || knots < 0) {
     stop("knots should be a positive numerical value.\n")
@@ -42,6 +56,18 @@ fitSpline <- function(corrDat,
            "timePoint.\n")
     }
   }
+  ## Restrict corrDat to selected genotypes and plotIds.
+  if (!is.null(genotypes)) {
+    corrDat <- corrDat[corrDat[["genotype"]] %in% genotypes, ]
+  }
+  if (!is.null(plotIds)) {
+    corrDat <- corrDat[corrDat[["plotId"]] %in% plotIds, ]
+  }
+  if (nrow(corrDat) == 0) {
+    stop("At least one valid combination of genotype and plotId should be ",
+         "selected.\n")
+  }
+  corrDat <- droplevels(corrDat)
   ## Create data.frame with plants and genotypes for adding genotype to results.
   plantGeno <- unique(corrDat[c("plotId", "genotype")])
   ## Determine minimum number of time points required.

@@ -4,13 +4,26 @@
 \alias{fitSpline}
 \title{Fit Splines}
 \usage{
-fitSpline(corrDat, trait, knots = 50, perMinTP = 0.8)
+fitSpline(
+  corrDat,
+  trait,
+  genotypes = NULL,
+  plotIds = NULL,
+  knots = 50,
+  perMinTP = 0.8
+)
 }
 \arguments{
 \item{corrDat}{A data.frame with corrected spatial data.}
 
 \item{trait}{A character string indicating the trait for which the spline
 should be fitted.}
+
+\item{genotypes}{A character vector indicating the genotypes for which
+splines are fitted. If \code{NULL}, splines will be fitted for all genotypes.}
+
+\item{plotIds}{A character vector indicating the plotIds for which splines
+are fitted. If \code{NULL}, splines will be fitted for all plotIds.}
 
 \item{knots}{The number of knots to use when fitting the spline.}
 
