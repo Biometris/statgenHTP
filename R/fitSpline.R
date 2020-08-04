@@ -17,6 +17,8 @@ fitSpline <- function(corrDat,
                       trait,
                       genotypes = NULL,
                       plotIds = NULL,
+                      useTimeNumber = FALSE,
+                      timeNumber = NULL,
                       knots = 50,
                       perMinTP = 0.8) {
   ## Checks.
@@ -26,7 +28,12 @@ fitSpline <- function(corrDat,
   if (!inherits(corrDat, "data.frame")) {
     stop("corrDat should be a data.frame.\n")
   }
-  corrCols <- c("plotId", "genotype", trait)
+  if (useTimeNumber && (is.null(timeNumber) || !is.character(timeNumber) ||
+                        length(timeNumber) > 1)) {
+    stop("timeNumber should be a character string of length 1.\n")
+  }
+  corrCols <- c("plotId", "genotype", trait,
+                if (useTimeNumber) timeNumber else "timePoint")
   if (!all(hasName(x = corrDat, name = corrCols))) {
     stop("corrDat should at least contain the following columns: ",
          paste(corrCols, collapse = ", "))
@@ -46,15 +53,13 @@ fitSpline <- function(corrDat,
       perMinTP > 1) {
     stop("perMinTP should be a numerical value between 0 and 1.\n")
   }
-  useTimePoint <- FALSE
-  if (!hasName(x = corrDat, name = "timeNumber")) {
-    if (hasName(x = corrDat, name = "timePoint")) {
-      useTimePoint <- TRUE
-      corrDat[["timeNumber"]] <- as.numeric(corrDat[["timePoint"]])
-    } else {
-      stop("corrDat should contain at least one of the colums timeNumber and ",
-           "timePoint.\n")
+  if (!useTimeNumber) {
+    corrDat[["timeNumber"]] <- as.numeric(corrDat[["timePoint"]])
+  } else {
+    if (!is.numeric(corrDat[["timeNumber"]])) {
+      stop("timeNumber should be a numerical column.\n")
     }
+    corrDat[["timeNumber"]] <- corrDat[[timeNumber]]
   }
   ## Restrict corrDat to selected genotypes and plotIds.
   if (!is.null(genotypes)) {
@@ -141,7 +146,7 @@ fitSpline <- function(corrDat,
   res <- structure(list(coefDat = coefTot, predDat = predTot),
                    modDat = corrDat,
                    trait = trait,
-                   useTimePoint = useTimePoint,
+                   useTimeNumber = useTimeNumber,
                    class = c("HTPSpline", "list"))
   return(res)
 }
@@ -163,7 +168,7 @@ plot.HTPSpline <- function(x,
   plotVar <- if (plotType == "predictions") "pred.value" else "deriv"
   modDat <- attr(x, which = "modDat")
   trait <- attr(x, which = "trait")
-  useTimePoint <- attr(x, which = "useTimePoint")
+  useTimeNumber <- attr(x, which = "useTimeNumber")
   predDat <- x$predDat
   if (!is.null(genotypes) &&
       (!is.character(genotypes) && !all(genotypes %in% predDat[["genotype"]]))) {
@@ -186,7 +191,7 @@ plot.HTPSpline <- function(x,
     stop("At least one valid combination of genotype and plotId should be ",
          "selected.\n")
   }
-  timeVar <- if (useTimePoint) "timePoint" else "timeNumber"
+  timeVar <- if (useTimeNumber) "timeNumber" else "timePoint"
   p <- ggplot(modDat, aes_string(x = timeVar, y = trait)) +
     geom_line(data = predDat,
               aes_string(x = timeVar, y = plotVar), col = "blue") +
@@ -197,7 +202,7 @@ plot.HTPSpline <- function(x,
   } else {
     p <- p + ggtitle("Pspline first derivatives")
   }
-  if (useTimePoint) {
+  if (!useTimeNumber) {
     ## Compute the number of breaks for the time scale.
     ## If there are less than 3 time points use the number of time points.
     ## Otherwise use 3.

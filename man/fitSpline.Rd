@@ -9,6 +9,8 @@ fitSpline(
   trait,
   genotypes = NULL,
   plotIds = NULL,
+  useTimeNumber = FALSE,
+  timeNumber = NULL,
   knots = 50,
   perMinTP = 0.8
 )
