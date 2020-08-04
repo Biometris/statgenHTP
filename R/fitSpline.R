@@ -17,11 +17,13 @@ fitSpline <- function(corrDat,
                       trait,
                       genotypes = NULL,
                       plotIds = NULL,
+                      fitLevel = c("plotId", "genotype"),
                       useTimeNumber = FALSE,
                       timeNumber = NULL,
                       knots = 50,
                       perMinTP = 0.8) {
   ## Checks.
+  fitLevel <- match.arg(fitLevel)
   if (!is.character(trait) || length(trait) > 1) {
     stop("trait should be a character string of length 1.\n")
   }
@@ -32,7 +34,7 @@ fitSpline <- function(corrDat,
                         length(timeNumber) > 1)) {
     stop("timeNumber should be a character string of length 1.\n")
   }
-  corrCols <- c("plotId", "genotype", trait,
+  corrCols <- c("genotype", trait, if (fitLevel == "plotId") "plotId",
                 if (useTimeNumber) timeNumber else "timePoint")
   if (!all(hasName(x = corrDat, name = corrCols))) {
     stop("corrDat should at least contain the following columns: ",
@@ -71,6 +73,11 @@ fitSpline <- function(corrDat,
   if (nrow(corrDat) == 0) {
     stop("At least one valid combination of genotype and plotId should be ",
          "selected.\n")
+  }
+  if (fitLevel == "genotype") {
+    ## If fitting at a genotype level set plotId to genotype.
+    ## This way all further code can remain intact.
+    corrDat[["plotId"]] <- corrDat[["genotype"]]
   }
   corrDat <- droplevels(corrDat)
   ## Create data.frame with plants and genotypes for adding genotype to results.
@@ -142,11 +149,17 @@ fitSpline <- function(corrDat,
   ## Add genotype.
   predTot[["genotype"]] <- plantGeno[match(predTot[["plotId"]],
                                            plantGeno[["plotId"]]), "genotype"]
+  if (fitLevel == "genotype") {
+    ## Remove plotId (duplicated genotype) from output.
+    coefTot[["plotId"]] <- NULL
+    predTot[["plotId"]] <- NULL
+  }
   ## Create output.
   res <- structure(list(coefDat = coefTot, predDat = predTot),
                    modDat = corrDat,
                    trait = trait,
                    useTimeNumber = useTimeNumber,
+                   fitLevel = fitLevel,
                    class = c("HTPSpline", "list"))
   return(res)
 }
@@ -168,6 +181,7 @@ plot.HTPSpline <- function(x,
   plotVar <- if (plotType == "predictions") "pred.value" else "deriv"
   modDat <- attr(x, which = "modDat")
   trait <- attr(x, which = "trait")
+  fitLevel <- attr(x, which = "fitLevel")
   useTimeNumber <- attr(x, which = "useTimeNumber")
   predDat <- x$predDat
   if (!is.null(genotypes) &&
@@ -212,7 +226,7 @@ plot.HTPSpline <- function(x,
                                        labels = scales::date_format("%B %d"))
   }
   ## Calculate the total number of plots.
-  nPlots <- length(unique(modDat[["plotId"]]))
+  nPlots <- length(unique(modDat[[fitLevel]]))
   ## 25 Plots per page.
   nPag <- ceiling(nPlots / 25)
   if (nPlots >= 25) {
@@ -239,7 +253,7 @@ plot.HTPSpline <- function(x,
   pPag <- vector(mode = "list", length = nPag)
   for (i in 1:nPag) {
     pPag[[i]] <- p +
-      ggforce::facet_wrap_paginate(facets = "plotId", nrow = rowPag[i],
+      ggforce::facet_wrap_paginate(facets = fitLevel, nrow = rowPag[i],
                                    ncol = colPag[i], page = i)
     if (output) {
       suppressMessages(plot(pPag[[i]]))
@@ -280,6 +294,7 @@ estimateSplineParameters <- function(HTPSpline,
   what <- match.arg(what)
   estVar <- if (estimate == "predictions") "pred.value" else "deriv"
   useTimeNumber <- attr(HTPSpline, which = "useTimeNumber")
+  fitLevel <- attr(HTPSpline, which = "fitLevel")
   predDat <- HTPSpline$predDat
   if (!is.null(genotypes) &&
       (!is.character(genotypes) && !all(genotypes %in% predDat[["genotype"]]))) {
@@ -322,7 +337,9 @@ estimateSplineParameters <- function(HTPSpline,
   predDat <- predDat[predDat[[timeVar]] >= timeMin &
                        predDat[[timeVar]] <= timeMax, ]
   ## Get estimates.
-  res <- aggregate(x = predDat[[estVar]], by = predDat[c("genotype", "plotId")],
+  res <- aggregate(x = predDat[[estVar]],
+                   by = predDat[c("genotype",
+                                  if (fitLevel == "plotId") "plotId")],
                    FUN = what)
   return(res)
 }
