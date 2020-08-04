@@ -56,7 +56,7 @@ fitSpline <- function(corrDat,
   if (!useTimeNumber) {
     corrDat[["timeNumber"]] <- as.numeric(corrDat[["timePoint"]])
   } else {
-    if (!is.numeric(corrDat[["timeNumber"]])) {
+    if (!is.numeric(corrDat[[timeNumber]])) {
       stop("timeNumber should be a numerical column.\n")
     }
     corrDat[["timeNumber"]] <- corrDat[[timeNumber]]
