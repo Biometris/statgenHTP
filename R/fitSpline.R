@@ -248,3 +248,81 @@ plot.HTPSpline <- function(x,
   invisible(pPag)
 }
 
+#' Extract estimates from fitted splines.
+#'
+#' Function for extracting parameter estimates from fitted splines on a
+#' specified interval.
+#'
+#' @param HTPSpline An object of class HTPSpline, the output of the
+#' \code{\link[fitSpline]} function.
+#' @param estimate The type of estimate that should be extracted.
+#' @param what The type of estimate that should be extracted.
+#' @param timeMin The lower bound of the time interval from which the
+#' estimates should be extracted. If \code{NULL} the smallest time value for
+#' which the splines were fitted is used.
+#' @param timeMax The upper bound of the time interval from which the
+#' estimates should be extracted. If \code{NULL} the largest time value for
+#' which the splines were fitted is used.
+#' @param genotypes A character vector indicating the genotypes for which
+#' splines are fitted. If \code{NULL}, splines will be fitted for all genotypes.
+#' @param plotIds A character vector indicating the plotIds for which splines
+#' are fitted. If \code{NULL}, splines will be fitted for all plotIds.
+#'
+#' @export
+estimateSplineParameters <- function(HTPSpline,
+                                     estimate = c("predictions", "derivatives"),
+                                     what = c("min", "max", "mean"),
+                                     timeMin = NULL,
+                                     timeMax = NULL,
+                                     genotypes = NULL,
+                                     plotIds = NULL) {
+  estimate <- match.arg(estimate)
+  what <- match.arg(what)
+  estVar <- if (estimate == "predictions") "pred.value" else "deriv"
+  useTimeNumber <- attr(HTPSpline, which = "useTimeNumber")
+  predDat <- HTPSpline$predDat
+  if (!is.null(genotypes) &&
+      (!is.character(genotypes) && !all(genotypes %in% predDat[["genotype"]]))) {
+    stop("genotypes should be a character vector of genotypes in predDat.\n")
+  }
+  if (!is.null(plotIds) &&
+      (!is.character(plotIds) && !all(plotIds %in% predDat[["genotype"]]))) {
+    stop("plotIds should be a character vector of plotIds in predDat.\n")
+  }
+  ## Restrict predDat to selected genotypes and plotIds.
+  if (!is.null(genotypes)) {
+    predDat <- predDat[predDat[["genotype"]] %in% genotypes, ]
+  }
+  if (!is.null(plotIds)) {
+    predDat <- predDat[predDat[["plotId"]] %in% plotIds, ]
+  }
+  if (nrow(predDat) == 0) {
+    stop("At least one valid combination of genotype and plotId should be ",
+         "selected.\n")
+  }
+  timeVar <- if (useTimeNumber) "timeNumber" else "timePoint"
+  if (is.null(timeMin)) {
+    timeMin <- min(predDat[[timeVar]])
+  } else {
+    if (timeMin < min(predDat[[timeVar]]) || timeMin > max(predDat[[timeVar]])) {
+      stop("timeMin should be within the time interval in the data.\n")
+    }
+  }
+  if (is.null(timeMax)) {
+    timeMax <- max(predDat[[timeVar]])
+  } else {
+    if (timeMax < min(predDat[[timeVar]]) || timeMax > max(predDat[[timeVar]])) {
+      stop("timeMax should be within the time interval in the data.\n")
+    }
+  }
+  if (timeMin >= timeMax) {
+    stop("timeMax should be larger than timeMin.\n")
+  }
+  ## Restrict predDat to time interval.
+  predDat <- predDat[predDat[[timeVar]] >= timeMin &
+                       predDat[[timeVar]] <= timeMax, ]
+  ## Get estimates.
+  res <- aggregate(x = predDat[[estVar]], by = predDat[c("genotype", "plotId")],
+                   FUN = what)
+  return(res)
+}
