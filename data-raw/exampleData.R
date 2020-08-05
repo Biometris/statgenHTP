@@ -1,5 +1,7 @@
 ## Create data for vignette.
 
+####### 1. Phenovator data set
+#### 1.1 Raw data
 # Read raw data.
 PhenovatorDat1 <- read.csv(system.file("extdata", "Phenovator_Data_Example1.csv",
                                        package = "statgenHTP"))
@@ -13,7 +15,16 @@ PhenovatorDat1 <- PhenovatorDat1[PhenovatorDat1$pos != "c1r54",]
 # Export to package
 usethis::use_data(PhenovatorDat1, overwrite = TRUE)
 
+#### 1.2. Corrected data - outliers removed
+# Read raw data.
+spatCorrVator <- read.csv(system.file("extdata", "PhenovatorDat1_corr_outPoint.csv",
+                                       package = "statgenHTP"))
+# Export to package
+usethis::use_data(spatCorrVator, overwrite = TRUE)
 
+
+####### 2. Phenoarch data set
+#### 2.1 Raw data
 # Read raw data.
 # PhenoarchDat1 <- read.csv(system.file("extdata", "Phenoarch_Data_ZA17.csv",
 #                                       package = "statgenHTP"))
@@ -25,6 +36,16 @@ PhenoarchDat1 <- read.csv(system.file("extdata", "Phenoarch_ZA17_extraVariables.
 usethis::use_data(PhenoarchDat1, overwrite = TRUE)
 
 
+#### 2.2. Corrected data - outliers removed
+# Read raw data.
+spatCorrArch <- read.csv(system.file("extdata", "PhenoarchDat1_corr_outPoint.csv",
+                                      package = "statgenHTP"))
+# Export to package
+usethis::use_data(spatCorrArch, overwrite = TRUE)
+
+
+####### 3. RootUCL data set
+#### 3.1 Raw data
 # Read raw data.
 RootDat1 <- read.csv(system.file("extdata", "Data_tipclean_format.csv",
                                       package = "statgenHTP"))
@@ -32,6 +53,14 @@ RootDat1 <- read.csv(system.file("extdata", "Data_tipclean_format.csv",
 RootDat1 <- RootDat1[RootDat1$Tank == "A",]
 # Export to package
 usethis::use_data(RootDat1, overwrite = TRUE)
+
+#### 3.2. not corrected data - outliers removed
+# Read raw data.
+noCorrRoot <- read.csv(system.file("extdata", "RootDat1_nocorr.csv",
+                                     package = "statgenHTP"))
+# Export to package
+usethis::use_data(noCorrRoot, overwrite = TRUE)
+
 
 
 ## Create data for testing.

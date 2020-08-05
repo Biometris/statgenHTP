@@ -255,12 +255,12 @@ plot(phenoTP,
 ```
 
 Raw data can be displayed per genotype. By default all genotypes are used but it can be restricted using `genotypes` and a subset of genotypes. By default, data are plotted as point but this can be changed by setting `plotLine = TRUE`.
-```{r rawVator, include=TRUE, fig.height=2, fig.width=6, fig.align = 'center'}
+```{r rawVator, include=TRUE, fig.height=3, fig.width=7, fig.align = 'center'}
 ## Create the raw data time courses for four genotypes.
 plot(phenoTP, 
      traits = "EffpsII",
      plotType = "raw",
-     genotypes = c("G1", "G2", "check1", "check2"))
+     genotypes = c("G1", "G2", "check1"))
 ```
 
 Boxplots can be made to get an idea of the total variability of the trait in the `TP` object.
@@ -336,7 +336,7 @@ plot(phenoTParch,
 
 Note that for the raw data, we can already use the geno.decomp option to split 
 the genotypes using the water scenario:
-```{r rawArch, include=TRUE, fig.height=2, fig.width=6, fig.align = 'center'}
+```{r rawArch, include=TRUE, fig.height=3, fig.width=7, fig.align = 'center'}
 plot(phenoTParch, 
      traits = "LA_Estimated",
      plotType = "raw",
@@ -357,15 +357,19 @@ rootTP <- createTimePoints(dat = RootDat1,
                            colNum = "Pos")
 summary(rootTP)
 ```
-The "rootTP" object just created is a `list` with xx items, one for each time points 
- in the original `data.frame` (called "RootDat1"). 
+This dataset is special, there is no common timepoint for all the platform, for example no date at which all plants were pictured. Instead, plants are constantly moving and pictures are taken every few minutes. Hence, each rows of the data frame has a unique time point. As a consequebce, the "rootTP" object just created is a `list` with 16275 items, one for each time points in the original `data.frame` (called "RootDat1"). 
 
-```{r rawRoot, include=TRUE, fig.height=2, fig.width=6, fig.align = 'center', eval=FALSE}
+```{r rawRoot, include=TRUE, fig.height=3, fig.width=7, fig.align = 'center', eval=FALSE}
 plot(rootTP, 
      traits = "tipPos_y",
      plotType = "raw",
-     genotypes = c("2", "8"))
+     genotypes = c("2","8","252"))
 ```
+
+<center>
+![rootRaw](figures/tipPosRaw.png){width=90%}
+</center>
+
 
 ----
 
