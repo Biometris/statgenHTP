@@ -17,13 +17,11 @@ fitSpline <- function(corrDat,
                       trait,
                       genotypes = NULL,
                       plotIds = NULL,
-                      fitLevel = c("plotId", "genotype"),
                       useTimeNumber = FALSE,
                       timeNumber = NULL,
                       knots = 50,
                       perMinTP = 0.8) {
   ## Checks.
-  fitLevel <- match.arg(fitLevel)
   if (!is.character(trait) || length(trait) > 1) {
     stop("trait should be a character string of length 1.\n")
   }
@@ -34,6 +32,7 @@ fitSpline <- function(corrDat,
                         length(timeNumber) > 1)) {
     stop("timeNumber should be a character string of length 1.\n")
   }
+  fitLevel <- if (hasName(x = corrDat, name = "plotId")) "plotId" else "genotype"
   corrCols <- c("genotype", trait, if (fitLevel == "plotId") "plotId",
                 if (useTimeNumber) timeNumber else "timePoint")
   if (!all(hasName(x = corrDat, name = corrCols))) {

@@ -9,7 +9,6 @@ fitSpline(
   trait,
   genotypes = NULL,
   plotIds = NULL,
-  fitLevel = c("plotId", "genotype"),
   useTimeNumber = FALSE,
   timeNumber = NULL,
   knots = 50,
