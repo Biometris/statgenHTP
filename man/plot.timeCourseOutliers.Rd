@@ -4,13 +4,17 @@
 \alias{plot.timeCourseOutliers}
 \title{plot.timeCourseOutliers}
 \usage{
-\method{plot}{timeCourseOutliers}(x, ..., title = NULL, output = TRUE)
+\method{plot}{timeCourseOutliers}(x, ..., genotypes = NULL, title = NULL, output = TRUE)
 }
 \arguments{
 \item{x}{An object of class timeCourseOutliers.}
 
 \item{...}{Extra plot options. Described per plotType in their respective
 section.}
+
+\item{genotypes}{A character vector indicating the genotypes for which to
+detect outliers. If \code{NULL}, outlier detection will be done for all
+genotypes.}
 
 \item{title}{A character string, the main title added to all plots in the
 output.}

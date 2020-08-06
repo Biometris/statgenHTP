@@ -193,16 +193,25 @@ detectTimeCourseOutliers <- function(corrDat,
 #' @export
 plot.timeCourseOutliers <- function(x,
                                     ...,
+                                    genotypes = NULL,
                                     title = NULL,
                                     output = TRUE) {
   thrCor <- attr(x = x, which = "thrCor")
   thrPca <- attr(x = x, which = "thrPca")
   trait <- attr(x = x, which = "trait")
   cormats <- attr(x = x, which = "cormats")
-  plantPcas <- attr(x = x, which = "plantPcas")
-  genoPreds <- attr(x = x, which = "genoPreds")
-  genoDats <- attr(x = x, which = "genoDats")
-  genotypes <- names(cormats)
+  if (!is.null(genotypes) &&
+      (!is.character(genotypes) || !all(genotypes %in% names(cormats)))) {
+    stop("genotypes should be a character vector of genotypes used for ",
+         "outlier detection.\n")
+  }
+  if (is.null(genotypes)) {
+    genotypes <- names(cormats)
+  }
+  cormats <- cormats[genotypes]
+  plantPcas <- attr(x = x, which = "plantPcas")[genotypes]
+  genoPreds <- attr(x = x, which = "genoPreds")[genotypes]
+  genoDats <- attr(x = x, which = "genoDats")[genotypes]
   ## Get minimum correlation. Cannot be higher than 0.8.
   minCor <- min(c(unlist(cormats, use.names = FALSE), 0.8), na.rm = TRUE)
   ## Compute the number of breaks for the time scale based on all plants.
