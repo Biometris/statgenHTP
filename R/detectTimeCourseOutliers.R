@@ -27,16 +27,13 @@
 #' @importFrom stats dist
 #'
 #' @export
-detectTimeCourseOutlier <- function(corrDat,
-                                    predDat,
-                                    coefDat,
-                                    trait,
-                                    genotypes = NULL,
-                                    thrCor = 0.9,
-                                    thrPca = 1,
-                                    title = NULL,
-                                    outFile = NULL,
-                                    outFileOpts = NULL) {
+detectTimeCourseOutliers <- function(corrDat,
+                                     predDat,
+                                     coefDat,
+                                     trait,
+                                     genotypes = NULL,
+                                     thrCor = 0.9,
+                                     thrPca = 1) {
   ## Checks.
   if (!is.character(trait) || length(trait) > 1) {
     stop("trait should be a character string of length 1.\n")
@@ -86,18 +83,6 @@ detectTimeCourseOutlier <- function(corrDat,
   }
   if (!is.numeric(thrPca) || length(thrPca) > 1 || thrPca < 0) {
     stop("thrPca should be a positive numerical value.\n")
-  }
-  if (!is.null(outFile)) {
-    ## Check if file exists and is writable.
-    chkFile(outFile, fileType = "pdf")
-    ## Add outFile to output file options.
-    outFileOpts <- c(list(file = outFile), outFileOpts)
-    tryCatch({
-      ## Open pdf.
-      do.call(pdf, args = outFileOpts)
-      ## Turn off device when exiting function.
-      on.exit(dev.off(), add = TRUE)
-    }, error = function(e) stop("Cannot open file", outFile, call. = FALSE))
   }
   ## Restrict corrDat, predDat and coefDat to genotypes.
   corrDat <- corrDat[corrDat[["genotype"]] %in% genotypes, ]
@@ -187,27 +172,57 @@ detectTimeCourseOutlier <- function(corrDat,
     annotatePlants <- with(annotatePlants,
                            annotatePlants[order(genotype, plotId), ])
   }
+  class(annotatePlants) <- c("timeCourseOutliers", class(annotatePlants))
+  attr(x = annotatePlants, which = "thrCor") <- thrCor
+  attr(x = annotatePlants, which = "thrPca") <- thrPca
+  attr(x = annotatePlants, which = "trait") <- trait
+  attr(x = annotatePlants, which = "cormats") <- cormats
+  attr(x = annotatePlants, which = "plantPcas") <- plantPcas
+  attr(x = annotatePlants, which = "genoPreds") <- genoPreds
+  attr(x = annotatePlants, which = "genoDats") <- genoDats
+  return(annotatePlants)
+}
+
+#' plot.timeCourseOutliers
+#'
+#' @inheritParams detectTimeCourseOutliers
+#' @inheritParams plot.TP
+#'
+#' @param x An object of class timeCourseOutliers.
+#'
+#' @export
+plot.timeCourseOutliers <- function(x,
+                                    ...,
+                                    title = NULL,
+                                    output = TRUE) {
+  thrCor <- attr(x = x, which = "thrCor")
+  thrPca <- attr(x = x, which = "thrPca")
+  trait <- attr(x = x, which = "trait")
+  cormats <- attr(x = x, which = "cormats")
+  plantPcas <- attr(x = x, which = "plantPcas")
+  genoPreds <- attr(x = x, which = "genoPreds")
+  genoDats <- attr(x = x, which = "genoDats")
+  genotypes <- names(cormats)
   ## Get minimum correlation. Cannot be higher than 0.8.
   minCor <- min(c(unlist(cormats, use.names = FALSE), 0.8), na.rm = TRUE)
   ## Compute the number of breaks for the time scale based on all plants.
   ## If there are less than 3 time points use the number of time points.
   ## Otherwise use 3.
-  useTimePoint <- hasName(x = predDat, name = "timePoint")
+  useTimePoint <- hasName(x = genoPreds[[1]], name = "timePoint")
   timeVar <- if (useTimePoint) "timePoint" else "timeNumber"
-  nBr <- min(length(unique(predDat[[timeVar]])), 3)
   ## Create plots.
-  for (geno in genotypes) {
+  p <- lapply(X = genotypes, FUN = function(genotype) {
     ## Create shape for plotting.
     ## Defaults to open circle.
-    plotShapes <- setNames(rep(1, times = ncol(plantDats[[geno]])),
-                           colnames(plantDats[[geno]]))
+    plotIds <- unique(genoPreds[[genotype]][["plotId"]])
+    plotShapes <- setNames(rep(1, times = length(plotIds)), plotIds)
     ## Annotated plants get a closed circle.
-    plotShapes[names(plotShapes) %in% annotatePlants[["plotId"]]] <- 19
+    plotShapes[names(plotShapes) %in% x[["plotId"]]] <- 19
     ## Plot of time course per genotype: corrected data + spline per plant.
-    kinetic <- ggplot(genoDats[[geno]], aes_string(x = timeVar, y = trait,
-                                                   color = "plotId")) +
+    kinetic <- ggplot(genoDats[[genotype]], aes_string(x = timeVar, y = trait,
+                                                       color = "plotId")) +
       geom_point(aes_string(shape = "plotId"), size = 2, na.rm = TRUE) +
-      geom_line(data = genoPreds[[geno]],
+      geom_line(data = genoPreds[[genotype]],
                 aes_string(y = "pred.value"), size = 0.5) +
       scale_shape_manual(values = plotShapes) +
       theme_light() +
@@ -216,12 +231,11 @@ detectTimeCourseOutlier <- function(corrDat,
     if (useTimePoint) {
       ## Format the time scale to Month + day.
       kinetic <- kinetic +
-        ggplot2::scale_x_datetime(breaks = prettier(n = nBr),
+        ggplot2::scale_x_datetime(breaks = prettier(n = 3),
                                   labels = scales::date_format("%B %d"))
     }
     ## Correlation plot.
-    ## maybe we need to adjust the scale limits per dataset).
-    correl <- ggplot(data = cormats[[geno]],
+    correl <- ggplot(data = cormats[[genotype]],
                      aes_string("Var2", "Var1", fill = "value")) +
       geom_tile(color = "white") +
       scale_fill_gradientn(colors = c("red", "white", "blue"),
@@ -242,19 +256,24 @@ detectTimeCourseOutlier <- function(corrDat,
             legend.position = "left") +
       labs(title = "Correl of coef", x = NULL, y = NULL)
     ## PCA biplot.
-    pcaplot <- factoextra::fviz_pca_var(plantPcas[[geno]])
+    pcaplot <- factoextra::fviz_pca_var(plantPcas[[genotype]])
     ## Arrange plots.
     lay <- rbind(c(1, 1), c(1, 1), c(1, 1), c(2, 3), c(2, 3))
     ## grid arrange always plots results.
-    titleGeno <- paste("Geno", geno,
+    titleGeno <- paste("Geno", genotype,
                        if (!is.null(title)) paste("-", title), "\n")
-    gridExtra::grid.arrange(kinetic, correl, pcaplot,
-                            layout_matrix = lay,
-                            top = grid::textGrob(label = titleGeno,
-                                                 gp = grid::gpar(fontsize = 15,
-                                                                 fontface = 2)))
-  }
-  return(annotatePlants)
+    pGeno <- gridExtra::arrangeGrob(kinetic, correl, pcaplot,
+                                    layout_matrix = lay,
+                                    top = grid::textGrob(label = titleGeno,
+                                                         gp = grid::gpar(fontsize = 15,
+                                                                         fontface = 2)))
+    if (output) {
+      grid::grid.newpage()
+      grid::grid.draw(pGeno)
+    }
+    return(pGeno)
+  })
+  invisible(p)
 }
 
 

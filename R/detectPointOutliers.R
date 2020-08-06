@@ -1,13 +1,4 @@
-#-------------------------------------------------------------------------------
-# Program: pointCleaning.R
-# Objective: detection of outlier points for time courses using a
-#            locfit smoothing and an interval of prediction
-# Author: I.Sanchez
-# Creation: 13/04/2018
-# Update  : 17/07/2020
-#-------------------------------------------------------------------------------
-
-#' FuncDetectPointOutlierLocFit
+#' detectPointOutliers
 #'
 #' Function to model each curve of a dataset using a local regression
 #'
@@ -87,14 +78,6 @@ detectPointOutliers <- function(TP,
   attr(plotPred, which = "trait") <- trait
   return(plotPred)
 }
-
-#------------------------------------------------------------------
-# Program: graphicalFunctions.R
-# Objective: graphical functions for lattice experiment data analysis
-# Author: I.Sanchez
-# Creation: 27/07/2016
-# Update: 17/07/2020
-#------------------------------------------------------------------
 
 #' plotDetectPointOutlierLocFit
 #'

@@ -267,7 +267,7 @@ plot.HTPSpline <- function(x,
 #' specified interval.
 #'
 #' @param HTPSpline An object of class HTPSpline, the output of the
-#' \code{\link[fitSpline]} function.
+#' \code{\link{fitSpline}} function.
 #' @param estimate The type of estimate that should be extracted.
 #' @param what The type of estimate that should be extracted.
 #' @param timeMin The lower bound of the time interval from which the

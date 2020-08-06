@@ -2,7 +2,7 @@
 % Please edit documentation in R/detectPointOutliers.R
 \name{detectPointOutliers}
 \alias{detectPointOutliers}
-\title{FuncDetectPointOutlierLocFit}
+\title{detectPointOutliers}
 \usage{
 detectPointOutliers(TP, trait, plotIds = NULL, confIntSize = 5, mylocfit = 0.5)
 }
