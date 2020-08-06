@@ -30,7 +30,10 @@ The detection procedure is applied to each trait individually without considerin
 
 Each time course is modelled by a nonparametric smoothing spline with a fixed number of 
 knots. This is a piecewise cubic polynomial (Eubank, 1999, Eilers et al. 2015) fitted with
-the ‘gam’ function of the R-package ‘mgcv’. The estimates of the spline coefficients are 
+the ‘gam’ function of the R-package ‘mgcv’. P-splines in generalized additive model (gam) 
+... optimization of the smoothing coeficient. Left nb of knots to select.
+
+The estimates of the spline coefficients are 
 then extracted per time course (typically per plant) and correlations between those 
 coefficient vectors are calculated to identify outlying time courses. 
 An outlying time course will have low correlation with the majority of the other time courses. 
@@ -46,58 +49,65 @@ This documents describes the procedures to detect outlying time course with exam
 
 # Illustration of the non-parametric smoothing associated with a PCA
 
-The function `fitSpline()` fits a p-spline per plant for the selected trait using the number of knots
+The function `fitSpline()` fits a p-spline per plant for the selected `trait` using the number of `knots`
 chosen by the user. In P-spline, the knots are equally spaced and their number can be large. The user should also chose an appropriate proportion of minimum number of time points that should be in the 
-dataset per plant. When a plant has less time point than the minimum, it will be skipped from the analysis.
-
+dataset per plant `perMinTP`. When a plant has less time point than the minimum, it will be skipped from the analysis.
 
 The functions are illustrated with the three example data sets. For more information about the data, see *Intro_HTP*.
 
 ## Example 1
 
-```{r fitSpline, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE, eval=FALSE}
-######### Phenovator dataset
-spatCorrVator <- read.csv("PhenovatorDat1_corr_outPoint.csv",
-                          stringsAsFactors = TRUE)
+Using the data corrected for spatial trends and removing time points outliers (see blablabla)
 
-spatCorrVator <- spatCorrVator[order(spatCorrVator$plotId,spatCorrVator$timePoint),]
-## Format the timepoint
+```{r fitSplineVator, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+data(spatCorrVator)  
+# Format the timepoint
 spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
-## Deal with numerical time
-spatCorrVator$timeNumber <- as.numeric(spatCorrVator$timePoint) #/60000
-#spatCorrVator$timeNumber <- spatCorrVator$timeNumber-(min(spatCorrVator$timeNumber)-1)
-
-## Run the function to fit spline using the mgcv package on a subset of genotypes
+# Run the function to fit p-spline using the mgcv package on a subset of genotypes
 subGeno <- c("G70","G160","G151","G179","G175","G4","G55")
-subcorrdat <- spatCorrVator[spatCorrVator$genotype %in% subGeno,]
-subcorrdat <- droplevels(subcorrdat)
-
-fit.spline <- fitSpline(corrDat = subcorrdat,
+#
+fit.spline <- fitSpline(corrDat = spatCorrVator,
                         trait = "EffpsII_corr",
+                        genotypes = subGeno,
                         knots = 50,
-                        perMinTP = 0.8,
-                        timeNumStep = 0.01)
-
+                        perMinTP = 0.8)
+# Extracting the tables of predicted values and pspline coeficients
 pred.Dat <- fit.spline$predDat
 coef.Dat <- fit.spline$coefDat
 row.names(coef.Dat) <- 1:nrow(coef.Dat)
 ```
 
 The object `fit.spline` contains the predicted value (`pred.value` in the table below), i.e the values predicted using the P-spline model coefficients. 
+prediction on denser grid: smallest gap between two time points / 9, so dividing the smallest gap in 10 segments.
+Also contains first derivative in column `deriv` **(see part XXX about Parameters estimation)**
 
-```{r headpredDat, echo=FALSE, message=FALSE, eval=FALSE}
+```{r headpredDat, echo=FALSE, message=FALSE, eval=TRUE}
 knitr::kable(head(pred.Dat), align=c('c','c'), booktabs = TRUE)
 ```
 
+We can visualise the p-spline prediction and first derivative for a subset of genotypes or for a subset of plant.
+
+```{r plotSpatRaw,  fig.height=4, fig.width=7, message=FALSE, eval=TRUE}
+plot(fit.spline,
+     genotypes = "G160")
+plot(fit.spline,
+     plotIds = "c10r29",
+     plotType =  "predictions")
+plot(fit.spline,
+     plotIds = "c10r29",
+     plotType =  "derivatives")
+```
+
+
 The object `fit.spline` also contains the values of the P-splines coefficients:
 
-```{r headcoefDat, echo=FALSE, message=FALSE, eval=FALSE}
+```{r headcoefDat, echo=FALSE, message=FALSE, eval=TRUE}
 knitr::kable(head(coef.Dat), align=c('c','c'), booktabs = TRUE)
 ```
 
-The coefficients are then used to tag suspect time courses with the function _detectOutliers()_. This function performs a PCA on the coefficients (from data frame `coef.Dat`) per `genotype` and tags the plants that have a coordinate on the second PC axis above a threshold (`thrPca`), see the lines 'reason = pc2' in the table below. The function also calculates the pairwise-correlation of the coefficients per genotype. Plants are tagged when the correlation is below a given threshold (`thrCor`), see the lines 'reason = mean corr' in the table below. 
+The coefficients are then used to tag suspect time courses with the function `detectOutliers()`. This function performs a PCA on the coefficients (from data frame `coef.Dat`) per `genotype` and tags the plants that have a coordinate on the second PC axis above a threshold (`thrPca`), see the lines 'reason = pc2' in the table below. The function also calculates the pairwise-correlation of the coefficients per genotype. Plants are tagged when the correlation is below a given threshold (`thrCor`), see the lines 'reason = mean corr' in the table below. 
 
-```{r OutVator, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE, eval=FALSE}
+```{r OutVator, echo=TRUE, message=FALSE, warning=FALSE, eval=FALSE}
 outVator <-
   detectTimeCourseOutlier(corrDat = spatCorrVator,
                           predDat = pred.Dat,
@@ -107,22 +117,101 @@ outVator <-
                           thrCor = 0.9,
                           thrPca = 1,
                           title = "Phenovator",
-                          outFile = "Phenovator_testOutliers.pdf")
+                          outFile = NULL) #"Phenovator_testOutliers.pdf"
 ```
 
 ```{r headOutPoint, echo=FALSE, message=FALSE, eval=FALSE}
-knitr::kable(head(out1), align=c('c','c'), booktabs = TRUE, row.names=F)
+knitr::kable(head(outVator), align=c('c','c'), booktabs = TRUE, row.names=F)
 ```
  
+When `outFile` is set as NULL, the plots are stored in the `outVator` object and can be visualised in the console.
 
+```{r plotOutVator, echo=TRUE, message=FALSE, warning=FALSE, eval=FALSE}
+plot(outVator)
+```
+
+
+### Illustration with nb of knots
+
+Number of knots:
+```{r fitSplineVatorKnots10, fig.height=3, fig.width=4, echo=TRUE, warning=FALSE, eval=TRUE}
+sp10k <- fitSpline(corrDat = spatCorrVator,
+                        trait = "EffpsII_corr",
+                        plotIds = "c10r29",
+                        knots = 10,
+                        perMinTP = 0.8)
+plot(sp10k)
+```
+
+
+```{r fitSplineVatorKnots50, fig.height=3, fig.width=4, echo=TRUE, warning=FALSE, eval=TRUE}
+sp50k <- fitSpline(corrDat = spatCorrVator,
+                        trait = "EffpsII_corr",
+                        plotIds = "c10r29",
+                        knots = 50,
+                        perMinTP = 0.8)
+plot(sp50k)
+```
 
 ## Example 2
+
+Using the data corrected for spatial trends and removing time points outliers (see blablabla)
+
+```{r fitSplineArch, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+data(spatCorrArch)  
+spatCorrArch$timePoint <- lubridate::as_datetime(spatCorrArch$timePoint)
+subGeno <- c("GenoA1","GenoA2","GenoA3","GenoA4","GenoB1","GenoB2","GenoB3")
+#
+fit.splineArch <- fitSpline(corrDat = spatCorrArch, 
+                            trait = "Biomass_Estimated_corr",
+                            genotypes = subGeno,
+                            knots = 15,
+                            perMinTP = 0.5)
+#
+pred.DatArch <- fit.splineArch$predDat
+coef.DatArch <- fit.splineArch$coefDat
+```
+
+```{r plotArch,  fig.height=4, fig.width=7, message=FALSE, eval=TRUE}
+plot(fit.splineArch,
+     genotypes = "GenoA1")
+plot(fit.splineArch,
+     plotIds = "c11r9",
+     plotType =  "predictions")
+plot(fit.splineArch,
+     plotIds = "c11r9",
+     plotType =  "derivatives")
+```
+
 
 
 
 ## Example 3
 
 
+# Extraction parameters from curve
+
+
+## Example 1
+
+```{r fitSplineVatorGeno, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE, eval=FALSE}
+# data(PhenovatorDat1_corr_outPoint)  
+spatPredVator <- read.csv("PhenovatorDat1_pred_outPoint.csv",
+                          stringsAsFactors = TRUE)
+
+## Run the function to fit p-spline using the mgcv package on a subset of genotypes
+subGeno <- c("G70","G160","G151","G179","G175","G4","G55")
+
+fit.spline <- fitSpline(corrDat = spatPredVator,
+                        trait = "EffpsII_corr",
+                        genotypes = subGeno,
+                        knots = 50,
+                        perMinTP = 0.8)
+
+pred.Dat <- fit.spline$predDat
+coef.Dat <- fit.spline$coefDat
+row.names(coef.Dat) <- 1:nrow(coef.Dat)
+```
 
 ----
 

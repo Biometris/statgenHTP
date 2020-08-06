@@ -120,7 +120,7 @@ In the models above, fixed effects are indicated in *italics* whereas random eff
 
 ### Calling SpATS
 
-Using the `TP` object "phenoTP" from the previous section, a model for a few time points 
+Using the `TP` object "phenoTPOut" from the previous section, a model for a few time points 
 and trait "EffpsII" can now be fitted on the data as follows. Since `engine` is not supplied 
 as an option, SpATS is used for fitting the following model:  
 EffpsII = **genotype** + **rowId** + **colId** + **$\epsilon$**
