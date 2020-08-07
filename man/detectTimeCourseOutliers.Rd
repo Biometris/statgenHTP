@@ -10,6 +10,7 @@ detectTimeCourseOutliers(
   coefDat,
   trait,
   genotypes = NULL,
+  geno.decomp = NULL,
   thrCor = 0.9,
   thrPca = 1
 )
@@ -27,6 +28,9 @@ outliers.}
 \item{genotypes}{A character vector indicating the genotypes for which to
 detect outliers. If \code{NULL}, outlier detection will be done for all
 genotypes.}
+
+\item{geno.decomp}{A character vector indicating the variables to use to
+group the genotypic variance in the model.}
 
 \item{thrCor}{A numerical value used as threshold for determining outliers
 based on correlation between plots.}

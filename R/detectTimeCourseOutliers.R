@@ -10,6 +10,8 @@
 #' @param genotypes A character vector indicating the genotypes for which to
 #' detect outliers. If \code{NULL}, outlier detection will be done for all
 #' genotypes.
+#' @param geno.decomp A character vector indicating the variables to use to
+#' group the genotypic variance in the model.
 #' @param thrCor A numerical value used as threshold for determining outliers
 #' based on correlation between plots.
 #' @param thrPca A numerical value used as threshold for determining outliers
@@ -32,6 +34,7 @@ detectTimeCourseOutliers <- function(corrDat,
                                      coefDat,
                                      trait,
                                      genotypes = NULL,
+                                     geno.decomp = NULL,
                                      thrCor = 0.9,
                                      thrPca = 1) {
   ## Checks.
@@ -41,7 +44,7 @@ detectTimeCourseOutliers <- function(corrDat,
   if (!inherits(corrDat, "data.frame")) {
     stop("corrDat should be a data.frame.\n")
   }
-  corrCols <- c("plotId", "genotype", trait)
+  corrCols <- c("plotId", "genotype", trait, geno.decomp)
   if (!all(hasName(x = corrDat, name = corrCols))) {
     stop("corrDat should at least contain the following columns: ",
          paste(corrCols, collapse = ", "))
@@ -87,15 +90,26 @@ detectTimeCourseOutliers <- function(corrDat,
   ## Restrict corrDat, predDat and coefDat to genotypes.
   corrDat <- corrDat[corrDat[["genotype"]] %in% genotypes, ]
   ## Get corrected and predicted data per genotype.
-  genoPreds <- split(x = predDat, f = predDat[["genotype"]], drop = TRUE)
+  ## Merge geno.decomp to coefDat.
+  if (!is.null(geno.decomp)) {
+    predDat <- merge(predDat, unique(corrDat[c("plotId", geno.decomp)]))
+  }
+  genoPreds <- split(x = predDat,
+                     f = predDat[c("genotype", geno.decomp)], drop = TRUE)
   ## Restrict to corrected plots that are also in predictions.
   ## Some plots are removed while predicting the splines.
   corrDatPred <- corrDat[corrDat[["plotId"]] %in% predDat[["plotId"]], ]
-  genoDats <- split(x = corrDatPred, f = corrDatPred[["genotype"]], drop = TRUE)
+  genoDats <- split(x = corrDatPred,
+                    f = corrDatPred[c("genotype", geno.decomp)], drop = TRUE)
   ## Reshape the spline coeficients per plant x geno.
   ## First restrict to selected genotypes.
   coefDat <- coefDat[coefDat[["genotype"]] %in% genotypes, ]
-  plantDats <- lapply(X = split(x = coefDat, f = coefDat[["genotype"]],
+  ## Merge geno.decomp to coefDat.
+  if (!is.null(geno.decomp)) {
+    coefDat <- merge(coefDat, unique(corrDatPred[c("plotId", geno.decomp)]))
+  }
+  plantDats <- lapply(X = split(x = coefDat,
+                                f = coefDat[c("genotype", geno.decomp)],
                                 drop = TRUE),
                       FUN = function(dat) {
                         plantDat <- reshape2::acast(dat, formula = type ~ plotId,
@@ -126,7 +140,7 @@ detectTimeCourseOutliers <- function(corrDat,
       return(NULL)
     }
   })
-  annotatePlantsCor <- lapply(X = genotypes, FUN = function(geno) {
+  annotatePlantsCor <- lapply(X = names(cormats), FUN = function(geno) {
     if (!is.null(cormats[[geno]])) {
       meanCor <- rowMeans(cormats[[geno]], na.rm = TRUE)
     } else {
@@ -136,8 +150,8 @@ detectTimeCourseOutliers <- function(corrDat,
       ## Create data.frame with info on plants with average correlation
       ## below threshold.
       annPlotsCorr <- meanCor[meanCor < thrCor]
-      return(data.frame(genotype = geno, plotId = names(annPlotsCorr),
-                        reason = "mean corr", value = annPlotsCorr))
+      return(data.frame(plotId = names(annPlotsCorr), reason = "mean corr",
+                        value = annPlotsCorr))
     } else {
       return(NULL)
     }
@@ -148,7 +162,7 @@ detectTimeCourseOutliers <- function(corrDat,
     ## Melt to format used by ggplot.
     meltedCormat <- reshape2::melt(cormat, na.rm = TRUE)
   })
-  annotatePlantsPca <- lapply(X = genotypes, FUN = function(geno) {
+  annotatePlantsPca <- lapply(X = names(plantPcas), FUN = function(geno) {
     ## Calculate the pairwise difference of coordinates on the 2nd axis and
     ## annotate plant with average diff larger than threshold.
     diffPc2 <- as.matrix(dist(plantPcas[[geno]]$rotation[, "PC2"]))
@@ -159,22 +173,33 @@ detectTimeCourseOutliers <- function(corrDat,
       ## Create data.frame with info on plants with avarage difference.
       ## above threshold.
       annPlotsPc2 <- meanPc2[meanPc2 >= thrPca]
-      return(data.frame(genotype = geno, plotId = names(annPlotsPc2),
-                        reason = "pc2", value = annPlotsPc2))
+      return(data.frame(plotId = names(annPlotsPc2), reason = "pc2",
+                        value = annPlotsPc2))
     } else {
       return(NULL)
     }
   })
   ## Create full data.frame with annotated plants.
   annotatePlants <- do.call(rbind, c(annotatePlantsCor, annotatePlantsPca))
-  ## Order by genotype and plotId.
+  ## Merge genotype and geno.decomp to annotated plants.
+  annotatePlants <- merge(unique(corrDatPred[c("genotype", geno.decomp, "plotId")]),
+                          annotatePlants)
   if (!is.null(annotatePlants)) {
-    annotatePlants <- with(annotatePlants,
-                           annotatePlants[order(genotype, plotId), ])
+    plotInfo <- unique(corrDatPred[c("genotype", geno.decomp)])
+    ## Order by genotype, geno.decomp and plotId.
+    if (!is.null(geno.decomp)) {
+      annOrd <- order(annotatePlants[["genotype"]],
+                      annotatePlants[[geno.decomp]], annotatePlants[["plotId"]])
+    } else {
+      annOrd <- order(annotatePlants[["genotype"]], annotatePlants[["plotId"]])
+    }
+    annotatePlants <- annotatePlants[annOrd, ]
     class(annotatePlants) <- c("timeCourseOutliers", class(annotatePlants))
     attr(x = annotatePlants, which = "thrCor") <- thrCor
     attr(x = annotatePlants, which = "thrPca") <- thrPca
     attr(x = annotatePlants, which = "trait") <- trait
+    attr(x = annotatePlants, which = "geno.decomp") <- geno.decomp
+    attr(x = annotatePlants, which = "plotInfo") <- plotInfo
     attr(x = annotatePlants, which = "cormats") <- cormats
     attr(x = annotatePlants, which = "plantPcas") <- plantPcas
     attr(x = annotatePlants, which = "genoPreds") <- genoPreds
@@ -199,16 +224,21 @@ plot.timeCourseOutliers <- function(x,
   thrCor <- attr(x = x, which = "thrCor")
   thrPca <- attr(x = x, which = "thrPca")
   trait <- attr(x = x, which = "trait")
-  cormats <- attr(x = x, which = "cormats")
-  if (!is.null(genotypes) &&
-      (!is.character(genotypes) || !all(genotypes %in% names(cormats)))) {
+  geno.decomp <- attr(x = x, which = "geno.decomp")
+  plotInfo <- attr(x = x, which = "plotInfo")
+  if (!is.null(genotypes) && (!is.character(genotypes) ||
+                              !all(genotypes %in% plotInfo[["genotype"]]))) {
     stop("genotypes should be a character vector of genotypes used for ",
          "outlier detection.\n")
   }
   if (is.null(genotypes)) {
-    genotypes <- names(cormats)
+    genotypes <- interaction(plotInfo[c("genotype", geno.decomp)])
+  } else {
+    genotypes <- interaction(plotInfo[plotInfo[["genotype"]] %in% genotypes,
+                                      c("genotype", geno.decomp)])
   }
-  cormats <- cormats[genotypes]
+  genotypes <- as.character(genotypes)
+  cormats <- cormats <- attr(x = x, which = "cormats")[genotypes]
   plantPcas <- attr(x = x, which = "plantPcas")[genotypes]
   genoPreds <- attr(x = x, which = "genoPreds")[genotypes]
   genoDats <- attr(x = x, which = "genoDats")[genotypes]
