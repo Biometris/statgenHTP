@@ -171,15 +171,15 @@ detectTimeCourseOutliers <- function(corrDat,
   if (!is.null(annotatePlants)) {
     annotatePlants <- with(annotatePlants,
                            annotatePlants[order(genotype, plotId), ])
+    class(annotatePlants) <- c("timeCourseOutliers", class(annotatePlants))
+    attr(x = annotatePlants, which = "thrCor") <- thrCor
+    attr(x = annotatePlants, which = "thrPca") <- thrPca
+    attr(x = annotatePlants, which = "trait") <- trait
+    attr(x = annotatePlants, which = "cormats") <- cormats
+    attr(x = annotatePlants, which = "plantPcas") <- plantPcas
+    attr(x = annotatePlants, which = "genoPreds") <- genoPreds
+    attr(x = annotatePlants, which = "genoDats") <- genoDats
   }
-  class(annotatePlants) <- c("timeCourseOutliers", class(annotatePlants))
-  attr(x = annotatePlants, which = "thrCor") <- thrCor
-  attr(x = annotatePlants, which = "thrPca") <- thrPca
-  attr(x = annotatePlants, which = "trait") <- trait
-  attr(x = annotatePlants, which = "cormats") <- cormats
-  attr(x = annotatePlants, which = "plantPcas") <- plantPcas
-  attr(x = annotatePlants, which = "genoPreds") <- genoPreds
-  attr(x = annotatePlants, which = "genoDats") <- genoDats
   return(annotatePlants)
 }
 
@@ -277,8 +277,7 @@ plot.timeCourseOutliers <- function(x,
                                                          gp = grid::gpar(fontsize = 15,
                                                                          fontface = 2)))
     if (output) {
-      grid::grid.newpage()
-      grid::grid.draw(pGeno)
+      gridExtra::grid.arrange(pGeno)
     }
     return(pGeno)
   })
