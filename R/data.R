@@ -39,7 +39,7 @@
 #' Greenhouse data for a maize experiment in the Phenoarch platform.
 #'
 #' A dataset containing greenhouse data from an experiment with maize in the
-#' Phenoarch platform (INRA, France, Cabrera-Bosquet et al. 2016). It consists of
+#' Phenoarch platform (INRAE, France, Cabrera-Bosquet et al. 2016). It consists of
 #' one experiment with 1671 plants grown in a greenhouse under two water scenarios,
 #' well-watered (WW) and water deficit (WD). There are two populations of genotypes,
 #' panel 1 and panel 2. Panel 1 contains 60 genotypes with 14 replicates: 7 in WW
@@ -48,18 +48,21 @@
 #' and 4 in WD. The studied trait is the leaf area extracted from the pictures over
 #' time. Plants were pictured every day for 35 days.
 #'
-#' @format A data.frame with 50,405 rows and 10 columns:
+#' @format A data.frame with 42,536 rows and 14 columns:
 #' \describe{
-#'   \item{geno}{Genotype}
-#'   \item{population}{Panel 1 or 2}
-#'   \item{Scenario}{Water regime}
-#'   \item{Rep}{Replicate}
-#'   \item{Line}{Line of conveyor belt (i.e. column coordinate)}
-#'   \item{Position}{Pot position on the conveyor belt (i.e. row coordinate)}
-#'   \item{Pot}{Unique pot ID}
-#'   \item{LA_Estimated}{Leaf area from the picture}
 #'   \item{Date}{Date of measurement}
 #'   \item{pos}{Unique pot using rowcol coordinate}
+#'   \item{geno}{Genotype}
+#'   \item{Scenario}{Water regime, WW or WD}
+#'   \item{population}{Panel 1 or 2}
+#'   \item{Row}{Pot position on the conveyor belt (i.e. row coordinate)}
+#'   \item{Col}{Line of conveyor belt (i.e. column coordinate)}
+#'   \item{Biomass_Estimated}{Biomass from the picture}
+#'   \item{LA_Estimated}{Leaf area from the picture}
+#'   \item{Height_Estimated}{Plant height from the picture}
+#'   \item{count_leaf}{Number of leaves manually scored}
+#'   \item{phyllocron}{Leaf emission rate}
+#'   \item{TT}{Thermal time cumulated from emergence}
 #' }
 #'
 #'
@@ -70,3 +73,36 @@
 #' New Phytologist 212 (1): 269-81.
 #' doi:10.1111/nph.14027.
 "PhenoarchDat1"
+
+
+
+#' Greenhouse data for an experiment in the RootPhAir platform.
+#'
+#' A dataset containing greenhouse data from two experiments in the RootPhAir
+#' platform (UCLouvain, France, ref). It consists of two experiments, each in two
+#' aeroponic tanks with a capacity of 495 plants each tank, located in the same
+#' greenhouse.
+#' with 1671 plants grown in a greenhouse in two tanks
+#' The studied traits are the root tip coordinates in y and x axis, extracted from the
+#' pictures over time. Plants were pictured every 2 hours for 10 days.
+#'
+#' @format A data.frame with 16,275 rows and 10 columns:
+#' \describe{
+#'   \item{Exp}{Experiment number}
+#'   \item{thermalTime}{Thermal time cumulated}
+#'   \item{Genotype}{Genotype}
+#'   \item{plantId}{Unique pot using tank and rowcol coordinate}
+#'   \item{Tank}{Tank A or B}
+#'   \item{Strip}{Number of strip of five plants (i.e. row coordinate)}
+#'   \item{Pos}{Position within th strip (i.e. column coordinate)}
+#'   \item{tipPos_x}{Position of the root tip in x axis}
+#'   \item{tipPos_y}{Position of the root tip in y axis}
+#'   \item{Time}{Time of measurement}
+#' }
+#'
+#'
+#' @references Author 1 author 2. date.
+#' “A Title.”
+#' Journal.
+#' doi:xxxx.
+"RootDat1"

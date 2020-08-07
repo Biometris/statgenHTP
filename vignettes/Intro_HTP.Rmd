@@ -131,10 +131,10 @@ The tip root data set was obtained during an experiment performed at the [RootPh
 </center>
 
 
-This data set consists of two experiments (`Block`) of root growth. For each genotype (`Genotype`), the tip position (`tipPos_x` and `tipPos_y`) of the main root was tracked over time (`Time`) for each plant (`plantId`).
+This data set consists of two experiments (`Exp`) of root growth. For each genotype (`Genotype`), the tip position (`tipPos_x` and `tipPos_y`) of the main root was tracked over time (`Time`) for each plant (`plantId`).
 
 ```{r importdataroot,echo=TRUE,message=FALSE, warning=FALSE, eval=FALSE}
-data("RootPhAirDat1")
+data("RootDat1")
 ```
 
 ```{r headdataroot, echo=FALSE, message=FALSE, eval=TRUE}
