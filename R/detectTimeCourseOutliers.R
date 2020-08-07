@@ -220,6 +220,14 @@ plot.timeCourseOutliers <- function(x,
   useTimePoint <- hasName(x = genoPreds[[1]], name = "timePoint")
   timeVar <- if (useTimePoint) "timePoint" else "timeNumber"
   ## Create plots.
+  if (!output) {
+    ## When calling arrangeGrob a blank page is opened if no plotting
+    ## device is currently open.
+    ## Adding a call to an empty pdf file prevents this empty plot from
+    ## being opened.
+    pdf(file = NULL)
+    on.exit(dev.off(), add = TRUE)
+  }
   p <- lapply(X = genotypes, FUN = function(genotype) {
     ## Create shape for plotting.
     ## Defaults to open circle.
@@ -271,13 +279,20 @@ plot.timeCourseOutliers <- function(x,
     ## grid arrange always plots results.
     titleGeno <- paste("Geno", genotype,
                        if (!is.null(title)) paste("-", title), "\n")
+    if (genotype == genotypes[1] && output) {
+      ## Arrange grob always needs an open device.
+      ## This creates a blank first page when first plotting.
+      ## By opening a new page for the first plot and then using
+      ## newpage = FALSE in the actual plot this blank page is overwritten.
+      grid::grid.newpage()
+    }
     pGeno <- gridExtra::arrangeGrob(kinetic, correl, pcaplot,
                                     layout_matrix = lay,
                                     top = grid::textGrob(label = titleGeno,
                                                          gp = grid::gpar(fontsize = 15,
                                                                          fontface = 2)))
     if (output) {
-      gridExtra::grid.arrange(pGeno)
+      gridExtra::grid.arrange(pGeno, newpage = (genotype != genotypes[1]))
     }
     return(pGeno)
   })
