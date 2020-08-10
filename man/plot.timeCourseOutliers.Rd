@@ -16,8 +16,8 @@ section.}
 detect outliers. If \code{NULL}, outlier detection will be done for all
 genotypes.}
 
-\item{title}{A character string, the main title added to all plots in the
-output.}
+\item{title}{A character string used as title for the plot. If \code{NULL} a
+default title is added to the plot depending on \code{plotType}.}
 
 \item{output}{Should the plot be output to the current device? If
 \code{FALSE} only a list of ggplot objects is invisibly returned. Ignored if

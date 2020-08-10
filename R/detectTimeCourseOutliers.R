@@ -16,15 +16,6 @@
 #' based on correlation between plots.
 #' @param thrPca A numerical value used as threshold for determining outliers
 #' based on PCA scores.
-#' @param title A character string, the main title added to all plots in the
-#' output.
-#' @param outFile A character string indicating the .csv file to which the
-#' results should be written. If \code{NULL} no file is written and all plots
-#' are made within R. Warning: this is potentially very slow for large numbers
-#' of genotypes.
-#' @param outFileOpts A named list of extra options for the pdf output file,
-#' e.g. width and height. See \code{\link[grDevices]{pdf}} for all possible
-#' options.
 #'
 #' @importFrom stats dist
 #'
@@ -181,11 +172,10 @@ detectTimeCourseOutliers <- function(corrDat,
   })
   ## Create full data.frame with annotated plants.
   annotatePlants <- do.call(rbind, c(annotatePlantsCor, annotatePlantsPca))
-  ## Merge genotype and geno.decomp to annotated plants.
-  annotatePlants <- merge(unique(corrDatPred[c("genotype", geno.decomp, "plotId")]),
-                          annotatePlants)
   if (!is.null(annotatePlants)) {
-    plotInfo <- unique(corrDatPred[c("genotype", geno.decomp)])
+    ## Merge genotype and geno.decomp to annotated plants.
+    annotatePlants <- merge(unique(corrDatPred[c("genotype", geno.decomp, "plotId")]),
+                            annotatePlants)
     ## Order by genotype, geno.decomp and plotId.
     if (!is.null(geno.decomp)) {
       annOrd <- order(annotatePlants[["genotype"]],
@@ -194,17 +184,20 @@ detectTimeCourseOutliers <- function(corrDat,
       annOrd <- order(annotatePlants[["genotype"]], annotatePlants[["plotId"]])
     }
     annotatePlants <- annotatePlants[annOrd, ]
-    class(annotatePlants) <- c("timeCourseOutliers", class(annotatePlants))
-    attr(x = annotatePlants, which = "thrCor") <- thrCor
-    attr(x = annotatePlants, which = "thrPca") <- thrPca
-    attr(x = annotatePlants, which = "trait") <- trait
-    attr(x = annotatePlants, which = "geno.decomp") <- geno.decomp
-    attr(x = annotatePlants, which = "plotInfo") <- plotInfo
-    attr(x = annotatePlants, which = "cormats") <- cormats
-    attr(x = annotatePlants, which = "plantPcas") <- plantPcas
-    attr(x = annotatePlants, which = "genoPreds") <- genoPreds
-    attr(x = annotatePlants, which = "genoDats") <- genoDats
+  } else {
+    annotatePlants <- data.frame()
   }
+  plotInfo <- unique(corrDatPred[c("genotype", geno.decomp)])
+  class(annotatePlants) <- c("timeCourseOutliers", class(annotatePlants))
+  attr(x = annotatePlants, which = "thrCor") <- thrCor
+  attr(x = annotatePlants, which = "thrPca") <- thrPca
+  attr(x = annotatePlants, which = "trait") <- trait
+  attr(x = annotatePlants, which = "geno.decomp") <- geno.decomp
+  attr(x = annotatePlants, which = "plotInfo") <- plotInfo
+  attr(x = annotatePlants, which = "cormats") <- cormats
+  attr(x = annotatePlants, which = "plantPcas") <- plantPcas
+  attr(x = annotatePlants, which = "genoPreds") <- genoPreds
+  attr(x = annotatePlants, which = "genoDats") <- genoDats
   return(annotatePlants)
 }
 
