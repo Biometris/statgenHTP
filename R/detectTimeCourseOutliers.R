@@ -326,9 +326,9 @@ plot.timeCourseOutliers <- function(x,
 #'
 #' Function for removing time course outliers from the data.
 #'
-#' @param TP A data.frame
+#' @param dat A data.frame.
 #' @param timeCourseOutliers A data.frame with at least the column plotId with
-#' values corresponding to those in TP.
+#' values corresponding to those in dat.
 #' @param trait The trait that should be set to NA. Can be ignored when using
 #' the output of \code{detectPointOutliers} as input.
 #'

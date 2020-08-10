@@ -18,7 +18,8 @@ estimateSplineParameters(
 \item{HTPSpline}{An object of class HTPSpline, the output of the
 \code{\link{fitSpline}} function.}
 
-\item{estimate}{The type of estimate that should be extracted.}
+\item{estimate}{The type of estimate that should be extracted,
+the predictions or the first derivatives.}
 
 \item{what}{The type of estimate that should be extracted.}
 

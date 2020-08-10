@@ -7,18 +7,17 @@
 detectPointOutliers(TP, trait, plotIds = NULL, confIntSize = 5, mylocfit = 0.5)
 }
 \arguments{
-\item{trait}{character, name of the variable to model in datain (for example,
-Biomass, PH or LA and so on)}
+\item{TP}{An object of class TP.}
+
+\item{trait}{A character vector indicating the trait to model in TP.}
 
 \item{plotIds}{A character vector of plotIds for which the outliers should be
-detected. If \code{NULL}}
+detected. If \code{NULL}, all plotId in TP are used.}
 
-\item{confIntSize}{numeric, factor to calculate the confidence interval}
+\item{confIntSize}{A numeric value defining the confidence interval.}
 
-\item{mylocfit}{numeric, The constant component of the smoothing parameter.
+\item{mylocfit}{A numeric value defining the constant component of the smoothing parameter nn.
 (see the locfit())}
-
-\item{datain}{input dataframe. This dataframe contains a set of time courses}
 }
 \value{
 An object of class pointOutliers, a data.frame with the following

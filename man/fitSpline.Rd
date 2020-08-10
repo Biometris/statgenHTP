@@ -9,9 +9,9 @@ fitSpline(
   trait,
   genotypes = NULL,
   plotIds = NULL,
+  knots = 50,
   useTimeNumber = FALSE,
   timeNumber = NULL,
-  knots = 50,
   perMinTP = 0.8
 )
 }
@@ -28,6 +28,11 @@ splines are fitted. If \code{NULL}, splines will be fitted for all genotypes.}
 are fitted. If \code{NULL}, splines will be fitted for all plotIds.}
 
 \item{knots}{The number of knots to use when fitting the spline.}
+
+\item{useTimeNumber}{Should the timeNumber be used instead of the timePoint?}
+
+\item{timeNumber}{If \code{useTimeNumber = TRUE}, a character vector indicating the column
+containing the numerical time to use.}
 
 \item{perMinTP}{The percentage of minimum number of time points to use.}
 }

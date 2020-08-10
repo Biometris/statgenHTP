@@ -10,6 +10,9 @@
 #' @param plotIds A character vector indicating the plotIds for which splines
 #' are fitted. If \code{NULL}, splines will be fitted for all plotIds.
 #' @param knots The number of knots to use when fitting the spline.
+#' @param useTimeNumber Should the timeNumber be used instead of the timePoint?
+#' @param timeNumber If \code{useTimeNumber = TRUE}, a character vector indicating the column
+#' containing the numerical time to use.
 #' @param perMinTP The percentage of minimum number of time points to use.
 #'
 #' @export
@@ -17,9 +20,9 @@ fitSpline <- function(corrDat,
                       trait,
                       genotypes = NULL,
                       plotIds = NULL,
+                      knots = 50,
                       useTimeNumber = FALSE,
                       timeNumber = NULL,
-                      knots = 50,
                       perMinTP = 0.8) {
   ## Checks.
   if (!is.character(trait) || length(trait) > 1) {
@@ -268,7 +271,8 @@ plot.HTPSpline <- function(x,
 #'
 #' @param HTPSpline An object of class HTPSpline, the output of the
 #' \code{\link{fitSpline}} function.
-#' @param estimate The type of estimate that should be extracted.
+#' @param estimate The type of estimate that should be extracted,
+#' the predictions or the first derivatives.
 #' @param what The type of estimate that should be extracted.
 #' @param timeMin The lower bound of the time interval from which the
 #' estimates should be extracted. If \code{NULL} the smallest time value for

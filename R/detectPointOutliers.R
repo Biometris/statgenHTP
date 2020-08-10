@@ -12,13 +12,12 @@
 #' to produce the grahics of the prediction and detected outliers, please use
 #' plotDetectPointOutlierLocFit() function.
 #'
-#' @param datain input dataframe. This dataframe contains a set of time courses
-#' @param trait character, name of the variable to model in datain (for example,
-#' Biomass, PH or LA and so on)
+#' @param TP An object of class TP.
+#' @param trait A character vector indicating the trait to model in TP.
 #' @param plotIds A character vector of plotIds for which the outliers should be
-#' detected. If \code{NULL}
-#' @param confIntSize numeric, factor to calculate the confidence interval
-#' @param mylocfit numeric, The constant component of the smoothing parameter.
+#' detected. If \code{NULL}, all plotId in TP are used.
+#' @param confIntSize A numeric value defining the confidence interval.
+#' @param mylocfit A numeric value defining the constant component of the smoothing parameter nn.
 #' (see the locfit())
 #'
 #' @return An object of class pointOutliers, a data.frame with the following

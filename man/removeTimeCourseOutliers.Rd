@@ -11,14 +11,14 @@ removeTimeCourseOutliers(
 )
 }
 \arguments{
+\item{dat}{A data.frame.}
+
 \item{timeCourseOutliers}{A data.frame with at least the column plotId with
-values corresponding to those in TP.}
+values corresponding to those in dat.}
 
 \item{trait}{The trait that should be set to NA. Can be ignored when using
 the output of \code{detectPointOutliers} as input.}
-
-\item{TP}{A data.frame}
 }
 \description{
-Function for time course outliers to NA.
+Function for removing time course outliers from the data.
 }

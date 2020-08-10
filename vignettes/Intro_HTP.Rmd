@@ -8,7 +8,7 @@ output:
     toc: no
 bibliography: bibliography.bib
 vignette: >
-  %\VignetteIndexEntry{Tutorial} 
+  %\VignetteIndexEntry{Intro} 
   %\VignetteEncoding{UTF-8} 
   %\VignetteEngine{knitr::rmarkdown}
 ---

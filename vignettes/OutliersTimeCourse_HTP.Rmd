@@ -8,7 +8,7 @@ output:
     toc: no
 bibliography: bibliography.bib
 vignette: >
-  %\VignetteIndexEntry{Tutorial} 
+  %\VignetteIndexEntry{TimeCourse} 
   %\VignetteEncoding{UTF-8} 
   %\VignetteEngine{knitr::rmarkdown}
 ---
@@ -50,6 +50,8 @@ dataset per plant `perMinTP`. When a plant has less time point than the minimum,
 
 Will only work when there are at least three replicates per genotypes. 
 
+Conversion of time to numerical time to get same scale, can be providing by the user
+
 The functions are illustrated with the three example data sets. For more information about the data, see *Intro_HTP*.
 
 ## Example 1
@@ -79,6 +81,36 @@ Also contains first derivative in column `deriv` **(see part XXX about Parameter
 
 ```{r headpredDat, echo=FALSE, message=FALSE, eval=TRUE}
 knitr::kable(head(pred.Dat), align=c('c','c'), booktabs = TRUE)
+```
+
+Conversion of time to numerical time to get same scale, can be providing by the user, for example when using thermal time ar a manual conversion. In this example, we provide a new column with time as hour since first measurement.
+
+```{r formatNum, echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE}
+timy <- data.frame(timePoint = unique(spatCorrVator$timePoint),
+                   timePointP1 = c(unique(spatCorrVator$timePoint)[2:73],
+                                   lubridate::ymd_hms("2018-06-18 16:37:00")),
+                   timeNum = NA)
+# diff between two time point in hour
+timeNum <- sapply( 1:nrow(timy), function(x) {
+    as.numeric(lubridate::ymd_hms(timy$timePointP1[x])-
+                             lubridate::ymd_hms(timy$timePoint)[x])
+})
+timy$timeNumDiff <- c(0,timeNum[1:(length(timeNum)-1)])
+# cum sum
+timy$timeNum <- cumsum(timy$timeNumDiff)
+# add to spatCorrVator
+spatCorrVator$timeNumHour <- timy$timeNum[match(spatCorrVator$timePoint,timy$timePoint)]
+```
+
+
+```{r fitSplineVatorNum, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+fit.splineNum <- fitSpline(corrDat = spatCorrVator,
+                        trait = "EffpsII_corr",
+                        genotypes = subGeno,
+                        knots = 50,
+                        perMinTP = 0.8,
+                        useTimeNumber = TRUE,
+                        timeNumber = "timeNumHour")
 ```
 
 We can visualise the p-spline prediction and first derivative for a subset of genotypes or for a subset of plant.
@@ -124,7 +156,7 @@ knitr::kable(head(outVator), align=c('c','c'), booktabs = TRUE, row.names=F)
  
 The `outVator` can be visualised by selecting genotypes:
 
-```{r plotOutVator,  fig.height=6, fig.width=6, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r plotOutVator,  fig.height=6, fig.width=6, echo=TRUE, message=FALSE, warning=FALSE}
 plot(outVator, genotypes = "G4")
 ```
 
@@ -132,6 +164,18 @@ The output of the outliers detection. A PCA plot of the plant scores will show t
 at time courses of plant replicates for a single genotype (Fig.6A), one can inspect correlation
 coefficients (Pearson’s r, Fig.6B) and a PCA plot of plant time courses (Fig. 6C) to identify
 possible outliers.
+
+```{r rmOutVator}
+spatCorrVatorOut <- removeTimeCourseOutliers(dat = spatCorrVator,
+                                            timeCourseOutliers = outVator)
+# Check one value annotated as outlier in the original corrected data frame
+head(spatCorrVator[spatCorrVator$plotId=="c21r25",
+                  c("EffpsII_corr","EffpsII")])
+# Check the same value in the new corrected data frame
+spatCorrVatorOut[spatCorrVatorOut$plotId=="c21r25",
+                c("EffpsII_corr","EffpsII")]
+```
+
 
 
 ### Illustration with nb of knots
@@ -177,9 +221,6 @@ coef.DatArch <- fit.splineArch$coefDat
 
 ```{r plotArch,  fig.height=3, fig.width=4, message=FALSE, eval=TRUE}
 plot(fit.splineArch,
-     genotypes = "GenoA1",
-     plotType =  "predictions")
-plot(fit.splineArch,
      plotIds = "c11r9",
      plotType =  "predictions")
 plot(fit.splineArch,
@@ -187,8 +228,10 @@ plot(fit.splineArch,
      plotType =  "derivatives")
 ```
 
+Here, the `geno.decomp` option is also used to split then plants of each genotypes between 
+well watered and drought. The outliers detection is run per treatment.
 
-```{r OutArchr, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r OutArch, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 outArch <- 
   detectTimeCourseOutliers(corrDat = spatCorrArch,
                            predDat = pred.DatArch,
@@ -208,6 +251,19 @@ knitr::kable(head(outArch), align=c('c','c'), booktabs = TRUE, row.names=F)
 plot(outArch, genotypes = "GenoB3")
 ```
 
+```{r rmOutArch}
+spatCorrArchOut <- removeTimeCourseOutliers(dat = spatCorrArch,
+                                            timeCourseOutliers = outArch)
+# Check one value annotated as outlier in the original corrected data frame
+head(spatCorrArch[spatCorrArch$plotId=="c17r40",
+                  c("Biomass_Estimated_corr","Biomass_Estimated")])
+# Check the same value in the new corrected data frame
+spatCorrArchOut[spatCorrArchOut$plotId=="c17r40",
+                c("Biomass_Estimated_corr","Biomass_Estimated")]
+```
+
+
+ 
 
 ## Example 3
 
@@ -236,6 +292,31 @@ plot(fit.splineRoot,
      genotypes = "2")
 ```
 
+```{r OutRoot, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+outRoot <- detectTimeCourseOutliers(corrDat = noCorrRoot,
+                                    predDat = pred.DatRoot,
+                                    coefDat = coef.DatRoot,
+                                    trait = "tipPos_y",
+                                    genotypes = as.character(subGeno),
+                                    thrCor = 0.9,
+                                    thrPca = 1.2)
+
+```
+
+```{r plotRootOut,  fig.height=6, fig.width=7, message=FALSE, eval=TRUE}
+plot(outRoot,
+     genotypes = "2")
+```
+
+
+```{r rmOutRoot}
+noCorrRootOut <- removeTimeCourseOutliers(dat = noCorrRoot,
+                                            timeCourseOutliers = outRoot)
+# Check one value annotated as outlier in the original corrected data frame
+head(noCorrRoot[noCorrRoot$plotId=="A_53_4","tipPos_y"])
+# Check the same value in the new corrected data frame
+noCorrRootOut[noCorrRootOut$plotId=="A_53_4","tipPos_y"]
+```
 
 
 # Extraction parameters from curve
@@ -245,7 +326,7 @@ that are relevant for biology. Some examples are provided below for each data se
 
 ## Example 1
 
-```{r fitSplineVatorGeno, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE, eval=FALSE}
+```{r fitSplineVatorGeno, echo=TRUE, message=FALSE, warning=FALSE, eval=FALSE}
 
 subGeno <- c("G70","G160","G151","G179","G175","G4","G55")
 

@@ -13,7 +13,7 @@
 section.}
 
 \item{plotIds}{A character vector of plotIds for which the outliers should be
-detected. If \code{NULL}}
+detected. If \code{NULL}, all plotId in TP are used.}
 
 \item{outOnly}{Should only plots containing outliers be plotted?}
 
