@@ -183,7 +183,7 @@ detectTimeCourseOutliers <- function(corrDat,
     } else {
       annOrd <- order(annotatePlants[["genotype"]], annotatePlants[["plotId"]])
     }
-    annotatePlants <- annotatePlants[annOrd, ]
+    annotatePlants <- droplevels(annotatePlants[annOrd, ])
   } else {
     annotatePlants <- data.frame()
   }
@@ -322,5 +322,38 @@ plot.timeCourseOutliers <- function(x,
   invisible(p)
 }
 
+#' Remove time course outliers
+#'
+#' Function for removing time course outliers from the data.
+#'
+#' @param TP A data.frame
+#' @param timeCourseOutliers A data.frame with at least the column plotId with
+#' values corresponding to those in TP.
+#' @param trait The trait that should be set to NA. Can be ignored when using
+#' the output of \code{detectPointOutliers} as input.
+#'
+#' @export
+removeTimeCourseOutliers <- function(dat,
+                                     timeCourseOutliers,
+                                     trait = attr(x = timeCourseOutliers,
+                                                  which = "trait")) {
+  if (!inherits(dat, "data.frame")) {
+    stop("dat should be a data.frame.\n")
+  }
+  if (!hasName(dat, "plotId")) {
+    stop("dat should at least contain the column plotId.\n")
+  }
+  if (!inherits(timeCourseOutliers, "data.frame")) {
+    stop("pointOutliers should be a data.frame.\n")
+  }
+  if (nrow(timeCourseOutliers) > 0) {
+    if (!hasName(timeCourseOutliers, "plotId")) {
+      stop("timeCourseOutliers should at least contain the column plotId.\n")
+    }
+    ## Remove plots that are in timeCourseOutliers.
+    dat <- dat[!dat[["plotId"]] %in% timeCourseOutliers[["plotId"]], ]
+  }
+  return(dat)
+}
 
 
