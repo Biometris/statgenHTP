@@ -18,6 +18,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
   )
+options(rmarkdown.html_vignette.check_title = FALSE)
 library(statgenHTP)
 ```
 
@@ -52,7 +53,7 @@ The local regression is a well known smoothing technique which locally approxima
 
 The user can set: 
 
-* the smoothing parameter `mylocfit`. It is the parameter `nn` from the locfit package (Nearest neighbor component of the smoothing parameter). This parameter values range grom 0 to 1, with thehigher the value, the smoother the curve.
+* the smoothing parameter `mylocfit`. It is the parameter `nn` from the locfit package (Nearest neighbor component of the smoothing parameter). This parameter values range from 0 to 1, with the higher the value, the smoother the curve.
 
 * the level at which the confidence interval `confIntSize` is calculated. Large value makes a wide intrval and fewer outliers are anotated.
 
@@ -188,7 +189,7 @@ rootTP <- createTimePoints(dat = RootDat1,
                            colNum = "Pos")
 ```
 
-We are then running the function on a subset of plant to set the parameters, using the `plotIds` option. The smoothing parameter `mylocfit` is set at 0.5. The curve are linear and medium smooth is enough. The confidence interval size `confIntSize` is set at 5 which is a medium interval.
+We are then running the function on a subset of plant to set the parameters, using the `plotIds` option. The smoothing parameter `mylocfit` is set at 1. The curve are almost linear and a strong smooth is enough to get an accurate curve shape (line). The confidence interval size `confIntSize` is set at 5 which is a medium interval.
 ```{r setParamRoot}
 # First select a subset of plants, for example here 10 plants 
 plantSelRoot <- unique(RootDat1$plantId)[1:7]

@@ -18,6 +18,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
   )
+options(rmarkdown.html_vignette.check_title = FALSE)
 library(statgenHTP)
 ```
 
@@ -141,7 +142,7 @@ data("RootDat1")
 knitr::kable(head(RootDat1), align=c('c','c'), booktabs = TRUE)
 ```
 
->  *TO NOTE: in this example, plants are constantly moving and it was not possible to get unique timepoint containing the full platform. No spatial analysis per time point but the other functions for outliers detection and longitudinal modelling are available.*
+>  *TO NOTE: in this example, plants are constantly moving and it was not possible to get unique timepoint containing the full platform. As a consequence, it is not possible to perform a spatial analysis per time point, but the other functions for outliers detection and longitudinal modelling are available and illustrated in the following tutorials.*
 
 
 # Data preparation
@@ -167,6 +168,7 @@ This function does a number of things:
 * Add a `data.frame` with columns `timeNumber` and `timePoint` as attribute 
 "timePoints" to the `TP` object. This data.frame can be used for referencing the time points by their number.
 
+It is possible to transform a TP object back into a data frame with the `as.data.frame()` function.
 
 ### Example 1
 

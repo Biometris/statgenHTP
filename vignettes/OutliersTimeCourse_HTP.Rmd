@@ -18,26 +18,34 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
   )
+options(rmarkdown.html_vignette.check_title = FALSE)
 library(statgenHTP)
 ```
 
 # Introduction 
 
-It consists in detecting outliers in a set of time courses resulting from the observation of one single trait. 
-The detection procedure is applied to each trait individually without considering other traits, meaning that distinct outlier datasets are associated with each considered trait. 
+It consists in detecting outliers in a set of time courses resulting from the observation of one single trait. The detection procedure is applied to each trait individually without considering other traits, meaning that distinct outlier datasets are associated with each considered trait. 
+
+The final step consists in extracting interesting parameterd from the modelled time course, for example a maximum rate of growth, or a minimum value in a specific period. These parameters could then be further analysed, for example a GxE analysis (see *statgenGxE*), or a genetic analysis (see *statgenGWAS*).
 
 ## A nonparametric smoothing associated with a PCA
 
 Each time course is modelled by a nonparametric smoothing spline with a fixed number of
-knots. This is a piecewise cubic polynomial (Eubank, 1999, Eilers et al. 2015) fitted with the
-‘gam’ function of the R-package ‘mgcv’. The estimates for the spline coefficients are then
+knots. This is a piecewise cubic polynomial ([@Eubank1999], [@Eilers2015]) fitted with the ‘gam’ function of the R-package ‘mgcv’. 
+
+<center>
+![P-spline](figures/pspline.png){width=40%}
+
+P-spline illustration with 20 knots, from [@Hugelier2016]. The individual B-splines (with the correct coefficients) are shown (colored lines), as well as their sum representing the fit (thick black line).
+</center>
+
+The estimates for the spline coefficients are then
 extracted per time course (typically per plant) and correlations between those coefficient
 vectors are calculated to identify outlying time courses, i.e., plants. An outlying time course will have low correlation to the majority of time courses. To support the analysis by correlations, a principal component analysis can be done on the plant (time course) by spline coefficient matrix. A PCA plot of the plant scores will show the outlying plant.
 
- P-splines in generalized additive model (gam) 
-... optimization of the smoothing coeficient. Left nb of knots to select.
+*To note,* for p-splines in generalized additive model (gam), the smoothing coefficient is optimised by restricted maximum likelihood but the number of knots is chosen by the user.
 
-This documents describes the procedures to detect outlying time course with examples on experimental data sets (see *Intro_HTP*). The data on which the procedures apply are the variables of interest. They may be variables measured directly or indirectly (through image analysis for example). The way they were obtained doesn't matter. 
+This document describes the procedure to detect outlying time course with examples on experimental data sets (see *Intro_HTP*). The data on which the procedures apply are the variables of interest. They may be variables measured directly or indirectly (through image analysis for example). The way they were obtained doesn't matter. The following functions can be applied to corrected data (see *SpatialModel_HTP*) or on raw data.
 
 
 ----
@@ -48,15 +56,11 @@ The function `fitSpline()` fits a p-spline per plant for the selected `trait` us
 chosen by the user. In P-spline, the knots are equally spaced and their number can be large. The user should also chose an appropriate proportion of minimum number of time points that should be in the 
 dataset per plant `perMinTP`. When a plant has less time point than the minimum, it will be skipped from the analysis.
 
-Will only work when there are at least three replicates per genotypes. 
-
-Conversion of time to numerical time to get same scale, can be providing by the user
-
 The functions are illustrated with the three example data sets. For more information about the data, see *Intro_HTP*.
 
 ## Example 1
 
-Using the data corrected for spatial trends and removing time points outliers (see blablabla)
+The data from the Phenovator platform have been corrected for spatial trends and time points outliers have been removed (see *XXXXX*). At this stage, the cleaned and corrected data are used:
 
 ```{r fitSplineVator, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 data(spatCorrVator)  
@@ -75,15 +79,14 @@ pred.Dat <- fit.spline$predDat
 coef.Dat <- fit.spline$coefDat
 ```
 
-The object `fit.spline` contains the predicted value (`pred.value` in the table below), i.e the values predicted using the P-spline model coefficients. 
-prediction on denser grid: smallest gap between two time points / 9, so dividing the smallest gap in 10 segments.
-Also contains first derivative in column `deriv` **(see part XXX about Parameters estimation)**
+The object `fit.spline` contains the predicted value (`pred.value` in the table below), i.e 
+the values predicted using the P-spline model coefficients. Conversion to numerical time is required by the mgcv package. In order to keep the same time scale as in the original `timePoint` column, a simple numerical transformation of the time points is made (column `timeNumber`). Predictions are made on a denser grid of time points: the time points for prediction are calculated as the smallest gap between two time points divided by 9, so dividing the smallest gap in 10 segments. The object `fit.spline` also contains the first derivatives (`deriv` **see part XXX about Parameters estimation**).
 
 ```{r headpredDat, echo=FALSE, message=FALSE, eval=TRUE}
 knitr::kable(head(pred.Dat), align=c('c','c'), booktabs = TRUE)
 ```
 
-Conversion of time to numerical time to get same scale, can be providing by the user, for example when using thermal time ar a manual conversion. In this example, we provide a new column with time as hour since first measurement.
+The numerical time can be provided by the user, for example when using thermal time or a manual conversion. In this example, we provide a new column with time in hour since first measurement.
 
 ```{r formatNum, echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE}
 timy <- data.frame(timePoint = unique(spatCorrVator$timePoint),
@@ -113,7 +116,7 @@ fit.splineNum <- fitSpline(corrDat = spatCorrVator,
                         timeNumber = "timeNumHour")
 ```
 
-We can visualise the p-spline prediction and first derivative for a subset of genotypes or for a subset of plant.
+We can then visualise the p-spline predictions and first derivatives for a subset of genotypes or for a subset of plots.
 
 ```{r plotSplGeno,  fig.height=4, fig.width=7, message=FALSE, eval=TRUE}
 plot(fit.spline,
@@ -136,7 +139,9 @@ The object `fit.spline` also contains the values of the P-splines coefficients:
 knitr::kable(head(coef.Dat), align=c('c','c'), booktabs = TRUE)
 ```
 
-The coefficients are then used to tag suspect time courses with the function `detectOutliers()`. This function performs a PCA on the coefficients (from data frame `coef.Dat`) per `genotype` and tags the plants that have a coordinate on the second PC axis above a threshold (`thrPca`), see the lines 'reason = pc2' in the table below. The function also calculates the pairwise-correlation of the coefficients per genotype. Plants are tagged when the correlation is below a given threshold (`thrCor`), see the lines 'reason = mean corr' in the table below. 
+The coefficients are then used to tag suspect time courses with the function `detectOutliers()`. This function performs a PCA on the coefficients (from data frame `coef.Dat`) per `genotype` and tags the plants that have a coordinate on the second PC axis above a threshold (`thrPca`), see the lines 'reason = pc2' in the table below. The function also calculates the pairwise-correlation of the coefficients per genotype. Plants are tagged when the correlation is below a given threshold (`thrCor`), see the lines `reason = mean corr` in the table below. 
+
+For obvious reasons, the detection will only work when there are at least three replicates per genotypes. Genotypes with less than three replicates will be skipped. (TRUE?)
 
 ```{r OutVator, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 outVator <-
@@ -153,17 +158,26 @@ outVator <-
 ```{r headOutPoint, echo=FALSE, message=FALSE, eval=TRUE}
 knitr::kable(head(outVator), align=c('c','c'), booktabs = TRUE, row.names=F)
 ```
- 
-The `outVator` can be visualised by selecting genotypes:
+
+For this subset of genotypes, 4 plants were tagged as outliers:
+
+* c21r25 and c9r4 had both low correlations and extreme PC axis coordinates,  
+* c11r55 and c4r13 had extreme PC axis coordinates.
+
+The `outVator` can be visualised by selecting genotypes. Here genotype G151 which has plant c21r25 tagged as outlier:
 
 ```{r plotOutVator,  fig.height=6, fig.width=6, echo=TRUE, message=FALSE, warning=FALSE}
-plot(outVator, genotypes = "G4")
+plot(outVator, genotypes = "G151")
 ```
 
-The output of the outliers detection. A PCA plot of the plant scores will show the outlying plant. For example, when looking
-at time courses of plant replicates for a single genotype (Fig.6A), one can inspect correlation
-coefficients (Pearson’s r, Fig.6B) and a PCA plot of plant time courses (Fig. 6C) to identify
-possible outliers.
+The figure above contains:
+
+* (top) A scatter plot of the trait value in y axis and time in x axis. Points are the raw or corrected data and lines are the p-spline predictions, with one colour per plant (in legend).  
+* (bottom left) A correlation matrix of the plant scores as a heatmap. The scale is centered on 0.9 to see at a glance the outlying plants with low correlations (usually correlation are high between plants).  
+* (bottom right) A PCA plot of the plant scores. Usually, all plants are grouped and the first axis explained most of the variation. When a plant is outlying, it will be located apart from the other plants on the second axis. 
+
+
+Finally, the outlying plants can be removed from the dataset:
 
 ```{r rmOutVator}
 spatCorrVatorOut <- removeTimeCourseOutliers(dat = spatCorrVator,
@@ -177,10 +191,11 @@ spatCorrVatorOut[spatCorrVatorOut$plotId=="c21r25",
 ```
 
 
+### Impact of the number of knots on the smoothing
 
-### Illustration with nb of knots
+For one plant of the example 1, we fit the p-spline with 10 or 50 knots and visualise the predictions to compare the smoothness. We advise the user to perform tests of the number of knots on a subset of plants before running the function on all plants. 
 
-Number of knots:
+With 10 knots: 
 ```{r fitSplineVatorKnots10, fig.height=3, fig.width=4, echo=TRUE, warning=FALSE, eval=TRUE}
 sp10k <- fitSpline(corrDat = spatCorrVator,
                         trait = "EffpsII_corr",
@@ -190,7 +205,10 @@ sp10k <- fitSpline(corrDat = spatCorrVator,
 plot(sp10k)
 ```
 
+The predicted curve is very smooth and, in this case, it is not following precisely the real data curve shape. When comparing the plants of a same genotype with this curve shape we might not identify the outlying plant.
 
+
+With 50 knots: 
 ```{r fitSplineVatorKnots50, fig.height=3, fig.width=4, echo=TRUE, warning=FALSE, eval=TRUE}
 sp50k <- fitSpline(corrDat = spatCorrVator,
                         trait = "EffpsII_corr",
@@ -200,9 +218,12 @@ sp50k <- fitSpline(corrDat = spatCorrVator,
 plot(sp50k)
 ```
 
+The predicted curve is less smooth and follows the actual curve shape. This seems to be a good setting to detect strange curve shape among the replicates of a genotype.
+
+
 ## Example 2
 
-Using the data corrected for spatial trends and removing time points outliers (see blablabla)
+The data from the PhenoArch platform have been corrected for spatial trends and time points outliers have been removed (see *XXXXX*). At this stage, the cleaned and corrected data are used:
 
 ```{r fitSplineArch, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 data(spatCorrArch)  
@@ -228,7 +249,7 @@ plot(fit.splineArch,
      plotType =  "derivatives")
 ```
 
-Here, the `geno.decomp` option is also used to split then plants of each genotypes between 
+Here, the `geno.decomp` option is also used to split the plants of each genotypes between 
 well watered and drought. The outliers detection is run per treatment.
 
 ```{r OutArch, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
@@ -262,13 +283,9 @@ spatCorrArchOut[spatCorrArchOut$plotId=="c17r40",
                 c("Biomass_Estimated_corr","Biomass_Estimated")]
 ```
 
-
- 
-
 ## Example 3
 
-Using the data corrected for spatial trends and removing time points outliers (see blablabla)
-Only genotypes with 3 plants or more are selected here.
+The data from the RootPhAir platform have not been corrected for spatial trends but time points outliers have been removed (see *XXXXX*). At this stage, the cleaned data are used:
 
 ```{r fitSplineRoot, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 noCorrRoot$timePoint <- lubridate::as_datetime(noCorrRoot$timePoint)
@@ -326,19 +343,19 @@ that are relevant for biology. Some examples are provided below for each data se
 
 ## Example 1
 
-```{r fitSplineVatorGeno, echo=TRUE, message=FALSE, warning=FALSE, eval=FALSE}
+We will use the `fit.splineOut` previously created which contains the p-spline prediction without the time course outliers. We could estimate the maximum value of the trait in the beginning of the time course. 
 
-subGeno <- c("G70","G160","G151","G179","G175","G4","G55")
+```{r paramVator, echo=TRUE, message=FALSE, warning=FALSE, eval=FALSE}
+paramVator1 <-
+  estimateSplineParameters(HTPSpline = fit.spline,
+                           estimate = "predictions",
+                           what = "max",
+                           timeMin = 1528957420,
+                           timeMax = 1529339820,
+                           genotypes = subGeno)
 
-fit.spline <- fitSpline(corrDat = spatPredVator,
-                        trait = "EffpsII_corr",
-                        genotypes = subGeno,
-                        knots = 50,
-                        perMinTP = 0.8)
 
-pred.Dat <- fit.spline$predDat
-coef.Dat <- fit.spline$coefDat
-row.names(coef.Dat) <- 1:nrow(coef.Dat)
+
 ```
 
 
