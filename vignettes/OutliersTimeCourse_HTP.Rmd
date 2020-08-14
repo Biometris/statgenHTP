@@ -108,12 +108,12 @@ spatCorrVator$timeNumHour <- timy$timeNum[match(spatCorrVator$timePoint,timy$tim
 
 ```{r fitSplineVatorNum, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 fit.splineNum <- fitSpline(corrDat = spatCorrVator,
-                        trait = "EffpsII_corr",
-                        genotypes = subGeno,
-                        knots = 50,
-                        perMinTP = 0.8,
-                        useTimeNumber = TRUE,
-                        timeNumber = "timeNumHour")
+                           trait = "EffpsII_corr",
+                           genotypes = subGeno,
+                           knots = 50,
+                           perMinTP = 0.8,
+                           useTimeNumber = TRUE,
+                           timeNumber = "timeNumHour")
 ```
 
 We can then visualise the p-spline predictions and first derivatives for a subset of genotypes or for a subset of plots.
@@ -177,7 +177,7 @@ The figure above contains:
 * (bottom right) A PCA plot of the plant scores. Usually, all plants are grouped and the first axis explained most of the variation. When a plant is outlying, it will be located apart from the other plants on the second axis. 
 
 
-Finally, the outlying plants can be removed from the dataset:
+Finally, the outlying plants can be removed from the dataset...
 
 ```{r rmOutVator}
 spatCorrVatorOut <- removeTimeCourseOutliers(dat = spatCorrVator,
@@ -186,8 +186,16 @@ spatCorrVatorOut <- removeTimeCourseOutliers(dat = spatCorrVator,
 head(spatCorrVator[spatCorrVator$plotId=="c21r25",
                   c("EffpsII_corr","EffpsII")])
 # Check the same value in the new corrected data frame
-spatCorrVatorOut[spatCorrVatorOut$plotId=="c21r25",
-                c("EffpsII_corr","EffpsII")]
+head(spatCorrVatorOut[spatCorrVatorOut$plotId=="c21r25",
+                c("EffpsII_corr","EffpsII")])
+```
+
+... and from the predictions.
+```{r rmOutVatorspline}
+fit.splineOut <- removeTimeCourseOutliers(fitSpline = fit.spline,
+                                          timeCourseOutliers = outVator)
+fit.splineNumOut <- removeTimeCourseOutliers(fitSpline = fit.splineNum,
+                                             timeCourseOutliers = outVator)
 ```
 
 
@@ -195,7 +203,7 @@ spatCorrVatorOut[spatCorrVatorOut$plotId=="c21r25",
 
 For one plant of the example 1, we fit the p-spline with 10 or 50 knots and visualise the predictions to compare the smoothness. We advise the user to perform tests of the number of knots on a subset of plants before running the function on all plants. 
 
-With 10 knots: 
+*With 10 knots:*
 ```{r fitSplineVatorKnots10, fig.height=3, fig.width=4, echo=TRUE, warning=FALSE, eval=TRUE}
 sp10k <- fitSpline(corrDat = spatCorrVator,
                         trait = "EffpsII_corr",
@@ -208,7 +216,7 @@ plot(sp10k)
 The predicted curve is very smooth and, in this case, it is not following precisely the real data curve shape. When comparing the plants of a same genotype with this curve shape we might not identify the outlying plant.
 
 
-With 50 knots: 
+*With 50 knots:*
 ```{r fitSplineVatorKnots50, fig.height=3, fig.width=4, echo=TRUE, warning=FALSE, eval=TRUE}
 sp50k <- fitSpline(corrDat = spatCorrVator,
                         trait = "EffpsII_corr",
@@ -279,8 +287,8 @@ spatCorrArchOut <- removeTimeCourseOutliers(dat = spatCorrArch,
 head(spatCorrArch[spatCorrArch$plotId=="c17r40",
                   c("Biomass_Estimated_corr","Biomass_Estimated")])
 # Check the same value in the new corrected data frame
-spatCorrArchOut[spatCorrArchOut$plotId=="c17r40",
-                c("Biomass_Estimated_corr","Biomass_Estimated")]
+head(spatCorrArchOut[spatCorrArchOut$plotId=="c17r40",
+                c("Biomass_Estimated_corr","Biomass_Estimated")])
 ```
 
 ## Example 3
@@ -332,34 +340,56 @@ noCorrRootOut <- removeTimeCourseOutliers(dat = noCorrRoot,
 # Check one value annotated as outlier in the original corrected data frame
 head(noCorrRoot[noCorrRoot$plotId=="A_53_4","tipPos_y"])
 # Check the same value in the new corrected data frame
-noCorrRootOut[noCorrRootOut$plotId=="A_53_4","tipPos_y"]
+head(noCorrRootOut[noCorrRootOut$plotId=="A_53_4","tipPos_y"])
 ```
 
 
 # Extraction parameters from curve
 
 After all the steps of cleaning and modeling... blablabla extract parameters from the curve
-that are relevant for biology. Some examples are provided below for each data set.
+that are relevant for biology. Some examples are provided below for the Phenovator data set (example 1).
 
 ## Example 1
 
-We will use the `fit.splineOut` previously created which contains the p-spline prediction without the time course outliers. We could estimate the maximum value of the trait in the beginning of the time course. 
+We will use the `fit.splineNumOut` previously created which contains the p-spline prediction without the time course outliers. We could estimate the maximum value of the trait at the beginning of the time course: 
 
-```{r paramVator, echo=TRUE, message=FALSE, warning=FALSE, eval=FALSE}
+```{r paramVator, fig.height=3, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+subGeno <- c("G70","G160","G151","G179","G175","G4","G55")
 paramVator1 <-
-  estimateSplineParameters(HTPSpline = fit.spline,
+  estimateSplineParameters(HTPSpline = fit.splineNumOut,
                            estimate = "predictions",
                            what = "max",
-                           timeMin = 1528957420,
-                           timeMax = 1529339820,
+                           timeMin = 330,
+                           timeMax = 432,
                            genotypes = subGeno)
-
-
-
+#
+library(ggplot2)
+ggplot(paramVator1, aes(x = genotype, y = x)) + 
+  geom_boxplot() +
+  theme_minimal()
 ```
 
+For this subset of genotypes, there is a variability in the maximum values of the psII efficiency after the light treatment. This could be used in genetic analysis and maybe to perform a GWAS.
 
+Another example is using the derivative during the recovery period to get the maximum slope, or the maximum rate of the psII per time unit during this period.
 
+<center>
+![P-spline](figures/psplinederiv.png){width=80%}
+</center>
+
+```{r paramVator2, fig.height=3, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+paramVator2 <-
+  estimateSplineParameters(HTPSpline = fit.splineNumOut,
+                           estimate = "derivatives",
+                           what = "max",
+                           timeMin = 210,
+                           timeMax = 312,
+                           genotypes = subGeno)
+#
+ggplot(paramVator2, aes(x = genotype, y = x)) + 
+  geom_boxplot() +
+  theme_minimal()
+```
 
 
 ----
