@@ -171,6 +171,10 @@ fitSpline <- function(corrDat,
 #' @inheritParams plot.TP
 #'
 #' @param x An object of class HTPSpline.
+#' @param genotypes A character vector indicating the genotypes for which
+#' splines should be plotted.
+#' @param plotIds A character vector indicating the plotIds for which splines
+#' should be plotted.
 #'
 #' @export
 plot.HTPSpline <- function(x,

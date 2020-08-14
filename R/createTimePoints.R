@@ -759,6 +759,7 @@ plot.TP <- function(x,
 #' Function for converting an object of class TP to a data.frame.
 #'
 #' @param x An object of class TP.
+#' @param ... Ignored.
 #'
 #' @export
 as.data.frame.TP <- function (x,

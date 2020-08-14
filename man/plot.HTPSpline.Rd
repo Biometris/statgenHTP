@@ -22,6 +22,12 @@ section.}
 \item{plotType}{A single character string indicating which plot should be
 made. See the sections below for a detailed explanation of the plots.}
 
+\item{genotypes}{A character vector indicating the genotypes for which
+splines should be plotted.}
+
+\item{plotIds}{A character vector indicating the plotIds for which splines
+should be plotted.}
+
 \item{output}{Should the plot be output to the current device? If
 \code{FALSE} only a list of ggplot objects is invisibly returned. Ignored if
 \code{outFile} is specified.}

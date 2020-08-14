@@ -1,15 +1,21 @@
 Package: statgenHTP
 Title: High Throughput Phenotyping (HTP) Data Analysis
-Version: 0.0.2
+Version: 0.0.3
 Authors@R: 
-    c(person(given = "Emilie",
+    c(person(given = "Emilie J",
              family = "Millet",
              role = c("aut", "cre"),
              email = "emilie.millet@wur.nl",
              comment = c(ORCID = "0000-0002-2913-4892")),
       person(given = "Maria Xose",
              family = "Rodriguez Alvarez",
-             role = c("aut")),
+             role = "aut"),
+      person(given = "Isabelle",
+             family = "Sanchez",
+             role = "aut"),
+      person(given = "Nadine",
+             family = "Hilgert",
+             role = "aut"),
       person(given = "Bart-Jan",
              family = "van Rossum",
              role = "aut",

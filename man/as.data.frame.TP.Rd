@@ -8,6 +8,8 @@
 }
 \arguments{
 \item{x}{An object of class TP.}
+
+\item{...}{Ignored.}
 }
 \description{
 Function for converting an object of class TP to a data.frame.
