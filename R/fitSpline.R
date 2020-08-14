@@ -203,6 +203,16 @@ plot.HTPSpline <- function(x,
     predDat <- predDat[predDat[["plotId"]] %in% plotIds, ]
     modDat <- modDat[modDat[["plotId"]] %in% plotIds, ]
   }
+  ## Remove plotIds with only NA from data.
+  ## This can be caused by removing outliers.
+  fitLevels <- unique(modDat[[fitLevel]])
+  allNA <- sapply(X = fitLevels, FUN = function(x) {
+    all(is.na(modDat[modDat[[fitLevel]] == x, trait]))
+  })
+  modDat <- modDat[!modDat[[fitLevel]] %in% fitLevels[allNA], ]
+  predDat <- predDat[!predDat[[fitLevel]] %in% fitLevels[allNA], ]
+  modDat <- droplevels(modDat)
+  predDat <- droplevels(predDat)
   if (nrow(predDat) == 0) {
     stop("At least one valid combination of genotype and plotId should be ",
          "selected.\n")
@@ -234,16 +244,16 @@ plot.HTPSpline <- function(x,
   if (nPlots >= 25) {
     ## More than 25 plots.
     ## For identical layout on all pages use 5 x 5 plots throughout.
-    #rowPag <- colPag <- rep(x = 5, times = nPag)
+    rowPag <- colPag <- rep(x = 5, times = nPag)
 
     # 28-7-2020. ggforce has a bug that prevents this identical layout
     # https://github.com/thomasp85/ggforce/issues/201
     # When fixed the code above can be reactivated and the three lines below
     # removed.
-    plotsLastPag <- nPlots %% 25
-    rowPag <- c(rep(x = 5, times = nPag - 1), min(plotsLastPag %/% 5 + 1, 5))
-    colPag <- c(rep(x = 5, times = nPag - 1),
-                ifelse(plotsLastPag >= 5, 5, plotsLastPag))
+    # plotsLastPag <- nPlots %% 25
+    # rowPag <- c(rep(x = 5, times = nPag - 1), min(plotsLastPag %/% 5 + 1, 5))
+    # colPag <- c(rep(x = 5, times = nPag - 1),
+    #             ifelse(plotsLastPag >= 5, 5, plotsLastPag))
   } else {
     ## Less than 25 plots.
     ## Fill page by row of 5 plots.
