@@ -324,24 +324,42 @@ plot.timeCourseOutliers <- function(x,
 
 #' Remove time course outliers
 #'
-#' Function for removing time course outliers from the data.
+#' Function for removing time course outliers from the data. This can either be
+#' a data.frame, specified in \code{dat}, or the output of the fitSpline
+#' function, specified in \code{fitSpline}. Exactly one of these should be
+#' provided as input for the function.
 #'
 #' @param dat A data.frame.
+#' @param fitSpline An object of class HTPSpline, the output of the
+#' \code{\link{fitSpline}} function.
 #' @param timeCourseOutliers A data.frame with at least the column plotId with
 #' values corresponding to those in dat.
-#' @param trait The trait that should be set to NA. Can be ignored when using
-#' the output of \code{detectPointOutliers} as input.
+#'
+#' @return Depending on the input either a data.frame or an object of class
+#' HTPSpline from which the outliers specified in \code{timeCourseOutliers} are
+#' removed.
 #'
 #' @export
-removeTimeCourseOutliers <- function(dat,
-                                     timeCourseOutliers,
-                                     trait = attr(x = timeCourseOutliers,
-                                                  which = "trait")) {
-  if (!inherits(dat, "data.frame")) {
-    stop("dat should be a data.frame.\n")
+removeTimeCourseOutliers <- function(dat = NULL,
+                                     fitSpline = NULL,
+                                     timeCourseOutliers) {
+  ## Check that one of dat and fitSpline are specified.
+  if ((is.null(dat) && is.null(fitSpline)) || (
+    !is.null(dat) && !is.null(fitSpline))) {
+    stop("Specify exactly one of dat and fitSpline as inputs.\n")
   }
-  if (!hasName(dat, "plotId")) {
-    stop("dat should at least contain the column plotId.\n")
+  if (!is.null(dat)) {
+    if (!inherits(dat, "data.frame")) {
+      stop("dat should be a data.frame.\n")
+    }
+    if (!hasName(dat, "plotId")) {
+      stop("dat should at least contain the column plotId.\n")
+    }
+  }
+  if (!is.null(fitSpline)) {
+    if (!inherits(fitSpline, "HTPSpline")) {
+      stop("dat should be an object of class HTPSpline.\n")
+    }
   }
   if (!inherits(timeCourseOutliers, "data.frame")) {
     stop("pointOutliers should be a data.frame.\n")
@@ -350,10 +368,19 @@ removeTimeCourseOutliers <- function(dat,
     if (!hasName(timeCourseOutliers, "plotId")) {
       stop("timeCourseOutliers should at least contain the column plotId.\n")
     }
-    ## Remove plots that are in timeCourseOutliers.
-    dat <- dat[!dat[["plotId"]] %in% timeCourseOutliers[["plotId"]], ]
+    if (!is.null(dat)) {
+      ## Remove plots that are in timeCourseOutliers.
+      dat <- dat[!dat[["plotId"]] %in% timeCourseOutliers[["plotId"]], ]
+    } else if (!is.null(fitSpline)) {
+      fitSpline$coefDat <- fitSpline$coefDat[!fitSpline$coefDat[["plotId"]] %in%
+                                               timeCourseOutliers[["plotId"]], ]
+      fitSpline$predDat <- fitSpline$predDat[!fitSpline$predDat[["plotId"]] %in%
+                                               timeCourseOutliers[["plotId"]], ]
+      modDat <- attr(x = fitSpline, which = "modDat")
+      attr(x = fitSpline, which = "modDat") <- modDat[!modDat[["plotId"]] %in%
+                                                        timeCourseOutliers[["plotId"]], ]
+    }
   }
-  return(dat)
+  res <- if (!is.null(dat)) dat else fitSpline
+  return(res)
 }
-
-
