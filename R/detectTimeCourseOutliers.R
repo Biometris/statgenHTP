@@ -78,6 +78,19 @@ detectTimeCourseOutliers <- function(corrDat,
   if (!is.numeric(thrPca) || length(thrPca) > 1 || thrPca < 0) {
     stop("thrPca should be a positive numerical value.\n")
   }
+  genoPlotId <- sapply(X = genotypes, FUN = function(genotype) {
+    length(unique(corrDat[corrDat[["genotype"]] == genotype, "plotId"]))
+  })
+  genoPlotIdLim <- names(genoPlotId[genoPlotId < 3])
+  if (length(genoPlotIdLim) > 0) {
+    warning("The following genotypes have less than 3 plotIds and are skipped ",
+            "in the outlier detection:\n",
+            paste(genoPlotIdLim, collapse = ", "), "\n", call. = FALSE)
+    genotypes <- genotypes[!genotypes %in% genoPlotIdLim]
+    if (length(genotypes) == 0) {
+      stop("No genotypes left for performing outlier detection.\n")
+    }
+  }
   ## Restrict corrDat, predDat and coefDat to genotypes.
   corrDat <- corrDat[corrDat[["genotype"]] %in% genotypes, ]
   ## Get corrected and predicted data per genotype.
