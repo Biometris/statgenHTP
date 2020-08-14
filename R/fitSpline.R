@@ -128,7 +128,7 @@ fitSpline <- function(corrDat,
       ## Predictions on a dense grid.
       yPred <- predict(obj, newdata = timeRangePl)
       yDeriv <- gratia::derivatives(obj, newdata = timeRangePl,
-                                    eps = 1e-7 * timeNumRange[1])
+                                    eps = 1e-7 * mean(timeNumRange[1:2]))
       ## Merge time, predictions and plotId.
       predDat <- data.frame(timeRangePl, pred.value = yPred,
                             deriv = yDeriv[["derivative"]],
