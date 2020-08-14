@@ -324,25 +324,29 @@ plot.timeCourseOutliers <- function(x,
 
 #' Remove time course outliers
 #'
-#' Function for removing time course outliers from the data. This can either be
-#' a data.frame, specified in \code{dat}, or the output of the fitSpline
-#' function, specified in \code{fitSpline}. Exactly one of these should be
-#' provided as input for the function.
+#' Function for setting time course outliers in the data to NA.
+#' The input can either be a data.frame, specified in \code{dat}, or the output
+#' of the fitSpline function, specified in \code{fitSpline}. Exactly one of
+#' these should be provided as input for the function.
 #'
 #' @param dat A data.frame.
 #' @param fitSpline An object of class HTPSpline, the output of the
 #' \code{\link{fitSpline}} function.
 #' @param timeCourseOutliers A data.frame with at least the column plotId with
 #' values corresponding to those in dat.
+#' @param trait The trait that should be set to NA. Can be ignored when using
+#' the output of \code{timeCourseOutliers} as input.
 #'
 #' @return Depending on the input either a data.frame or an object of class
-#' HTPSpline from which the outliers specified in \code{timeCourseOutliers} are
-#' removed.
+#' HTPSpline for which the outliers specified in \code{timeCourseOutliers} are
+#' set to NA.
 #'
 #' @export
 removeTimeCourseOutliers <- function(dat = NULL,
                                      fitSpline = NULL,
-                                     timeCourseOutliers) {
+                                     timeCourseOutliers,
+                                     trait = attr(x = timeCourseOutliers,
+                                                  which = "trait")) {
   ## Check that one of dat and fitSpline are specified.
   if ((is.null(dat) && is.null(fitSpline)) || (
     !is.null(dat) && !is.null(fitSpline))) {
@@ -370,15 +374,16 @@ removeTimeCourseOutliers <- function(dat = NULL,
     }
     if (!is.null(dat)) {
       ## Remove plots that are in timeCourseOutliers.
-      dat <- dat[!dat[["plotId"]] %in% timeCourseOutliers[["plotId"]], ]
+      dat[dat[["plotId"]] %in% timeCourseOutliers[["plotId"]], trait] <- NA
     } else if (!is.null(fitSpline)) {
-      fitSpline$coefDat <- fitSpline$coefDat[!fitSpline$coefDat[["plotId"]] %in%
-                                               timeCourseOutliers[["plotId"]], ]
-      fitSpline$predDat <- fitSpline$predDat[!fitSpline$predDat[["plotId"]] %in%
-                                               timeCourseOutliers[["plotId"]], ]
+      fitSpline$coefDat[fitSpline$coefDat[["plotId"]] %in%
+                          timeCourseOutliers[["plotId"]], trait] < NA
+      fitSpline$predDat[fitSpline$predDat[["plotId"]] %in%
+                          timeCourseOutliers[["plotId"]], c("pred.value",
+                                                            "deriv")] <- NA
       modDat <- attr(x = fitSpline, which = "modDat")
-      attr(x = fitSpline, which = "modDat") <- modDat[!modDat[["plotId"]] %in%
-                                                        timeCourseOutliers[["plotId"]], ]
+      modDat[modDat[["plotId"]] %in% timeCourseOutliers[["plotId"]], trait] <- NA
+      attr(x = fitSpline, which = "modDat") <- modDat
     }
   }
   res <- if (!is.null(dat)) dat else fitSpline

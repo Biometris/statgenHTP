@@ -210,7 +210,7 @@ plot.HTPSpline <- function(x,
   timeVar <- if (useTimeNumber) "timeNumber" else "timePoint"
   p <- ggplot(modDat, aes_string(x = timeVar, y = trait)) +
     geom_line(data = predDat,
-              aes_string(x = timeVar, y = plotVar), col = "blue") +
+              aes_string(x = timeVar, y = plotVar), col = "blue", na.rm = TRUE) +
     labs(y = trait, x = timeVar)
   if (plotType == "predictions") {
     p <- p + geom_point(na.rm = TRUE) +

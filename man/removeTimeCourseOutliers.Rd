@@ -4,7 +4,12 @@
 \alias{removeTimeCourseOutliers}
 \title{Remove time course outliers}
 \usage{
-removeTimeCourseOutliers(dat = NULL, fitSpline = NULL, timeCourseOutliers)
+removeTimeCourseOutliers(
+  dat = NULL,
+  fitSpline = NULL,
+  timeCourseOutliers,
+  trait = attr(x = timeCourseOutliers, which = "trait")
+)
 }
 \arguments{
 \item{dat}{A data.frame.}
@@ -14,15 +19,18 @@ removeTimeCourseOutliers(dat = NULL, fitSpline = NULL, timeCourseOutliers)
 
 \item{timeCourseOutliers}{A data.frame with at least the column plotId with
 values corresponding to those in dat.}
+
+\item{trait}{The trait that should be set to NA. Can be ignored when using
+the output of \code{timeCourseOutliers} as input.}
 }
 \value{
 Depending on the input either a data.frame or an object of class
-HTPSpline from which the outliers specified in \code{timeCourseOutliers} are
-removed.
+HTPSpline for which the outliers specified in \code{timeCourseOutliers} are
+set to NA.
 }
 \description{
-Function for removing time course outliers from the data. This can either be
-a data.frame, specified in \code{dat}, or the output of the fitSpline
-function, specified in \code{fitSpline}. Exactly one of these should be
-provided as input for the function.
+Function for setting time course outliers in the data to NA.
+The input can either be a data.frame, specified in \code{dat}, or the output
+of the fitSpline function, specified in \code{fitSpline}. Exactly one of
+these should be provided as input for the function.
 }
