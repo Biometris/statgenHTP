@@ -36,6 +36,29 @@
 #' doi:10.1186/s13007-016-0113-y.
 "PhenovatorDat1"
 
+
+#' Arabidopsis data corrected for spatial trends.
+#'
+#' This dataset contains the corrected data obtained by (1) removing point outliers
+#' and (2) running a spatial model on the PhenovatorDat1 dataset.
+#' See the vignettes for details.
+#'
+#' @format A data.frame with 103,801 rows and 11 columns:
+#' \describe{
+#'   \item{timeNumber}{Time number obtained after formatting the original dataset with the function createTP.}
+#'   \item{timePoint}{Original time point.}
+#'   \item{EffpsII_corr}{Efficiency of the photosystem II, corrected data}
+#'   \item{EffpsII}{Efficiency of the photosystem II, raw data}
+#'   \item{genotype}{Genotypes}
+#'   \item{repId}{Block define after sowing for post-blocking.}
+#'   \item{Image_pos}{Position of the camera}
+#'   \item{check}{Status of the genotypes: check for the reference genotypes, noCheck for the others.}
+#'   \item{colId}{Column coordinate}
+#'   \item{rowId}{Row coordinate}
+#'   \item{plotId}{Unique pot ID using rowcol coordinates}
+#' }
+"spatCorrVator"
+
 #' Greenhouse data for a maize experiment in the Phenoarch platform.
 #'
 #' A dataset containing greenhouse data from an experiment with maize in the
@@ -74,7 +97,25 @@
 #' doi:10.1111/nph.14027.
 "PhenoarchDat1"
 
-
+#' Maize data corrected for spatial trends.
+#'
+#' This dataset contains the corrected data obtained by (1) removing point outliers
+#' and (2) running a spatial model on the PhenoarchDat1 dataset.
+#' See the vignettes for details.
+#'
+#' @format A data.frame with 37,038 rows and 9 columns:
+#' \describe{
+#'   \item{timeNumber}{Time number obtained after formatting the original dataset with the function createTP.}
+#'   \item{timePoint}{Original time point.}
+#'   \item{Biomass_Estimated_corr}{Biomass, corrected data}
+#'   \item{Biomass_Estimated}{Biomass from the picture, raw data}
+#'   \item{genotype}{Genotypes}
+#'   \item{geno.decomp}{Combination of treatment levels to decompose the genotypic variance (see vignettes)}
+#'   \item{colId}{Column coordinate}
+#'   \item{rowId}{Row coordinate}
+#'   \item{plotId}{Unique pot ID using rowcol coordinates}
+#' }
+"spatCorrArch"
 
 #' Greenhouse data for an experiment in the RootPhAir platform.
 #'
@@ -106,3 +147,24 @@
 #' Journal.
 #' doi:xxxx.
 "RootDat1"
+
+#' Root data corrected for point outliers.
+#'
+#' This dataset contains the corrected data obtained by removing point outliers
+#' on the RootDat1 dataset. See the vignettes for details.
+#'
+#' @format A data.frame with 15,934 rows and 8 columns:
+#' \describe{
+#'   \item{timePoint}{Original time points, date and time}
+#'   \item{Date}{Date}
+#'   \item{thermalTime}{Thermal time cumulated}
+#'   \item{Exp}{Experiment number}
+#'   \item{genotype}{Genotypes}
+#'   \item{Tank}{Tank in the greenhouse}
+#'   \item{plotId}{Unique pot ID using rowcol coordinates}
+#'   \item{rowId}{Row coordinate}
+#'   \item{colId}{Column coordinate}
+#'   \item{tipPos_y}{Position of the root tip in y axis}
+#' }
+"noCorrRoot"
+

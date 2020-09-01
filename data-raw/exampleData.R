@@ -58,6 +58,7 @@ usethis::use_data(RootDat1, overwrite = TRUE)
 # Read raw data.
 noCorrRoot <- read.csv(system.file("extdata", "RootDat1_nocorr.csv",
                                      package = "statgenHTP"))
+noCorrRoot <- noCorrRoot[,c(11,12,3,2,4,6,5,7,8,10)]
 # Export to package
 usethis::use_data(noCorrRoot, overwrite = TRUE)
 
