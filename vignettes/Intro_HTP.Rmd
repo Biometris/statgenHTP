@@ -142,7 +142,7 @@ data("RootDat1")
 knitr::kable(head(RootDat1), align=c('c','c'), booktabs = TRUE)
 ```
 
->  *TO NOTE: in this example, plants are constantly moving and it was not possible to get unique timepoint containing the full platform. As a consequence, it is not possible to perform a spatial analysis per time point, but the other functions for outliers detection and longitudinal modelling are available and illustrated in the following tutorials.*
+>  *TO NOTE: in this example, plants are constantly moving and it was not possible to get unique time point containing the full platform. As a consequence, it is not possible to perform a spatial analysis per time point, but the other functions for outliers detection and longitudinal modelling are available and illustrated in the following tutorials.*
 
 
 # Data preparation
@@ -186,7 +186,7 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             checkGenotypes = c("check1", "check2", "check3", "check4"))
 summary(phenoTP)
 ```
-In this dataset, 3 plants contain less thant 50% of the 73 time points. The user may choose to check the data for these plant and eventually to remove them from the dataset.
+In this dataset, 3 plants contain less than 50% of the 73 time points. The user may choose to check the data for these plant and eventually to remove them from the dataset.
 
 The function getTimePoints allows to generate a data frame containing the time points and 
 their numbers in the `TP` object. Below is a example with the first 6 time points of the `phenoTP`:
@@ -307,7 +307,7 @@ plot(phenoTP,
      timePoints = seq(from = 1,to = 73,by = 5))
 ```
 
-Eeach plot can be exported to a pdf document by using the `outFile` option containing 
+Each plot can be exported to a pdf document by using the `outFile` option containing 
 the name of the document.
 
 ----
@@ -359,7 +359,7 @@ rootTP <- createTimePoints(dat = RootDat1,
                            colNum = "Pos")
 summary(rootTP)
 ```
-This dataset is special, there is no common timepoint for all the platform, for example no date at which all plants were pictured. Instead, plants are constantly moving and pictures are taken every few minutes. Hence, each rows of the data frame has a unique time point. As a consequebce, the "rootTP" object just created is a `list` with 16275 items, one for each time points in the original `data.frame` (called "RootDat1"). 
+This dataset is special, there is no common time point for all the platform, for example no date at which all plants were pictured. Instead, plants are constantly moving and pictures are taken every few minutes. Hence, each rows of the data frame has a unique time point. As a consequence, the "rootTP" object just created is a `list` with 16275 items, one for each time points in the original `data.frame` (called "RootDat1"). 
 
 ```{r rawRoot, include=TRUE, fig.height=3, fig.width=7, fig.align = 'center', eval=FALSE}
 plot(rootTP, 

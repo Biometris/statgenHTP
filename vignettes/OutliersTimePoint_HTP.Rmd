@@ -55,7 +55,7 @@ The user can set:
 
 * the smoothing parameter `mylocfit`. It is the parameter `nn` from the locfit package (Nearest neighbor component of the smoothing parameter). This parameter values range from 0 to 1, with the higher the value, the smoother the curve.
 
-* the level at which the confidence interval `confIntSize` is calculated. Large value makes a wide intrval and fewer outliers are anotated.
+* the level at which the confidence interval `confIntSize` is calculated. Large value makes a wide interval and fewer outliers are annotated.
 
 The functions are illustrated with the three example data sets. For more information about the data, see *Intro_HTP*.
 
@@ -76,7 +76,7 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             checkGenotypes = c("check1", "check2", "check3", "check4"))
 ```
 
-We are then running the function on a subset of plant to set the parameters, using the `plotIds` option. The smoothing parameter `mylocfit` is set at 0.1. The curve are atypical and to detect only the very strang point, fitted curves have to be not too smooth. The confidence interval size `confIntSize` is set at 3 which is a relatively narrow interval.
+We are then running the function on a subset of plant to set the parameters, using the `plotIds` option. The smoothing parameter `mylocfit` is set at 0.1. The curve are atypical and to detect only the very strange point, fitted curves have to be not too smooth. The confidence interval size `confIntSize` is set at 3 which is a relatively narrow interval.
 ```{r setParamVator}
 # First select a subset of plants, for example here 10 plants 
 plantSel <- phenoTP[[1]]$plotId[1:9]

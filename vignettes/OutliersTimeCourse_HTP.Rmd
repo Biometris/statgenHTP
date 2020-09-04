@@ -88,24 +88,6 @@ knitr::kable(head(pred.Dat), align=c('c','c'), booktabs = TRUE)
 
 The numerical time can be provided by the user, for example when using thermal time or a manual conversion. In this example, we provide a new column with time in hour since first measurement.
 
-```{r formatNum, echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE}
-timy <- data.frame(timePoint = unique(spatCorrVator$timePoint),
-                   timePointP1 = c(unique(spatCorrVator$timePoint)[2:73],
-                                   lubridate::ymd_hms("2018-06-18 16:37:00")),
-                   timeNum = NA)
-# diff between two time point in hour
-timeNum <- sapply( 1:nrow(timy), function(x) {
-    as.numeric(lubridate::ymd_hms(timy$timePointP1[x])-
-                             lubridate::ymd_hms(timy$timePoint)[x])
-})
-timy$timeNumDiff <- c(0,timeNum[1:(length(timeNum)-1)])
-# cum sum
-timy$timeNum <- cumsum(timy$timeNumDiff)
-# add to spatCorrVator
-spatCorrVator$timeNumHour <- timy$timeNum[match(spatCorrVator$timePoint,timy$timePoint)]
-```
-
-
 ```{r fitSplineVatorNum, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 fit.splineNum <- fitSpline(corrDat = spatCorrVator,
                            trait = "EffpsII_corr",
