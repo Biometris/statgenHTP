@@ -19,6 +19,22 @@ usethis::use_data(PhenovatorDat1, overwrite = TRUE)
 # Read raw data.
 spatCorrVator <- read.csv(system.file("extdata", "PhenovatorDat1_corr_outPoint.csv",
                                        package = "statgenHTP"))
+# Format the time in hour since first measurement
+spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
+timy <- data.frame(timePoint = unique(spatCorrVator$timePoint),
+                   timePointP1 = c(unique(spatCorrVator$timePoint)[2:73],
+                                   lubridate::ymd_hms("2018-06-18 16:37:00")),
+                   timeNum = NA)
+# diff between two time point in hour
+timeNum <- sapply( 1:nrow(timy), function(x) {
+  as.numeric(lubridate::ymd_hms(timy$timePointP1[x])-
+               lubridate::ymd_hms(timy$timePoint)[x])
+})
+timy$timeNumDiff <- c(0,timeNum[1:(length(timeNum)-1)])
+# cum sum
+timy$timeNum <- cumsum(timy$timeNumDiff)
+# add to spatCorrVator
+spatCorrVator$timeNumHour <- timy$timeNum[match(spatCorrVator$timePoint,timy$timePoint)]
 # Export to package
 usethis::use_data(spatCorrVator, overwrite = TRUE)
 
