@@ -39,3 +39,28 @@ containing the numerical time to use.}
 \description{
 Function for fitting splines.
 }
+\examples{
+## The data from the Phenovator platform have been corrected for spatial
+trends and time points outliers have been removed
+# Format the timepoint
+spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
+# Run the function to fit p-spline using the mgcv package on a subset of genotypes
+subGeno <- c("G70","G160","G151","G179","G175","G4","G55")
+fit.spline <- fitSpline(corrDat = spatCorrVator,
+                        trait = "EffpsII_corr",
+                        genotypes = subGeno,
+                        knots = 50,
+                        perMinTP = 0.8)
+# Extracting the tables of predicted values and pspline coeficients
+pred.Dat <- fit.spline$predDat
+coef.Dat <- fit.spline$coefDat
+
+## We can then visualise the p-spline predictions and first derivatives
+# for a subset of genotypes...
+plot(fit.spline, genotypes = "G160")
+# ...or for a subset of plots.
+plot(fit.spline, plotIds = "c10r29", plotType =  "predictions")
+plot(fit.spline, plotIds = "c10r29", plotType =  "derivatives")
+
+
+}

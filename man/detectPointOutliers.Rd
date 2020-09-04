@@ -34,7 +34,8 @@ columns.
 }
 }
 \description{
-Function to model each curve of a dataset using a local regression
+Function to model each curve of a dataset using a local regression. This is the
+first step of the detection of outlying points in a curve.
 }
 \details{
 see locfit() help function from the locfit R library. The user can act on:
@@ -46,6 +47,30 @@ see locfit() help function from the locfit R library. The user can act on:
 }
 to produce the grahics of the prediction and detected outliers, please use
 plotDetectPointOutlierLocFit() function.
+}
+\examples{
+## Create a TP object containing the data from the Phenovator.
+PhenovatorDat1 <- PhenovatorDat1[!PhenovatorDat1$pos \%in\% c("c24r41", "c7r18","c7r49"),]
+phenoTP <- createTimePoints(dat = PhenovatorDat1,
+                            experimentName = "Phenovator",
+                            genotype = "Genotype",
+                            timePoint = "timepoints",
+                            repId = "Replicate",
+                            plotId = "pos",
+                            rowNum = "y", colNum = "x",
+                            addCheck = TRUE,
+                            checkGenotypes = c("check1","check2","check3","check4"))
+
+## First select a subset of plants, for example here 10 plants
+plantSel <- phenoTP[[1]]$plotId[1:9]
+# plantSel <- c("c11r55","c6r49","c21r16","c13r45")
+# Then run on the subset
+resuVatorHTP <- detectPointOutliers(TP = phenoTP,
+                                    trait = "EffpsII",
+                                    plotIds = plantSel,
+                                    confIntSize = 3,
+                                    mylocfit = 0.1)
+
 }
 \seealso{
 plot.pointOutliers

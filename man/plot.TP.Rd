@@ -128,12 +128,12 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             plotId = "pos",
                             rowNum = "y", colNum = "x",
                             addCheck = TRUE,
-                            checkGenotypes = c("check1", "check2", "check3", "check4"))
+                            checkGenotypes = c("check1","check2","check3","check4"))
 
 ## Plot the layout for the third time point with the check genotypes highlighted
 plot(phenoTP,
      plotType = "layout",
-     timePoints = c(3),
+     timePoints = 3,
      highlight = c("check1", "check2", "check3", "check4"))
 
 ## Create a boxplot for "EffpsII" with 5 time points and boxes colored
@@ -148,7 +148,7 @@ plot(phenoTP,
 plot(phenoTP,
      plotType = "cor",
      traits = "EffpsII",
-     timePoints = seq(from=1,to=73,by=5))
+     timePoints = seq(from=1, to=73, by=5))
 
 ## Plot the raw data of four genotypes for the trait "EffpsII":
 plot(phenoTP,

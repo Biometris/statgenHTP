@@ -41,3 +41,24 @@ are fitted. If \code{NULL}, splines will be fitted for all plotIds.}
 Function for extracting parameter estimates from fitted splines on a
 specified interval.
 }
+\examples{
+# Format the timepoint
+spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
+# Run the function to fit p-spline using the mgcv package on a subset of genotypes
+subGeno <- c("G70","G160","G151","G179","G175","G4","G55")
+fit.spline <- fitSpline(corrDat = spatCorrVator,
+                        trait = "EffpsII_corr",
+                        genotypes = subGeno,
+                        knots = 50,
+                        perMinTP = 0.8)
+
+# Estimate the maximum value of the trait at the beginning of the time course
+paramVator1 <-
+     estimateSplineParameters(HTPSpline = fit.spline,
+                              estimate = "predictions",
+                              what = "max",
+                              timeMin = 1527784620,
+                              timeMax = 1528500000,
+                              genotypes = subGeno)
+
+}

@@ -10,7 +10,7 @@ attributes.}
 \arguments{
 \item{x}{An object of class TP.}
 
-\item{i}{An index specifying the element to extract of replace.}
+\item{i}{An index specifying the element to extract or replace.}
 
 \item{...}{Ignored.}
 }

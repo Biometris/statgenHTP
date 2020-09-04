@@ -34,3 +34,33 @@ The input can either be a data.frame, specified in \code{dat}, or the output
 of the fitSpline function, specified in \code{fitSpline}. Exactly one of
 these should be provided as input for the function.
 }
+\examples{
+# Format the timepoint
+spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
+# Run the function to fit p-spline using the mgcv package on a subset of genotypes
+subGeno <- c("G70","G160","G151","G179","G175","G4","G55")
+fit.spline <- fitSpline(corrDat = spatCorrVator,
+                        trait = "EffpsII_corr",
+                        genotypes = subGeno,
+                        knots = 50,
+                        perMinTP = 0.8)
+# Extracting the tables of predicted values and pspline coeficients
+pred.Dat <- fit.spline$predDat
+coef.Dat <- fit.spline$coefDat
+
+## The coefficients are then used to tag suspect time courses
+outVator <- detectTimeCourseOutliers(corrDat = spatCorrVator,
+                         predDat = pred.Dat,
+                         coefDat = coef.Dat,
+                         trait = "EffpsII_corr",
+                         genotypes = subGeno,
+                         thrCor = 0.9,
+                         thrPca = 1)
+
+## The outliers can be removed from the dataset
+spatCorrVatorOut <-
+       removeTimeCourseOutliers(dat = spatCorrVator,
+                                timeCourseOutliers = outVator)
+
+
+}

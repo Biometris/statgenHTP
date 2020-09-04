@@ -62,7 +62,6 @@
 #' number.
 #'
 #' @examples ## Create a TP object containing the data from the Phenovator.
-#' data("PhenovatorDat1")
 #' phenoTP <- createTimePoints(dat = PhenovatorDat1,
 #'                             experimentName = "Phenovator",
 #'                             genotype = "Genotype",
@@ -71,7 +70,7 @@
 #'                             plotId = "pos",
 #'                             rowNum = "y", colNum = "x",
 #'                             addCheck = TRUE,
-#'                             checkGenotypes = c("check1", "check2", "check3", "check4"))
+#'                             checkGenotypes = c("check1","check2","check3","check4"))
 #' summary(phenoTP)
 #'
 #' @family functions for TP objects
@@ -365,12 +364,12 @@ summary.TP <- function(object,
 #'                             plotId = "pos",
 #'                             rowNum = "y", colNum = "x",
 #'                             addCheck = TRUE,
-#'                             checkGenotypes = c("check1", "check2", "check3", "check4"))
+#'                             checkGenotypes = c("check1","check2","check3","check4"))
 #'
 #' ## Plot the layout for the third time point with the check genotypes highlighted
 #' plot(phenoTP,
 #'      plotType = "layout",
-#'      timePoints = c(3),
+#'      timePoints = 3,
 #'      highlight = c("check1", "check2", "check3", "check4"))
 #'
 #' ## Create a boxplot for "EffpsII" with 5 time points and boxes colored
@@ -385,7 +384,7 @@ summary.TP <- function(object,
 #' plot(phenoTP,
 #'      plotType = "cor",
 #'      traits = "EffpsII",
-#'      timePoints = seq(from=1,to=73,by=5))
+#'      timePoints = seq(from=1, to=73, by=5))
 #'
 #' ## Plot the raw data of four genotypes for the trait "EffpsII":
 #' plot(phenoTP,
@@ -735,7 +734,7 @@ plot.TP <- function(x,
 #' attributes.
 #'
 #' @param x An object of class TP.
-#' @param i An index specifying the element to extract of replace.
+#' @param i An index specifying the element to extract or replace.
 #' @param ... Ignored.
 #'
 #' @export

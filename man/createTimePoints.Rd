@@ -94,7 +94,6 @@ plant. It cannot occur more than once per time point.
 }
 \examples{
 ## Create a TP object containing the data from the Phenovator.
-data("PhenovatorDat1")
 phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             experimentName = "Phenovator",
                             genotype = "Genotype",
@@ -103,7 +102,7 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             plotId = "pos",
                             rowNum = "y", colNum = "x",
                             addCheck = TRUE,
-                            checkGenotypes = c("check1", "check2", "check3", "check4"))
+                            checkGenotypes = c("check1","check2","check3","check4"))
 summary(phenoTP)
 
 }

@@ -146,7 +146,7 @@ summary.fitMod <- function(object,
 #'                             plotId = "pos",
 #'                             rowNum = "y", colNum = "x",
 #'                             addCheck = TRUE,
-#'                             checkGenotypes = c("check1", "check2", "check3", "check4"))
+#'                             checkGenotypes = c("check1","check2","check3","check4"))
 #'
 #' ## Fit a SpATS model on few time points:
 #' modPhenoSp <- fitModels(TP = phenoTP,

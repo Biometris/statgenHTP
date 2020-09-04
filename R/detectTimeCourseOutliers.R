@@ -19,6 +19,32 @@
 #'
 #' @importFrom stats dist
 #'
+#' @examples ## The data from the Phenovator platform have been corrected for spatial
+#' trends and time points outliers have been removed
+#' # Format the timepoint
+#' spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
+#' # Run the function to fit p-spline using the mgcv package on a subset of genotypes
+#' subGeno <- c("G70","G160","G151","G179","G175","G4","G55")
+#' fit.spline <- fitSpline(corrDat = spatCorrVator,
+#'                         trait = "EffpsII_corr",
+#'                         genotypes = subGeno,
+#'                         knots = 50,
+#'                         perMinTP = 0.8)
+#' # Extracting the tables of predicted values and pspline coeficients
+#' pred.Dat <- fit.spline$predDat
+#' coef.Dat <- fit.spline$coefDat
+#'
+#' ## The coefficients are then used to tag suspect time courses
+#' outVator <- detectTimeCourseOutliers(corrDat = spatCorrVator,
+#'                          predDat = pred.Dat,
+#'                          coefDat = coef.Dat,
+#'                          trait = "EffpsII_corr",
+#'                          genotypes = subGeno,
+#'                          thrCor = 0.9,
+#'                          thrPca = 1)
+#' # The `outVator` can be visualised by selecting genotypes
+#' plot(outVator, genotypes = "G151")
+#'
 #' @export
 detectTimeCourseOutliers <- function(corrDat,
                                      predDat,
@@ -221,6 +247,32 @@ detectTimeCourseOutliers <- function(corrDat,
 #'
 #' @param x An object of class timeCourseOutliers.
 #'
+#' @examples ## The data from the Phenovator platform have been corrected for spatial
+#' trends and time points outliers have been removed
+#' # Format the timepoint
+#' spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
+#' # Run the function to fit p-spline using the mgcv package on a subset of genotypes
+#' subGeno <- c("G70","G160","G151","G179","G175","G4","G55")
+#' fit.spline <- fitSpline(corrDat = spatCorrVator,
+#'                         trait = "EffpsII_corr",
+#'                         genotypes = subGeno,
+#'                         knots = 50,
+#'                         perMinTP = 0.8)
+#' # Extracting the tables of predicted values and pspline coeficients
+#' pred.Dat <- fit.spline$predDat
+#' coef.Dat <- fit.spline$coefDat
+#'
+#' ## The coefficients are then used to tag suspect time courses
+#' outVator <- detectTimeCourseOutliers(corrDat = spatCorrVator,
+#'                          predDat = pred.Dat,
+#'                          coefDat = coef.Dat,
+#'                          trait = "EffpsII_corr",
+#'                          genotypes = subGeno,
+#'                          thrCor = 0.9,
+#'                          thrPca = 1)
+#' # The `outVator` can be visualised by selecting genotypes
+#' plot(outVator, genotypes = "G151")
+#'
 #' @export
 plot.timeCourseOutliers <- function(x,
                                     ...,
@@ -353,6 +405,34 @@ plot.timeCourseOutliers <- function(x,
 #' @return Depending on the input either a data.frame or an object of class
 #' HTPSpline for which the outliers specified in \code{timeCourseOutliers} are
 #' set to NA.
+#'
+#' @examples # Format the timepoint
+#' spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
+#' # Run the function to fit p-spline using the mgcv package on a subset of genotypes
+#' subGeno <- c("G70","G160","G151","G179","G175","G4","G55")
+#' fit.spline <- fitSpline(corrDat = spatCorrVator,
+#'                         trait = "EffpsII_corr",
+#'                         genotypes = subGeno,
+#'                         knots = 50,
+#'                         perMinTP = 0.8)
+#' # Extracting the tables of predicted values and pspline coeficients
+#' pred.Dat <- fit.spline$predDat
+#' coef.Dat <- fit.spline$coefDat
+#'
+#' ## The coefficients are then used to tag suspect time courses
+#' outVator <- detectTimeCourseOutliers(corrDat = spatCorrVator,
+#'                          predDat = pred.Dat,
+#'                          coefDat = coef.Dat,
+#'                          trait = "EffpsII_corr",
+#'                          genotypes = subGeno,
+#'                          thrCor = 0.9,
+#'                          thrPca = 1)
+#'
+#' ## The outliers can be removed from the dataset
+#' spatCorrVatorOut <-
+#'        removeTimeCourseOutliers(dat = spatCorrVator,
+#'                                 timeCourseOutliers = outVator)
+#'
 #'
 #' @export
 removeTimeCourseOutliers <- function(dat = NULL,
