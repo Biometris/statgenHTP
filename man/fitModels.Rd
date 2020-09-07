@@ -138,14 +138,12 @@ modPhenoSpAs <- fitModels(TP = phenoTP,
 ## Fit a model with SpATS on few time points with two variables for geno.decomp:
 data("PhenoarchDat1")
 phenoTParch <- createTimePoints(dat = PhenoarchDat1,
-                                experimentName = "ZA17",
+                                experimentName = "Phenoarch",
                                 genotype = "geno",
-                                timePoint = "Date",
-                                repId = "Rep",
+                                timePoint = "Time",
                                 plotId = "pos",
-                                rowNum = "Position",
-                                colNum = "Line")
-
+                                rowNum = "Row",
+                                colNum = "Col")
 
 modPhenoSpGD <- fitModels(TP = phenoTParch,
                           trait = "LA_Estimated",

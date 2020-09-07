@@ -50,7 +50,6 @@
 #'
 #' ## First select a subset of plants, for example here 10 plants
 #' plantSel <- phenoTP[[1]]$plotId[1:9]
-#' # plantSel <- c("c11r55","c6r49","c21r16","c13r45")
 #' # Then run on the subset
 #' resuVatorHTP <- detectPointOutliers(TP = phenoTP,
 #'                                     trait = "EffpsII",
@@ -126,7 +125,6 @@ detectPointOutliers <- function(TP,
 #'
 #' ## First select a subset of plants, for example here 10 plants
 #' plantSel <- phenoTP[[1]]$plotId[1:9]
-#' # plantSel <- c("c11r55","c6r49","c21r16","c13r45")
 #' # Then run on the subset
 #' resuVatorHTP <- detectPointOutliers(TP = phenoTP,
 #'                                     trait = "EffpsII",
@@ -244,7 +242,6 @@ plot.pointOutliers <- function(x,
 #'
 #' ## First select a subset of plants, for example here 10 plants
 #' plantSel <- phenoTP[[1]]$plotId[1:9]
-#' # plantSel <- c("c11r55","c6r49","c21r16","c13r45")
 #' # Then run on the subset
 #' resuVatorHTP <- detectPointOutliers(TP = phenoTP,
 #'                                     trait = "EffpsII",

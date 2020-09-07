@@ -43,7 +43,7 @@ Function for detecting outliers.
 }
 \examples{
 ## The data from the Phenovator platform have been corrected for spatial
-trends and time points outliers have been removed
+# trends and time points outliers have been removed
 # Format the timepoint
 spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
 # Run the function to fit p-spline using the mgcv package on a subset of genotypes
