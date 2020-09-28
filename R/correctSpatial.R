@@ -1,4 +1,4 @@
-#' Correct for spatial effects and other unnecesary factors.
+#' Correct for spatial effects and other unnecessary factors.
 #'
 #' @keywords internal
 correctSpatial <- function(fitMod) {
@@ -28,31 +28,44 @@ correctSpatialSpATS <- function(fitMod) {
   fixVars <- attr(terms(fitMod$model$fixed), "term.labels")
   ## Subset on order = 1 to remove interaction terms.
   fixVars <- fixVars[attr(terms(fitMod$model$fixed), "order") == 1]
-  predVars <- setdiff(c(fixVars, "colNum", "rowNum", "colId", "rowId"),
-                      geno.decomp)
+  fixVars <- setdiff(fixVars, c("genotype", "genoCheck", geno.decomp))
+
+  randVars <- attr(terms(fitMod$model$random), "term.labels")
+  ## Subset on order = 1 to remove interaction terms.
+  randVars <- randVars[attr(terms(fitMod$model$random), "order") == 1]
+  randVars <- setdiff(randVars, c("genotype", "genoCheck", geno.decomp,
+                                  "rowNum", "colNum"))
+  ## Get name of genotype column used.
+  genoCol <- fitMod$model$geno$genotype
+  useGenoDecomp <- !is.null(fitMod$model$geno$geno.decomp)
+  ## Genotype prediction (including the effect of geno.decomp as well as
+  ## the intercept).
+  predVars <- c(genoCol,
+                if (useGenoDecomp) "geno.decomp",
+                if (useCheck) "check")
   pred <- predict(fitMod, which = predVars, predFixed = "marginal")
-  pred <- pred[, !colnames(pred) %in% c("genotype", geno.decomp)]
-  ## Merge genotype and timepoint to data
-  pred <- merge(pred, fitMod$data[c("rowNum", "colNum", "genotype",
-                                    "plotId", "timePoint", trait,
-                                    geno.decomp)],
-                by = c("rowNum", "colNum"))
+  ## Remove redundant columns since these are added from the data
+  ## used for fitting the model.
+  pred <- pred[, !colnames(pred) %in% c(fixVars, randVars)]
+  ## Merge genotype and timepoint to data.
+  modDat <- fitMod$data[c("genotype", "plotId", "timePoint", trait,
+                          geno.decomp, fixVars, randVars)]
+  modDat[["resid"]] <- fitMod$residuals
+
+  pred <- merge(modDat, pred, by = predVars, all.x = TRUE)
   if (!is.null(geno.decomp) && !useCheck) {
     ## Genotype was converted to an interaction term of genotype and
-    ## geno.decomp in the proces of fitting the model. That needs to be
+    ## geno.decomp in the process of fitting the model. That needs to be
     ## undone to get the genotype back in the output again.
     genoStart <- nchar(as.character(pred[["geno.decomp"]])) + 2
     pred[["genotype"]] <- as.factor(substring(pred[["genotype"]],
                                                 first = genoStart))
   }
-  ## Get the intercept from the coefficients.
-  intercept <- fitMod$coeff["Intercept"]
   ## Obtain the corrected trait.
-  pred[[newTrait]] <- pred[[trait]] - pred[["predicted.values"]] + intercept
+  pred[[newTrait]] <- pred[["predicted.values"]] + pred[["resid"]]
   ## Select the variables needed for subsequent analyses.
   pred <- pred[c(newTrait, trait, "genotype", geno.decomp,
-                 setdiff(predVars, c("rowNum", "colNum")), "plotId",
-                 "timePoint")]
+               fixVars, randVars, "plotId", "timePoint")]
 }
 
 #' @keywords internal
