@@ -43,7 +43,15 @@ correctSpatialSpATS <- function(fitMod) {
   predVars <- c(genoCol,
                 if (useGenoDecomp) "geno.decomp",
                 if (useCheck) "check")
-  pred <- predict(fitMod, which = predVars, predFixed = "marginal")
+  pred <- predict(fitMod, which = predVars, predFixed = "marginal",
+                  return.vcov.matrix = TRUE)
+  ## Compute Weights based on the inverse of the var-cov (vcov) matrix.
+  ## Get the vcov matrix from pred.
+  vcov <- attr(x = pred, which = "vcov")
+  ## Add the residual error to the diagonal of the vcov matrix
+  ## Required since the residuals are added to the predictions.
+  vcovComb <- as.matrix(vcov) + fitMod$psi[1] * diag(nrow(vcov))
+  pred[["wt"]] <- sqrt(diag(solve(vcovComb)))
   ## Remove redundant columns since these are added from the data
   ## used for fitting the model.
   pred <- pred[, !colnames(pred) %in% c(fixVars, randVars)]
@@ -51,7 +59,6 @@ correctSpatialSpATS <- function(fitMod) {
   modDat <- fitMod$data[c("genotype", "plotId", "timePoint", trait,
                           geno.decomp, fixVars, randVars)]
   modDat[["resid"]] <- fitMod$residuals
-
   pred <- merge(modDat, pred, by = predVars, all.x = TRUE)
   if (!is.null(geno.decomp) && !useCheck) {
     ## Genotype was converted to an interaction term of genotype and
@@ -64,7 +71,7 @@ correctSpatialSpATS <- function(fitMod) {
   ## Obtain the corrected trait.
   pred[[newTrait]] <- pred[["predicted.values"]] + pred[["resid"]]
   ## Select the variables needed for subsequent analyses.
-  pred <- pred[c(newTrait, trait, "genotype", geno.decomp,
+  pred <- pred[c(newTrait, trait, "wt", "genotype", geno.decomp,
                fixVars, randVars, "plotId", "timePoint")]
 }
 
