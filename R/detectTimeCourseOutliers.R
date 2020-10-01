@@ -470,7 +470,7 @@ removeTimeCourseOutliers <- function(dat = NULL,
       dat[dat[["plotId"]] %in% timeCourseOutliers[["plotId"]], trait] <- NA
     } else if (!is.null(fitSpline)) {
       fitSpline$coefDat[fitSpline$coefDat[["plotId"]] %in%
-                          timeCourseOutliers[["plotId"]], trait] < NA
+                          timeCourseOutliers[["plotId"]], trait] <- NA
       fitSpline$predDat[fitSpline$predDat[["plotId"]] %in%
                           timeCourseOutliers[["plotId"]], c("pred.value",
                                                             "deriv")] <- NA
