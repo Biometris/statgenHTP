@@ -307,7 +307,7 @@ fitModels <- function(TP,
       modDat <- timePoint[colnames(timePoint) %in% modCols]
       modDat <- droplevels(modDat)
       ## number of segments for SpATS.
-      nseg = c(nlevels(modDat[["colId"]]), nlevels(modDat[["rowId"]])) / 2
+      nseg <- c(nlevels(modDat[["colId"]]), nlevels(modDat[["rowId"]])) #/ 2
       ## Fit and return the model.
       SpATS::SpATS(response = trait, fixed = fixedForm,
                    random = randForm,
