@@ -35,7 +35,7 @@ to model the local trends [@Cullis2006]. These models are sometimes difficult to
 the selection of a best model is complicated, therefore preventing an automated 
 phenotypic analysis of series of trials. An attractive alternative is the use of 
 2-dimensional P-spline surfaces, the SpATS model (Spatial Analysis of Trials using Splines, 
-[@RodAlv2017]). This model corrects for spatial trends, row and column effects and has 
+[@RodAlv2018]). This model corrects for spatial trends, row and column effects and has 
 the advantage of avoiding the model selection step. It also provides the user with 
 graphical output that are easy to interpret. It has proven to be a good alternative to the 
 classical AR1×AR1 modeling in the field [@Velazco2017]. It is also suitable for 
@@ -75,18 +75,18 @@ phenoTPOut <- removePointOutliers(phenoTP,
 
 After creating a `TP` object, a model can be fitted on the data. This is done 
 using the function `fitModels`, which uses two different engines for fitting the models, namely
-*SpATS* [@RodAlv2017] and *ASReml* [@Gilmour2017]. For models with row and column coordinates,
-SpATS is the default engine (see part [**4.1**](#spats)). This can  be overruled by specifying the 
-function parameter `engine` and using asreml for spatial models (see part [**4.2**](#asreml)). When the 
+*SpATS* [@RodAlv2018] and *ASReml* [@Gilmour2017]. For models with row and column coordinates,
+SpATS is the default engine (see part [**2.1**](#spats)). This can  be overruled by specifying the 
+function parameter `engine` and using asreml for spatial models (see part [**2.2**](#asreml)). When the 
 row and column coordinates are not available, asreml is used for modeling without 
-spatial components (see part [**4.3**](#asremlnoSP)). Finally, it is possible to decompose the genotypic 
-variance using, for example, a treatment effect (see part [**4.4**](#genodecomp)).
+spatial components (see part [**2.3**](#asremlnoSP)). Finally, it is possible to decompose the genotypic 
+variance using, for example, a treatment effect (see part [**2.4**](#genodecomp)).
 
 The output of `fitModels` is an object of class `fitMod`, a list of fitted models with one item for each time point the model was fitted for. 
 
 ## Spatial model using SpATS {#spats}
 
-When SpATS is used for modeling, an extra spatial term is included in the model. This spatial component is composed using the `PSANOVA` function in the SpATS package which uses 2-dimensional smoothing with P-splines as described in @Lee2013 and in @RodAlv2017. 
+When SpATS is used for modeling, an extra spatial term is included in the model. This spatial component is composed using the `PSANOVA` function in the SpATS package which uses 2-dimensional smoothing with P-splines as described in @Lee2013 and in @RodAlv2018. 
 See `help(PSANOVA, SpATS)` for a detailed description. Extra fixed effects may be fitted using the option `extraFixedFactors`. The model can also be fitted following a resolvable row-column design setting `useRepId` as `TRUE`. The model specifications are listed in the table below. 
 
 option | model fitted | spatial term |
@@ -187,7 +187,7 @@ modPhenoSpRCD <- fitModels(TP = phenoTPOut,
 The first type of plot that can be made for fitted models, is a spatial plot per time 
 point using `plotType = "spatial"`. It consists of five plots, spatial plots of the raw 
 data, fitted values, residuals and either BLUEs or BLUPs, and a histogram of the BLUEs or 
-BLUPs. When SpATS is used for modeling an extra plot with the fitted spatial trend is included. 
+BLUPs. When SpATS is used for modeling an extra plot with the fitted spatial trend is included (see [@RodAlv2018] and [@Velazco2017] for interpretation). 
 
 Note that spatial plots can only be made if spatial information, i.e. "rowNum" and
 "colNum", is available in the `TP` object.

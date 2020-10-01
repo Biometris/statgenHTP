@@ -17,7 +17,7 @@
 #' in the model. This term is constructed using the function
 #' \code{\link[SpATS]{PSANOVA}} from the SpATS package as\cr
 #' \code{PSANOVA(colNum, rowNum, nseg = nSeg, nest.div = 2)}
-#' where\cr \code{nSeg = (number of columns/2, number of rows/2)}.\cr\cr
+#' where\cr \code{nSeg = (number of columns, number of rows)}.\cr\cr
 #' When \code{asreml} is used for modeling and \code{spatial = TRUE},
 #' four models are fitted with different random terms and covariance structures.
 #' The best model is determined based on a goodness-of-fit criterion, AIC,
