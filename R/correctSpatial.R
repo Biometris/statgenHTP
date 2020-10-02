@@ -110,13 +110,16 @@ correctSpatialAsreml <- function(fitMod) {
   ## Include in the prediction the factors (variables) whose effect we are
   ## interested in removing.
   fixVars <- all.vars(update(fitMod$formulae$fixed, 0~.))
-  fixVars <- setdiff(fixVars, c("genotype", "genoCheck", geno.decomp))
+  fixVars <- setdiff(fixVars, c("genotype", "genoCheck",
+                                if (useGenoDecomp) "geno.decomp"))
   randVars <- all.vars(fitMod$formulae$random)
-  randVars <- setdiff(randVars, c("genotype", "genoCheck", geno.decomp))
+  randVars <- setdiff(randVars, c("genotype", "genoCheck",
+                                  if (useGenoDecomp) "geno.decomp"))
   predVars <- c(fixVars, randVars)
   modDat <- fitMod$call$data[union(c("genotype", if (useCheck) "check",
                                      "plotId", "timePoint", trait,
-                                     geno.decomp), predVars)]
+                                     if (useGenoDecomp) "geno.decomp"),
+                                   predVars)]
   modDat[["resid"]] <- residuals(fitMod)
   # ## Predict fixed + random effects.
   # if (length(predVars) > 0) {
@@ -142,6 +145,7 @@ correctSpatialAsreml <- function(fitMod) {
   ## Remove row/col combinations added when fitting models.
   pred <- pred[!is.na(pred[["plotId"]]), ]
   ## Select the variables needed for subsequent analyses.
-  pred <- pred[c(newTrait, trait, "wt", "genotype", geno.decomp, fixVars,
-                 randVars, "plotId", "timePoint")]
+  pred <- pred[c(newTrait, trait, "wt", "genotype",
+                 if (useGenoDecomp) "geno.decomp", fixVars, randVars,
+                 "plotId", "timePoint")]
 }
