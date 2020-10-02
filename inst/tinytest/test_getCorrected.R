@@ -140,7 +140,8 @@ expect_equal(corrOut[["t1_corr"]], corrIn[["t1_corr"]])
 
 ## Fit some models with different options that influence output
 ## of getCorrected function.
-testFitModAs1 <- fitModels(testTP, trait = "t1", engine = "asreml", quiet = TRUE)
+testFitModAs1 <- fitModels(testTP, trait = "t1", engine = "asreml",
+                           quiet = TRUE)
 testFitModAs2 <- fitModels(testTP, trait = "t1", extraFixedFactors = "Basin",
                            engine = "asreml", quiet = TRUE)
 testFitModAs3 <- fitModels(testTP, trait = "t1", geno.decomp = "repId",

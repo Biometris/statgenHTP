@@ -11,15 +11,16 @@
 #' are fitted. If \code{NULL}, splines will be fitted for all plotIds.
 #' @param knots The number of knots to use when fitting the spline.
 #' @param useTimeNumber Should the timeNumber be used instead of the timePoint?
-#' @param timeNumber If \code{useTimeNumber = TRUE}, a character vector indicating the column
-#' containing the numerical time to use.
+#' @param timeNumber If \code{useTimeNumber = TRUE}, a character vector
+#' indicating the column containing the numerical time to use.
 #' @param perMinTP The percentage of minimum number of time points to use.
 #'
 #' @examples ## The data from the Phenovator platform have been corrected for
 #' # spatial trends and time points outliers have been removed
 #' # Format the timepoint
 #' spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
-#' # Run the function to fit p-spline using the mgcv package on a subset of genotypes
+#' # Run the function to fit p-spline using the mgcv package on a subset of
+#' # genotypes
 #' subGeno <- c("G70","G160","G151","G179","G175","G4","G55")
 #' fit.spline <- fitSpline(corrDat = spatCorrVator,
 #'                         trait = "EffpsII_corr",
@@ -58,7 +59,8 @@ fitSpline <- function(corrDat,
                         length(timeNumber) > 1)) {
     stop("timeNumber should be a character string of length 1.\n")
   }
-  fitLevel <- if (hasName(x = corrDat, name = "plotId")) "plotId" else "genotype"
+  fitLevel <- if (hasName(x = corrDat, name = "plotId")) "plotId" else
+    "genotype"
   corrCols <- c("genotype", trait, if (fitLevel == "plotId") "plotId",
                 if (useTimeNumber) timeNumber else "timePoint")
   if (!all(hasName(x = corrDat, name = corrCols))) {
@@ -66,7 +68,8 @@ fitSpline <- function(corrDat,
          paste(corrCols, collapse = ", "))
   }
   if (!is.null(genotypes) &&
-      (!is.character(genotypes) && !all(genotypes %in% corrDat[["genotype"]]))) {
+      (!is.character(genotypes) &&
+       !all(genotypes %in% corrDat[["genotype"]]))) {
     stop("genotypes should be a character vector of genotypes in corrDat.\n")
   }
   if (!is.null(plotIds) &&
@@ -145,8 +148,10 @@ fitSpline <- function(corrDat,
       coeff <- data.frame(obj$coefficients, plotId = plant)
       coeff$type <- row.names(coeff)
       ## Restrict dense grid to points within observation range.
-      timeRangePl <- timeRange[timeRange[["timeNumber"]] >= min(dat[["timeNumber"]]) &
-                                 timeRange[["timeNumber"]] <= max(dat[["timeNumber"]]),
+      timeRangePl <- timeRange[timeRange[["timeNumber"]] >=
+                                 min(dat[["timeNumber"]]) &
+                                 timeRange[["timeNumber"]] <=
+                                 max(dat[["timeNumber"]]),
                                , drop = FALSE]
       ## Predictions on a dense grid.
       yPred <- predict(obj, newdata = timeRangePl)
@@ -214,7 +219,8 @@ plot.HTPSpline <- function(x,
   useTimeNumber <- attr(x, which = "useTimeNumber")
   predDat <- x$predDat
   if (!is.null(genotypes) &&
-      (!is.character(genotypes) && !all(genotypes %in% predDat[["genotype"]]))) {
+      (!is.character(genotypes) &&
+       !all(genotypes %in% predDat[["genotype"]]))) {
     stop("genotypes should be a character vector of genotypes in predDat.\n")
   }
   if (!is.null(plotIds) &&
@@ -246,8 +252,8 @@ plot.HTPSpline <- function(x,
   }
   timeVar <- if (useTimeNumber) "timeNumber" else "timePoint"
   p <- ggplot(modDat, aes_string(x = timeVar, y = trait)) +
-    geom_line(data = predDat,
-              aes_string(x = timeVar, y = plotVar), col = "blue", na.rm = TRUE) +
+    geom_line(data = predDat, aes_string(x = timeVar, y = plotVar),
+              col = "blue", na.rm = TRUE) +
     labs(y = trait, x = timeVar)
   if (plotType == "predictions") {
     p <- p + geom_point(na.rm = TRUE) +
@@ -324,7 +330,8 @@ plot.HTPSpline <- function(x,
 #'
 #' @examples # Format the timepoint
 #' spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
-#' # Run the function to fit p-spline using the mgcv package on a subset of genotypes
+#' # Run the function to fit p-spline using the mgcv package on a subset of
+#' # genotypes
 #' subGeno <- c("G70","G160","G151","G179","G175","G4","G55")
 #' fit.spline <- fitSpline(corrDat = spatCorrVator,
 #'                         trait = "EffpsII_corr",
@@ -356,7 +363,8 @@ estimateSplineParameters <- function(HTPSpline,
   fitLevel <- attr(HTPSpline, which = "fitLevel")
   predDat <- HTPSpline$predDat
   if (!is.null(genotypes) &&
-      (!is.character(genotypes) && !all(genotypes %in% predDat[["genotype"]]))) {
+      (!is.character(genotypes) &&
+       !all(genotypes %in% predDat[["genotype"]]))) {
     stop("genotypes should be a character vector of genotypes in predDat.\n")
   }
   if (!is.null(plotIds) &&
@@ -378,14 +386,16 @@ estimateSplineParameters <- function(HTPSpline,
   if (is.null(timeMin)) {
     timeMin <- min(predDat[[timeVar]])
   } else {
-    if (timeMin < min(predDat[[timeVar]]) || timeMin > max(predDat[[timeVar]])) {
+    if (timeMin < min(predDat[[timeVar]]) ||
+        timeMin > max(predDat[[timeVar]])) {
       stop("timeMin should be within the time interval in the data.\n")
     }
   }
   if (is.null(timeMax)) {
     timeMax <- max(predDat[[timeVar]])
   } else {
-    if (timeMax < min(predDat[[timeVar]]) || timeMax > max(predDat[[timeVar]])) {
+    if (timeMax < min(predDat[[timeVar]]) ||
+        timeMax > max(predDat[[timeVar]])) {
       stop("timeMax should be within the time interval in the data.\n")
     }
   }

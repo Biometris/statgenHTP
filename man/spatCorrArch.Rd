@@ -7,12 +7,14 @@
 \format{
 A data.frame with 37,038 rows and 9 columns:
 \describe{
-  \item{timeNumber}{Time number obtained after formatting the original dataset with the function createTP.}
+  \item{timeNumber}{Time number obtained after formatting the original
+  dataset with the function createTP.}
   \item{timePoint}{Original time point.}
   \item{Biomass_Estimated_corr}{Biomass, corrected data}
   \item{Biomass_Estimated}{Biomass from the picture, raw data}
   \item{genotype}{Genotypes}
-  \item{geno.decomp}{Combination of treatment levels to decompose the genotypic variance (see vignettes)}
+  \item{geno.decomp}{Combination of treatment levels to decompose the
+  genotypic variance (see vignettes)}
   \item{colId}{Column coordinate}
   \item{rowId}{Row coordinate}
   \item{plotId}{Unique pot ID using rowcol coordinates}
@@ -22,8 +24,8 @@ A data.frame with 37,038 rows and 9 columns:
 spatCorrArch
 }
 \description{
-This dataset contains the corrected data obtained by (1) removing point outliers
-and (2) running a spatial model on the PhenoarchDat1 dataset.
+This dataset contains the corrected data obtained by (1) removing point
+outliers and (2) running a spatial model on the PhenoarchDat1 dataset.
 See the vignettes for details.
 }
 \keyword{datasets}

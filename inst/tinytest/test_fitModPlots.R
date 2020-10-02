@@ -243,7 +243,7 @@ expect_silent(p2 <- plot(testFitMod2, plotType = "spatial", outFile = tmpFile))
 if (at_home()) {
   ## Check that spatial plots cannot be made for asreml when spatial = FALSE.
   expect_error(plot(testFitModAs, plotType = "spatial"),
-               "only be made when setting spatial = TRUE when fitting the asreml models")
+               "when setting spatial = TRUE when fitting the asreml models")
 
   p3 <- plot(testFitModAs2, plotType = "spatial")
   expect_equal(length(p3), 5)

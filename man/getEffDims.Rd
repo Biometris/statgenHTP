@@ -44,14 +44,16 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             plotId = "pos",
                             rowNum = "y", colNum = "x",
                             addCheck = TRUE,
-                            checkGenotypes = c("check1", "check2", "check3", "check4"))
+                            checkGenotypes = c("check1", "check2",
+                                               "check3", "check4"))
 
 ## Fit a SpATS model on few time points:
 modPhenoSp <- fitModels(TP = phenoTP,
                         trait = "EffpsII",
                         timePoints = seq(1,73,by=5))
 
-## Extract the effective dimensions for all available time points in the model object:
+## Extract the effective dimensions for all available time points in the
+## model object:
 effDimSp <- getEffDims(modPhenoSp)
 
 }

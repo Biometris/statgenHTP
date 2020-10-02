@@ -9,7 +9,8 @@ A data.frame with 103,839 rows and 10 columns:
 \describe{
   \item{Genotype}{Genotypes}
   \item{Basin}{Table of experiment}
-  \item{Replicate}{Block define after sowing for post-blocking. They are not full-resolvable blocks.}
+  \item{Replicate}{Block define after sowing for post-blocking. They are not
+  full-resolvable blocks.}
   \item{Image_pos}{Position of the camera}
   \item{x}{Row coordinate}
   \item{y}{Column coordinate}
@@ -24,11 +25,12 @@ PhenovatorDat1
 }
 \description{
 A dataset containing growth chamber data from an experiment with Arabidopsis
-in the Phenovator platform (WUR, Netherlands, Flood et al. 2016). It consists of
-one experiment with 1440 plants grown in a growth chamber. The number of tested
-genotypes is 192 with 6-7 replicates per genotype. Four reference genotypes were
-also tested with 15 or 30 replicates. The studied trait is the photosystem II
-efficiency (EffpsII) extracted from the pictures over time (van Rooijen et al. 2017).
+in the Phenovator platform (WUR, Netherlands, Flood et al. 2016). It consists
+of one experiment with 1440 plants grown in a growth chamber. The number of
+tested genotypes is 192 with 6-7 replicates per genotype. Four reference
+genotypes were also tested with 15 or 30 replicates. The studied trait is
+the photosystem II efficiency (EffpsII) extracted from the pictures over
+time (van Rooijen et al. 2017).
 }
 \references{
 Rooijen, Roxanne van, Willem Kruijer, René Boesten,
@@ -39,8 +41,8 @@ doi:10.1038/s41467-017-01576-3.
 
 Flood, Pádraic J., Willem Kruijer, Sabine K. Schnabel, Rob van der Schoor,
 Henk Jalink, Jan F. H. Snel, Jeremy Harbinson, and Mark G. M. Aarts. 2016.
-“Phenomics for Photosynthesis, Growth and Reflectance in Arabidopsis Thaliana
-Reveals Circadian and Long-Term Fluctuations in Heritability.”
+“Phenomics for Photosynthesis, Growth and Reflectance in Arabidopsis
+Thaliana Reveals Circadian and Long-Term Fluctuations in Heritability.”
 Plant Methods 12 (1): 14.
 doi:10.1186/s13007-016-0113-y.
 }

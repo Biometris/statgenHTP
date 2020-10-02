@@ -12,7 +12,8 @@
 #' genotype and check is used as an extra fixed effect. So then the model
 #' becomes:\cr
 #' trait = \emph{check} + \strong{genoCheck} + e\cr
-#' Variables in \code{extraFixedFactors} are fitted as extra fixed effects.\cr\cr
+#' Variables in \code{extraFixedFactors} are fitted as extra fixed
+#' effects.\cr\cr
 #' When \code{SpATS} is used for modeling, an extra spatial term is included
 #' in the model. This term is constructed using the function
 #' \code{\link[SpATS]{PSANOVA}} from the SpATS package as\cr
@@ -77,7 +78,8 @@
 #'                             plotId = "pos",
 #'                             rowNum = "y", colNum = "x",
 #'                             addCheck = TRUE,
-#'                             checkGenotypes = c("check1", "check2", "check3", "check4"))
+#'                             checkGenotypes = c("check1", "check2",
+#'                                                "check3", "check4"))
 #'
 #' modPhenoSp <- fitModels(TP = phenoTP,
 #'                         trait = "EffpsII",
@@ -103,7 +105,8 @@
 #' }
 #'
 #' ## Using the second example dataset (PhenoarchDat1):
-#' ## Fit a model with SpATS on few time points with two variables for geno.decomp:
+#' ## Fit a model with SpATS on few time points with two variables for
+#' ## geno.decomp:
 #' data("PhenoarchDat1")
 #' phenoTParch <- createTimePoints(dat = PhenoarchDat1,
 #'                                 experimentName = "Phenoarch",
@@ -228,9 +231,9 @@ fitModels <- function(TP,
   }
   ## Extract timepoints attribute for re-adding in the end.
   timePoints <- attr(TP, which = "timePoints")
-  ## If geno.decomp is used genotype and extraFixedFactors have to be replaced by
-  ## an interaction of genotype and extraFixedFactors with the geno.decomp variables.
-  ## Construct an interaction of all variables in geno.decomp.
+  ## If geno.decomp is used genotype and extraFixedFactors have to be replaced
+  ## by an interaction of genotype and extraFixedFactors with the geno.decomp
+  ## variables. Construct an interaction of all variables in geno.decomp.
   if (length(geno.decomp) > 0) {
     TP <- lapply(X = TP, FUN = function(timePoint) {
       timePoint[["geno.decomp"]] <- interaction(timePoint[geno.decomp],
@@ -477,7 +480,7 @@ bestSpatMod <- function(modDat,
         as.numeric(levels(TPTab[, "Var2"]))[TPTab[, "Var2"]])
     modDat <- rbind(modDat, extObs)
   }
-  ## modDat needs to be sorted by row and column to prevent asreml from crashing.
+  ## modDat needs to be sorted by row and column to prevent asreml from crashing
   modDat <- modDat[order(modDat[["rowId"]], modDat[["colId"]]), ]
   spatCh <- c("none", "AR1(x)id", "id(x)AR1", "AR1(x)AR1")
   spatSel <- which(spatCh %in% spatTerms)
@@ -571,9 +574,10 @@ bestSpatMod <- function(modDat,
           if (criterionCur < criterionBest) {
             bestModTr <- fitMod
             ## Evaluate call terms in bestModTr so predict can be run.
-            ## The first (unnamed) item in call contains the full asreml function.
-            ## This is replaced by a named reference to drastically reduce output
-            ## size.
+            ## The first (unnamed) item in call contains the full asreml
+            ## function.
+            ## This is replaced by a named reference to drastically reduce
+            ## output size.
             ## Needs to be called in every iteration to prevent final result
             ## from always having the values of the last iteration.
             bestModTr$call[[1]] <- quote(asreml::asreml)

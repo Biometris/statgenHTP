@@ -56,10 +56,10 @@ below.
 \section{rawPred plot}{
 
 Plots the raw data (coloured lines) overlayed with the predicted values from
-the fitted model (black line). For each genotype a plot is made per plot/plant
-over time. These plots are put together in a 5x5 grid. By using the parameter
-\code{genotypes} a selection of genotypes can be plotted. Extra parameter
-options:
+the fitted model (black line). For each genotype a plot is made per
+plot/plant over time. These plots are put together in a 5x5 grid. By using
+the parameter \code{genotypes} a selection of genotypes can be plotted.
+Extra parameter options:
 \describe{
 \item{genotypes}{A character vector indicating the genotypes to be plotted.}
 \item{plotChecks}{Should the check genotypes be included in the plot?}
@@ -69,9 +69,9 @@ options:
 
 \section{corrPred plot}{
 
-Plots the spatially corrected data (coloured lines) overlayed with the predicted
-values from the fitted model(black line). For each genotype a plot is made
-per plot/plant over time. These plots are put together in a 5x5 grid.
+Plots the spatially corrected data (coloured lines) overlayed with the
+predicted values from the fitted model(black line). For each genotype a plot
+is made per plot/plant over time. These plots are put together in a 5x5 grid.
 By using the parameter \code{genotypes} a selection of genotypes can be
 plotted. Extra parameter options:
 \describe{
@@ -151,7 +151,8 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             plotId = "pos",
                             rowNum = "y", colNum = "x",
                             addCheck = TRUE,
-                            checkGenotypes = c("check1","check2","check3","check4"))
+                            checkGenotypes = c("check1","check2",
+                                               "check3","check4"))
 
 ## Fit a SpATS model on few time points:
 modPhenoSp <- fitModels(TP = phenoTP,

@@ -55,7 +55,8 @@ expect_warning(createTimePoints(dat = testDatTF, experimentName = "testExp",
 ## Compatible timeFormat should be ok.
 expect_silent(createTimePoints(dat = testDat, experimentName = "testExp",
                                genotype = "Genotype", timePoint = "timepoints",
-                               timeFormat = "%Y-%m-%d %H:%M:%S", plotId = "pos"))
+                               timeFormat = "%Y-%m-%d %H:%M:%S",
+                               plotId = "pos"))
 
 ## Check that row and column numbers are added correctly.
 ## Should be added both as factor and as numeric column.

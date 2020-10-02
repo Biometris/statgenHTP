@@ -31,8 +31,8 @@ are fitted. If \code{NULL}, splines will be fitted for all plotIds.}
 
 \item{useTimeNumber}{Should the timeNumber be used instead of the timePoint?}
 
-\item{timeNumber}{If \code{useTimeNumber = TRUE}, a character vector indicating the column
-containing the numerical time to use.}
+\item{timeNumber}{If \code{useTimeNumber = TRUE}, a character vector
+indicating the column containing the numerical time to use.}
 
 \item{perMinTP}{The percentage of minimum number of time points to use.}
 }
@@ -44,7 +44,8 @@ Function for fitting splines.
 # spatial trends and time points outliers have been removed
 # Format the timepoint
 spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
-# Run the function to fit p-spline using the mgcv package on a subset of genotypes
+# Run the function to fit p-spline using the mgcv package on a subset of
+# genotypes
 subGeno <- c("G70","G160","G151","G179","G175","G4","G55")
 fit.spline <- fitSpline(corrDat = spatCorrVator,
                         trait = "EffpsII_corr",

@@ -72,12 +72,13 @@ In case \code{useCheck = TRUE}, instead of genotype genoCheck is used as
 genotype and check is used as an extra fixed effect. So then the model
 becomes:\cr
 trait = \emph{check} + \strong{genoCheck} + e\cr
-Variables in \code{extraFixedFactors} are fitted as extra fixed effects.\cr\cr
+Variables in \code{extraFixedFactors} are fitted as extra fixed
+effects.\cr\cr
 When \code{SpATS} is used for modeling, an extra spatial term is included
 in the model. This term is constructed using the function
 \code{\link[SpATS]{PSANOVA}} from the SpATS package as\cr
 \code{PSANOVA(colNum, rowNum, nseg = nSeg, nest.div = 2)}
-where\cr \code{nSeg = (number of columns/2, number of rows/2)}.\cr\cr
+where\cr \code{nSeg = (number of columns, number of rows)}.\cr\cr
 When \code{asreml} is used for modeling and \code{spatial = TRUE},
 four models are fitted with different random terms and covariance structures.
 The best model is determined based on a goodness-of-fit criterion, AIC,
@@ -109,7 +110,8 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             plotId = "pos",
                             rowNum = "y", colNum = "x",
                             addCheck = TRUE,
-                            checkGenotypes = c("check1", "check2", "check3", "check4"))
+                            checkGenotypes = c("check1", "check2",
+                                               "check3", "check4"))
 
 modPhenoSp <- fitModels(TP = phenoTP,
                         trait = "EffpsII",
@@ -135,7 +137,8 @@ modPhenoSpAs <- fitModels(TP = phenoTP,
 }
 
 ## Using the second example dataset (PhenoarchDat1):
-## Fit a model with SpATS on few time points with two variables for geno.decomp:
+## Fit a model with SpATS on few time points with two variables for
+## geno.decomp:
 data("PhenoarchDat1")
 phenoTParch <- createTimePoints(dat = PhenoarchDat1,
                                 experimentName = "Phenoarch",

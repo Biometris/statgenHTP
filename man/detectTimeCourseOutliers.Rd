@@ -42,11 +42,12 @@ based on PCA scores.}
 Function for detecting outliers.
 }
 \examples{
-## The data from the Phenovator platform have been corrected for spatial
-# trends and time points outliers have been removed
+## The data from the Phenovator platform have been corrected for
+## spatial trends and time points outliers have been removed.
 # Format the timepoint
 spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
-# Run the function to fit p-spline using the mgcv package on a subset of genotypes
+# Run the function to fit p-spline using the mgcv package on a subset of
+# genotypes
 subGeno <- c("G70","G160","G151","G179","G175","G4","G55")
 fit.spline <- fitSpline(corrDat = spatCorrVator,
                         trait = "EffpsII_corr",

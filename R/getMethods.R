@@ -31,7 +31,8 @@
 #'                             plotId = "pos",
 #'                             rowNum = "y", colNum = "x",
 #'                             addCheck = TRUE,
-#'                             checkGenotypes = c("check1", "check2", "check3", "check4"))
+#'                             checkGenotypes = c("check1", "check2",
+#'                                                "check3", "check4"))
 #'
 #' ## Fit a SpATS model on few time points:
 #' modPhenoSp <- fitModels(TP = phenoTP,
@@ -130,7 +131,8 @@ getGenoPred <- function(fitMod,
 #'                             plotId = "pos",
 #'                             rowNum = "y", colNum = "x",
 #'                             addCheck = TRUE,
-#'                             checkGenotypes = c("check1", "check2", "check3", "check4"))
+#'                             checkGenotypes = c("check1", "check2",
+#'                                                "check3", "check4"))
 #'
 #' ## Fit a SpATS model on few time points:
 #' modPhenoSp <- fitModels(TP = phenoTP,
@@ -190,7 +192,8 @@ getCorrected <- function(fitMod,
 #'                             plotId = "pos",
 #'                             rowNum = "y", colNum = "x",
 #'                             addCheck = TRUE,
-#'                             checkGenotypes = c("check1", "check2", "check3", "check4"))
+#'                             checkGenotypes = c("check1", "check2",
+#'                                                "check3", "check4"))
 #'
 #' ## Fit a SpATS model on few time points:
 #' modPhenoSp <- fitModels(TP = phenoTP,
@@ -296,14 +299,16 @@ getVar <- function(fitMod,
 #'                             plotId = "pos",
 #'                             rowNum = "y", colNum = "x",
 #'                             addCheck = TRUE,
-#'                             checkGenotypes = c("check1", "check2", "check3", "check4"))
+#'                             checkGenotypes = c("check1", "check2",
+#'                                                "check3", "check4"))
 #'
 #' ## Fit a SpATS model on few time points:
 #' modPhenoSp <- fitModels(TP = phenoTP,
 #'                         trait = "EffpsII",
 #'                         timePoints = seq(1,73,by=5))
 #'
-#' ## Extract the heritabilities for all available time points in the model object:
+#' ## Extract the heritabilities for all available time points in the model
+#' ## object:
 #' heritSp    <- getHerit(modPhenoSp)
 #'
 #' @export
@@ -353,14 +358,16 @@ getHerit <- function(fitMod,
 #'                             plotId = "pos",
 #'                             rowNum = "y", colNum = "x",
 #'                             addCheck = TRUE,
-#'                             checkGenotypes = c("check1", "check2", "check3", "check4"))
+#'                             checkGenotypes = c("check1", "check2",
+#'                                                "check3", "check4"))
 #'
 #' ## Fit a SpATS model on few time points:
 #' modPhenoSp <- fitModels(TP = phenoTP,
 #'                         trait = "EffpsII",
 #'                         timePoints = seq(1,73,by=5))
 #'
-#' ## Extract the effective dimensions for all available time points in the model object:
+#' ## Extract the effective dimensions for all available time points in the
+#' ## model object:
 #' effDimSp <- getEffDims(modPhenoSp)
 #'
 #' @export

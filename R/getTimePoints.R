@@ -19,7 +19,8 @@
 #'                             plotId = "pos",
 #'                             rowNum = "y", colNum = "x",
 #'                             addCheck = TRUE,
-#'                             checkGenotypes = c("check1", "check2", "check3", "check4"))
+#'                             checkGenotypes = c("check1", "check2",
+#'                                                "check3", "check4"))
 #'
 #' ## Extract the time points from the object.
 #' head(getTimePoints(phenoTP))

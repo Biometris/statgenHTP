@@ -1,17 +1,19 @@
 #' Growth chamber data for an Arabidopsis experiment in the Phenovator platform.
 #'
 #' A dataset containing growth chamber data from an experiment with Arabidopsis
-#' in the Phenovator platform (WUR, Netherlands, Flood et al. 2016). It consists of
-#' one experiment with 1440 plants grown in a growth chamber. The number of tested
-#' genotypes is 192 with 6-7 replicates per genotype. Four reference genotypes were
-#' also tested with 15 or 30 replicates. The studied trait is the photosystem II
-#' efficiency (EffpsII) extracted from the pictures over time (van Rooijen et al. 2017).
+#' in the Phenovator platform (WUR, Netherlands, Flood et al. 2016). It consists
+#' of one experiment with 1440 plants grown in a growth chamber. The number of
+#' tested genotypes is 192 with 6-7 replicates per genotype. Four reference
+#' genotypes were also tested with 15 or 30 replicates. The studied trait is
+#' the photosystem II efficiency (EffpsII) extracted from the pictures over
+#' time (van Rooijen et al. 2017).
 #'
 #' @format A data.frame with 103,839 rows and 10 columns:
 #' \describe{
 #'   \item{Genotype}{Genotypes}
 #'   \item{Basin}{Table of experiment}
-#'   \item{Replicate}{Block define after sowing for post-blocking. They are not full-resolvable blocks.}
+#'   \item{Replicate}{Block define after sowing for post-blocking. They are not
+#'   full-resolvable blocks.}
 #'   \item{Image_pos}{Position of the camera}
 #'   \item{x}{Row coordinate}
 #'   \item{y}{Column coordinate}
@@ -30,8 +32,8 @@
 #'
 #' Flood, Pádraic J., Willem Kruijer, Sabine K. Schnabel, Rob van der Schoor,
 #' Henk Jalink, Jan F. H. Snel, Jeremy Harbinson, and Mark G. M. Aarts. 2016.
-#' “Phenomics for Photosynthesis, Growth and Reflectance in Arabidopsis Thaliana
-#' Reveals Circadian and Long-Term Fluctuations in Heritability.”
+#' “Phenomics for Photosynthesis, Growth and Reflectance in Arabidopsis
+#' Thaliana Reveals Circadian and Long-Term Fluctuations in Heritability.”
 #' Plant Methods 12 (1): 14.
 #' doi:10.1186/s13007-016-0113-y.
 "PhenovatorDat1"
@@ -39,20 +41,22 @@
 
 #' Arabidopsis data corrected for spatial trends.
 #'
-#' This dataset contains the corrected data obtained by (1) removing point outliers
-#' and (2) running a spatial model on the PhenovatorDat1 dataset.
+#' This dataset contains the corrected data obtained by (1) removing point
+#' outliers and (2) running a spatial model on the PhenovatorDat1 dataset.
 #' See the vignettes for details.
 #'
 #' @format A data.frame with 103,801 rows and 11 columns:
 #' \describe{
-#'   \item{timeNumber}{Time number obtained after formatting the original dataset with the function createTP.}
+#'   \item{timeNumber}{Time number obtained after formatting the original
+#'   dataset with the function createTP.}
 #'   \item{timePoint}{Original time point.}
 #'   \item{EffpsII_corr}{Efficiency of the photosystem II, corrected data}
 #'   \item{EffpsII}{Efficiency of the photosystem II, raw data}
 #'   \item{genotype}{Genotypes}
 #'   \item{repId}{Block define after sowing for post-blocking.}
 #'   \item{Image_pos}{Position of the camera}
-#'   \item{check}{Status of the genotypes: check for the reference genotypes, noCheck for the others.}
+#'   \item{check}{Status of the genotypes: check for the reference genotypes,
+#'   noCheck for the others.}
 #'   \item{colId}{Column coordinate}
 #'   \item{rowId}{Row coordinate}
 #'   \item{plotId}{Unique pot ID using rowcol coordinates}
@@ -62,14 +66,15 @@
 #' Greenhouse data for a maize experiment in the Phenoarch platform.
 #'
 #' A dataset containing greenhouse data from an experiment with maize in the
-#' Phenoarch platform (INRAE, France, Cabrera-Bosquet et al. 2016). It consists of
-#' one experiment with 1671 plants grown in a greenhouse under two water scenarios,
-#' well-watered (WW) and water deficit (WD). There are two populations of genotypes,
-#' panel 1 and panel 2. Panel 1 contains 60 genotypes with 14 replicates: 7 in WW
-#' and 7 in WD. Note that there are more plants per replicates than one (about 24
-#' plants per genotypes). Panel 2 contains 30 genotypes with 8 replicates, 4 in WW
-#' and 4 in WD. The studied trait is the leaf area extracted from the pictures over
-#' time. Plants were pictured every day for 35 days.
+#' Phenoarch platform (INRAE, France, Cabrera-Bosquet et al. 2016). It consists
+#' of one experiment with 1671 plants grown in a greenhouse under two water
+#' scenarios, well-watered (WW) and water deficit (WD). There are two
+#' populations of genotypes, panel 1 and panel 2. Panel 1 contains 60 genotypes
+#' with 14 replicates: 7 in WW and 7 in WD. Note that there are more plants per
+#' replicates than one (about 24 plants per genotypes). Panel 2 contains 30
+#' genotypes with 8 replicates, 4 in WW and 4 in WD. The studied trait is the
+#' leaf area extracted from the pictures over time. Plants were pictured every
+#' day for 35 days.
 #'
 #' @format A data.frame with 42,536 rows and 14 columns:
 #' \describe{
@@ -99,18 +104,20 @@
 
 #' Maize data corrected for spatial trends.
 #'
-#' This dataset contains the corrected data obtained by (1) removing point outliers
-#' and (2) running a spatial model on the PhenoarchDat1 dataset.
+#' This dataset contains the corrected data obtained by (1) removing point
+#' outliers and (2) running a spatial model on the PhenoarchDat1 dataset.
 #' See the vignettes for details.
 #'
 #' @format A data.frame with 37,038 rows and 9 columns:
 #' \describe{
-#'   \item{timeNumber}{Time number obtained after formatting the original dataset with the function createTP.}
+#'   \item{timeNumber}{Time number obtained after formatting the original
+#'   dataset with the function createTP.}
 #'   \item{timePoint}{Original time point.}
 #'   \item{Biomass_Estimated_corr}{Biomass, corrected data}
 #'   \item{Biomass_Estimated}{Biomass from the picture, raw data}
 #'   \item{genotype}{Genotypes}
-#'   \item{geno.decomp}{Combination of treatment levels to decompose the genotypic variance (see vignettes)}
+#'   \item{geno.decomp}{Combination of treatment levels to decompose the
+#'   genotypic variance (see vignettes)}
 #'   \item{colId}{Column coordinate}
 #'   \item{rowId}{Row coordinate}
 #'   \item{plotId}{Unique pot ID using rowcol coordinates}
@@ -120,12 +127,11 @@
 #' Greenhouse data for an experiment in the RootPhAir platform.
 #'
 #' A dataset containing greenhouse data from two experiments in the RootPhAir
-#' platform (UCLouvain, France, ref). It consists of two experiments, each in two
-#' aeroponic tanks with a capacity of 495 plants each tank, located in the same
-#' greenhouse.
-#' with 1671 plants grown in a greenhouse in two tanks
-#' The studied traits are the root tip coordinates in y and x axis, extracted from the
-#' pictures over time. Plants were pictured every 2 hours for 10 days.
+#' platform (UCLouvain, France, ref). It consists of two experiments, each in
+#' two aeroponic tanks with a capacity of 495 plants each tank, located in the
+#' same greenhouse. with 1671 plants grown in a greenhouse in two tanks
+#' The studied traits are the root tip coordinates in y and x axis, extracted
+#' from the pictures over time. Plants were pictured every 2 hours for 10 days.
 #'
 #' @format A data.frame with 16,275 rows and 10 columns:
 #' \describe{

@@ -132,7 +132,7 @@ calcPlotBorders <- function(tpDat,
   ## are added.
   M <- matrix(nrow = yMax - yMin + 1, ncol = xMax - xMin + 1,
               dimnames = list(yMin:yMax, xMin:xMax))
-  for (i in 1:nrow(tpDat)) {
+  for (i in seq_len(nrow(tpDat))) {
     M[as.character(tpDat[i, "rowNum"]),
       as.character(tpDat[i, "colNum"])] <- tpDat[i, bordVar]
   }
@@ -147,7 +147,7 @@ calcPlotBorders <- function(tpDat,
   vertW <- do.call(rbind.data.frame,
                    Filter(f = has.breaks, x = Map(function(i, x) {
                      cbind(y = i, x = which(diff(c(0, x, 0)) != 0))
-                   }, 1:nrow(MImp), split(MImp, 1:nrow(MImp)))))
+                   }, seq_len(nrow(MImp)), split(MImp, seq_len(nrow(MImp))))))
   ## Remove vertical walls that are on the outside bordering an NA value
   ## to prevent drawing of unneeded lines.
   vertW <- vertW[!(vertW$x == 1 & is.na(M[vertW$y, 1])) &
@@ -160,7 +160,7 @@ calcPlotBorders <- function(tpDat,
   horW <- do.call(rbind.data.frame,
                   Filter(f = has.breaks, x = Map(function(i, y) {
                     cbind(x = i, y = which(diff(c(0, y, 0)) != 0))
-                  }, 1:ncol(MImp), as.data.frame(MImp))))
+                  }, seq_len(ncol(MImp)), as.data.frame(MImp))))
   horW <- horW[!(horW$y == 1 & is.na(M[1, horW$x])) &
                  !(horW$y == nrow(M) + 1 & is.na(M[nrow(M), horW$x])), ]
   horW$y <- horW$y + yMin - 1
@@ -306,7 +306,8 @@ chkFile <- function(outFile,
 chkTimePoints <- function(x,
                           timePoints) {
   if (!inherits(x, "TP") && !inherits(x, "fitMod")) {
-    stop(deparse(substitute(x)), " should be an object of class TP or fitMod.\n")
+    stop(deparse(substitute(x)),
+         " should be an object of class TP or fitMod.\n")
   }
   timePointsX <- attr(x, which = "timePoints")
   if (is.character(timePoints)) {

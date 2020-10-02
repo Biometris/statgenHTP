@@ -27,7 +27,8 @@ Function for setting point outliers to NA.
 }
 \examples{
 ## Create a TP object containing the data from the Phenovator.
-PhenovatorDat1 <- PhenovatorDat1[!PhenovatorDat1$pos \%in\% c("c24r41", "c7r18","c7r49"),]
+PhenovatorDat1 <- PhenovatorDat1[!PhenovatorDat1$pos \%in\%
+                                 c("c24r41", "c7r18", "c7r49"), ]
 phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             experimentName = "Phenovator",
                             genotype = "Genotype",
@@ -36,7 +37,8 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             plotId = "pos",
                             rowNum = "y", colNum = "x",
                             addCheck = TRUE,
-                            checkGenotypes = c("check1","check2","check3","check4"))
+                            checkGenotypes = c("check1", "check2",
+                                               "check3", "check4"))
 
 ## First select a subset of plants, for example here 10 plants
 plantSel <- phenoTP[[1]]$plotId[1:9]

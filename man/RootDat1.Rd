@@ -24,12 +24,11 @@ RootDat1
 }
 \description{
 A dataset containing greenhouse data from two experiments in the RootPhAir
-platform (UCLouvain, France, ref). It consists of two experiments, each in two
-aeroponic tanks with a capacity of 495 plants each tank, located in the same
-greenhouse.
-with 1671 plants grown in a greenhouse in two tanks
-The studied traits are the root tip coordinates in y and x axis, extracted from the
-pictures over time. Plants were pictured every 2 hours for 10 days.
+platform (UCLouvain, France, ref). It consists of two experiments, each in
+two aeroponic tanks with a capacity of 495 plants each tank, located in the
+same greenhouse. with 1671 plants grown in a greenhouse in two tanks
+The studied traits are the root tip coordinates in y and x axis, extracted
+from the pictures over time. Plants were pictured every 2 hours for 10 days.
 }
 \references{
 Author 1 author 2. date.

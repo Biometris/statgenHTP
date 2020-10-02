@@ -7,14 +7,16 @@
 \format{
 A data.frame with 103,801 rows and 11 columns:
 \describe{
-  \item{timeNumber}{Time number obtained after formatting the original dataset with the function createTP.}
+  \item{timeNumber}{Time number obtained after formatting the original
+  dataset with the function createTP.}
   \item{timePoint}{Original time point.}
   \item{EffpsII_corr}{Efficiency of the photosystem II, corrected data}
   \item{EffpsII}{Efficiency of the photosystem II, raw data}
   \item{genotype}{Genotypes}
   \item{repId}{Block define after sowing for post-blocking.}
   \item{Image_pos}{Position of the camera}
-  \item{check}{Status of the genotypes: check for the reference genotypes, noCheck for the others.}
+  \item{check}{Status of the genotypes: check for the reference genotypes,
+  noCheck for the others.}
   \item{colId}{Column coordinate}
   \item{rowId}{Row coordinate}
   \item{plotId}{Unique pot ID using rowcol coordinates}
@@ -24,8 +26,8 @@ A data.frame with 103,801 rows and 11 columns:
 spatCorrVator
 }
 \description{
-This dataset contains the corrected data obtained by (1) removing point outliers
-and (2) running a spatial model on the PhenovatorDat1 dataset.
+This dataset contains the corrected data obtained by (1) removing point
+outliers and (2) running a spatial model on the PhenovatorDat1 dataset.
 See the vignettes for details.
 }
 \keyword{datasets}

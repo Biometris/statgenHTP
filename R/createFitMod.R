@@ -35,8 +35,8 @@ summary.fitMod <- function(object,
     tpUsed <- min(max(noTP / 5, 10), noTP)
     bestSpat <- attr(x = object[[1]], which = "sumTab")[[1]][, "spatial"]
   }
-  cat("Models in ", deparse(substitute(object)), " where fitted for experiment ",
-      experimentName, ".\n\n", sep = "")
+  cat("Models in ", deparse(substitute(object)),
+      " where fitted for experiment ", experimentName, ".\n\n", sep = "")
   cat("It contains", noTP, "time points.\n")
   cat("The models were fitted using ", engine, ".\n\n", sep = "")
   if (engine == "asreml" && attr(x = object, which = "spatial")) {
@@ -53,10 +53,10 @@ summary.fitMod <- function(object,
 #'
 #' @section rawPred plot:
 #' Plots the raw data (coloured lines) overlayed with the predicted values from
-#' the fitted model (black line). For each genotype a plot is made per plot/plant
-#' over time. These plots are put together in a 5x5 grid. By using the parameter
-#' \code{genotypes} a selection of genotypes can be plotted. Extra parameter
-#' options:
+#' the fitted model (black line). For each genotype a plot is made per
+#' plot/plant over time. These plots are put together in a 5x5 grid. By using
+#' the parameter \code{genotypes} a selection of genotypes can be plotted.
+#' Extra parameter options:
 #' \describe{
 #' \item{genotypes}{A character vector indicating the genotypes to be plotted.}
 #' \item{plotChecks}{Should the check genotypes be included in the plot?}
@@ -64,9 +64,9 @@ summary.fitMod <- function(object,
 #' }
 #'
 #' @section corrPred plot:
-#' Plots the spatially corrected data (coloured lines) overlayed with the predicted
-#' values from the fitted model(black line). For each genotype a plot is made
-#' per plot/plant over time. These plots are put together in a 5x5 grid.
+#' Plots the spatially corrected data (coloured lines) overlayed with the
+#' predicted values from the fitted model(black line). For each genotype a plot
+#' is made per plot/plant over time. These plots are put together in a 5x5 grid.
 #' By using the parameter \code{genotypes} a selection of genotypes can be
 #' plotted. Extra parameter options:
 #' \describe{
@@ -146,7 +146,8 @@ summary.fitMod <- function(object,
 #'                             plotId = "pos",
 #'                             rowNum = "y", colNum = "x",
 #'                             addCheck = TRUE,
-#'                             checkGenotypes = c("check1","check2","check3","check4"))
+#'                             checkGenotypes = c("check1","check2",
+#'                                                "check3","check4"))
 #'
 #' ## Fit a SpATS model on few time points:
 #' modPhenoSp <- fitModels(TP = phenoTP,
@@ -309,7 +310,8 @@ plot.fitMod <- function(x,
                      yValOverlay = "predicted.values",
                      facetVal = c("genotype",
                                   if (!is.null(geno.decomp)) "geno.decomp"),
-                     title = title, yLab = trait, output = output, plotLine = plotLine)
+                     title = title, yLab = trait, output = output,
+                     plotLine = plotLine)
   } else if (plotType == "corrPred") {
     genotypes <- dotArgs$genotypes
     plotLine <- isTRUE(dotArgs$plotLine)
@@ -556,7 +558,7 @@ spatPlot <- function(fitMod,
     ## columns/rows in the field even if they are completely empty.
     M <- matrix(nrow = nRow, ncol = nCol,
                 dimnames = list(yMin:yMax, xMin:xMax))
-    for (i in 1:nrow(plotDat)) {
+    for (i in seq_len(nrow(plotDat))) {
       M[as.character(plotDat[i, "rowNum"]),
         as.character(plotDat[i, "colNum"])] <-
         ifelse(is.na(plotDat[i, trait]), NA, 1)
@@ -612,7 +614,8 @@ spatPlot <- function(fitMod,
       zlim <- c(-1, 1) * max(c(abs(plotDatSpat[["value"]]), 0.1))
       plots$p4 <- fieldPlotPcts(plotDat = plotDatSpat, fillVar = "value",
                                 title = legends[4], zlim = zlim,
-                                colors = colorRampPalette(c("red", "yellow", "blue"),
+                                colors = colorRampPalette(c("red", "yellow",
+                                                            "blue"),
                                                           space = "Lab")(100),
                                 xTicks = xTicks)
     }
@@ -757,7 +760,7 @@ timeLapsePlot <- function(fitMods,
       ## columns/rows in the field even if they are completely empty.
       M <- matrix(nrow = nRow, ncol = nCol,
                   dimnames = list(yMin:yMax, xMin:xMax))
-      for (i in 1:nrow(plotDat)) {
+      for (i in seq_len(nrow(plotDat))) {
         M[as.character(plotDat[i, "rowNum"]),
           as.character(plotDat[i, "colNum"])] <-
           ifelse(is.na(plotDat[i, trait]), NA, 1)

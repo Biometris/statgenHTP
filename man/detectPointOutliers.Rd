@@ -16,8 +16,8 @@ detected. If \code{NULL}, all plotId in TP are used.}
 
 \item{confIntSize}{A numeric value defining the confidence interval.}
 
-\item{mylocfit}{A numeric value defining the constant component of the smoothing parameter nn.
-(see the locfit())}
+\item{mylocfit}{A numeric value defining the constant component of the
+smoothing parameter nn. (see the locfit())}
 }
 \value{
 An object of class pointOutliers, a data.frame with the following
@@ -34,8 +34,8 @@ columns.
 }
 }
 \description{
-Function to model each curve of a dataset using a local regression. This is the
-first step of the detection of outlying points in a curve.
+Function to model each curve of a dataset using a local regression. This is
+the first step of the detection of outlying points in a curve.
 }
 \details{
 see locfit() help function from the locfit R library. The user can act on:
@@ -50,7 +50,8 @@ plotDetectPointOutlierLocFit() function.
 }
 \examples{
 ## Create a TP object containing the data from the Phenovator.
-PhenovatorDat1 <- PhenovatorDat1[!PhenovatorDat1$pos \%in\% c("c24r41", "c7r18","c7r49"),]
+PhenovatorDat1 <- PhenovatorDat1[!PhenovatorDat1$pos \%in\%
+                                 c("c24r41", "c7r18", "c7r49"), ]
 phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             experimentName = "Phenovator",
                             genotype = "Genotype",
@@ -59,7 +60,8 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             plotId = "pos",
                             rowNum = "y", colNum = "x",
                             addCheck = TRUE,
-                            checkGenotypes = c("check1","check2","check3","check4"))
+                            checkGenotypes = c("check1", "check2",
+                                               "check3", "check4"))
 
 ## First select a subset of plants, for example here 10 plants
 plantSel <- phenoTP[[1]]$plotId[1:9]

@@ -48,8 +48,8 @@ plots should be written. If \code{NULL}, no file is written.}
 width and height. See \code{\link[grDevices]{pdf}} for all possible options.}
 }
 \value{
-Depending on the plot type, either a ggplot object or a list of ggplot
-objects is invisibly returned.
+Depending on the plot type, either a ggplot object or a list of
+ggplot objects is invisibly returned.
 }
 \description{
 Plotting function for objects of class TP. Plots the layout of the platform
@@ -79,8 +79,8 @@ plot.}
 
 \section{Box Plot}{
 
-Creates a boxplot per selected trait grouped by time point (all available time
-points by  default). Extra parameter options:
+Creates a boxplot per selected trait grouped by time point (all available
+time points by  default). Extra parameter options:
 \describe{
 \item{groupBy}{A character string indicating a column in \code{TP} by which
 the boxes in the plot should be grouped.
@@ -98,18 +98,18 @@ descending mean. Default boxes are ordered alphabetically.}
 
 \section{Correlation Plot}{
 
-Draws a heatmap of correlations of raw data between time points per selected trait
-for selected time points (all available time points by default).
+Draws a heatmap of correlations of raw data between time points per selected
+trait for selected time points (all available time points by default).
 }
 
 \section{Raw data plot}{
 
 Create a plot of the raw data of the selected trait over time for selected
-time points (all available time points by default). Plots are grouped per genotypes,
-or by genotype x treatment when the \code{geno.decomp} option is specified. By default,
-all the genotypes will be plotted wich might take time and memory when the output is
-not saved in a file (see \code{outFile}). Warning about the labels with few time points?
-Extra parameter options:
+time points (all available time points by default). Plots are grouped per
+genotypes, or by genotype x treatment when the \code{geno.decomp} option is
+specified. By default, all the genotypes will be plotted wich might take
+time and memory when the output is not saved in a file (see \code{outFile}).
+Warning about the labels with few time points? Extra parameter options:
 \describe{
 \item{genotypes}{A character vector indicating the genotypes to be plotted.}
 \item{geno.decomp}{A character vector indicating the grouping of the
@@ -128,9 +128,11 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             plotId = "pos",
                             rowNum = "y", colNum = "x",
                             addCheck = TRUE,
-                            checkGenotypes = c("check1","check2","check3","check4"))
+                            checkGenotypes = c("check1", "check2",
+                                               "check3", "check4"))
 
-## Plot the layout for the third time point with the check genotypes highlighted
+## Plot the layout for the third time point with the check genotypes
+## highlighted
 plot(phenoTP,
      plotType = "layout",
      timePoints = 3,

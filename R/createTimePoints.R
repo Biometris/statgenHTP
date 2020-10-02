@@ -13,15 +13,15 @@
 #' are converted to numeric columns, all other renamed columns to factor
 #' columns. Columns other than the default columns, e.g. traits or other
 #' covariates will be included in the output unchanged.}
-#' \item{If \code{addCheck = TRUE}, the genotypes listed in \code{checkGenotypes}
-#' are reference genotypes (or check). It will add a column check with a value
-#' "noCheck" for the genotypes that are not in \code{checkGenotypes} and
-#' the name of the genotypes for the \code{checkGenotypes}. A column
-#' genoCheck is also added with the names of the genotypes that are not in
-#' \code{checkGenotypes} and \code{NA} for the \code{checkGenotypes}. These
-#' columns are necessary for fitting models on data that includes check
-#' genotypes, e.g. reference genotypes that are highly replicated or in case
-#' of augmented design.}
+#' \item{If \code{addCheck = TRUE}, the genotypes listed in
+#' \code{checkGenotypes} are reference genotypes (or check). It will add a
+#' column check with a value "noCheck" for the genotypes that are not in
+#' \code{checkGenotypes} and the name of the genotypes for the
+#' \code{checkGenotypes}. A column genoCheck is also added with the names of
+#' the genotypes that are not in \code{checkGenotypes} and \code{NA} for the
+#' \code{checkGenotypes}. These columns are necessary for fitting models on
+#' data that includes check genotypes, e.g. reference genotypes that are
+#' highly replicated or in case of augmented design.}
 #' \item{Split input data by time point - each time point in the input data will
 #' become a list item in the output.}
 #' \item{Add a list of time points as attribute \code{timePoints} to the
@@ -70,7 +70,8 @@
 #'                             plotId = "pos",
 #'                             rowNum = "y", colNum = "x",
 #'                             addCheck = TRUE,
-#'                             checkGenotypes = c("check1","check2","check3","check4"))
+#'                             checkGenotypes = c("check1", "check2",
+#'                                                "check3","check4"))
 #' summary(phenoTP)
 #'
 #' @family functions for TP objects
@@ -163,7 +164,7 @@ createTimePoints <- function(dat,
     renameFrom[dupCol] <- tempName
   }
   ## Rename columns.
-  for (i in 1:length(renameCols)) {
+  for (i in seq_along(renameCols)) {
     cols[cols == renameFrom[i]] <- renameCols[i]
   }
   colnames(dat) <- cols
@@ -176,8 +177,10 @@ createTimePoints <- function(dat,
     ## When using format an the output is of class POSIXlt.
     ## This doesn't work with split later on and therefore is converted to
     ## POSIXct.
-    dateTime <- try(as.POSIXct(lubridate::as_datetime(as.character(dat[["timePoint"]]),
-                                                      format = timeFormat)))
+    dateTime <- try({
+      as.POSIXct(lubridate::as_datetime(as.character(dat[["timePoint"]]),
+                                        format = timeFormat))
+    })
   }
   if (inherits(dateTime, "try-error") || all(is.na(dateTime))) {
     stop("Error when converting timePoints to Date format. Please check the
@@ -228,7 +231,7 @@ createTimePoints <- function(dat,
       if (nrow(renamed) > 0) renamed else NULL
   }
   ## Create a data.frame with coding of time points for reference.
-  timePoints <- data.frame(timeNumber = 1:length(listData),
+  timePoints <- data.frame(timeNumber = seq_along(listData),
                            timePoint = names(listData),
                            stringsAsFactors = FALSE)
   TP <- structure(listData,
@@ -295,8 +298,8 @@ summary.TP <- function(object,
 #' }
 #'
 #' @section Box Plot:
-#' Creates a boxplot per selected trait grouped by time point (all available time
-#' points by  default). Extra parameter options:
+#' Creates a boxplot per selected trait grouped by time point (all available
+#' time points by  default). Extra parameter options:
 #' \describe{
 #' \item{groupBy}{A character string indicating a column in \code{TP} by which
 #' the boxes in the plot should be grouped.
@@ -312,16 +315,16 @@ summary.TP <- function(object,
 #' }
 #'
 #' @section Correlation Plot:
-#' Draws a heatmap of correlations of raw data between time points per selected trait
-#' for selected time points (all available time points by default).
+#' Draws a heatmap of correlations of raw data between time points per selected
+#' trait for selected time points (all available time points by default).
 #'
 #' @section Raw data plot:
 #' Create a plot of the raw data of the selected trait over time for selected
-#' time points (all available time points by default). Plots are grouped per genotypes,
-#' or by genotype x treatment when the \code{geno.decomp} option is specified. By default,
-#' all the genotypes will be plotted wich might take time and memory when the output is
-#' not saved in a file (see \code{outFile}). Warning about the labels with few time points?
-#' Extra parameter options:
+#' time points (all available time points by default). Plots are grouped per
+#' genotypes, or by genotype x treatment when the \code{geno.decomp} option is
+#' specified. By default, all the genotypes will be plotted wich might take
+#' time and memory when the output is not saved in a file (see \code{outFile}).
+#' Warning about the labels with few time points? Extra parameter options:
 #'\describe{
 #' \item{genotypes}{A character vector indicating the genotypes to be plotted.}
 #' \item{geno.decomp}{A character vector indicating the grouping of the
@@ -351,8 +354,8 @@ summary.TP <- function(object,
 #' @param outFileOpts A named list of extra options for the pdf outfile, e.g.
 #' width and height. See \code{\link[grDevices]{pdf}} for all possible options.
 #'
-#' @return Depending on the plot type, either a ggplot object or a list of ggplot
-#' objects is invisibly returned.
+#' @return Depending on the plot type, either a ggplot object or a list of
+#' ggplot objects is invisibly returned.
 #'
 #' @examples
 #' data("PhenovatorDat1")
@@ -364,9 +367,11 @@ summary.TP <- function(object,
 #'                             plotId = "pos",
 #'                             rowNum = "y", colNum = "x",
 #'                             addCheck = TRUE,
-#'                             checkGenotypes = c("check1","check2","check3","check4"))
+#'                             checkGenotypes = c("check1", "check2",
+#'                                                "check3", "check4"))
 #'
-#' ## Plot the layout for the third time point with the check genotypes highlighted
+#' ## Plot the layout for the third time point with the check genotypes
+#' ## highlighted
 #' plot(phenoTP,
 #'      plotType = "layout",
 #'      timePoints = 3,
@@ -422,7 +427,8 @@ plot.TP <- function(x,
       stop("highlight should be a character vector.\n")
     }
     plotTitle <- title
-    p <- setNames(vector(mode = "list", length = length(timePoints)), timePoints)
+    p <- setNames(vector(mode = "list", length = length(timePoints)),
+                  timePoints)
     for (timePoint in timePoints) {
       if (is.null(title)) {
         plotTitle <- paste(experimentName, "-", timePoint)
@@ -529,8 +535,8 @@ plot.TP <- function(x,
     p <- setNames(vector(mode = "list", length = length(traits)), traits)
     plotTitle <- title
     for (trait in traits) {
-      ## Create a single data.frame from x with only columns timePoint, trait and
-      ## genotype. Genotype is needed to be able to display hovering info.
+      ## Create a single data.frame from x with only columns timePoint, trait
+      ## and genotype. Genotype is needed to be able to display hovering info.
       ## timePoints where trait is not measured/available are removed by setting
       ## them to NULL.
       if (is.null(title)) {
@@ -602,17 +608,19 @@ plot.TP <- function(x,
         plotTitle <- paste(experimentName, "- Correlations of timepoints for",
                            trait)
       }
-      ## Create a single data.frame from x with only columns timePoint and trait.
+      ## Create a single data.frame from x with only columns timePoint and trait
       ## timePoints where trait is not measured/available are removed by setting
       ## them to NULL.
-      plotDat <- Reduce(f = rbind, x = lapply(X = x[timePoints],
-                                              FUN = function(timePoint) {
-                                                if (!hasName(x = timePoint, name = trait)) {
-                                                  NULL
-                                                } else {
-                                                  timePoint[c("plotId", "timePoint", trait)]
-                                                }
-                                              }))
+      plotDat <- Reduce(f = rbind,
+                        x = lapply(X = x[timePoints],
+                                   FUN = function(timePoint) {
+                                     if (!hasName(x = timePoint, name = trait)) {
+                                       NULL
+                                     } else {
+                                       timePoint[c("plotId", "timePoint",
+                                                   trait)]
+                                     }
+                                   }))
       if (is.null(plotDat)) {
         warning(trait, " isn't a column in any of the timePoints.\n",
                 "Plot skipped.\n", call. = FALSE)
@@ -625,7 +633,7 @@ plot.TP <- function(x,
       ## Create a correlation matrix.
       corMat <- cor(plotTab, use = "pairwise.complete.obs")
       ## Remove rows and columns with only NA.
-      corKeep <- sapply(X = 1:ncol(corMat), FUN = function(i) {
+      corKeep <- sapply(X = seq_len(ncol(corMat)), FUN = function(i) {
         any(!is.na(corMat[, i]))
       })
       corMat <- corMat[corKeep, corKeep, drop = FALSE]
@@ -699,7 +707,8 @@ plot.TP <- function(x,
                                        NULL
                                      } else {
                                        timePoint[c("genotype", "timePoint",
-                                                   "plotId", trait, geno.decomp)]
+                                                   "plotId", trait,
+                                                   geno.decomp)]
                                      }
                                    }))
       if (is.null(plotDat)) {
@@ -721,7 +730,8 @@ plot.TP <- function(x,
       plotDat <- addMissVals(dat = plotDat, trait = trait)
       ## Create actual plots.
       xyFacetPlot(baseDat = plotDat, yVal = trait,
-                  title = plotTitle, yLab = trait, output = output, plotLine = plotLine)
+                  title = plotTitle, yLab = trait, output = output,
+                  plotLine = plotLine)
     }
   }
   if (!is.null(outFile)) {

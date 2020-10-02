@@ -75,15 +75,15 @@ colId converted to factors.}
 are converted to numeric columns, all other renamed columns to factor
 columns. Columns other than the default columns, e.g. traits or other
 covariates will be included in the output unchanged.}
-\item{If \code{addCheck = TRUE}, the genotypes listed in \code{checkGenotypes}
-are reference genotypes (or check). It will add a column check with a value
-"noCheck" for the genotypes that are not in \code{checkGenotypes} and
-the name of the genotypes for the \code{checkGenotypes}. A column
-genoCheck is also added with the names of the genotypes that are not in
-\code{checkGenotypes} and \code{NA} for the \code{checkGenotypes}. These
-columns are necessary for fitting models on data that includes check
-genotypes, e.g. reference genotypes that are highly replicated or in case
-of augmented design.}
+\item{If \code{addCheck = TRUE}, the genotypes listed in
+\code{checkGenotypes} are reference genotypes (or check). It will add a
+column check with a value "noCheck" for the genotypes that are not in
+\code{checkGenotypes} and the name of the genotypes for the
+\code{checkGenotypes}. A column genoCheck is also added with the names of
+the genotypes that are not in \code{checkGenotypes} and \code{NA} for the
+\code{checkGenotypes}. These columns are necessary for fitting models on
+data that includes check genotypes, e.g. reference genotypes that are
+highly replicated or in case of augmented design.}
 \item{Split input data by time point - each time point in the input data will
 become a list item in the output.}
 \item{Add a list of time points as attribute \code{timePoints} to the
@@ -102,7 +102,8 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             plotId = "pos",
                             rowNum = "y", colNum = "x",
                             addCheck = TRUE,
-                            checkGenotypes = c("check1","check2","check3","check4"))
+                            checkGenotypes = c("check1", "check2",
+                                               "check3","check4"))
 summary(phenoTP)
 
 }

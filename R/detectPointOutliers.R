@@ -1,7 +1,7 @@
 #' detectPointOutliers
 #'
-#' Function to model each curve of a dataset using a local regression. This is the
-#' first step of the detection of outlying points in a curve.
+#' Function to model each curve of a dataset using a local regression. This is
+#' the first step of the detection of outlying points in a curve.
 #'
 #' see locfit() help function from the locfit R library. The user can act on:
 #' \describe{
@@ -18,8 +18,8 @@
 #' @param plotIds A character vector of plotIds for which the outliers should be
 #' detected. If \code{NULL}, all plotId in TP are used.
 #' @param confIntSize A numeric value defining the confidence interval.
-#' @param mylocfit A numeric value defining the constant component of the smoothing parameter nn.
-#' (see the locfit())
+#' @param mylocfit A numeric value defining the constant component of the
+#' smoothing parameter nn. (see the locfit())
 #'
 #' @return An object of class pointOutliers, a data.frame with the following
 #' columns.
@@ -37,7 +37,8 @@
 #' @seealso plot.pointOutliers
 #'
 #' @examples ## Create a TP object containing the data from the Phenovator.
-#' PhenovatorDat1 <- PhenovatorDat1[!PhenovatorDat1$pos %in% c("c24r41", "c7r18","c7r49"),]
+#' PhenovatorDat1 <- PhenovatorDat1[!PhenovatorDat1$pos %in%
+#'                                  c("c24r41", "c7r18", "c7r49"), ]
 #' phenoTP <- createTimePoints(dat = PhenovatorDat1,
 #'                             experimentName = "Phenovator",
 #'                             genotype = "Genotype",
@@ -46,7 +47,8 @@
 #'                             plotId = "pos",
 #'                             rowNum = "y", colNum = "x",
 #'                             addCheck = TRUE,
-#'                             checkGenotypes = c("check1","check2","check3","check4"))
+#'                             checkGenotypes = c("check1", "check2",
+#'                                                "check3", "check4"))
 #'
 #' ## First select a subset of plants, for example here 10 plants
 #' plantSel <- phenoTP[[1]]$plotId[1:9]
@@ -112,7 +114,8 @@ detectPointOutliers <- function(TP,
 #' @param outOnly Should only plots containing outliers be plotted?
 #'
 #' @examples ## Create a TP object containing the data from the Phenovator.
-#' PhenovatorDat1 <- PhenovatorDat1[!PhenovatorDat1$pos %in% c("c24r41", "c7r18","c7r49"),]
+#' PhenovatorDat1 <- PhenovatorDat1[!PhenovatorDat1$pos %in%
+#'                                  c("c24r41", "c7r18", "c7r49"), ]
 #' phenoTP <- createTimePoints(dat = PhenovatorDat1,
 #'                             experimentName = "Phenovator",
 #'                             genotype = "Genotype",
@@ -121,7 +124,8 @@ detectPointOutliers <- function(TP,
 #'                             plotId = "pos",
 #'                             rowNum = "y", colNum = "x",
 #'                             addCheck = TRUE,
-#'                             checkGenotypes = c("check1","check2","check3","check4"))
+#'                             checkGenotypes = c("check1", "check2",
+#'                                                "check3", "check4"))
 #'
 #' ## First select a subset of plants, for example here 10 plants
 #' plantSel <- phenoTP[[1]]$plotId[1:9]
@@ -229,7 +233,8 @@ plot.pointOutliers <- function(x,
 #' the output of \code{detectPointOutliers} as input.
 
 #' @examples ## Create a TP object containing the data from the Phenovator.
-#' PhenovatorDat1 <- PhenovatorDat1[!PhenovatorDat1$pos %in% c("c24r41", "c7r18","c7r49"),]
+#' PhenovatorDat1 <- PhenovatorDat1[!PhenovatorDat1$pos %in%
+#'                                  c("c24r41", "c7r18", "c7r49"), ]
 #' phenoTP <- createTimePoints(dat = PhenovatorDat1,
 #'                             experimentName = "Phenovator",
 #'                             genotype = "Genotype",
@@ -238,7 +243,8 @@ plot.pointOutliers <- function(x,
 #'                             plotId = "pos",
 #'                             rowNum = "y", colNum = "x",
 #'                             addCheck = TRUE,
-#'                             checkGenotypes = c("check1","check2","check3","check4"))
+#'                             checkGenotypes = c("check1", "check2",
+#'                                                "check3", "check4"))
 #'
 #' ## First select a subset of plants, for example here 10 plants
 #' plantSel <- phenoTP[[1]]$plotId[1:9]
@@ -277,7 +283,7 @@ removePointOutliers <- function(TP,
     ## Remove observations that are not actually outliers.
     pointOutliers <- pointOutliers[pointOutliers[["outlier"]] == 1, ]
   }
-  for (i in 1:nrow(pointOutliers)) {
+  for (i in seq_len(nrow(pointOutliers))) {
     plotI <- pointOutliers[i, "plotId"]
     timeI <- as.character(pointOutliers[i, "timePoint"])
     if (!plotI %in% TP[[timeI]][["plotId"]]) {
