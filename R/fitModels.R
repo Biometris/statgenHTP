@@ -309,8 +309,25 @@ fitModels <- function(TP,
                    geno.decomp, trait)
       modDat <- timePoint[colnames(timePoint) %in% modCols]
       modDat <- droplevels(modDat)
+      if (useRepId) {
+        ## Assure nesting of rows and columns within replicates.
+        rowTab <- table(modDat[["repId"]], modDat[["rowNum"]])
+        colTab <- table(modDat[["repId"]], modDat[["colNum"]])
+        ## Count the number of non-zero entries per replicate.
+        sumNonZero <- function(x) { sum(x != 0) }
+        nRowRep <- max(apply(X = rowTab, MARGIN = 1, FUN = sumNonZero))
+        nColRep <- max(apply(X = colTab, MARGIN = 1, FUN = sumNonZero))
+        ## Make nesting by assuring row/columns values of zero to max number of
+        ## non zero entries for each replicate.
+        ## If there is no nesting in one of the dimensions nothing will happen.
+        modDat[["rowId"]] <- factor(modDat[["rowNum"]] %% nRowRep,
+                                    levels = c(1:nRowRep, 0))
+        modDat[["colId"]] <- factor(modDat[["colNum"]] %% nColRep,
+                                    levels = c(1:nColRep, 0))
+      }
       ## number of segments for SpATS.
-      nseg <- c(nlevels(modDat[["colId"]]), nlevels(modDat[["rowId"]])) #/ 2
+      nseg <- c(length(unique(modDat[["colNum"]])),
+                length(unique(modDat[["rowNum"]]))) #/ 2
       ## Fit and return the model.
       SpATS::SpATS(response = trait, fixed = fixedForm,
                    random = randForm,
