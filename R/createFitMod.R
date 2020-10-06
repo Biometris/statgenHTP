@@ -810,8 +810,11 @@ timeLapsePlot <- function(fitMods,
 #' @param i An index specifying the element to extract of replace.
 #' @param ... Ignored.
 #'
+#' @noRd
 #' @export
-`[.fitMod` <- function(x, i, ...) {
+`[.fitMod` <- function(x,
+                       i,
+                       ...) {
   timePoints <- chkTimePoints(x, i)
   timePointsX <- attr(x, which = "timePoints")
   timePointsR <- timePointsX[timePointsX[["timePoint"]] %in% timePoints, ]

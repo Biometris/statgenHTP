@@ -1,0 +1,11 @@
+pandoc: 2.9.2.1
+pkgdown: 1.6.1
+pkgdown_sha: ~
+articles:
+  Getting_started: Getting_started.html
+  Intro_HTP: Intro_HTP.html
+  OutliersTimeCourse_HTP: OutliersTimeCourse_HTP.html
+  OutliersTimePoint_HTP: OutliersTimePoint_HTP.html
+  SpatialModel_HTP: SpatialModel_HTP.html
+last_built: 2020-10-06T08:16Z
+

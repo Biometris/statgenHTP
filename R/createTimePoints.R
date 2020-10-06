@@ -747,8 +747,11 @@ plot.TP <- function(x,
 #' @param i An index specifying the element to extract or replace.
 #' @param ... Ignored.
 #'
+#' @noRd
 #' @export
-`[.TP` <- function(x, i, ...) {
+`[.TP` <- function(x,
+                   i,
+                   ...) {
   timePoints <- chkTimePoints(x, i)
   timePointsX <- attr(x, which = "timePoints")
   timePointsR <- timePointsX[timePointsX[["timePoint"]] %in% timePoints, ]

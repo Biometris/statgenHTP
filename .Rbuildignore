@@ -12,3 +12,6 @@ testScript*
 ^.apt$
 ^ci
 
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

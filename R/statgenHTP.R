@@ -1,9 +1,6 @@
-#' \code{statgenHTP} package
+#' @keywords internal
+"_PACKAGE"
 #'
-#' statgenHTP
-#'
-#' @docType package
-#' @name statgenHTP
 #' @importFrom utils hasName write.csv capture.output
 #' @importFrom graphics plot
 #' @importFrom grDevices topo.colors pdf dev.off

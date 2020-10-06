@@ -16,30 +16,19 @@ vignette: >
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
-  )
+  comment = "#>")
 options(rmarkdown.html_vignette.check_title = FALSE)
 library(statgenHTP)
 ```
 
 # The statgenHTP Package  
 
-The statgenHTP package is developed as an easy-to-use package for analyzing data coming 
-from high throughput phenotyping (HTP) platform experiments. The package provides many options 
-for plotting and exporting the results of the analyses. It was developed within the 
-[EPPN^2020^ project](https://eppn2020.plant-phenotyping.eu/) to meet the needs for 
-automated analyses of HTP data.
+The statgenHTP package is developed as an easy-to-use package for analyzing data coming from high throughput phenotyping (HTP) platform experiments. The package provides many options for plotting and exporting the results of the analyses. It was developed within the [EPPN^2020^project](https://eppn2020.plant-phenotyping.eu/) to meet the needs for automated analyses of HTP data.
 
-New phenotyping techniques enable measuring traits at high throughput, with traits being 
-measured at multiple time points for hundreds or thousands of plants. This requires 
-automatic modeling of the data [@Tardieu2017] with a model that is robust, flexible and has 
-easy selection steps.
+New phenotyping techniques enable measuring traits at high throughput, with traits being measured at multiple time points for hundreds or thousands of plants. This requires automatic modeling of the data [@Tardieu2017] with a model that is robust, flexible and has easy selection steps.
 
-The aim of this package is to provide a suit of functions to (1) detect outliers at the time
-point or at the plant levels, (2) accurately separate the genetic effects from the spatial 
-effects at each time point and (3) estimate relevant parameters from a modeled time course.
-It will provide user with either genotypic values or corrected values that can be used 
-for further modeling, e.g. extract responses to environment [@vanEeuw2019]. 
+The aim of this package is to provide a suit of functions to (1) detect outliers at the time point or at the plant levels, (2) accurately separate the genetic effects from the spatial effects at each time point and (3) estimate relevant parameters from a modeled time course.
+It will provide user with either genotypic values or corrected values that can be used for further modeling, e.g. extract responses to environment [@vanEeuw2019]. 
 
 **Structure of the package**
 
@@ -50,16 +39,13 @@ The overall structure of the package is in 5 main parts:
 4. Outliers detection: time course - *statgenHTP tutorial: 4. Outlier detection Time course*  
 5. Parameter extraction - *statgenHTP tutorial: 5. Parameters extraction*  
 
-This documents describes in detail three datasets which are used to example the functions. 
-It also contains description on how to prepare the data for analysis and how to visualise them.
+This documents describes in detail three datasets which are used to example the functions. It also contains description on how to prepare the data for analysis and how to visualize them.
 
 ----
 
 # Load the statgenHTP R package
 
-For more information on how to install R and RStudio and the statgen packages, please read the
-Getting started file. Once everything is installed and before functions of the statgenHTP R 
-package can be used within R, it needs to be made available:
+For more information on how to install R and RStudio and the statgen packages, please read the Getting started file. Once everything is installed and before functions of the statgenHTP R package can be used within R, it needs to be made available:
 ```{r label="library-statgenhtp", echo=TRUE, eval=FALSE}
 ### Load the statgenHTP package
 library(statgenHTP)
@@ -69,13 +55,12 @@ library(statgenHTP)
 
 ## Example 1: photosystem efficiency in Arabidopsis
 
-The first example used in this package contains data from an experiment in the Phenovator 
-platform (WUR, Netherlands, [@Flood2016]) with Arabidopsis plants. It consists of one experiment with 1440 plants grown in a growth chamber with different light intensity. 
+The first example used in this package contains data from an experiment in the Phenovator platform (WUR, Netherlands, [@Flood2016]) with Arabidopsis plants. It consists of one experiment with 1440 plants grown in a growth chamber with different light intensity. 
 The studied trait is the photosystem II efficiency ("EffpsII") extracted from the pictures over time [@vanRooi2017]. The dataset called "PhenovatorDat1" is included in the package.
 
-<center>
-![PFvator](figures/phenovator_pf.png){width=70%}
-</center>
+```{r PFvatorFig, fig.cap = 'PFvator', out.width='70%', fig.pos='p', echo=FALSE}
+knitr::include_graphics("figures/phenovator_pf.png", auto_pdf = TRUE)
+```
 
 The number of tested genotypes (`Genotype`) is 192 with 6-7 replicates per genotype (`Replicate`). Four reference genotypes were also tested with 15 or 30 replicates. The studied trait is the photosystem II efficiency (`EffpsII`) extracted from the pictures over time [@vanRooi2017]. The unique ID of the plant is recorded (`plantId`), together with the pot position in row (`x`) and in column (`y`). The dataset also includes factors from the design: the position of the camera (`Image_pos`) and the pots table (`Basin`).
 
@@ -90,21 +75,15 @@ knitr::kable(head(PhenovatorDat1), align=c('c','c'), booktabs = TRUE)
 ## Example 2: maize leaf growth in greenhouse
 
 The second example used in this tutorial contains data from an experiment in the 
-[Phenoarch platform](https://www6.montpellier.inrae.fr/lepse/M3P/Plateformes/PHENOARCH) 
-with maize plants (INRA, France, [@Cabrera2016]). It consists of a greenhouse containing a conveyor belt structure of 28 lanes carrying 60 carts with one pot each (i.e. 1680 pots).
+[Phenoarch platform](https://www6.montpellier.inrae.fr/lepse/M3P/Plateformes/PHENOARCH) with maize plants (INRA, France, [@Cabrera2016]). It consists of a greenhouse containing a conveyor belt structure of 28 lanes carrying 60 carts with one pot each (i.e. 1680 pots).
 
-<center>
-![PFarch](figures/phenoarch_pf.png){width=70%}
-</center>
+```{r PFarchFig, fig.cap = 'PFarch', out.width='70%', fig.pos='p', echo=FALSE}
+knitr::include_graphics("figures/phenoarch_pf.png", auto_pdf = TRUE)
+```
 
-
-
-In this dataset, there are two genotypic panels (`population`) and two water scenarios (`Scenario`), well-watered (WW) and water deficit (WD). 
-The first panel contains 60 genotypes (`geno`) with 14 replicates: 7 in WW and 7 in WD. 
+In this dataset, there are two genotypic panels (`population`) and two water scenarios (`Scenario`), well-watered (WW) and water deficit (WD). The first panel contains 60 genotypes (`geno`) with 14 replicates: 7 in WW and 7 in WD. 
 Note that there are more plants per replicate than one for the first panel 
-(about 24 plants per genotype).
-The second population contains 30 genotypes with 8 replicates, 4 in WW and 4 in WD. 
-
+(about 24 plants per genotype). The second population contains 30 genotypes with 8 replicates, 4 in WW and 4 in WD. 
 
 ```{r importdatagh,echo=TRUE,message=FALSE, warning=FALSE}
 data("PhenoarchDat1")
@@ -127,10 +106,9 @@ knitr::kable(PhenoarchDat1[PhenoarchDat1$pos=="c16r1",1:8][5:10,],
 
 The tip root data set was obtained during an experiment performed at the [RootPhAir platform](https://uclouvain.be/en/research-institutes/eli/elia/aeroponics.html) (Louvain-La-Neuve University). This platform consists in two aeroponic tanks of 495 plants located in the same greenhouse. Plants are hold on 5 plants strips with 99 strips per tank. Sprinklers are placed in the bottom of the tanks and spray nutrient solution. Strips move constantly and plants are pictured when the strip passes in front of the camera. Plants are pictured every two hours. Root system is described in two dimensions, with the root tip position in depth and width (tipPos_y and tipPos_x respectively) deduced from image analysis.
 
-<center>
-![PFrooth](figures/ucl_pf.png){width=90%}
-</center>
-
+```{r PFroothFig, fig.cap = 'PFrooth', out.width='90%', fig.pos='p', echo=FALSE}
+knitr::include_graphics("figures/ucl_pf.png", auto_pdf = TRUE)
+```
 
 This data set consists of two experiments (`Exp`) of root growth. For each genotype (`Genotype`), the tip position (`tipPos_x` and `tipPos_y`) of the main root was tracked over time (`Time`) for each plant (`plantId`).
 
@@ -144,13 +122,9 @@ knitr::kable(head(RootDat1), align=c('c','c'), booktabs = TRUE)
 
 >  *TO NOTE: in this example, plants are constantly moving and it was not possible to get unique time point containing the full platform. As a consequence, it is not possible to perform a spatial analysis per time point, but the other functions for outliers detection and longitudinal modelling are available and illustrated in the following tutorials.*
 
-
 # Data preparation
 
-The first step when modeling platform experiment data with the statgenHTP package
-is creating an object of class `TP` (Time Points). In this object, the time points are
-split into single data frames. It is then used throughout the statgenHTP package as input 
-for analyses. 
+The first step when modeling platform experiment data with the statgenHTP package is creating an object of class `TP` (Time Points). In this object, the time points are split into single data frames. It is then used throughout the statgenHTP package as input for analyses. 
 
 >  *TO NOTE: It is possible to use the functions of this package with a phenotype measured at one time point only. In that case, the user need to create a column with time point containing the unique measurement time.*
 
@@ -188,8 +162,7 @@ summary(phenoTP)
 ```
 In this dataset, 3 plants contain less than 50% of the 73 time points. The user may choose to check the data for these plant and eventually to remove them from the dataset.
 
-The function getTimePoints allows to generate a data frame containing the time points and 
-their numbers in the `TP` object. Below is a example with the first 6 time points of the `phenoTP`:
+The function getTimePoints allows to generate a data frame containing the time points and their numbers in the `TP` object. Below is a example with the first 6 time points of the `phenoTP`:
 ```{r getTimepoints}
 ### Extract the time points table
 timepoint <- getTimePoints(phenoTP)
@@ -199,35 +172,14 @@ timepoint <- getTimePoints(phenoTP)
 knitr::kable(head(timepoint), align=c('c','c'), padding = 0)
 ```
 
-
 The `TP` object just created is a `list` with 73 items, one for each time point 
-in the original `data.frame` (called "PhenovatorDat1"). The option `experimentName`
-is used for identifying the dataset and is a requirement. The column "Genotype" in the 
-original data is renamed to "genotype" and converted to a factor. The columns 
-"Replicate" and "pos" are renamed and converted likewise. The newly created column 
-"plotID" needs to be a unique identifier for a plot or a plant. It cannot occur more 
-than once per time point. The columns "y" and "x" are renamed to "rowNum" and "colNum" 
-respectively. Simultaneously, two columns "rowId" and "colId" are created containing 
-the same information converted to a factor. This seemingly duplicate information is 
-needed for spatial analysis. The information about which columns have been renamed when
-creating a `TP` object is stored as an attribute of each individual `data.frame` in the object.
-The option `addCheck` is set as `TRUE` to specify that the genotypes listed in
-`checkGenotypes` are reference genotypes (or check). This option will create a column 
-"check" with a value "noCheck" for the genotypes that are not in `checkGenotypes` and
-the name of the genotype for the `checkGenotypes`. Also a column "genoCheck" is added with
-the names of the genotypes that are not in `checkGenotypes` and `NA` for the
-`checkGenotypes` (see section [**4.1**](#spats)). These columns are necessary for fitting models on 
-data in case of augmented design [@Piepho2016].
+in the original `data.frame` (called "PhenovatorDat1"). The option `experimentName` is used for identifying the dataset and is a requirement. The column "Genotype" in the original data is renamed to "genotype" and converted to a factor. The columns "Replicate" and "pos" are renamed and converted likewise. The newly created column "plotID" needs to be a unique identifier for a plot or a plant. It cannot occur more than once per time point. The columns "y" and "x" are renamed to "rowNum" and "colNum" respectively. Simultaneously, two columns "rowId" and "colId" are created containing the same information converted to a factor. This seemingly duplicate information is needed for spatial analysis. The information about which columns have been renamed when creating a `TP` object is stored as an attribute of each individual `data.frame` in the object. The option `addCheck` is set as `TRUE` to specify that the genotypes listed in `checkGenotypes` are reference genotypes (or check). This option will create a column "check" with a value "noCheck" for the genotypes that are not in `checkGenotypes` and the name of the genotype for the `checkGenotypes`. Also a column "genoCheck" is added with the names of the genotypes that are not in `checkGenotypes` and `NA` for the `checkGenotypes` (see section [**4.1**](#spats)). These columns are necessary for fitting models on data in case of augmented design [@Piepho2016].
 
 ## Plotting a `TP` object
 
-Several plots can be made to further investigate the content of a `TP` object.    
+Several plots can be made to further investigate the content of a `TP` object.
 
-The first type of plot displays the layout of the experiment as a grid using the row and 
-column coordinates in "plotID". The default option creates plots of all time points in 
-the `TP` object. This can be restricted to selected time points using their number in 
-the option `timePoints`. If replicates ("repId") are available, a black line is plotted 
-between them. Missing plots are indicated in white circled with a bold black line.
+The first type of plot displays the layout of the experiment as a grid using the row and column coordinates in "plotID". The default option creates plots of all time points in the `TP` object. This can be restricted to selected time points using their number in the option `timePoints`. If replicates ("repId") are available, a black line is plotted between them. Missing plots are indicated in white circled with a bold black line.
 ```{r layoutPlot, fig.height=4, fig.width=5, fig.align = 'center'}
 ## Plot the layout for the third time point.
 plot(phenoTP, 
@@ -235,9 +187,7 @@ plot(phenoTP,
      timePoints = 3)
 ```
 
-Here, the third time point is displayed which corresponds to the 1^st^ of June at 11:37. Note
-that the title can be manually changed using the `title` option. This plot can be extended 
-by highlighting interesting genotypes in the layout. Hereafter the check genotypes are highlighted:
+Here, the third time point is displayed which corresponds to the 1^st^ of June at 11:37. Note that the title can be manually changed using the `title` option. This plot can be extended by highlighting interesting genotypes in the layout. Hereafter the check genotypes are highlighted:
 ```{r layoutPlotHL, fig.height=4, fig.width=5, fig.align = 'center'}
 ## Plot the layout for the third time point with the check genotypes highlighted.
 plot(phenoTP, 
@@ -265,8 +215,7 @@ plot(phenoTP,
      genotypes = c("G1", "G2", "check1"))
 ```
 
-Boxplots can be made to get an idea of the total variability of the trait in the `TP` object.
-By default a box is plotted per time point for the specified trait using all time points.
+Boxplots can be made to get an idea of the total variability of the trait in the `TP` object. By default a box is plotted per time point for the specified trait using all time points.
 ```{r boxPlot, fig.height=4.5, fig.width=7, fig.align = 'center'}
 ## Create a boxplot for "EffpsII" using the default all time points.
 plot(phenoTP, 
@@ -274,9 +223,7 @@ plot(phenoTP,
      traits = "EffpsII") 
 ```
 
-Colors can be applied to groups within time points using the option `colorBy`. The boxes 
-for the (groups of) time points can be ordered using `orderBy`. Boxes can be ordered by 
-alphabetical order ("alphabetic") or by the group mean ("ascending","descending").
+Colors can be applied to groups within time points using the option `colorBy`. The boxes for the (groups of) time points can be ordered using `orderBy`. Boxes can be ordered by alphabetical order ("alphabetic") or by the group mean ("ascending","descending").
 ```{r boxPlotCL, fig.height=4.5, fig.width=6, fig.align = 'center'}
 ## Create a boxplot for "EffpsII" with 5 time points and boxes colored by "repId" within
 ## time point.
@@ -297,8 +244,7 @@ plot(phenoTP,
      groupBy = "repId")
 ```
 
-The last plot that can be made is a plot of the correlations between the time points for
-a specified trait. The order of the plot is the time and by default all time points are used.
+The last plot that can be made is a plot of the correlations between the time points for a specified trait. The order of the plot is the time and by default all time points are used.
 ```{r corPlot, fig.height=5, fig.width=6, fig.align = 'center'}
 ## Create a correlation plot for "EffpsII" for a selection of time points.
 plot(phenoTP, 
@@ -307,8 +253,7 @@ plot(phenoTP,
      timePoints = seq(from = 1,to = 73,by = 5))
 ```
 
-Each plot can be exported to a pdf document by using the `outFile` option containing 
-the name of the document.
+Each plot can be exported to a pdf document by using the `outFile` option containing the name of the document.
 
 ----
 
@@ -325,9 +270,7 @@ phenoTParch <- createTimePoints(dat = PhenoarchDat1,
                                 colNum = "Col")
 summary(phenoTParch)
 ```
-The "phenoTParch" object just created is a `list` with 35 items, one for each time points 
- in the original `data.frame` (called "PhenoarchDat1"). We can visualize the layout and the 
- raw data the same way as for the Phenovator data.
+The "phenoTParch" object just created is a `list` with 35 items, one for each time points in the original `data.frame` (called "PhenoarchDat1"). We can visualize the layout and the raw data the same way as for the Phenovator data.
 
 ```{r layoutArch, echo=FALSE, fig.align='center', fig.height=5, fig.width=6}
 plot(phenoTParch, 
@@ -368,10 +311,9 @@ plot(rootTP,
      genotypes = c("2","8","252"))
 ```
 
-<center>
-![rootRaw](figures/tipPosRaw.png){width=90%}
-</center>
-
+```{r rootRawFig, fig.cap = 'rootRaw', out.width='90%', fig.pos='p', echo=FALSE}
+knitr::include_graphics("figures/tipPosRaw.png", auto_pdf = TRUE)
+```
 
 ----
 
