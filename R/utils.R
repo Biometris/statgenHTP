@@ -235,7 +235,7 @@ xyFacetPlot <- function(baseDat,
     if (!plotLine || length(unique(baseDat[[xVal]])) == 1) {
       ## Multiple time points in data. Display a line.
       p <- p + geom_point(aes_string(x = xVal, y = yValOverlay),
-                          data = overlayDat, color = "black", size = 2,
+                          data = overlayDat, color = "black", size = 1,
                           show.legend = FALSE, na.rm = TRUE)
     } else {
       ## Only one time point. Makes geom_line crash. Display as point.
