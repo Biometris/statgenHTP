@@ -42,6 +42,8 @@
 #' ## Extract the genotypic predictions for one time point:
 #' genoPredSp <- getGenoPred(modPhenoSp, timePoints = 6)
 #'
+#' @family Spatial modeling
+#'
 #' @export
 getGenoPred <- function(fitMod,
                         timePoints = names(fitMod),
@@ -142,6 +144,8 @@ getGenoPred <- function(fitMod,
 #' ## Extract the corrected values for one time point:
 #' spatCorrSp <- getCorrected(modPhenoSp, timePoints = 6)
 #'
+#' @family Spatial modeling
+#'
 #' @export
 getCorrected <- function(fitMod,
                          timePoints = names(fitMod),
@@ -202,6 +206,8 @@ getCorrected <- function(fitMod,
 #'
 #' ## Extract the variances for all available time points in the model object:
 #' varianceSp <- getVar(modPhenoSp)
+#'
+#' @family Spatial modeling
 #'
 #' @export
 getVar <- function(fitMod,
@@ -311,6 +317,8 @@ getVar <- function(fitMod,
 #' ## object:
 #' heritSp    <- getHerit(modPhenoSp)
 #'
+#' @family Spatial modeling
+#'
 #' @export
 getHerit <- function(fitMod,
                      timePoints = names(fitMod),
@@ -369,6 +377,8 @@ getHerit <- function(fitMod,
 #' ## Extract the effective dimensions for all available time points in the
 #' ## model object:
 #' effDimSp <- getEffDims(modPhenoSp)
+#'
+#' @family Spatial modeling
 #'
 #' @export
 getEffDims <- function(fitMod,

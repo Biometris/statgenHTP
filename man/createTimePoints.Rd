@@ -108,7 +108,10 @@ summary(phenoTP)
 
 }
 \seealso{
-Other functions for TP objects: 
-\code{\link{plot.TP}()}
+Other Data preparation: 
+\code{\link{as.data.frame.TP}()},
+\code{\link{plot.TP}()},
+\code{\link{removeTimePoints}()},
+\code{\link{summary.TP}()}
 }
-\concept{functions for TP objects}
+\concept{Data preparation}

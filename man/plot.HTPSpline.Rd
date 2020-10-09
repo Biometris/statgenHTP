@@ -35,3 +35,9 @@ should be plotted.}
 \description{
 Plot the results of a fitted spline.
 }
+\seealso{
+Other Fit splines: 
+\code{\link{estimateSplineParameters}()},
+\code{\link{fitSpline}()}
+}
+\concept{Fit splines}

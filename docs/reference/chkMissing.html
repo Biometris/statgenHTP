@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function for extracting objects of class fitMod that keeps class. — [.fitMod • statgenHTP</title>
+<title>Helper function for checking missing values for a given trait. — chkMissing • statgenHTP</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Function for extracting objects of class fitMod that keeps class. — [.fitMod" />
-<meta property="og:description" content="Function for extracting objects of class fitMod that keeps class." />
+<meta property="og:title" content="Helper function for checking missing values for a given trait. — chkMissing" />
+<meta property="og:description" content="Helper function for checking missing values for a given trait." />
 
 
 
@@ -143,32 +143,28 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Function for extracting objects of class fitMod that keeps class.</h1>
+    <h1>Helper function for checking missing values for a given trait.</h1>
     
-    <div class="hidden name"><code>sub-.fitMod.Rd</code></div>
+    <div class="hidden name"><code>chkMissing.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Function for extracting objects of class fitMod that keeps class.</p>
+    <p>Helper function for checking missing values for a given trait.</p>
     </div>
 
-    <pre class="usage"># S3 method for fitMod
-[(x, i, ...)</pre>
+    <pre class="usage"><span class='fu'>chkMissing</span><span class='op'>(</span><span class='va'>TP</span>, <span class='va'>trait</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>An object of class fitMod.</p></td>
+      <th>TP</th>
+      <td><p>An object of class TP.</p></td>
     </tr>
     <tr>
-      <th>i</th>
-      <td><p>An index specifying the element to extract of replace.</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Ignored.</p></td>
+      <th>trait</th>
+      <td><p>A character string indicating the trait for which missings
+should be checked.</p></td>
     </tr>
     </table>
 

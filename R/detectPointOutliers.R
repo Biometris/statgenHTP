@@ -59,6 +59,8 @@
 #'                                     confIntSize = 3,
 #'                                     mylocfit = 0.1)
 #'
+#' @family Detect point outliers
+#'
 #' @export
 detectPointOutliers <- function(TP,
                                 trait,
@@ -140,6 +142,8 @@ detectPointOutliers <- function(TP,
 #' plot(resuVatorHTP, plotIds = "c21r24", outOnly = FALSE)
 #' ## ...or a subset of plants.
 #' plot(resuVatorHTP, plotIds = plantSel, outOnly = FALSE)
+#'
+#' @family Detect point outliers
 #'
 #' @export
 plot.pointOutliers <- function(x,
@@ -257,6 +261,8 @@ plot.pointOutliers <- function(x,
 #'
 #' ## The annotated points can be replaced by NA for the studied trait
 #' phenoTPOut <- removePointOutliers(phenoTP, resuVatorHTP)
+#'
+#' @family Detect point outliers
 #'
 #' @export
 removePointOutliers <- function(TP,

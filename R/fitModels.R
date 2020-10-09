@@ -131,6 +131,8 @@
 #' Butler, D. G., et al. (2018).ASReml-R Reference Manual Version 4. VSN
 #' International Ltd, http://asreml.org
 #'
+#' @family Spatial modeling
+#'
 #' @export
 fitModels <- function(TP,
                       trait,

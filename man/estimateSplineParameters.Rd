@@ -63,3 +63,9 @@ paramVator1 <-
                               genotypes = subGeno)
 
 }
+\seealso{
+Other Fit splines: 
+\code{\link{fitSpline}()},
+\code{\link{plot.HTPSpline}()}
+}
+\concept{Fit splines}

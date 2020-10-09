@@ -6,8 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function for extracting for objects of class TP that keeps class and
-attributes. — [.TP • statgenHTP</title>
+<title>Remove selected time points from an object of class TP — removeTimePoints • statgenHTP</title>
 
 
 <!-- jquery -->
@@ -40,10 +39,8 @@ attributes. — [.TP • statgenHTP</title>
 
 
 
-<meta property="og:title" content="Function for extracting for objects of class TP that keeps class and
-attributes. — [.TP" />
-<meta property="og:description" content="Function for extracting for objects of class TP that keeps class and
-attributes." />
+<meta property="og:title" content="Remove selected time points from an object of class TP — removeTimePoints" />
+<meta property="og:description" content="Remove selected time points from an object of class TP" />
 
 
 
@@ -146,37 +143,41 @@ attributes." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Function for extracting for objects of class TP that keeps class and
-attributes.</h1>
+    <h1>Remove selected time points from an object of class TP</h1>
     
-    <div class="hidden name"><code>sub-.TP.Rd</code></div>
+    <div class="hidden name"><code>removeTimePoints.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Function for extracting for objects of class TP that keeps class and
-attributes.</p>
+    <p>Remove selected time points from an object of class TP</p>
     </div>
 
-    <pre class="usage"># S3 method for TP
-[(x, i, ...)</pre>
+    <pre class="usage"><span class='fu'>removeTimePoints</span><span class='op'>(</span><span class='va'>TP</span>, <span class='va'>timePoints</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
+      <th>TP</th>
       <td><p>An object of class TP.</p></td>
     </tr>
     <tr>
-      <th>i</th>
-      <td><p>An index specifying the element to extract or replace.</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Ignored.</p></td>
+      <th>timePoints</th>
+      <td><p>A character or numeric vector indicating the time points
+to be removed. When using a character string to reference a time point, the
+value has to be an exact match to one of the existing timePoints. When using
+a number it will be matched by its number ("timeNumber") in the timePoints
+attribute of the TP object.</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p>Other Data preparation: 
+<code><a href='as.data.frame.TP.html'>as.data.frame.TP</a>()</code>,
+<code><a href='createTimePoints.html'>createTimePoints</a>()</code>,
+<code><a href='plot.TP.html'>plot.TP</a>()</code>,
+<code><a href='summary.TP.html'>summary.TP</a>()</code></p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

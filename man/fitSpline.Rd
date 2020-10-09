@@ -63,5 +63,10 @@ plot(fit.spline, genotypes = "G160")
 plot(fit.spline, plotIds = "c10r29", plotType =  "predictions")
 plot(fit.spline, plotIds = "c10r29", plotType =  "derivatives")
 
-
 }
+\seealso{
+Other Fit splines: 
+\code{\link{estimateSplineParameters}()},
+\code{\link{plot.HTPSpline}()}
+}
+\concept{Fit splines}

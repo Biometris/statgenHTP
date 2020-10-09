@@ -63,5 +63,10 @@ spatCorrVatorOut <-
        removeTimeCourseOutliers(dat = spatCorrVator,
                                 timeCourseOutliers = outVator)
 
-
 }
+\seealso{
+Other Detect time course outliers: 
+\code{\link{detectTimeCourseOutliers}()},
+\code{\link{plot.timeCourseOutliers}()}
+}
+\concept{Detect time course outliers}

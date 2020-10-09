@@ -164,3 +164,14 @@ experiments with P-splines. Spatial Statistics
 Butler, D. G., et al. (2018).ASReml-R Reference Manual Version 4. VSN
 International Ltd, http://asreml.org
 }
+\seealso{
+Other Spatial modeling: 
+\code{\link{getCorrected}()},
+\code{\link{getEffDims}()},
+\code{\link{getGenoPred}()},
+\code{\link{getHerit}()},
+\code{\link{getVar}()},
+\code{\link{plot.fitMod}()},
+\code{\link{summary.fitMod}()}
+}
+\concept{Spatial modeling}

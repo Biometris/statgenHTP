@@ -47,6 +47,8 @@
 #' # The `outVator` can be visualised by selecting genotypes
 #' plot(outVator, genotypes = "G151")
 #'
+#' @family Detect time course outliers
+#'
 #' @export
 detectTimeCourseOutliers <- function(corrDat,
                                      predDat,
@@ -279,6 +281,8 @@ detectTimeCourseOutliers <- function(corrDat,
 #' # The `outVator` can be visualised by selecting genotypes
 #' plot(outVator, genotypes = "G151")
 #'
+#' @family Detect time course outliers
+#'
 #' @export
 plot.timeCourseOutliers <- function(x,
                                     ...,
@@ -441,6 +445,7 @@ plot.timeCourseOutliers <- function(x,
 #'        removeTimeCourseOutliers(dat = spatCorrVator,
 #'                                 timeCourseOutliers = outVator)
 #'
+#' @family Detect time course outliers
 #'
 #' @export
 removeTimeCourseOutliers <- function(dat = NULL,

@@ -55,3 +55,9 @@ outVator <- detectTimeCourseOutliers(corrDat = spatCorrVator,
 plot(outVator, genotypes = "G151")
 
 }
+\seealso{
+Other Detect time course outliers: 
+\code{\link{detectTimeCourseOutliers}()},
+\code{\link{removeTimeCourseOutliers}()}
+}
+\concept{Detect time course outliers}

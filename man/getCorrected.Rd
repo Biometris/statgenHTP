@@ -51,3 +51,14 @@ modPhenoSp <- fitModels(TP = phenoTP,
 spatCorrSp <- getCorrected(modPhenoSp, timePoints = 6)
 
 }
+\seealso{
+Other Spatial modeling: 
+\code{\link{fitModels}()},
+\code{\link{getEffDims}()},
+\code{\link{getGenoPred}()},
+\code{\link{getHerit}()},
+\code{\link{getVar}()},
+\code{\link{plot.fitMod}()},
+\code{\link{summary.fitMod}()}
+}
+\concept{Spatial modeling}

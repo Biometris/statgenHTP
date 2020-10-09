@@ -55,3 +55,9 @@ plot(resuVatorHTP, plotIds = "c21r24", outOnly = FALSE)
 plot(resuVatorHTP, plotIds = plantSel, outOnly = FALSE)
 
 }
+\seealso{
+Other Detect point outliers: 
+\code{\link{detectPointOutliers}()},
+\code{\link{removePointOutliers}()}
+}
+\concept{Detect point outliers}

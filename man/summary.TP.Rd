@@ -14,3 +14,11 @@
 \description{
 Summary function for class TP
 }
+\seealso{
+Other Data preparation: 
+\code{\link{as.data.frame.TP}()},
+\code{\link{createTimePoints}()},
+\code{\link{plot.TP}()},
+\code{\link{removeTimePoints}()}
+}
+\concept{Data preparation}

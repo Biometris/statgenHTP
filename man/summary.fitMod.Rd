@@ -14,3 +14,14 @@
 \description{
 Summary function for class fitMod
 }
+\seealso{
+Other Spatial modeling: 
+\code{\link{fitModels}()},
+\code{\link{getCorrected}()},
+\code{\link{getEffDims}()},
+\code{\link{getGenoPred}()},
+\code{\link{getHerit}()},
+\code{\link{getVar}()},
+\code{\link{plot.fitMod}()}
+}
+\concept{Spatial modeling}

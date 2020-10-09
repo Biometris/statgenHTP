@@ -38,6 +38,7 @@
 #' plot(fit.spline, plotIds = "c10r29", plotType =  "predictions")
 #' plot(fit.spline, plotIds = "c10r29", plotType =  "derivatives")
 #'
+#' @family Fit splines
 #'
 #' @export
 fitSpline <- function(corrDat,
@@ -204,6 +205,8 @@ fitSpline <- function(corrDat,
 #' @param plotIds A character vector indicating the plotIds for which splines
 #' should be plotted.
 #'
+#' @family Fit splines
+#'
 #' @export
 plot.HTPSpline <- function(x,
                            ...,
@@ -347,6 +350,8 @@ plot.HTPSpline <- function(x,
 #'                               timeMin = 1527784620,
 #'                               timeMax = 1528500000,
 #'                               genotypes = subGeno)
+#'
+#' @family Fit splines
 #'
 #' @export
 estimateSplineParameters <- function(HTPSpline,

@@ -25,6 +25,8 @@ createFitMod <- function(models,
 #' @param object An object of class fitMod.
 #' @param ... Ignored.
 #'
+#' @family Spatial modeling
+#'
 #' @export
 summary.fitMod <- function(object,
                            ...)  {
@@ -179,7 +181,7 @@ summary.fitMod <- function(object,
 #'      whichED = c("colId", "rowId", "fColRow","colfRow"),
 #'      EDType = "ratio")
 #'
-#'
+#' @family Spatial modeling
 #'
 #' @import ggplot2
 #' @export

@@ -160,7 +160,10 @@ plot(phenoTP,
 
 }
 \seealso{
-Other functions for TP objects: 
-\code{\link{createTimePoints}()}
+Other Data preparation: 
+\code{\link{as.data.frame.TP}()},
+\code{\link{createTimePoints}()},
+\code{\link{removeTimePoints}()},
+\code{\link{summary.TP}()}
 }
-\concept{functions for TP objects}
+\concept{Data preparation}

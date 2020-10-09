@@ -326,34 +326,6 @@ chkTimePoints <- function(x,
   return(timePoints)
 }
 
-#' Row bind data.frames
-#'
-#' Helper function for row binding data.frames with diffent columns.
-#'
-#' @param dfList A list of data.frames.
-#'
-#' @noRd
-#' @keywords internal
-dfBind <- function(dfList) {
-  ## Filter empty data.frames from dfList
-  dfList <- Filter(f = function(x) nrow(x) > 0, x = dfList)
-  if (length(dfList) == 0) {
-    return(data.frame())
-  }
-  ## Get variable names from all data.frames.
-  allNms <- unique(unlist(lapply(dfList, names)))
-  ## rbind all data.frames setting values for missing columns to NA.
-  do.call(rbind,
-          c(lapply(X = dfList, FUN = function(x) {
-            nwDat <- sapply(X = setdiff(allNms, names(x)), FUN = function(y) {
-              NA
-            })
-            data.frame(c(x, nwDat), check.names = FALSE,
-                       stringsAsFactors = FALSE)
-          }), make.row.names = FALSE)
-  )
-}
-
 #' Helper function for minimal plot theme.
 #'
 #' @noRd
@@ -467,6 +439,23 @@ dfBind <- function(dfList) {
                        stringsAsFactors = FALSE)
           }), make.row.names = FALSE)
   )
+}
+
+#' Helper function for checking missing values for a given trait.
+#'
+#' @param TP An object of class TP.
+#' @param trait A character string indicating the trait for which missings
+#' should be checked.
+#'
+#' @keywords internal
+chkMissing <- function(TP,
+                       trait) {
+  if (!inherits(TP, "TP")) {
+    stop("TP should be an object of class TP.\n")
+  }
+  sapply(X = TP, FUN = function(timepoint) {
+    sum(!is.na(timepoint[[trait]]))
+  })
 }
 
 

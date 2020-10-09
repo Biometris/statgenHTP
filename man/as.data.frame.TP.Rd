@@ -14,3 +14,11 @@
 \description{
 Function for converting an object of class TP to a data.frame.
 }
+\seealso{
+Other Data preparation: 
+\code{\link{createTimePoints}()},
+\code{\link{plot.TP}()},
+\code{\link{removeTimePoints}()},
+\code{\link{summary.TP}()}
+}
+\concept{Data preparation}

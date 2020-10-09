@@ -57,3 +57,14 @@ modPhenoSp <- fitModels(TP = phenoTP,
 effDimSp <- getEffDims(modPhenoSp)
 
 }
+\seealso{
+Other Spatial modeling: 
+\code{\link{fitModels}()},
+\code{\link{getCorrected}()},
+\code{\link{getGenoPred}()},
+\code{\link{getHerit}()},
+\code{\link{getVar}()},
+\code{\link{plot.fitMod}()},
+\code{\link{summary.fitMod}()}
+}
+\concept{Spatial modeling}
