@@ -47,6 +47,7 @@ reference:
   - plot.TP
   - summary.TP
   - getTimePoints
+  - removeTimePoints
   - as.data.frame.TP
 - title: Detect point outliers
 - contents:

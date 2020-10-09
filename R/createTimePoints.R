@@ -74,7 +74,7 @@
 #'                                                "check3","check4"))
 #' summary(phenoTP)
 #'
-#' @family functions for TP objects
+#' @family Data preparation
 #'
 #' @import ggplot2
 #' @export
@@ -243,12 +243,38 @@ createTimePoints <- function(dat,
   return(TP)
 }
 
+#' Remove selected time points from an object of class TP
+#'
+#' Remove selected time points from an object of class TP
+#'
+#' @param TP An object of class TP.
+#' @param timePoints A character or numeric vector indicating the time points
+#' to be removed. When using a character string to reference a time point, the
+#' value has to be an exact match to one of the existing timePoints. When using
+#' a number it will be matched by its number ("timeNumber") in the timePoints
+#' attribute of the TP object.
+#'
+#' @family Data preparation
+#'
+#' @export
+removeTimePoints <- function(TP,
+                             timePoints) {
+  if (!inherits(TP, "TP")) {
+    stop("TP should be an object of class TP.\n")
+  }
+  timePoints <- chkTimePoints(TP, timePoints)
+  TPOut <- TP[setdiff(names(TP), timePoints)]
+  return(TPOut)
+}
+
 #' Summary function for class TP
 #'
 #' Summary function for class TP
 #'
 #' @param object An object of class TP.
 #' @param ... Ignored.
+#'
+#' @family Data preparation
 #'
 #' @export
 summary.TP <- function(object,
@@ -397,7 +423,7 @@ summary.TP <- function(object,
 #'      plotType = "raw",
 #'      genotypes = c("G1","G2","check1","check2"))
 #'
-#' @family functions for TP objects
+#' @family Data preparation
 #'
 #' @export
 plot.TP <- function(x,
@@ -767,11 +793,12 @@ plot.TP <- function(x,
   return(r)
 }
 
-
 #' Function for converting an object of class TP to a data.frame.
 #'
 #' @param x An object of class TP.
 #' @param ... Ignored.
+#'
+#' @family Data preparation
 #'
 #' @export
 as.data.frame.TP <- function (x,
@@ -779,5 +806,3 @@ as.data.frame.TP <- function (x,
   res <- dfBind(x)
   return(res)
 }
-
-
