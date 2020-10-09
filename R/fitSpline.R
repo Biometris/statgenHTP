@@ -113,6 +113,12 @@ fitSpline <- function(corrDat,
   plantGeno <- unique(corrDat[c("plotId", "genotype")])
   ## Determine minimum number of time points required.
   minTP <- perMinTP * length(unique(corrDat[["timeNumber"]]))
+  ## Number of knots cannot be larger than the minimum number of time points.
+  ## If it is mgcv will crash.
+  if (knots >= minTP) {
+    stop("The number of knots cannot be larger than the minimum number of ",
+         "time points, which is ", minTP)
+  }
   ## Construct formula for fitting model.
   modForm <- as.formula(paste(trait, "~s(timeNumber, bs = 'ps', k = ",
                               knots, ")"))
