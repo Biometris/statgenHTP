@@ -228,12 +228,13 @@ getVar <- function(fitMod,
   if (inherits(fitMod[[1]], "SpATS")) {
     geno.decomp <- fitMod[[1]]$model$geno$geno.decomp
     if (!is.null(geno.decomp)) {
-      varGen <- t(sapply(X = fitMod, FUN = function(x) {
+      varGenDf <- lapply(X = fitMod, FUN = function(x) {
         levGD <- levels(x$data[["geno.decomp"]])
         varGD <- x$var.comp[paste0("geno.decomp", levGD)]
         names(varGD) <- paste0("var_geno.decomp_", levGD)
-        return(varGD)
-      }))
+        return(as.data.frame(t(varGD)))
+      })
+      varGen <- dfBind(varGenDf)
     } else {
       varGen <- sapply(X = fitMod, FUN = function(x) {
         x$var.comp[genoCol]
@@ -252,13 +253,14 @@ getVar <- function(fitMod,
       geno.decomp <- NULL
     }
     if (!is.null(geno.decomp)) {
-      varGen <- t(sapply(X = fitMod, FUN = function(x) {
+      varGenDf <- lapply(X = fitMod, FUN = function(x) {
         levGD <- levels(x$call$data[["geno.decomp"]])
         varGD <- x$vparameters[paste0("at(geno.decomp, ", levGD, "):",
                                       genoCol)] * x$sigma2
         names(varGD) <- paste0("var_geno.decomp_", levGD)
-        return(varGD)
-      }))
+        return(as.data.frame(t(varGD)))
+      })
+      varGen <- dfBind(varGenDf)
     } else {
       varGen <- sapply(X = fitMod, FUN = function(x) {
         x$vparameters[genoCol] * x$sigma2
