@@ -441,21 +441,65 @@ dfBind <- function(dfList) {
   )
 }
 
-#' Helper function for checking missing values for a given trait.
+#' Count valid observations per time point for a given trait
+#'
+#' Count valid observations per time point for a given trait.
 #'
 #' @param TP An object of class TP.
-#' @param trait A character string indicating the trait for which missings
-#' should be checked.
+#' @param trait A character string indicating the trait for which valid
+#' observations should be counted.
 #'
-#' @keywords internal
-chkMissing <- function(TP,
+#' @export
+countValid <- function(TP,
                        trait) {
   if (!inherits(TP, "TP")) {
     stop("TP should be an object of class TP.\n")
+  }
+  if (!is.character(trait) || length(trait) > 1) {
+    stop("trait should be a character string of length one.\n")
   }
   sapply(X = TP, FUN = function(timepoint) {
     sum(!is.na(timepoint[[trait]]))
   })
 }
 
-
+#' Count valid observations per plotId for a given trait
+#'
+#' Count valid observations per plotId for a given trait.
+#'
+#' @param TP An object of class TP.
+#' @param trait A character string indicating the trait for which valid
+#' observations should be counted.
+#' @param plotIds A character vector indicating the plotIds for which valid
+#' observations should be checked. If \code{NULL} valid observations are
+#' counted for all plotIds in TP.
+#'
+#' @export
+countValidPlot <- function(TP,
+                           trait,
+                           plotIds = NULL) {
+  if (!inherits(TP, "TP")) {
+    stop("TP should be an object of class TP.\n")
+  }
+  TPTot <- as.data.frame(TP)
+  if (!is.null(plotIds) && !is.character(plotIds)) {
+    stop("plotIds should be NULL or a character vector.\n")
+  }
+  if (is.null(plotIds)) {
+    plotIds <- as.character(unique(TPTot[["plotId"]]))
+  } else {
+    if (!all(plotIds %in% TPTot[["plotId"]])) {
+      stop("All plotIds should be in TP.\n")
+    }
+  }
+  if (!is.character(trait) || length(trait) > 1) {
+    stop("trait should be a character string of length one.\n")
+  }
+  if (!hasName(x = TPTot, name = trait)) {
+    stop(trait, " should be a column in TP.\n")
+  }
+  plotIdsValid <- as.character(TPTot[!is.na(TPTot[[trait]]), "plotId"])
+  sapply(X = plotIds, FUN = function(plotId) {
+    sum(plotIdsValid == plotId)
+  })
+}
