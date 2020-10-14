@@ -183,7 +183,6 @@ summary.fitMod <- function(object,
 #'
 #' @family Spatial modeling
 #'
-#' @import ggplot2
 #' @export
 plot.fitMod <- function(x,
                         ...,
@@ -254,7 +253,7 @@ plot.fitMod <- function(x,
       stop("genotypes should be NULL or a character vector.\n")
     }
     if (is.null(title)) title <-
-        paste(experimentName, "- genotypic prediction + raw data")
+      paste(experimentName, "- genotypic prediction + raw data")
     if (isTRUE(dotArgs$plotChecks) && useCheck) {
       totPred <- getGenoPred(fitMods, predictChecks = TRUE)
       ## Get check predictions.
@@ -375,17 +374,20 @@ plot.fitMod <- function(x,
     yLim <- c(min(dotArgs$yLim[1], herit[["h2"]]),
               max(dotArgs$yLim[2], herit[["h2"]]))
     nBr <- min(length(unique(herit[["timePoint"]])), 3)
-    p <- ggplot(herit, aes_string(x = "timePoint", y = "h2",
-                                  group = "herit", color = "herit")) +
-      geom_point(size = 3, na.rm = TRUE) +
-      scale_x_datetime(breaks = prettier(nBr),
-                       labels = scales::date_format("%B %d")) +
-      plotTheme() +
-      theme(axis.title.y = element_text(angle = 0, vjust = 0.5)) +
-      ylim(yLim) +
-      labs(title = title)
+    p <- ggplot2::ggplot(herit,
+                         ggplot2::aes_string(x = "timePoint", y = "h2",
+                                             group = "herit",
+                                             color = "herit")) +
+      ggplot2::geom_point(size = 3, na.rm = TRUE) +
+      ggplot2::scale_x_datetime(breaks = prettier(nBr),
+                                labels = scales::date_format("%B %d")) +
+      ggplot2::plotTheme() +
+      ggplot2::theme(axis.title.y = ggplot2::element_text(angle = 0,
+                                                          vjust = 0.5)) +
+      ggplot2::ylim(yLim) +
+      ggplot2::labs(title = title)
     if (length(unique(herit[["timePoint"]])) > 1) {
-      p <- p + geom_line(size = 0.5, na.rm = TRUE)
+      p <- p + ggplot2::geom_line(size = 0.5, na.rm = TRUE)
     }
     if (output) {
       plot(p)
@@ -413,17 +415,20 @@ plot.fitMod <- function(x,
     yLim <- c(min(dotArgs$yLim[1], effDim[["ED"]]),
               max(dotArgs$yLim[2], effDim[["ED"]]))
     nBr <- min(length(unique(effDim[["timePoint"]])), 3)
-    p <- ggplot(effDim, aes_string(x = "timePoint", y = "ED",
-                                   group = "effDim", color = "effDim")) +
-      geom_point(size = 3, na.rm = TRUE) +
-      scale_x_datetime(breaks = prettier(nBr),
-                       labels = scales::date_format("%B %d")) +
-      plotTheme() +
-      theme(axis.title.y = element_text(angle = 0, vjust = 0.5)) +
-      ylim(yLim) +
-      labs(title = title, color = "Effective dimension")
+    p <- ggplot2::ggplot(effDim,
+                         ggplot2::aes_string(x = "timePoint", y = "ED",
+                                             group = "effDim",
+                                             color = "effDim")) +
+      ggplot2::geom_point(size = 3, na.rm = TRUE) +
+      ggplot2::scale_x_datetime(breaks = prettier(nBr),
+                                labels = scales::date_format("%B %d")) +
+      ggplot2::plotTheme() +
+      ggplot2::theme(axis.title.y = ggplot2::element_text(angle = 0,
+                                                          vjust = 0.5)) +
+      ggplot2::ylim(yLim) +
+      ggplot2::labs(title = title, color = "Effective dimension")
     if (length(unique(effDim[["timePoint"]])) > 1) {
-      p <- p + geom_line(size = 0.5, na.rm = TRUE)
+      p <- p + ggplot2::geom_line(size = 0.5, na.rm = TRUE)
     }
     if (output) {
       plot(p)
@@ -446,18 +451,21 @@ plot.fitMod <- function(x,
     yLim <- c(min(dotArgs$yLim[1], variance[["value"]]),
               max(dotArgs$yLim[2], variance[["value"]]))
     nBr <- min(length(unique(variance[["timePoint"]])), 3)
-    p <- ggplot(variance, aes_string(x = "timePoint", y = "value",
-                                     group = "var", color = "var")) +
-      geom_point(size = 3, na.rm = TRUE) +
-      scale_color_discrete(labels = varLabs) +
-      scale_x_datetime(breaks = prettier(nBr),
-                       labels = scales::date_format("%B %d")) +
-      plotTheme() +
-      theme(axis.title.y = element_text(angle = 0, vjust = 0.5)) +
-      ylim(yLim) +
-      labs(title = title, color = "variance", y = expression(sigma ^ 2))
+    p <- ggplot2::ggplot(variance,
+                         ggplot2::aes_string(x = "timePoint", y = "value",
+                                             group = "var", color = "var")) +
+      ggplot2::geom_point(size = 3, na.rm = TRUE) +
+      ggplot2::scale_color_discrete(labels = varLabs) +
+      ggplot2::scale_x_datetime(breaks = prettier(nBr),
+                                labels = scales::date_format("%B %d")) +
+      ggplot2::plotTheme() +
+      ggplot2::theme(axis.title.y = ggplot2::element_text(angle = 0,
+                                                          vjust = 0.5)) +
+      ggplot2::ylim(yLim) +
+      ggplot2::labs(title = title, color = "variance",
+                    y = expression(sigma ^ 2))
     if (length(unique(variance[["timePoint"]])) > 1) {
-      p <- p + geom_line(size = 0.5, na.rm = TRUE)
+      p <- p + ggplot2::geom_line(size = 0.5, na.rm = TRUE)
     }
     if (output) {
       plot(p)
@@ -605,7 +613,7 @@ spatPlot <- function(fitMod,
   if (engine == "SpATS") {
     ## Get tickmarks from first plot to be used as ticks.
     ## Spatial plot tends to use different tickmarks by default.
-    xTicks <- ggplot_build(plots[[1]])$layout$panel_params[[1]]$x$breaks
+    xTicks <- ggplot2::ggplot_build(plots[[1]])$layout$panel_params[[1]]$x$breaks
     if (spaTrend == "raw") {
       plots$p4 <- fieldPlot(plotDat = plotDatSpat, fillVar = "value",
                             title = legends[4], colors = colors,
@@ -624,18 +632,18 @@ spatPlot <- function(fitMod,
   }
   plots$p5 <- fieldPlot(plotDat = plotDat, fillVar = "predicted.values",
                         title = legends[5], colors = colors)
-  plots$p6 <- ggplot(data = plotDat) +
-    geom_histogram(aes_string(x = "predicted.values"),
-                   fill = "white", col = "black", bins = 10,
-                   boundary = 0) +
+  plots$p6 <- ggplot2::ggplot(data = plotDat) +
+    ggplot2::geom_histogram(ggplot2::aes_string(x = "predicted.values"),
+                            fill = "white", col = "black", bins = 10,
+                            boundary = 0) +
     ## Remove empty space between ticks and actual plot.
-    scale_x_continuous(expand = c(0, 0)) +
-    scale_y_continuous(expand = c(0, 0)) +
+    ggplot2::scale_x_continuous(expand = c(0, 0)) +
+    ggplot2::scale_y_continuous(expand = c(0, 0)) +
     ## No background. Center and resize title. Resize axis labels.
-    theme(panel.background = element_blank(),
-          plot.title = element_text(hjust = 0.5, size = 10),
-          axis.title = element_text(size = 9)) +
-    labs(y = "Frequency", x = legends[5], title = legends[6])
+    ggplot2::theme(panel.background = ggplot2::element_blank(),
+                   plot.title = ggplot2::element_text(hjust = 0.5, size = 10),
+                   axis.title = ggplot2::element_text(size = 9)) +
+    ggplot2::labs(y = "Frequency", x = legends[5], title = legends[6])
   if (output) {
     ## do.call is needed since grid.arrange doesn't accept lists as input.
     do.call(gridExtra::grid.arrange,
@@ -654,24 +662,26 @@ fieldPlot <- function(plotDat,
                       title,
                       colors,
                       zlim = range(plotDat[fillVar]),
-                      xTicks = waiver(),
+                      xTicks = ggplot2::waiver(),
                       ...) {
-  p <- ggplot(data = plotDat, aes_string(x = "colNum", y = "rowNum",
-                                         fill = fillVar)) +
-    geom_raster() +
+  p <- ggplot2::ggplot(data = plotDat,
+                       ggplot2::aes_string(x = "colNum", y = "rowNum",
+                                           fill = fillVar)) +
+    ggplot2::geom_raster() +
     ## Remove empty space between ticks and actual plot.
-    scale_x_continuous(expand = c(0, 0), breaks = xTicks) +
-    scale_y_continuous(expand = c(0, 0)) +
+    ggplot2::scale_x_continuous(expand = c(0, 0), breaks = xTicks) +
+    ggplot2::scale_y_continuous(expand = c(0, 0)) +
     ## Adjust plot colors.
-    scale_fill_gradientn(limits = zlim, colors = colors) +
+    ggplot2::scale_fill_gradientn(limits = zlim, colors = colors) +
     ## No background. Center and resize title. Resize axis labels.
     ## Remove legend title and resize legend entries.
-    theme(panel.background = element_blank(),
-          plot.title = element_text(hjust = 0.5, size = 10),
-          axis.title = element_text(size = 9),
-          legend.title = element_blank(),
-          legend.text = element_text(size = 8, margin = margin(l = 5))) +
-    ggtitle(title)
+    ggplot2::theme(panel.background = ggplot2::element_blank(),
+                   plot.title = ggplot2::element_text(hjust = 0.5, size = 10),
+                   axis.title = ggplot2::element_text(size = 9),
+                   legend.title = ggplot2::element_blank(),
+                   legend.text = ggplot2::element_text(size = 8,
+                                                       margin = ggplot2::margin(l = 5))) +
+    ggplot2::ggtitle(title)
   return(p)
 }
 
@@ -688,30 +698,30 @@ fieldPlotPcts <- function(plotDat,
                           xTicks = waiver(),
                           scaleLim = Inf,
                           ...) {
-  p <- ggplot(
+  p <- ggplot2::ggplot(
     data = plotDat,
-    aes_string(x = "colNum", y = "rowNum",
-               fill = fillVar,
-               color = if (is.infinite(scaleLim)) NULL else "''")) +
-    geom_tile(na.rm = TRUE) +
+    ggplot2::aes_string(x = "colNum", y = "rowNum",
+                        fill = fillVar,
+                        color = if (is.infinite(scaleLim)) NULL else "''")) +
+    ggplot2::geom_tile(na.rm = TRUE) +
     ## Remove empty space between ticks and actual plot.
-    scale_x_continuous(expand = c(0, 0), breaks = xTicks) +
-    scale_y_continuous(expand = c(0, 0)) +
+    ggplot2::scale_x_continuous(expand = c(0, 0), breaks = xTicks) +
+    ggplot2::scale_y_continuous(expand = c(0, 0)) +
     ## Adjust plot colors.
-    scale_fill_gradientn(limits = zlim, colors = colors, name = NULL,
-                         labels = scales::percent,
-                         breaks = seq(zlim[1], zlim[2], length.out = 5)) +
-    scale_color_manual(values = NA) +
-    guides(fill = guide_colorbar(order = 1),
-           color = guide_legend("Larger than scale limit",
-                                override.aes = list(fill = "grey50",
-                                                    color = "grey50"))) +
+    ggplot2::scale_fill_gradientn(limits = zlim, colors = colors, name = NULL,
+                                  labels = scales::percent,
+                                  breaks = seq(zlim[1], zlim[2], length.out = 5)) +
+    ggplot2::scale_color_manual(values = NA) +
+    ggplot2::guides(fill = ggplot2::guide_colorbar(order = 1),
+                    color = ggplot2::guide_legend("Larger than scale limit",
+                                                  override.aes = list(fill = "grey50",
+                                                                      color = "grey50"))) +
     ## No background. Center and resize title. Resize axis labels.
     ## Remove legend title and resize legend entries.
-    theme(panel.background = element_blank(),
-          plot.title = element_text(hjust = 0.5, size = 10),
-          axis.title = element_text(size = 9)) +
-    ggtitle(title)
+    ggplot2::theme(panel.background = ggplot2::element_blank(),
+                   plot.title = ggplot2::element_text(hjust = 0.5, size = 10),
+                   axis.title = ggplot2::element_text(size = 9)) +
+    ggplot2::ggtitle(title)
   return(p)
 }
 
@@ -777,7 +787,7 @@ timeLapsePlot <- function(fitMods,
       plotDatSpat[["colNum"]] <- spatTr[["col.p"]]
       plotDatSpat[["rowNum"]] <- rep(x = spatTr[["row.p"]], each = p1 * nCol)
       ## Remove missings from data.
-      plotDatSpat <- remove_missing(plotDatSpat, na.rm = TRUE)
+      plotDatSpat <- ggplot2::remove_missing(plotDatSpat, na.rm = TRUE)
       ## Divide by mean value of trait to get trend as percentage.
       plotDatSpat[["mean"]] <- mean(plotDat[[trait]], na.rm = TRUE)
       plotDatSpat[["value"]] <- plotDatSpat[["value"]] / plotDatSpat[["mean"]]

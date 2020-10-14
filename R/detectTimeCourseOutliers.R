@@ -334,15 +334,17 @@ plot.timeCourseOutliers <- function(x,
     ## Annotated plants get a closed circle.
     plotShapes[names(plotShapes) %in% x[["plotId"]]] <- 19
     ## Plot of time course per genotype: corrected data + spline per plant.
-    kinetic <- ggplot(genoDats[[genotype]], aes_string(x = timeVar, y = trait,
-                                                       color = "plotId")) +
-      geom_point(aes_string(shape = "plotId"), size = 2, na.rm = TRUE) +
-      geom_line(data = genoPreds[[genotype]],
-                aes_string(y = "pred.value"), size = 0.5) +
-      scale_shape_manual(values = plotShapes) +
-      theme_light() +
-      theme(axis.text = element_text(size = 12),
-            axis.title = element_text(size = 13))
+    kinetic <- ggplot2::ggplot(genoDats[[genotype]],
+                               ggplot2::aes_string(x = timeVar, y = trait,
+                                                   color = "plotId")) +
+      ggplot2::geom_point(ggplot2::aes_string(shape = "plotId"), size = 2,
+                          na.rm = TRUE) +
+      ggplot2::geom_line(data = genoPreds[[genotype]],
+                         ggplot2::aes_string(y = "pred.value"), size = 0.5) +
+      ggplot2::scale_shape_manual(values = plotShapes) +
+      ggplot2::theme_light() +
+      ggplot2::theme(axis.text = ggplot2::element_text(size = 12),
+                     axis.title = ggplot2::element_text(size = 13))
     if (useTimePoint) {
       ## Format the time scale to Month + day.
       kinetic <- kinetic +
@@ -350,26 +352,28 @@ plot.timeCourseOutliers <- function(x,
                                   labels = scales::date_format("%B %d"))
     }
     ## Correlation plot.
-    correl <- ggplot(data = cormats[[genotype]],
-                     aes_string("Var2", "Var1", fill = "value")) +
-      geom_tile(color = "white") +
-      scale_fill_gradientn(colors = c("red", "white", "blue"),
-                           values = scales::rescale(c(minCor, thrCor, 1)),
-                           limits = c(minCor, 1),
-                           name = "Pearson\nCorrelation") +
+    correl <- ggplot2::ggplot(data = cormats[[genotype]],
+                              ggplot2::aes_string("Var2", "Var1",
+                                                  fill = "value")) +
+      ggplot2::geom_tile(color = "white") +
+      ggplot2::scale_fill_gradientn(colors = c("red", "white", "blue"),
+                                    values = scales::rescale(c(minCor,
+                                                               thrCor, 1)),
+                                    limits = c(minCor, 1),
+                                    name = "Pearson\nCorrelation") +
       ## Move y-axis to the right.
-      scale_y_discrete(position = "right") +
+      ggplot2::scale_y_discrete(position = "right") +
       ## Use coord fixed to create a square shaped output.
-      coord_fixed() +
-      theme(panel.background = element_rect(fill = "white"),
-            panel.border = element_blank(),
-            panel.grid = element_line(color = "grey92"),
-            plot.title = element_text(hjust = 0.5),
-            axis.ticks = element_blank(),
-            axis.text.x = element_text(angle = 45, vjust = 1,
-                                       size = 12, hjust = 1),
-            legend.position = "left") +
-      labs(title = "Correl of coef", x = NULL, y = NULL)
+      ggplot2::coord_fixed() +
+      ggplot2::theme(panel.background = ggplot2::element_rect(fill = "white"),
+                     panel.border = ggplot2::element_blank(),
+                     panel.grid = ggplot2::element_line(color = "grey92"),
+                     plot.title = ggplot2::element_text(hjust = 0.5),
+                     axis.ticks = ggplot2::element_blank(),
+                     axis.text.x = ggplot2::element_text(angle = 45, vjust = 1,
+                                                         size = 12, hjust = 1),
+                     legend.position = "left") +
+      ggplot2::labs(title = "Correl of coef", x = NULL, y = NULL)
     ## PCA biplot.
     pcaplot <- factoextra::fviz_pca_var(plantPcas[[genotype]])
     ## Arrange plots.

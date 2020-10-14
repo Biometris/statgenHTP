@@ -260,15 +260,16 @@ plot.HTPSpline <- function(x,
          "selected.\n")
   }
   timeVar <- if (useTimeNumber) "timeNumber" else "timePoint"
-  p <- ggplot(modDat, aes_string(x = timeVar, y = trait)) +
-    geom_line(data = predDat, aes_string(x = timeVar, y = plotVar),
-              col = "blue", na.rm = TRUE) +
-    labs(y = trait, x = timeVar)
+  p <- ggplot2::ggplot(modDat, ggplot2::aes_string(x = timeVar, y = trait)) +
+    ggplot2::geom_line(data = predDat,
+                       ggplot2::aes_string(x = timeVar, y = plotVar),
+                       col = "blue", na.rm = TRUE) +
+    ggplot2::labs(y = trait, x = timeVar)
   if (plotType == "predictions") {
-    p <- p + geom_point(na.rm = TRUE) +
-      ggtitle("Corrected data and Pspline prediction")
+    p <- p + ggplot2::geom_point(na.rm = TRUE) +
+      ggplot2::ggtitle("Corrected data and Pspline prediction")
   } else {
-    p <- p + ggtitle("Pspline first derivatives")
+    p <- p + ggplot2::ggtitle("Pspline first derivatives")
   }
   if (!useTimeNumber) {
     ## Compute the number of breaks for the time scale.

@@ -210,38 +210,44 @@ xyFacetPlot <- function(baseDat,
   ## Otherwise use 3.
   nBr <- min(length(unique(baseDat[[xVal]])), 3)
   ## Create plot.
-  p <- ggplot(baseDat, aes_string(x = xVal, y = yVal)) +
+  p <- ggplot2::ggplot(baseDat, ggplot2::aes_string(x = xVal, y = yVal)) +
     ## Format the time scale to Month + day.
-    scale_x_datetime(breaks = prettier(n = nBr),
-                     labels = scales::date_format("%B %d")) +
-    theme(panel.background = element_blank(),
-          panel.spacing = unit(0, "cm"),
-          panel.border = element_rect(color = "black", fill = "transparent"),
-          strip.background = element_rect(color = "black", fill = "bisque"),
-          plot.title = element_text(hjust = 0.5),
-          axis.text.x = element_text(angle = 25, vjust = 1, hjust = 1)) +
-    labs(title = title, x = xLab, y = yLab)
+    ggplot2::scale_x_datetime(breaks = prettier(n = nBr),
+                              labels = scales::date_format("%B %d")) +
+    ggplot2::theme(panel.background = ggplot2::element_blank(),
+                   panel.spacing = ggplot2::unit(0, "cm"),
+                   panel.border = ggplot2::element_rect(color = "black",
+                                                        fill = "transparent"),
+                   strip.background = ggplot2::element_rect(color = "black",
+                                                            fill = "bisque"),
+                   plot.title = ggplot2::element_text(hjust = 0.5),
+                   axis.text.x = ggplot2::element_text(angle = 25, vjust = 1, hjust = 1)) +
+    ggplot2::labs(title = title, x = xLab, y = yLab)
   if (!plotLine || length(unique(baseDat[[xVal]])) == 1) {
     ## Multiple time points in data. Display a line.
-    p <- p + geom_point(aes_string(group = groupVal, color = colVal),
-                        show.legend = FALSE, na.rm = TRUE, size = 1)
+    p <- p + ggplot2::geom_point(ggplot2::aes_string(group = groupVal,
+                                                     color = colVal),
+                                 show.legend = FALSE, na.rm = TRUE, size = 1)
   } else {
     ## Only one time point. Makes geom_line crash. Display as point.
-    p <- p + geom_line(aes_string(group = groupVal, color = colVal),
-                       show.legend = FALSE, na.rm = TRUE)
+    p <- p + ggplot2::geom_line(ggplot2::aes_string(group = groupVal,
+                                                    color = colVal),
+                                show.legend = FALSE, na.rm = TRUE)
   }
   if (!is.null(overlayDat)) {
     ## Add a second data set as overlay over the first plot.
     if (!plotLine || length(unique(baseDat[[xVal]])) == 1) {
       ## Multiple time points in data. Display a line.
-      p <- p + geom_point(aes_string(x = xVal, y = yValOverlay),
-                          data = overlayDat, color = "black", size = 1,
-                          show.legend = FALSE, na.rm = TRUE)
+      p <- p + ggplot2::geom_point(ggplot2::aes_string(x = xVal,
+                                                       y = yValOverlay),
+                                   data = overlayDat, color = "black", size = 1,
+                                   show.legend = FALSE, na.rm = TRUE)
     } else {
       ## Only one time point. Makes geom_line crash. Display as point.
-      p <- p + geom_line(aes_string(x = xVal, y = yValOverlay),
-                         data = overlayDat, color = "black", size = 1,
-                         show.legend = FALSE, na.rm = TRUE)
+      p <- p +
+        ggplot2::geom_line(ggplot2::aes_string(x = xVal, y = yValOverlay),
+                           data = overlayDat, color = "black", size = 1,
+                           show.legend = FALSE, na.rm = TRUE)
     }
   }
   ## Calculate the total number of plots.
@@ -266,7 +272,7 @@ xyFacetPlot <- function(baseDat,
     pPag[[i]] <- p +
       ggforce::facet_wrap_paginate(facets = facetVal,
                                    nrow = rowPag[i], ncol = colPag[i],
-                                   labeller = label_wrap_gen(multi_line = FALSE),
+                                   labeller = ggplot2::label_wrap_gen(multi_line = FALSE),
                                    page = i)
     if (output) {
       suppressMessages(plot(pPag[[i]]))
@@ -331,11 +337,11 @@ chkTimePoints <- function(x,
 #' @noRd
 #' @keywords internal
 plotTheme <- function() {
-  theme(panel.grid = element_blank(),
-        panel.background = element_blank(),
-        legend.key = element_blank(),
-        axis.line = element_line(color = "black"),
-        plot.title = element_text(hjust = 0.5))
+  ggplot2::theme(panel.grid = ggplot2::element_blank(),
+                 panel.background = ggplot2::element_blank(),
+                 legend.key = ggplot2::element_blank(),
+                 axis.line = ggplot2::element_line(color = "black"),
+                 plot.title = ggplot2::element_text(hjust = 0.5))
 }
 
 #' Helper function for creating a decent looking time scale on the x-axis of
