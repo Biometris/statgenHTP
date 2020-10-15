@@ -7,16 +7,16 @@
 \format{
 A data.frame with 16,275 rows and 10 columns:
 \describe{
-  \item{Exp}{Experiment number}
-  \item{thermalTime}{Thermal time cumulated}
-  \item{Genotype}{Genotype}
-  \item{plantId}{Unique pot using tank and rowcol coordinate}
-  \item{Tank}{Tank A or B}
-  \item{Strip}{Number of strip of five plants (i.e. row coordinate)}
-  \item{Pos}{Position within th strip (i.e. column coordinate)}
-  \item{tipPos_x}{Position of the root tip in x axis}
-  \item{tipPos_y}{Position of the root tip in y axis}
-  \item{Time}{Time of measurement}
+\item{Exp}{Experiment number}
+\item{thermalTime}{Thermal time cumulated}
+\item{Genotype}{Genotype}
+\item{plantId}{Unique pot using tank and rowcol coordinate}
+\item{Tank}{Tank A or B}
+\item{Strip}{Number of strip of five plants (i.e. row coordinate)}
+\item{Pos}{Position within th strip (i.e. column coordinate)}
+\item{tipPos_x}{Position of the root tip in x axis}
+\item{tipPos_y}{Position of the root tip in y axis}
+\item{Time}{Time of measurement}
 }
 }
 \usage{

@@ -32,7 +32,7 @@ the time points.}
 
 \item{timeFormat}{A character string indicating the input format of the time
 points. E.g. for a date/time input of the form day/month/year hour:minute,
-use \%d/\%m/\%Y \%H:\%M. For a full list of abbreviations see
+use \\%d/\\%m/\\%Y \\%H:\\%M. For a full list of abbreviations see
 \code{\link[base]{strptime}}. If \code{NULL}, a best guess is done based on
 the input.}
 

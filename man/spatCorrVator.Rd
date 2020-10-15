@@ -7,19 +7,19 @@
 \format{
 A data.frame with 103,801 rows and 11 columns:
 \describe{
-  \item{timeNumber}{Time number obtained after formatting the original
-  dataset with the function createTP.}
-  \item{timePoint}{Original time point.}
-  \item{EffpsII_corr}{Efficiency of the photosystem II, corrected data}
-  \item{EffpsII}{Efficiency of the photosystem II, raw data}
-  \item{genotype}{Genotypes}
-  \item{repId}{Block define after sowing for post-blocking.}
-  \item{Image_pos}{Position of the camera}
-  \item{check}{Status of the genotypes: check for the reference genotypes,
-  noCheck for the others.}
-  \item{colId}{Column coordinate}
-  \item{rowId}{Row coordinate}
-  \item{plotId}{Unique pot ID using rowcol coordinates}
+\item{timeNumber}{Time number obtained after formatting the original
+dataset with the function createTP.}
+\item{timePoint}{Original time point.}
+\item{EffpsII_corr}{Efficiency of the photosystem II, corrected data}
+\item{EffpsII}{Efficiency of the photosystem II, raw data}
+\item{genotype}{Genotypes}
+\item{repId}{Block define after sowing for post-blocking.}
+\item{Image_pos}{Position of the camera}
+\item{check}{Status of the genotypes: check for the reference genotypes,
+noCheck for the others.}
+\item{colId}{Column coordinate}
+\item{rowId}{Row coordinate}
+\item{plotId}{Unique pot ID using rowcol coordinates}
 }
 }
 \usage{

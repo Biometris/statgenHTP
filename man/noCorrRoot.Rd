@@ -7,16 +7,16 @@
 \format{
 A data.frame with 15,934 rows and 8 columns:
 \describe{
-  \item{timePoint}{Original time points, date and time}
-  \item{Date}{Date}
-  \item{thermalTime}{Thermal time cumulated}
-  \item{Exp}{Experiment number}
-  \item{genotype}{Genotypes}
-  \item{Tank}{Tank in the greenhouse}
-  \item{plotId}{Unique pot ID using rowcol coordinates}
-  \item{rowId}{Row coordinate}
-  \item{colId}{Column coordinate}
-  \item{tipPos_y}{Position of the root tip in y axis}
+\item{timePoint}{Original time points, date and time}
+\item{Date}{Date}
+\item{thermalTime}{Thermal time cumulated}
+\item{Exp}{Experiment number}
+\item{genotype}{Genotypes}
+\item{Tank}{Tank in the greenhouse}
+\item{plotId}{Unique pot ID using rowcol coordinates}
+\item{rowId}{Row coordinate}
+\item{colId}{Column coordinate}
+\item{tipPos_y}{Position of the root tip in y axis}
 }
 }
 \usage{

@@ -82,7 +82,7 @@ where\cr \code{nSeg = (number of columns, number of rows)}.\cr\cr
 When \code{asreml} is used for modeling and \code{spatial = TRUE},
 four models are fitted with different random terms and covariance structures.
 The best model is determined based on a goodness-of-fit criterion, AIC,
-on 20% of the time points or at least 10 time points. The best model is then
+on 20\% of the time points or at least 10 time points. The best model is then
 run on all time points.
 The following combinations of random and spatial terms are fitted
 \itemize{

@@ -32,6 +32,18 @@ A data.frame with effective dimensions per time point.
 }
 \description{
 Extract effective dimensions from an object of class fitMod.
+The table below gives an overview of the effective dimensions and an
+explanation of their meaning.\tabular{ll}{
+   Effective Dimension \tab Explanation \cr
+   colId \tab Linear trend along columns \cr
+   rowId \tab Linear trend along rows \cr
+   fCol \tab Smooth trend along columns \cr
+   fRow \tab Smooth trend along rows \cr
+   fColRow \tab Linear trend in rows changing smoothly along cols \cr
+   colfRow \tab Linear trend in cols changing smoothly along rows \cr
+   fColfRow \tab Smooth-by-smooth interaction trend over rows and cols \cr
+   surface \tab Sum of smooth trends \cr
+}
 }
 \examples{
 ## Using the first example dataset (PhenovatorDat1):

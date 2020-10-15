@@ -347,7 +347,20 @@ getHerit <- function(fitMod,
 
 #' Extract effective dimensions
 #'
-#' Extract effective dimensions from an object of class fitMod.
+#' @description Extract effective dimensions from an object of class fitMod.
+#' The table below gives an overview of the effective dimensions and an
+#' explanation of their meaning.
+#'
+#' | Effective Dimension | Explanation |
+#' | :---------------------------- |:----------------------------------|
+#' | colId | Linear trend along columns |
+#' | rowId | Linear trend along rows |
+#' | fCol | Smooth trend along columns |
+#' | fRow | Smooth trend along rows |
+#' | fColRow | Linear trend in rows changing smoothly along cols |
+#' | colfRow | Linear trend in cols changing smoothly along rows |
+#' | fColfRow | Smooth-by-smooth interaction trend over rows and cols |
+#' | surface | Sum of smooth trends |
 #'
 #' @inheritParams getGenoPred
 #'

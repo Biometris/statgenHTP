@@ -23,14 +23,14 @@ smoothing parameter nn. (see the locfit())}
 An object of class pointOutliers, a data.frame with the following
 columns.
 \describe{
-  \item{plotId}{the id variable}
-  \item{timePoint}{time variable in datain}
-  \item{trait}{name of the modeled variable in datain}
-  \item{yPred}{the locfit prediction}
-  \item{sd_yPred}{standard deviation of the prediction}
-  \item{lwr}{lower bound of the confidence interval}
-  \item{upr}{upper bound of the confidence interval}
-  \item{outlier}{flag of detected outlier (0 is outlier, 1 is not)}
+\item{plotId}{the id variable}
+\item{timePoint}{time variable in datain}
+\item{trait}{name of the modeled variable in datain}
+\item{yPred}{the locfit prediction}
+\item{sd_yPred}{standard deviation of the prediction}
+\item{lwr}{lower bound of the confidence interval}
+\item{upr}{upper bound of the confidence interval}
+\item{outlier}{flag of detected outlier (0 is outlier, 1 is not)}
 }
 }
 \description{
@@ -40,10 +40,10 @@ the first step of the detection of outlying points in a curve.
 \details{
 see locfit() help function from the locfit R library. The user can act on:
 \describe{
-  \item{mylocfit}{the constant of the smoothing parameter. Increase mylocfit
-  to have a very smooth curve}
-  \item{confIntSize}{the level to calculate the confidence interval. Increase
-  confIntSize to exclude less outliers}
+\item{mylocfit}{the constant of the smoothing parameter. Increase mylocfit
+to have a very smooth curve}
+\item{confIntSize}{the level to calculate the confidence interval. Increase
+confIntSize to exclude less outliers}
 }
 to produce the grahics of the prediction and detected outliers, please use
 plotDetectPointOutlierLocFit() function.

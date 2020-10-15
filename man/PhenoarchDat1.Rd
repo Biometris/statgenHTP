@@ -7,19 +7,19 @@
 \format{
 A data.frame with 42,536 rows and 14 columns:
 \describe{
-  \item{Date}{Date of measurement}
-  \item{pos}{Unique pot using rowcol coordinate}
-  \item{geno}{Genotype}
-  \item{Scenario}{Water regime, WW or WD}
-  \item{population}{Panel 1 or 2}
-  \item{Row}{Pot position on the conveyor belt (i.e. row coordinate)}
-  \item{Col}{Line of conveyor belt (i.e. column coordinate)}
-  \item{Biomass_Estimated}{Biomass from the picture}
-  \item{LA_Estimated}{Leaf area from the picture}
-  \item{Height_Estimated}{Plant height from the picture}
-  \item{count_leaf}{Number of leaves manually scored}
-  \item{phyllocron}{Leaf emission rate}
-  \item{TT}{Thermal time cumulated from emergence}
+\item{Date}{Date of measurement}
+\item{pos}{Unique pot using rowcol coordinate}
+\item{geno}{Genotype}
+\item{Scenario}{Water regime, WW or WD}
+\item{population}{Panel 1 or 2}
+\item{Row}{Pot position on the conveyor belt (i.e. row coordinate)}
+\item{Col}{Line of conveyor belt (i.e. column coordinate)}
+\item{Biomass_Estimated}{Biomass from the picture}
+\item{LA_Estimated}{Leaf area from the picture}
+\item{Height_Estimated}{Plant height from the picture}
+\item{count_leaf}{Number of leaves manually scored}
+\item{phyllocron}{Leaf emission rate}
+\item{TT}{Thermal time cumulated from emergence}
 }
 }
 \usage{
