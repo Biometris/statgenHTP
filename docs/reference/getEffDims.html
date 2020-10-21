@@ -40,7 +40,21 @@
 
 
 <meta property="og:title" content="Extract effective dimensions — getEffDims" />
-<meta property="og:description" content="Extract effective dimensions from an object of class fitMod." />
+<meta property="og:description" content="Extract effective dimensions from an object of class fitMod.
+The table below gives an overview of the effective dimensions and an
+explanation of their meaning.
+Effective DimensionExplanation
+colIdLinear trend along columns
+rowIdLinear trend along rows
+fColSmooth trend along columns
+fRowSmooth trend along rows
+fColRowLinear trend in rows changing smoothly along cols
+colfRowLinear trend in cols changing smoothly along rows
+fColfRowSmooth-by-smooth interaction trend over rows and cols
+surfaceSum of smooth trends
+
+
+" />
 
 
 
@@ -149,7 +163,21 @@
     </div>
 
     <div class="ref-description">
-    <p>Extract effective dimensions from an object of class fitMod.</p>
+    <p>Extract effective dimensions from an object of class fitMod.
+The table below gives an overview of the effective dimensions and an
+explanation of their meaning.</p><table class='table'>
+<tr><td>Effective Dimension</td><td>Explanation</td></tr>
+<tr><td>colId</td><td>Linear trend along columns</td></tr>
+<tr><td>rowId</td><td>Linear trend along rows</td></tr>
+<tr><td>fCol</td><td>Smooth trend along columns</td></tr>
+<tr><td>fRow</td><td>Smooth trend along rows</td></tr>
+<tr><td>fColRow</td><td>Linear trend in rows changing smoothly along cols</td></tr>
+<tr><td>colfRow</td><td>Linear trend in cols changing smoothly along rows</td></tr>
+<tr><td>fColfRow</td><td>Smooth-by-smooth interaction trend over rows and cols</td></tr>
+<tr><td>surface</td><td>Sum of smooth trends</td></tr>
+</table>
+
+
     </div>
 
     <pre class="usage"><span class='fu'>getEffDims</span><span class='op'>(</span>

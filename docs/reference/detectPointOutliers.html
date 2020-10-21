@@ -187,24 +187,24 @@ smoothing parameter nn. (see the locfit())</p></td>
 
     <p>An object of class pointOutliers, a data.frame with the following
 columns.</p><dl>
-  <dt>plotId</dt><dd><p>the id variable</p></dd>
-  <dt>timePoint</dt><dd><p>time variable in datain</p></dd>
-  <dt>trait</dt><dd><p>name of the modeled variable in datain</p></dd>
-  <dt>yPred</dt><dd><p>the locfit prediction</p></dd>
-  <dt>sd_yPred</dt><dd><p>standard deviation of the prediction</p></dd>
-  <dt>lwr</dt><dd><p>lower bound of the confidence interval</p></dd>
-  <dt>upr</dt><dd><p>upper bound of the confidence interval</p></dd>
-  <dt>outlier</dt><dd><p>flag of detected outlier (0 is outlier, 1 is not)</p></dd>
+<dt>plotId</dt><dd><p>the id variable</p></dd>
+<dt>timePoint</dt><dd><p>time variable in datain</p></dd>
+<dt>trait</dt><dd><p>name of the modeled variable in datain</p></dd>
+<dt>yPred</dt><dd><p>the locfit prediction</p></dd>
+<dt>sd_yPred</dt><dd><p>standard deviation of the prediction</p></dd>
+<dt>lwr</dt><dd><p>lower bound of the confidence interval</p></dd>
+<dt>upr</dt><dd><p>upper bound of the confidence interval</p></dd>
+<dt>outlier</dt><dd><p>flag of detected outlier (0 is outlier, 1 is not)</p></dd>
 
 </dl>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>see locfit() help function from the locfit R library. The user can act on:</p><dl>
-  <dt>mylocfit</dt><dd><p>the constant of the smoothing parameter. Increase mylocfit
-  to have a very smooth curve</p></dd>
-  <dt>confIntSize</dt><dd><p>the level to calculate the confidence interval. Increase
-  confIntSize to exclude less outliers</p></dd>
+<dt>mylocfit</dt><dd><p>the constant of the smoothing parameter. Increase mylocfit
+to have a very smooth curve</p></dd>
+<dt>confIntSize</dt><dd><p>the level to calculate the confidence interval. Increase
+confIntSize to exclude less outliers</p></dd>
 
 </dl><p>to produce the grahics of the prediction and detected outliers, please use
 plotDetectPointOutlierLocFit() function.</p>

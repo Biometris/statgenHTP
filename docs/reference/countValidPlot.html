@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Greenhouse data for a maize experiment in the Phenoarch platform. — PhenoarchDat1 • statgenHTP</title>
+<title>Count valid observations per plotId for a given trait — countValidPlot • statgenHTP</title>
 
 
 <!-- jquery -->
@@ -39,17 +39,8 @@
 
 
 
-<meta property="og:title" content="Greenhouse data for a maize experiment in the Phenoarch platform. — PhenoarchDat1" />
-<meta property="og:description" content="A dataset containing greenhouse data from an experiment with maize in the
-Phenoarch platform (INRAE, France, Cabrera-Bosquet et al. 2016). It consists
-of one experiment with 1671 plants grown in a greenhouse under two water
-scenarios, well-watered (WW) and water deficit (WD). There are two
-populations of genotypes, panel 1 and panel 2. Panel 1 contains 60 genotypes
-with 14 replicates: 7 in WW and 7 in WD. Note that there are more plants per
-replicates than one (about 24 plants per genotypes). Panel 2 contains 30
-genotypes with 8 replicates, 4 in WW and 4 in WD. The studied trait is the
-leaf area extracted from the pictures over time. Plants were pictured every
-day for 35 days." />
+<meta property="og:title" content="Count valid observations per plotId for a given trait — countValidPlot" />
+<meta property="og:description" content="Count valid observations per plotId for a given trait." />
 
 
 
@@ -152,54 +143,37 @@ day for 35 days." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Greenhouse data for a maize experiment in the Phenoarch platform.</h1>
+    <h1>Count valid observations per plotId for a given trait</h1>
     
-    <div class="hidden name"><code>PhenoarchDat1.Rd</code></div>
+    <div class="hidden name"><code>countValidPlot.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>A dataset containing greenhouse data from an experiment with maize in the
-Phenoarch platform (INRAE, France, Cabrera-Bosquet et al. 2016). It consists
-of one experiment with 1671 plants grown in a greenhouse under two water
-scenarios, well-watered (WW) and water deficit (WD). There are two
-populations of genotypes, panel 1 and panel 2. Panel 1 contains 60 genotypes
-with 14 replicates: 7 in WW and 7 in WD. Note that there are more plants per
-replicates than one (about 24 plants per genotypes). Panel 2 contains 30
-genotypes with 8 replicates, 4 in WW and 4 in WD. The studied trait is the
-leaf area extracted from the pictures over time. Plants were pictured every
-day for 35 days.</p>
+    <p>Count valid observations per plotId for a given trait.</p>
     </div>
 
-    <pre class="usage"><span class='va'>PhenoarchDat1</span></pre>
+    <pre class="usage"><span class='fu'>countValidPlot</span><span class='op'>(</span><span class='va'>TP</span>, <span class='va'>trait</span>, plotIds <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>TP</th>
+      <td><p>An object of class TP.</p></td>
+    </tr>
+    <tr>
+      <th>trait</th>
+      <td><p>A character string indicating the trait for which valid
+observations should be counted.</p></td>
+    </tr>
+    <tr>
+      <th>plotIds</th>
+      <td><p>A character vector indicating the plotIds for which valid
+observations should be checked. If <code>NULL</code> valid observations are
+counted for all plotIds in TP.</p></td>
+    </tr>
+    </table>
 
-    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
-
-    <p>A data.frame with 42,536 rows and 14 columns:</p><dl>
-<dt>Date</dt><dd><p>Date of measurement</p></dd>
-<dt>pos</dt><dd><p>Unique pot using rowcol coordinate</p></dd>
-<dt>geno</dt><dd><p>Genotype</p></dd>
-<dt>Scenario</dt><dd><p>Water regime, WW or WD</p></dd>
-<dt>population</dt><dd><p>Panel 1 or 2</p></dd>
-<dt>Row</dt><dd><p>Pot position on the conveyor belt (i.e. row coordinate)</p></dd>
-<dt>Col</dt><dd><p>Line of conveyor belt (i.e. column coordinate)</p></dd>
-<dt>Biomass_Estimated</dt><dd><p>Biomass from the picture</p></dd>
-<dt>LA_Estimated</dt><dd><p>Leaf area from the picture</p></dd>
-<dt>Height_Estimated</dt><dd><p>Plant height from the picture</p></dd>
-<dt>count_leaf</dt><dd><p>Number of leaves manually scored</p></dd>
-<dt>phyllocron</dt><dd><p>Leaf emission rate</p></dd>
-<dt>TT</dt><dd><p>Thermal time cumulated from emergence</p></dd>
-
-</dl>
-
-    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
-
-    <p>Cabrera-Bosquet, Llorenç, Fournier Christian, Brichet Nicolas,
-Welcker Claude, Suard Benoît, and Tardieu François. 2016.
-“High-throughput estimation of incident light, light interception and
-radiation-use efficiency of thousands of plants in a phenotyping platform.”
-New Phytologist 212 (1): 269-81.
-doi:10.1111/nph.14027.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
