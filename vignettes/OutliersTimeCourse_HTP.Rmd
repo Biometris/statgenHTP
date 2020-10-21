@@ -22,36 +22,37 @@ options(rmarkdown.html_vignette.check_title = FALSE)
 library(statgenHTP)
 ```
 
-# Introduction 
+# Introduction
 
-It consists in detecting outliers in a set of time courses resulting from the observation of one single trait. The detection procedure is applied to each trait individually without considering other traits, meaning that distinct outlier datasets are associated with each considered trait. 
+It consists in detecting outliers in a set of time courses resulting from the observation of one single trait. The detection procedure is applied to each trait individually without considering other traits, meaning that distinct outlier datasets are associated with each considered trait.
 
 The final step consists in extracting interesting parameterd from the modelled time course, for example a maximum rate of growth, or a minimum value in a specific period. These parameters could then be further analysed, for example a GxE analysis (see *statgenGxE*), or a genetic analysis (see *statgenGWAS*).
 
 ## A nonparametric smoothing associated with a PCA
 
-Each time course is modelled by a nonparametric smoothing spline with a fixed number of knots. This is a piecewise cubic polynomial ([@Eubank1999], [@Eilers2015]) fitted with the ‘gam’ function of the R-package ‘mgcv’. 
+Each time course is modelled by a nonparametric smoothing spline with a fixed number of knots. This is a piecewise cubic polynomial ([@Eubank1999], [@Eilers2015]) fitted with the 'gam' function of the R-package 'mgcv'.
 
 <center>
-![P-spline](figures/pspline.png){width=40%}
+
+![P-spline](figures/pspline.png){width="40%"}
 
 P-spline illustration with 20 knots, from [@Hugelier2016]. The individual B-splines (with the correct coefficients) are shown (colored lines), as well as their sum representing the fit (thick black line).
+
 </center>
 
 The estimates for the spline coefficients are then extracted per time course (typically per plant) and correlations between those coefficient vectors are calculated to identify outlying time courses, i.e., plants. An outlying time course will have low correlation to the majority of time courses. To support the analysis by correlations, a principal component analysis can be done on the plant (time course) by spline coefficient matrix. A PCA plot of the plant scores will show the outlying plant.
 
 *To note,* for p-splines in generalized additive model (gam), the smoothing coefficient is optimized by restricted maximum likelihood but the number of knots is chosen by the user.
 
-This document describes the procedure to detect outlying time course with examples on experimental data sets (see *Intro_HTP*). The data on which the procedures apply are the variables of interest. They may be variables measured directly or indirectly (through image analysis for example). The way they were obtained doesn't matter. The following functions can be applied to corrected data (see *SpatialModel_HTP*) or on raw data.
+This document describes the procedure to detect outlying time course with examples on experimental data sets (see *Intro\_HTP*). The data on which the procedures apply are the variables of interest. They may be variables measured directly or indirectly (through image analysis for example). The way they were obtained doesn't matter. The following functions can be applied to corrected data (see *SpatialModel\_HTP*) or on raw data.
 
-----
+------------------------------------------------------------------------
 
 # Illustration of the non-parametric smoothing associated with a PCA
 
-The function `fitSpline()` fits a p-spline per plant for the selected `trait` using the number of `knots` chosen by the user. In P-spline, the knots are equally spaced and their number can be large. The user should also chose an appropriate proportion of minimum number of time points that should be in the 
-dataset per plant `perMinTP`. When a plant has less time points than the minimum, it will be skipped from the analysis.
+The function `fitSpline()` fits a p-spline per plant for the selected `trait` using the number of `knots` chosen by the user. In P-spline, the knots are equally spaced and their number can be large. The user should also chose an appropriate proportion of minimum number of time points that should be in the dataset per plant `perMinTP`. When a plant has less time points than the minimum, it will be skipped from the analysis.
 
-The functions are illustrated with the three example data sets. For more information about the data, see *Intro_HTP*.
+The functions are illustrated with the three example data sets. For more information about the data, see *Intro\_HTP*.
 
 ## Example 1
 
@@ -108,14 +109,13 @@ plot(fit.spline,
      plotType =  "derivatives")
 ```
 
-
 The object `fit.spline` also contains the values of the P-splines coefficients:
 
 ```{r headcoefDat, echo=FALSE, message=FALSE, eval=TRUE}
 knitr::kable(head(coef.Dat), align=c('c','c'), booktabs = TRUE)
 ```
 
-The coefficients are then used to tag suspect time courses with the function `detectOutliers()`. This function performs a PCA on the coefficients (from data frame `coef.Dat`) per `genotype` and tags the plants that have a coordinate on the second PC axis above a threshold (`thrPca`), see the lines 'reason = pc2' in the table below. The function also calculates the pairwise-correlation of the coefficients per genotype. Plants are tagged when the correlation is below a given threshold (`thrCor`), see the lines `reason = mean corr` in the table below. 
+The coefficients are then used to tag suspect time courses with the function `detectOutliers()`. This function performs a PCA on the coefficients (from data frame `coef.Dat`) per `genotype` and tags the plants that have a coordinate on the second PC axis above a threshold (`thrPca`), see the lines 'reason = pc2' in the table below. The function also calculates the pairwise-correlation of the coefficients per genotype. Plants are tagged when the correlation is below a given threshold (`thrCor`), see the lines `reason = mean corr` in the table below.
 
 For obvious reasons, the detection will only work when there are at least three replicates per genotype. Genotypes with less than three replicates will be skipped. (TRUE?)
 
@@ -130,15 +130,14 @@ outVator <-
                            thrPca = 1) 
 ```
 
-
 ```{r headOutPoint, echo=FALSE, message=FALSE, eval=TRUE}
 knitr::kable(head(outVator), align=c('c','c'), booktabs = TRUE, row.names=F)
 ```
 
 For this subset of genotypes, 4 plants were tagged as outliers:
 
-* c21r25 and c9r4 had both low correlations and extreme PC axis coordinates,  
-* c11r55 and c4r13 had extreme PC axis coordinates.
+-   c21r25 and c9r4 had both low correlations and extreme PC axis coordinates,\
+-   c11r55 and c4r13 had extreme PC axis coordinates.
 
 The `outVator` can be visualised by selecting genotypes. Here genotype G151 which has plant c21r25 tagged as outlier:
 
@@ -148,9 +147,9 @@ plot(outVator, genotypes = "G151")
 
 The figure above contains:
 
-* (top) A scatter plot of the trait value in y axis and time in x axis. Points are the raw or corrected data and lines are the p-spline predictions, with one color per plant (in legend).  
-* (bottom left) A correlation matrix of the plant scores as a heatmap. The scale is centered on 0.9 to see at a glance the outlying plants with low correlations (usually correlation are high between plants).  
-* (bottom right) A PCA plot of the plant scores. Usually, all plants are grouped and the first axis explained most of the variation. When a plant is outlying, it will be located apart from the other plants on the second axis. 
+-   (top) A scatter plot of the trait value in y axis and time in x axis. Points are the raw or corrected data and lines are the p-spline predictions, with one color per plant (in legend).\
+-   (bottom left) A correlation matrix of the plant scores as a heatmap. The scale is centered on 0.9 to see at a glance the outlying plants with low correlations (usually correlation are high between plants).\
+-   (bottom right) A PCA plot of the plant scores. Usually, all plants are grouped and the first axis explained most of the variation. When a plant is outlying, it will be located apart from the other plants on the second axis.
 
 Finally, the outlying plants can be removed from the dataset...
 
@@ -166,6 +165,7 @@ head(spatCorrVatorOut[spatCorrVatorOut$plotId=="c21r25",
 ```
 
 ... and from the predictions.
+
 ```{r rmOutVatorspline}
 fit.splineOut <- removeTimeCourseOutliers(fitSpline = fit.spline,
                                           timeCourseOutliers = outVator)
@@ -175,9 +175,10 @@ fit.splineNumOut <- removeTimeCourseOutliers(fitSpline = fit.splineNum,
 
 ### Impact of the number of knots on the smoothing
 
-For one plant of the example 1, we fit the p-spline with 10 or 50 knots and visualize the predictions to compare the smoothness. We advise the user to perform tests of the number of knots on a subset of plants before running the function on all plants. 
+For one plant of the example 1, we fit the p-spline with 10 or 50 knots and visualize the predictions to compare the smoothness. We advise the user to perform tests of the number of knots on a subset of plants before running the function on all plants.
 
 *With 10 knots:*
+
 ```{r fitSplineVatorKnots10, fig.height=3, fig.width=4, echo=TRUE, warning=FALSE, eval=TRUE}
 sp10k <- fitSpline(corrDat = spatCorrVator,
                         trait = "EffpsII_corr",
@@ -190,6 +191,7 @@ plot(sp10k)
 The predicted curve is very smooth and, in this case, it is not following precisely the real data curve shape. When comparing the plants of a same genotype with this curve shape we might not identify the outlying plant.
 
 *With 50 knots:*
+
 ```{r fitSplineVatorKnots50, fig.height=3, fig.width=4, echo=TRUE, warning=FALSE, eval=TRUE}
 sp50k <- fitSpline(corrDat = spatCorrVator,
                         trait = "EffpsII_corr",
@@ -318,7 +320,7 @@ After all the steps of cleaning and modeling... blablabla extract parameters fro
 
 ## Example 1
 
-We will use the `fit.splineNumOut` previously created which contains the p-spline prediction without the time course outliers. We could estimate the maximum value of the trait at the beginning of the time course: 
+We will use the `fit.splineNumOut` previously created which contains the p-spline prediction without the time course outliers. We could estimate the maximum value of the trait at the beginning of the time course:
 
 ```{r paramVator, fig.height=3, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 subGeno <- c("G70","G160","G151","G179","G175","G4","G55")
@@ -332,7 +334,7 @@ paramVator1 <-
 #
 library(ggplot2)
 ggplot(paramVator1, aes(x = genotype, y = x)) + 
-  geom_boxplot() +
+  geom_boxplot(na.rm = TRUE) +
   theme_minimal()
 ```
 
@@ -341,7 +343,9 @@ For this subset of genotypes, there is a variability in the maximum values of th
 Another example is using the derivative during the recovery period to get the maximum slope, or the maximum rate of the psII per time unit during this period.
 
 <center>
-![P-spline](figures/psplinederiv.png){width=80%}
+
+![P-spline](figures/psplinederiv.png){width="80%"}
+
 </center>
 
 ```{r paramVator2, fig.height=3, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
@@ -354,12 +358,10 @@ paramVator2 <-
                            genotypes = subGeno)
 #
 ggplot(paramVator2, aes(x = genotype, y = x)) + 
-  geom_boxplot() +
+  geom_boxplot(na.rm = TRUE) +
   theme_minimal()
 ```
 
-
-----
+------------------------------------------------------------------------
 
 ## References
-

@@ -113,11 +113,19 @@ fitSpline <- function(corrDat,
   plantGeno <- unique(corrDat[c("plotId", "genotype")])
   ## Determine minimum number of time points required.
   minTP <- perMinTP * length(unique(corrDat[["timeNumber"]]))
-  ## Number of knots cannot be larger than the minimum number of time points.
-  ## If it is mgcv will crash.
-  if (knots >= minTP) {
+  ## Get number of non NA observations per plot for determining minimum
+  ## number of knots.
+  plotObs <- aggregate(x = corrDat[[trait]], by = list(corrDat[["plotId"]]),
+                       FUN = function(plant) {
+                         sum(!is.na(plant))
+                       })
+  ## Number of knots cannot be larger than the minimum number of observations
+  ## determined over all plots that have at least the number of required
+  ## observations.
+  minKnots <- min(plotObs[plotObs[["x"]] > minTP, "x"])
+  if (knots >= minKnots) {
     stop("The number of knots cannot be larger than the minimum number of ",
-         "time points, which is ", minTP)
+         "required time points, which is ", minKnots)
   }
   ## Construct formula for fitting model.
   modForm <- as.formula(paste(trait, "~s(timeNumber, bs = 'ps', k = ",
