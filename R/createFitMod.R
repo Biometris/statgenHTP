@@ -381,7 +381,7 @@ plot.fitMod <- function(x,
       ggplot2::geom_point(size = 3, na.rm = TRUE) +
       ggplot2::scale_x_datetime(breaks = prettier(nBr),
                                 labels = scales::date_format("%B %d")) +
-      ggplot2::plotTheme() +
+      plotTheme() +
       ggplot2::theme(axis.title.y = ggplot2::element_text(angle = 0,
                                                           vjust = 0.5)) +
       ggplot2::ylim(yLim) +
@@ -422,7 +422,7 @@ plot.fitMod <- function(x,
       ggplot2::geom_point(size = 3, na.rm = TRUE) +
       ggplot2::scale_x_datetime(breaks = prettier(nBr),
                                 labels = scales::date_format("%B %d")) +
-      ggplot2::plotTheme() +
+      plotTheme() +
       ggplot2::theme(axis.title.y = ggplot2::element_text(angle = 0,
                                                           vjust = 0.5)) +
       ggplot2::ylim(yLim) +
@@ -458,7 +458,7 @@ plot.fitMod <- function(x,
       ggplot2::scale_color_discrete(labels = varLabs) +
       ggplot2::scale_x_datetime(breaks = prettier(nBr),
                                 labels = scales::date_format("%B %d")) +
-      ggplot2::plotTheme() +
+      plotTheme() +
       ggplot2::theme(axis.title.y = ggplot2::element_text(angle = 0,
                                                           vjust = 0.5)) +
       ggplot2::ylim(yLim) +
@@ -583,10 +583,10 @@ spatPlot <- function(fitMod,
     plotDatSpat[["colNum"]] <- spatTr$col.p
     plotDatSpat[["rowNum"]] <- rep(x = spatTr$row.p, each = p1 * nCol)
     ## Remove missings from data.
-    plotDatSpat <- remove_missing(plotDatSpat, na.rm = TRUE)
+    plotDatSpat <- ggplot2::remove_missing(plotDatSpat, na.rm = TRUE)
   }
   ## Now missing values can be removed from plotDat.
-  plotDat <- remove_missing(plotDat, na.rm = TRUE)
+  plotDat <- ggplot2::remove_missing(plotDat, na.rm = TRUE)
   ## Code taken from plot.SpATS and simplified.
   ## Set colors and legends.
   colors <- topo.colors(100)
