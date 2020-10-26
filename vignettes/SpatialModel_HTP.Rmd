@@ -288,6 +288,20 @@ plot(modPhenoSp,
 
 The effective dimensions are also known as the effective degrees of freedom. They can be interpreted as a measure of the complexity of the corresponding component: if the effective dimension of one component is large, it indicates that there are strong spatial trends in this direction. Here, for better comparison between components, the ratio of effective dimensions vs. total dimensions can be used. It has a value between 0, no spatial trend, and 1, strong spatial trend (almost all the degrees of freedom are used to model it).
 
+The table below gives an overview of the effective dimensions and an
+explanation of their meaning.
+
+| Effective Dimension | Explanation |
+| :---------------------------- |:----------------------------------|
+| colId | Linear trend along columns |
+| rowId | Linear trend along rows |
+| fCol | Smooth trend along columns |
+| fRow | Smooth trend along rows |
+| fColRow | Linear trend in rows changing smoothly along cols |
+| colfRow | Linear trend in cols changing smoothly along rows |
+| fColfRow | Smooth-by-smooth interaction trend over rows and cols |
+| surface | Sum of smooth trends |
+
 ## Spatial model with ASReml {#asreml}
 
 When asreml is used for modeling and `spatial = TRUE`, four models are fitted with different random terms and covariance structures. The best model is determined based on a goodness-of-fit criterion, AIC, on 20% on the time points or at least 10 time points. The best model is then run on all time points. As for SpATS, all the asreml models can be extended by fitting extra fixed factors using the option `extraFixedFactors`. 
