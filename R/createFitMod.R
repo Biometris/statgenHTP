@@ -695,7 +695,7 @@ fieldPlotPcts <- function(plotDat,
                           title,
                           colors,
                           zlim = range(plotDat[fillVar]),
-                          xTicks = waiver(),
+                          xTicks = ggplto2::waiver(),
                           scaleLim = Inf,
                           ...) {
   p <- ggplot2::ggplot(

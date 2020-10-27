@@ -102,11 +102,11 @@ detectTimeCourseOutliers <- function(corrDat,
   if (!all(genotypes %in% corrDat[["genotype"]])) {
     stop("all genotypes should be in corrDat")
   }
-  if (!is.numeric(thrCor) || length(thrCor) > 1 || thrCor < 0 || thrCor > 1) {
-    stop("thrCor should be a numerical value between 0 and 1.\n")
+  if (!is.numeric(thrCor) || any(thrCor < 0) || any(thrCor > 1)) {
+    stop("thrCor should be a numerical vector with values between 0 and 1.\n")
   }
-  if (!is.numeric(thrPca) || length(thrPca) > 1 || thrPca < 0) {
-    stop("thrPca should be a positive numerical value.\n")
+  if (!is.numeric(thrPca) || any(thrPca < 0)) {
+    stop("thrPca should be a numerical vector with positive values.\n")
   }
   genoPlotId <- sapply(X = genotypes, FUN = function(genotype) {
     length(unique(corrDat[corrDat[["genotype"]] == genotype, "plotId"]))
@@ -121,8 +121,35 @@ detectTimeCourseOutliers <- function(corrDat,
       stop("No genotypes left for performing outlier detection.\n")
     }
   }
-  ## Restrict corrDat, predDat and coefDat to genotypes.
+  ## Restrict corrDat to genotypes.
   corrDat <- corrDat[corrDat[["genotype"]] %in% genotypes, ]
+  ## Get number of values for geno.decomp.
+  if (!is.null(geno.decomp)) {
+    genoDecompLevs <- unique(corrDat[[geno.decomp]])
+    nGenoDecomp <- length(genoDecompLevs)
+    if (length(thrCor) == 1) {
+      thrCor <- setNames(rep(thrCor, times = nGenoDecomp), genoDecompLevs)
+    } else if (is.null(names(thrCor)) ||
+               !all(genoDecompLevs %in% names(thrCor))) {
+      stop("thrCor should be a named vector, with names matching the levels ",
+           "in geno.decomp.\n")
+    }
+    if (length(thrPca) == 1) {
+      thrPca <- setNames(rep(thrPca, times = nGenoDecomp), genoDecompLevs)
+    } else if (is.null(names(thrPca)) ||
+               !all(genoDecompLevs %in% names(thrPca))) {
+      stop("thrPca should be a named vector, with names matching the levels ",
+           "in geno.decomp.\n")
+    }
+  } else {
+    if (length(thrCor) != 1) {
+      stop("thrCor should be a vector of length 1.\n")
+    }
+    if (length(thrPca) != 1) {
+      stop("thrPca should be a vector of length 1.\n")
+    }
+  }
+  ## Restrict predDat and coefDat to genotypes.
   ## Get corrected and predicted data per genotype.
   ## Merge geno.decomp to coefDat.
   if (!is.null(geno.decomp)) {
@@ -150,7 +177,11 @@ detectTimeCourseOutliers <- function(corrDat,
                                                     formula = type ~ plotId,
                                                     value.var = "obj.coefficients")
                         ## Remove intercept.
-                        return(plantDat[-1, ])
+                        plantDat <- plantDat[-1, ]
+                        ## Add geno.decomp as attribute for later use.
+                        attr(plantDat, which = "genoDecomp") <-
+                          as.character(unique(dat[[geno.decomp]]))
+                        return(plantDat)
                       })
   ## Compute correlation matrix.
   cormats <- lapply(X = plantDats, FUN = function(plantDat) {
@@ -158,6 +189,7 @@ detectTimeCourseOutliers <- function(corrDat,
       ## if there are plants, estimate the correlation...
       cormat <- cor(plantDat)
       diag(cormat) <- NA
+      attr(cormat, which = "genoDecomp") <- attr(plantDat, which = "genoDecomp")
       return(cormat)
     } else {
       ## ... if not, return a null matrix
@@ -168,8 +200,10 @@ detectTimeCourseOutliers <- function(corrDat,
     ## Perform a PCA on the spline coefficients per genotype.
     ## Run the PCA.
     if (!is.null(dim(plantDat))) {
+      plantPca <- prcomp(plantDat, center = TRUE, scale. = TRUE)
+      attr(plantPca, which = "genoDecomp") <- attr(plantDat, which = "genoDecomp")
       ## if there are plants, perform the PCA...
-      return(prcomp(plantDat, center = TRUE, scale. = TRUE))
+      return(plantPca)
     } else {
       ## ... if not, return a null object
       return(NULL)
@@ -178,13 +212,18 @@ detectTimeCourseOutliers <- function(corrDat,
   annotatePlantsCor <- lapply(X = names(cormats), FUN = function(geno) {
     if (!is.null(cormats[[geno]])) {
       meanCor <- rowMeans(cormats[[geno]], na.rm = TRUE)
+      if (!is.null(geno.decomp)) {
+        thrCorPlant <- thrCor[attr(cormats[[geno]], which = "genoDecomp")]
+      } else {
+        thrCorPlant <- thrCor
+      }
     } else {
       meanCor <- NULL
     }
-    if (any(meanCor < thrCor)) {
+    if (any(meanCor < thrCorPlant)) {
       ## Create data.frame with info on plants with average correlation
       ## below threshold.
-      annPlotsCorr <- meanCor[meanCor < thrCor]
+      annPlotsCorr <- meanCor[meanCor < thrCorPlant]
       return(data.frame(plotId = names(annPlotsCorr), reason = "mean corr",
                         value = annPlotsCorr))
     } else {
@@ -203,11 +242,16 @@ detectTimeCourseOutliers <- function(corrDat,
     diffPc2 <- as.matrix(dist(plantPcas[[geno]]$rotation[, "PC2"]))
     diag(diffPc2) <- NA
     meanPc2 <- rowMeans(diffPc2, na.rm = TRUE)
+    if (!is.null(geno.decomp)) {
+      thrPcaPlant <- thrPca[attr(plantPcas[[geno]], which = "genoDecomp")]
+    } else {
+      thrPcaPlant <- thrPca
+    }
     ## Create shape for plotting.
-    if (any(meanPc2 >= thrPca)) {
+    if (any(meanPc2 >= thrPcaPlant)) {
       ## Create data.frame with info on plants with avarage difference.
       ## above threshold.
-      annPlotsPc2 <- meanPc2[meanPc2 >= thrPca]
+      annPlotsPc2 <- meanPc2[meanPc2 >= thrPcaPlant]
       return(data.frame(plotId = names(annPlotsPc2), reason = "pc2",
                         value = annPlotsPc2))
     } else {
