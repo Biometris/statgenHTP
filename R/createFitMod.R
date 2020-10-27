@@ -667,7 +667,7 @@ fieldPlot <- function(plotDat,
   p <- ggplot2::ggplot(data = plotDat,
                        ggplot2::aes_string(x = "colNum", y = "rowNum",
                                            fill = fillVar)) +
-    ggplot2::geom_raster() +
+    ggplot2::geom_tile() +
     ## Remove empty space between ticks and actual plot.
     ggplot2::scale_x_continuous(expand = c(0, 0), breaks = xTicks) +
     ggplot2::scale_y_continuous(expand = c(0, 0)) +
