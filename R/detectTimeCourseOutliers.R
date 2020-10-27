@@ -179,8 +179,10 @@ detectTimeCourseOutliers <- function(corrDat,
                         ## Remove intercept.
                         plantDat <- plantDat[-1, ]
                         ## Add geno.decomp as attribute for later use.
-                        attr(plantDat, which = "genoDecomp") <-
-                          as.character(unique(dat[[geno.decomp]]))
+                        if (!is.null(geno.decomp)) {
+                          attr(plantDat, which = "genoDecomp") <-
+                            as.character(unique(dat[[geno.decomp]]))
+                        }
                         return(plantDat)
                       })
   ## Compute correlation matrix.
