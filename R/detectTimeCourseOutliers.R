@@ -26,10 +26,10 @@
 #' spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
 #' # Run the function to fit p-spline using the mgcv package on a subset of
 #' # genotypes
-#' subGeno <- c("G70","G160","G151","G179","G175","G4","G55")
+#' subGenoVator <- c("G70","G160","G151","G179","G175","G4","G55")
 #' fit.spline <- fitSpline(corrDat = spatCorrVator,
 #'                         trait = "EffpsII_corr",
-#'                         genotypes = subGeno,
+#'                         genotypes = subGenoVator,
 #'                         knots = 50,
 #'                         perMinTP = 0.8)
 #' # Extracting the tables of predicted values and pspline coeficients
@@ -41,7 +41,7 @@
 #'                          predDat = pred.Dat,
 #'                          coefDat = coef.Dat,
 #'                          trait = "EffpsII_corr",
-#'                          genotypes = subGeno,
+#'                          genotypes = subGenoVator,
 #'                          thrCor = 0.9,
 #'                          thrPca = 1)
 #' # The `outVator` can be visualised by selecting genotypes
@@ -304,10 +304,10 @@ detectTimeCourseOutliers <- function(corrDat,
 #' spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
 #' # Run the function to fit p-spline using the mgcv package on a subset of
 #' # genotypes
-#' subGeno <- c("G70","G160","G151","G179","G175","G4","G55")
+#' subGenoVator <- c("G70","G160","G151","G179","G175","G4","G55")
 #' fit.spline <- fitSpline(corrDat = spatCorrVator,
 #'                         trait = "EffpsII_corr",
-#'                         genotypes = subGeno,
+#'                         genotypes = subGenoVator,
 #'                         knots = 50,
 #'                         perMinTP = 0.8)
 #' # Extracting the tables of predicted values and pspline coeficients
@@ -319,7 +319,7 @@ detectTimeCourseOutliers <- function(corrDat,
 #'                          predDat = pred.Dat,
 #'                          coefDat = coef.Dat,
 #'                          trait = "EffpsII_corr",
-#'                          genotypes = subGeno,
+#'                          genotypes = subGenoVator,
 #'                          thrCor = 0.9,
 #'                          thrPca = 1)
 #' # The `outVator` can be visualised by selecting genotypes
@@ -469,10 +469,10 @@ plot.timeCourseOutliers <- function(x,
 #' spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
 #' # Run the function to fit p-spline using the mgcv package on a subset of
 #' # genotypes
-#' subGeno <- c("G70","G160","G151","G179","G175","G4","G55")
+#' subGenoVator <- c("G70","G160","G151","G179","G175","G4","G55")
 #' fit.spline <- fitSpline(corrDat = spatCorrVator,
 #'                         trait = "EffpsII_corr",
-#'                         genotypes = subGeno,
+#'                         genotypes = subGenoVator,
 #'                         knots = 50,
 #'                         perMinTP = 0.8)
 #' # Extracting the tables of predicted values and pspline coeficients
@@ -484,7 +484,7 @@ plot.timeCourseOutliers <- function(x,
 #'                          predDat = pred.Dat,
 #'                          coefDat = coef.Dat,
 #'                          trait = "EffpsII_corr",
-#'                          genotypes = subGeno,
+#'                          genotypes = subGenoVator,
 #'                          thrCor = 0.9,
 #'                          thrPca = 1)
 #'

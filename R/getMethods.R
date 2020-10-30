@@ -37,7 +37,7 @@
 #' ## Fit a SpATS model on few time points:
 #' modPhenoSp <- fitModels(TP = phenoTP,
 #'                         trait = "EffpsII",
-#'                         timePoints = seq(1,73,by=5))
+#'                         timePoints = c(1,6,20))
 #'
 #' ## Extract the genotypic predictions for one time point:
 #' genoPredSp <- getGenoPred(modPhenoSp, timePoints = 6)
@@ -139,7 +139,7 @@ getGenoPred <- function(fitMod,
 #' ## Fit a SpATS model on few time points:
 #' modPhenoSp <- fitModels(TP = phenoTP,
 #'                         trait = "EffpsII",
-#'                         timePoints = seq(1,73,by=5))
+#'                         timePoints = c(1,6,20)))
 #'
 #' ## Extract the corrected values for one time point:
 #' spatCorrSp <- getCorrected(modPhenoSp, timePoints = 6)
@@ -202,7 +202,7 @@ getCorrected <- function(fitMod,
 #' ## Fit a SpATS model on few time points:
 #' modPhenoSp <- fitModels(TP = phenoTP,
 #'                         trait = "EffpsII",
-#'                         timePoints = seq(1,73,by=5))
+#'                         timePoints = c(1,6,20))
 #'
 #' ## Extract the variances for all available time points in the model object:
 #' varianceSp <- getVar(modPhenoSp)
@@ -313,7 +313,7 @@ getVar <- function(fitMod,
 #' ## Fit a SpATS model on few time points:
 #' modPhenoSp <- fitModels(TP = phenoTP,
 #'                         trait = "EffpsII",
-#'                         timePoints = seq(1,73,by=5))
+#'                         timePoints = c(1,6,20))
 #'
 #' ## Extract the heritabilities for all available time points in the model
 #' ## object:
@@ -387,7 +387,7 @@ getHerit <- function(fitMod,
 #' ## Fit a SpATS model on few time points:
 #' modPhenoSp <- fitModels(TP = phenoTP,
 #'                         trait = "EffpsII",
-#'                         timePoints = seq(1,73,by=5))
+#'                         timePoints = c(1,6,20))
 #'
 #' ## Extract the effective dimensions for all available time points in the
 #' ## model object:

@@ -154,7 +154,7 @@ summary.fitMod <- function(object,
 #' ## Fit a SpATS model on few time points:
 #' modPhenoSp <- fitModels(TP = phenoTP,
 #'                         trait = "EffpsII",
-#'                         timePoints = seq(1,73,by=5))
+#'                         timePoints = c(1,6,36))
 #'
 #' ## Plot the spatial trends of one time point:
 #' plot(modPhenoSp,

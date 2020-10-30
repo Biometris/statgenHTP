@@ -83,7 +83,7 @@
 #'
 #' modPhenoSp <- fitModels(TP = phenoTP,
 #'                         trait = "EffpsII",
-#'                         timePoints = seq(1,73,by=5))
+#'                         timePoints = c(3,6,20))
 #' summary(modPhenoSp)
 #'
 #' ## Fit a model with SpATS for a single time point with extra fixed factors
@@ -99,7 +99,7 @@
 #' ## Fit a model with asreml on few time points with a spatial function:
 #' modPhenoSpAs <- fitModels(TP = phenoTP,
 #'                           trait = "EffpsII",
-#'                           timePoints = seq(1,73,by=5),
+#'                           timePoints = c(1,6,20),
 #'                           engine = "asreml",
 #'                           spatial = TRUE)
 #' }
@@ -119,7 +119,7 @@
 #' modPhenoSpGD <- fitModels(TP = phenoTParch,
 #'                           trait = "LA_Estimated",
 #'                           geno.decomp = c("Scenario","population"),
-#'                           timePoints = seq(1,35,by=3))
+#'                           timePoints = 16)
 #'
 #'
 #' @references
