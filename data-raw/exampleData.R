@@ -54,8 +54,10 @@ usethis::use_data(PhenoarchDat1, overwrite = TRUE)
 
 #### 2.2. Corrected data - outliers removed
 # Read raw data.
-spatCorrArch <- read.csv(system.file("extdata", "PhenoarchDat1_corr_outPoint.csv",
-                                      package = "statgenHTP"))
+# spatCorrArch <- read.csv(system.file("extdata", "PhenoarchDat1_corr_outPoint.csv",
+#                                       package = "statgenHTP"))
+spatCorrArch <- read.csv(system.file("extdata", "PhenoArchDat1_corr_OutPoint_LA.csv",
+                                     package = "statgenHTP"))
 # Export to package
 usethis::use_data(spatCorrArch, overwrite = TRUE)
 
