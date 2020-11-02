@@ -139,7 +139,7 @@ getGenoPred <- function(fitMod,
 #' ## Fit a SpATS model on few time points:
 #' modPhenoSp <- fitModels(TP = phenoTP,
 #'                         trait = "EffpsII",
-#'                         timePoints = c(1,6,20)))
+#'                         timePoints = c(1,6,20))
 #'
 #' ## Extract the corrected values for one time point:
 #' spatCorrSp <- getCorrected(modPhenoSp, timePoints = 6)

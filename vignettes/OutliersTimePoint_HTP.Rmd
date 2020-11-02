@@ -61,7 +61,7 @@ The functions are illustrated with the three example data sets. For more informa
 
 First a `TP` object is created containing all the time points. 
 ```{r createTP, warning=TRUE}
-PhenovatorDat1 <- PhenovatorDat1[!PhenovatorDat1$pos %in% c("c24r41", "c7r18", "c7r49"),]
+PhenovatorDat1 <- PhenovatorDat1[!PhenovatorDat1$pos %in% c("c24r41", "c7r18", "c7r49"), ]
 ## Create a TP object containing the data from the Phenovator.
 phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             experimentName = "Phenovator",
@@ -74,11 +74,10 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             checkGenotypes = c("check1", "check2", "check3", "check4"))
 ```
 
-We are then running the function on a subset of plant to set the parameters, using the `plotIds` option. The smoothing parameter `mylocfit` is set at 0.1. The curve are atypical and to detect only the very strange point, fitted curves have to be not too smooth. The confidence interval size `confIntSize` is set at 3 which is a relatively narrow interval.
+We are then running the function on a subset of plant to set the parameters, using the `plotIds` option. The smoothing parameter `mylocfit` is set at 0.1. The curves are atypical and to detect only the very strange points, fitted curves cannot be too smooth. The confidence interval size `confIntSize` is set at 3 which is a relatively narrow interval.
 ```{r setParamVator}
-# First select a subset of plants, for example here 10 plants 
+# First select a subset of plants, for example here 9 plants 
 plantSel <- phenoTP[[1]]$plotId[1:9]
-# plantSel <- c("c11r55","c6r49","c21r16","c13r45")
 # Then run on the subset
 resuVatorHTP <- detectPointOutliers(TP = phenoTP,
                                     trait = "EffpsII",
@@ -88,12 +87,12 @@ resuVatorHTP <- detectPointOutliers(TP = phenoTP,
 ```
 
 ```{r headOutVator, echo=FALSE, message=FALSE}
-knitr::kable(head(resuVatorHTP[14:19,]), align=c('c','c'), padding = 0)
+knitr::kable(head(resuVatorHTP[14:19, ]), align = c('c','c'), padding = 0)
 ```
 
 The function output is a `data.frame` containing for each plant at each time point: the predicted value, `yPred`, the standard deviation of the prediction, `sd_yPred`, the limits of the confidence interval, `lwr` and `upr`, and the `outlier` status. When a point is annotated as outlying, the last column value is 1, it is 0 otherwise.
 
-The prediction values can be visualize to adjust the smoothing parameter and the confidence interval using the `plot` function. The option `outOnly`, default value `TRUE`, enables visualizing only plants with annotated outliers. Here, we are visualizing one plant and then all the selected plants to check the prediction.
+The prediction values can be visualized to adjust the smoothing parameter and the confidence interval using the `plot` function. The option `outOnly`, default value `TRUE`, enables visualizing only plants with annotated outliers. Here, we are visualizing one plant and then all the selected plants to check the prediction.
 ```{r plotOutVatorFA1, fig.height=3, fig.width=5, fig.align = 'center'}
 plot(resuVatorHTP,
      plotIds = "c21r24",
@@ -113,11 +112,10 @@ The annotated points can be replaced by NA for the studied trait using the funct
 phenoTPOut <- removePointOutliers(phenoTP,
                                   resuVatorHTP)
 # Check one value annotated as outlier in the original TP object
-phenoTP[[16]][phenoTP[[16]]$plotId=="c14r32",c("plotId","EffpsII")]
+phenoTP[[16]][phenoTP[[16]]$plotId=="c14r32", c("plotId", "EffpsII")]
 # Check the same value in the new TP object
-phenoTPOut[[16]][phenoTPOut[[16]]$plotId=="c14r32",c("plotId","EffpsII")]
+phenoTPOut[[16]][phenoTPOut[[16]]$plotId=="c14r32", c("plotId", "EffpsII")]
 ```
-
 
 ## Example 2
 
@@ -132,10 +130,10 @@ phenoTParch <- createTimePoints(dat = PhenoarchDat1,
                                 colNum = "Col")
 ```
 
-We are then running the function on a subset of plant to set the parameters, using the `plotIds` option. The smoothing parameter `mylocfit` is set at 0.5. The curve are linear and medium smooth is enough. The confidence interval size `confIntSize` is set at 5 which is a medium interval.
+We are then running the function on a subset of plants to set the parameters, using the `plotIds` option. The smoothing parameter `mylocfit` is set at 0.5. The curves are linear and medium smooth is enough. The confidence interval size `confIntSize` is set at 5 which is a medium interval.
 ```{r setParamArch}
-# First select a subset of plants, for example here 10 plants 
-plantSelArch <- c("c22r7","c8r22","c1r10","c21r43","c12r31","c25r12","c6r54","c21r43")
+# First select a subset of plants, for example here 7 plants 
+plantSelArch <- c("c22r7", "c8r22", "c1r10", "c21r43", "c12r31", "c25r12", "c6r54")
 # Then run on the subset
 resuArchHTP <- detectPointOutliers(TP = phenoTParch,
                                    trait = "LA_Estimated",
@@ -145,10 +143,10 @@ resuArchHTP <- detectPointOutliers(TP = phenoTParch,
 ```
 
 ```{r headOutArch, echo=FALSE, message=FALSE}
-knitr::kable(head(resuArchHTP[22:26,]), align=c('c','c'), padding = 0)
+knitr::kable(head(resuArchHTP[22:26, ]), align = c('c','c'), padding = 0)
 ```
 
-The prediction values can be visualise to adjust the smoothing parameter and the confidence interval using the `plot` function.
+The prediction values can be visualized to adjust the smoothing parameter and the confidence interval using the `plot` function.
 ```{r plotOutArchFA1, fig.height=3, fig.width=4, fig.align = 'center'}
 plot(resuArchHTP,
      plotIds = "c12r31",
@@ -167,9 +165,9 @@ The annotated points can be replaced by NA for the studied trait using the funct
 phenoTParchOut <- removePointOutliers(phenoTParch,
                                       resuArchHTP)
 # Check one value annotated as outlier in the original TP object
-phenoTParch[[30]][phenoTParch[[30]]$plotId=="c12r31",c("plotId","LA_Estimated")]
+phenoTParch[[30]][phenoTParch[[30]]$plotId=="c12r31", c("plotId", "LA_Estimated")]
 # Check the same value in the new TP object
-phenoTParchOut[[30]][phenoTParchOut[[30]]$plotId=="c12r31",c("plotId","LA_Estimated")]
+phenoTParchOut[[30]][phenoTParchOut[[30]]$plotId=="c12r31", c("plotId", "LA_Estimated")]
 ```
 
 
@@ -186,11 +184,10 @@ rootTP <- createTimePoints(dat = RootDat1,
                            colNum = "Pos")
 ```
 
-We are then running the function on a subset of plant to set the parameters, using the `plotIds` option. The smoothing parameter `mylocfit` is set at 1. The curve are almost linear and a strong smooth is enough to get an accurate curve shape (line). The confidence interval size `confIntSize` is set at 5 which is a medium interval.
+We are then running the function on a subset of plant to set the parameters, using the `plotIds` option. The smoothing parameter `mylocfit` is set at 1. The curves are almost linear and a strong smooth is enough to get an accurate curve shape (line). The confidence interval size `confIntSize` is set at 5 which is a medium interval.
 ```{r setParamRoot}
-# First select a subset of plants, for example here 10 plants 
+# First select a subset of plants, for example here 7 plants 
 plantSelRoot <- unique(RootDat1$plantId)[1:7]
-# plantSel <- c("A_59_1","A_04_2","A_39_2","A_73_3")
 # Then run on the subset
 resuRootHTP <- detectPointOutliers(TP = rootTP,
                                    trait = "tipPos_y",
@@ -200,10 +197,10 @@ resuRootHTP <- detectPointOutliers(TP = rootTP,
 ```
 
 ```{r headOutRoot, echo=FALSE, message=FALSE}
-knitr::kable(head(resuRootHTP[38:43,]), align=c('c','c'), padding = 0)
+knitr::kable(head(resuRootHTP[38:43, ]), align=c('c','c'), padding = 0)
 ```
 
-The prediction values can be visualise to adjust the smoothing parameter and the confidence interval using the `plot` function.
+The prediction values can be visualize to adjust the smoothing parameter and the confidence interval using the `plot` function.
 ```{r plotOutRootFA1, fig.height=3, fig.width=3, fig.align = 'center'}
 plot(resuRootHTP,
      plotIds = "A_03_2",
@@ -222,12 +219,11 @@ The annotated points can be replaced by NA for the studied trait using the funct
 rootTPOut <- removePointOutliers(rootTP,
                                  resuRootHTP)
 # Check one value annotated as outlier in the original TP object
-rootTP[[11127]][rootTP[[11127]]$plotId=="A_01_2",c("plotId","tipPos_y")]
+rootTP[[11127]][rootTP[[11127]]$plotId == "A_01_2", c("plotId", "tipPos_y")]
 # Check the same value in the new TP object
-rootTPOut[[11127]][rootTPOut[[11127]]$plotId=="A_01_2",c("plotId","tipPos_y")]
+rootTPOut[[11127]][rootTPOut[[11127]]$plotId == "A_01_2", c("plotId", "tipPos_y")]
 ```
 
 ----
 
 ## References
-

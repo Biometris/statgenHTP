@@ -99,13 +99,14 @@
 
       
 
-      </header><script src="OutliersTimeCourse_HTP_files/header-attrs-2.4/header-attrs.js"></script><script src="OutliersTimeCourse_HTP_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><script src="OutliersTimeCourse_HTP_files/header-attrs-2.5/header-attrs.js"></script><link href="OutliersTimeCourse_HTP_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
+<script src="OutliersTimeCourse_HTP_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>statgenHTP tutorial: 4. Outlier detection Time courses</h1>
                         <h4 class="author">Emilie Millet, Bart-Jan van Rossum, Isabelle Sanchez, Nadine Hilgert</h4>
             
-            <h4 class="date">2020-10-21</h4>
+            <h4 class="date">2020-11-02</h4>
       
       
       <div class="hidden name"><code>OutliersTimeCourse_HTP.Rmd</code></div>
@@ -118,20 +119,20 @@
 <h1 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h1>
 <p>It consists in detecting outliers in a set of time courses resulting from the observation of one single trait. The detection procedure is applied to each trait individually without considering other traits, meaning that distinct outlier datasets are associated with each considered trait.</p>
-<p>The final step consists in extracting interesting parameterd from the modelled time course, for example a maximum rate of growth, or a minimum value in a specific period. These parameters could then be further analysed, for example a GxE analysis (see <em>statgenGxE</em>), or a genetic analysis (see <em>statgenGWAS</em>).</p>
+<p>The final step consists in extracting interesting parameterd from the modelled time course, for example a maximum rate of growth, or a minimum value in a specific period. These parameters could then be further analysed, for example a GxE analysis (see <a href="https://cran.r-project.org/web/packages/statgenSTA/index.html"><em>statgenGxE</em></a>), or a genetic analysis (see <a href="https://cran.r-project.org/web/packages/statgenGWAS/index.html"><em>statgenGWAS</em></a>).</p>
 <div id="a-nonparametric-smoothing-associated-with-a-pca" class="section level2">
 <h2 class="hasAnchor">
 <a href="#a-nonparametric-smoothing-associated-with-a-pca" class="anchor"></a>A nonparametric smoothing associated with a PCA</h2>
-<p>Each time course is modelled by a nonparametric smoothing spline with a fixed number of knots. This is a piecewise cubic polynomial (<span class="citation">(Eubank 1999)</span>, <span class="citation">(Eilers, Marx, and Durbán 2015)</span>) fitted with the ‘gam’ function of the R-package ‘mgcv’.</p>
+<p>Each time course is modelled by a nonparametric smoothing spline with a fixed number of knots. This is a piecewise cubic polynomial (<span class="citation">(Eubank 1999)</span>, <span class="citation">(Eilers, Marx, and Durbán 2015)</span>) fitted with the ‘gam’ function of the R-package ‘mgcv.’</p>
 <center>
 <div class="figure">
 <img src="figures/pspline.png" style="width:40.0%" alt=""><p class="caption">P-spline</p>
 </div>
 <p>P-spline illustration with 20 knots, from <span class="citation">(Hugelier, Devos, and Ruckebusch 2016)</span>. The individual B-splines (with the correct coefficients) are shown (colored lines), as well as their sum representing the fit (thick black line).</p>
 </center>
-<p>The estimates for the spline coefficients are then extracted per time course (typically per plant) and correlations between those coefficient vectors are calculated to identify outlying time courses, i.e., plants. An outlying time course will have low correlation to the majority of time courses. To support the analysis by correlations, a principal component analysis can be done on the plant (time course) by spline coefficient matrix. A PCA plot of the plant scores will show the outlying plant.</p>
+<p>The estimates for the spline coefficients are then extracted per time course (typically per plant) and correlations between those coefficient vectors are calculated to identify outlying time courses, <em>i.e.</em>, plants. An outlying time course will have low correlation to the majority of time courses. To support the analysis by correlations, a principal component analysis can be done on the plant (time course) by spline coefficient matrix. A PCA plot of the plant scores will show the outlying plant.</p>
 <p><em>To note,</em> for p-splines in generalized additive model (gam), the smoothing coefficient is optimized by restricted maximum likelihood but the number of knots is chosen by the user.</p>
-<p>This document describes the procedure to detect outlying time course with examples on experimental data sets (see <em>Intro_HTP</em>). The data on which the procedures apply are the variables of interest. They may be variables measured directly or indirectly (through image analysis for example). The way they were obtained doesn’t matter. The following functions can be applied to corrected data (see <em>SpatialModel_HTP</em>) or on raw data.</p>
+<p>This document describes the procedure to detect outlying time course with examples on experimental data sets. The data on which the procedures apply are the variables of interest. They may be variables measured directly or indirectly (through image analysis for example). The following functions can be applied to corrected data (see <strong>statgenHTP tutorial: 3. Correction for spatial trends</strong>) or on raw data.</p>
 <hr>
 </div>
 </div>
@@ -143,17 +144,17 @@
 <div id="example-1" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example-1" class="anchor"></a>Example 1</h2>
-<p>The data from the Phenovator platform have been corrected for spatial trends and time points outliers have been removed (see <em>XXXXX</em>). At this stage, the cleaned and corrected data are used:</p>
+<p>The data from the Phenovator platform have been corrected for spatial trends and time points outliers have been removed (see <strong>statgenHTP tutorial: 2. Outlier detection Time points</strong> and <strong>statgenHTP tutorial: 3. Correction for spatial trends</strong>). At this stage, the cleaned and corrected data are used:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit">
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">spatCorrVator</span><span class="op">)</span>  
 <span class="co"># Format the timepoint</span>
 <span class="va">spatCorrVator</span><span class="op">$</span><span class="va">timePoint</span> <span class="op">&lt;-</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="http://lubridate.tidyverse.org/reference/as_date.html">as_datetime</a></span><span class="op">(</span><span class="va">spatCorrVator</span><span class="op">$</span><span class="va">timePoint</span><span class="op">)</span>
 <span class="co"># Run the function to fit p-spline using the mgcv package on a subset of genotypes</span>
-<span class="va">subGeno</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"G70"</span>,<span class="st">"G160"</span>,<span class="st">"G151"</span>,<span class="st">"G179"</span>,<span class="st">"G175"</span>,<span class="st">"G4"</span>,<span class="st">"G55"</span><span class="op">)</span>
+<span class="va">subGenoVator</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"G70"</span>,<span class="st">"G160"</span>,<span class="st">"G151"</span>,<span class="st">"G179"</span>,<span class="st">"G175"</span>,<span class="st">"G4"</span>,<span class="st">"G55"</span><span class="op">)</span>
 <span class="co">#</span>
 <span class="va">fit.spline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitSpline.html">fitSpline</a></span><span class="op">(</span>corrDat <span class="op">=</span> <span class="va">spatCorrVator</span>,
                         trait <span class="op">=</span> <span class="st">"EffpsII_corr"</span>,
-                        genotypes <span class="op">=</span> <span class="va">subGeno</span>,
+                        genotypes <span class="op">=</span> <span class="va">subGenoVator</span>,
                         knots <span class="op">=</span> <span class="fl">50</span>,
                         perMinTP <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span>
 <span class="co"># Extracting the tables of predicted values and pspline coeficients</span>
@@ -224,7 +225,7 @@
 <div class="sourceCode" id="cb2"><pre class="downlit">
 <span class="va">fit.splineNum</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitSpline.html">fitSpline</a></span><span class="op">(</span>corrDat <span class="op">=</span> <span class="va">spatCorrVator</span>,
                            trait <span class="op">=</span> <span class="st">"EffpsII_corr"</span>,
-                           genotypes <span class="op">=</span> <span class="va">subGeno</span>,
+                           genotypes <span class="op">=</span> <span class="va">subGenoVator</span>,
                            knots <span class="op">=</span> <span class="fl">50</span>,
                            perMinTP <span class="op">=</span> <span class="fl">0.8</span>,
                            useTimeNumber <span class="op">=</span> <span class="cn">TRUE</span>,
@@ -306,7 +307,7 @@
                            predDat <span class="op">=</span> <span class="va">pred.Dat</span>,
                            coefDat <span class="op">=</span> <span class="va">coef.Dat</span>,
                            trait <span class="op">=</span> <span class="st">"EffpsII_corr"</span>,
-                           genotypes <span class="op">=</span> <span class="va">subGeno</span>,
+                           genotypes <span class="op">=</span> <span class="va">subGenoVator</span>,
                            thrCor <span class="op">=</span> <span class="fl">0.9</span>,
                            thrPca <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> </pre></div>
 <table class="table">
@@ -376,7 +377,7 @@
 <p>Finally, the outlying plants can be removed from the dataset…</p>
 <div class="sourceCode" id="cb8"><pre class="downlit">
 <span class="va">spatCorrVatorOut</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/removeTimeCourseOutliers.html">removeTimeCourseOutliers</a></span><span class="op">(</span>dat <span class="op">=</span> <span class="va">spatCorrVator</span>,
-                                            timeCourseOutliers <span class="op">=</span> <span class="va">outVator</span><span class="op">)</span>
+                                             timeCourseOutliers <span class="op">=</span> <span class="va">outVator</span><span class="op">)</span>
 <span class="co"># Check one value annotated as outlier in the original corrected data frame</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">spatCorrVator</span><span class="op">[</span><span class="va">spatCorrVator</span><span class="op">$</span><span class="va">plotId</span><span class="op">==</span><span class="st">"c21r25"</span>,
                   <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"EffpsII_corr"</span>,<span class="st">"EffpsII"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>
@@ -432,15 +433,15 @@
 <div id="example-2" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example-2" class="anchor"></a>Example 2</h2>
-<p>The data from the PhenoArch platform have been corrected for spatial trends and time points outliers have been removed (see <em>XXXXX</em>). At this stage, the cleaned and corrected data are used:</p>
+<p>The data from the PhenoArch platform have been corrected for spatial trends and time points outliers have been removed (see <strong>statgenHTP tutorial: 2. Outlier detection Time points</strong> and <strong>statgenHTP tutorial: 3. Correction for spatial trends</strong>). At this stage, the cleaned and corrected data are used:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit">
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">spatCorrArch</span><span class="op">)</span>  
 <span class="va">spatCorrArch</span><span class="op">$</span><span class="va">timePoint</span> <span class="op">&lt;-</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="http://lubridate.tidyverse.org/reference/as_date.html">as_datetime</a></span><span class="op">(</span><span class="va">spatCorrArch</span><span class="op">$</span><span class="va">timePoint</span><span class="op">)</span>
-<span class="va">subGeno</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"GenoA1"</span>,<span class="st">"GenoA2"</span>,<span class="st">"GenoA3"</span>,<span class="st">"GenoA4"</span>,<span class="st">"GenoB1"</span>,<span class="st">"GenoB2"</span>,<span class="st">"GenoB3"</span><span class="op">)</span>
+<span class="va">subGenoArch</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"GenoA1"</span>,<span class="st">"GenoA2"</span>,<span class="st">"GenoA3"</span>,<span class="st">"GenoA4"</span>,<span class="st">"GenoB1"</span>,<span class="st">"GenoB2"</span>,<span class="st">"GenoB3"</span><span class="op">)</span>
 <span class="co">#</span>
 <span class="va">fit.splineArch</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitSpline.html">fitSpline</a></span><span class="op">(</span>corrDat <span class="op">=</span> <span class="va">spatCorrArch</span>, 
-                            trait <span class="op">=</span> <span class="st">"Biomass_Estimated_corr"</span>,
-                            genotypes <span class="op">=</span> <span class="va">subGeno</span>,
+                            trait <span class="op">=</span> <span class="st">"LA_Estimated_corr"</span>,
+                            genotypes <span class="op">=</span> <span class="va">subGenoArch</span>,
                             knots <span class="op">=</span> <span class="fl">15</span>,
                             perMinTP <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>
 <span class="co">#</span>
@@ -462,8 +463,8 @@
   <span class="fu"><a href="../reference/detectTimeCourseOutliers.html">detectTimeCourseOutliers</a></span><span class="op">(</span>corrDat <span class="op">=</span> <span class="va">spatCorrArch</span>,
                            predDat <span class="op">=</span> <span class="va">pred.DatArch</span>,
                            coefDat <span class="op">=</span> <span class="va">coef.DatArch</span>,
-                           trait <span class="op">=</span> <span class="st">"Biomass_Estimated_corr"</span>,
-                           genotypes <span class="op">=</span> <span class="va">subGeno</span>,
+                           trait <span class="op">=</span> <span class="st">"LA_Estimated_corr"</span>,
+                           genotypes <span class="op">=</span> <span class="va">subGenoArch</span>,
                            thrCor <span class="op">=</span> <span class="fl">0.9</span>,
                            thrPca <span class="op">=</span> <span class="fl">1</span>,
                            geno.decomp <span class="op">=</span> <span class="st">"geno.decomp"</span><span class="op">)</span></pre></div>
@@ -477,18 +478,25 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="center">c17r40</td>
-<td align="center">GenoB2</td>
-<td align="center">WD_Panel2</td>
+<td align="center">c17r3</td>
+<td align="center">GenoB1</td>
+<td align="center">WW_Panel2</td>
 <td align="center">pc2</td>
-<td align="center">1.072931</td>
+<td align="center">1.039606</td>
 </tr>
 <tr class="even">
+<td align="center">c17r7</td>
+<td align="center">GenoB2</td>
+<td align="center">WW_Panel2</td>
+<td align="center">pc2</td>
+<td align="center">1.146102</td>
+</tr>
+<tr class="odd">
 <td align="center">c7r55</td>
 <td align="center">GenoB3</td>
 <td align="center">WW_Panel2</td>
 <td align="center">pc2</td>
-<td align="center">1.086501</td>
+<td align="center">1.063902</td>
 </tr>
 </tbody>
 </table>
@@ -499,37 +507,37 @@
 <span class="va">spatCorrArchOut</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/removeTimeCourseOutliers.html">removeTimeCourseOutliers</a></span><span class="op">(</span>dat <span class="op">=</span> <span class="va">spatCorrArch</span>,
                                             timeCourseOutliers <span class="op">=</span> <span class="va">outArch</span><span class="op">)</span>
 <span class="co"># Check one value annotated as outlier in the original corrected data frame</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">spatCorrArch</span><span class="op">[</span><span class="va">spatCorrArch</span><span class="op">$</span><span class="va">plotId</span><span class="op">==</span><span class="st">"c17r40"</span>,
-                  <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Biomass_Estimated_corr"</span>,<span class="st">"Biomass_Estimated"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>
-<span class="co">#&gt;       Biomass_Estimated_corr Biomass_Estimated</span>
-<span class="co">#&gt; 928                       NA                NA</span>
-<span class="co">#&gt; 2598                      NA                NA</span>
-<span class="co">#&gt; 5387                1.434445         0.1179894</span>
-<span class="co">#&gt; 7813               13.268594         7.7470329</span>
-<span class="co">#&gt; 9452               18.149580        12.4334778</span>
-<span class="co">#&gt; 10856              22.729554        14.2451385</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">spatCorrArch</span><span class="op">[</span><span class="va">spatCorrArch</span><span class="op">$</span><span class="va">plotId</span><span class="op">==</span><span class="st">"c7r55"</span>,
+                  <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"LA_Estimated_corr"</span>,<span class="st">"LA_Estimated"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>
+<span class="co">#&gt;       LA_Estimated_corr LA_Estimated</span>
+<span class="co">#&gt; 2148        0.003919408  0.003598095</span>
+<span class="co">#&gt; 3809        0.004594816  0.004501691</span>
+<span class="co">#&gt; 5473        0.006827556  0.006594625</span>
+<span class="co">#&gt; 7141        0.009340560  0.009613520</span>
+<span class="co">#&gt; 8814        0.011005334  0.011246088</span>
+<span class="co">#&gt; 10009       0.012635505  0.013049526</span>
 <span class="co"># Check the same value in the new corrected data frame</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">spatCorrArchOut</span><span class="op">[</span><span class="va">spatCorrArchOut</span><span class="op">$</span><span class="va">plotId</span><span class="op">==</span><span class="st">"c17r40"</span>,
-                <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Biomass_Estimated_corr"</span>,<span class="st">"Biomass_Estimated"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>
-<span class="co">#&gt;       Biomass_Estimated_corr Biomass_Estimated</span>
-<span class="co">#&gt; 928                       NA                NA</span>
-<span class="co">#&gt; 2598                      NA                NA</span>
-<span class="co">#&gt; 5387                      NA         0.1179894</span>
-<span class="co">#&gt; 7813                      NA         7.7470329</span>
-<span class="co">#&gt; 9452                      NA        12.4334778</span>
-<span class="co">#&gt; 10856                     NA        14.2451385</span></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">spatCorrArchOut</span><span class="op">[</span><span class="va">spatCorrArchOut</span><span class="op">$</span><span class="va">plotId</span><span class="op">==</span><span class="st">"c7r55"</span>,
+                <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"LA_Estimated_corr"</span>,<span class="st">"LA_Estimated"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>
+<span class="co">#&gt;       LA_Estimated_corr LA_Estimated</span>
+<span class="co">#&gt; 2148                 NA  0.003598095</span>
+<span class="co">#&gt; 3809                 NA  0.004501691</span>
+<span class="co">#&gt; 5473                 NA  0.006594625</span>
+<span class="co">#&gt; 7141                 NA  0.009613520</span>
+<span class="co">#&gt; 8814                 NA  0.011246088</span>
+<span class="co">#&gt; 10009                NA  0.013049526</span></pre></div>
 </div>
 <div id="example-3" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example-3" class="anchor"></a>Example 3</h2>
-<p>The data from the RootPhAir platform have not been corrected for spatial trends but time points outliers have been removed (see <em>XXXXX</em>). At this stage, the cleaned data are used:</p>
+<p>The data from the RootPhAir platform have not been corrected for spatial trends but time points outliers have been removed (see <strong>statgenHTP tutorial: 2. Outlier detection Time points</strong> and <strong>statgenHTP tutorial: 3. Correction for spatial trends</strong>). At this stage, the cleaned data are used:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit">
 <span class="va">noCorrRoot</span><span class="op">$</span><span class="va">timePoint</span> <span class="op">&lt;-</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="http://lubridate.tidyverse.org/reference/as_date.html">as_datetime</a></span><span class="op">(</span><span class="va">noCorrRoot</span><span class="op">$</span><span class="va">timePoint</span><span class="op">)</span>
-<span class="va">subGeno</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span> <span class="st">"2"</span>,<span class="st">"6"</span>,<span class="st">"8"</span>,<span class="st">"9"</span>,<span class="st">"10"</span>,<span class="st">"520"</span>,<span class="st">"522"</span><span class="op">)</span>
+<span class="va">subGenoRoot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span> <span class="st">"2"</span>,<span class="st">"6"</span>,<span class="st">"8"</span>,<span class="st">"9"</span>,<span class="st">"10"</span>,<span class="st">"520"</span>,<span class="st">"522"</span><span class="op">)</span>
 <span class="va">fit.splineRoot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitSpline.html">fitSpline</a></span><span class="op">(</span>corrDat <span class="op">=</span> <span class="va">noCorrRoot</span>,
                             trait <span class="op">=</span> <span class="st">"tipPos_y"</span>,
                             knots <span class="op">=</span> <span class="fl">10</span>,
-                            genotypes <span class="op">=</span> <span class="va">subGeno</span>,
+                            genotypes <span class="op">=</span> <span class="va">subGenoRoot</span>,
                             perMinTP <span class="op">=</span> <span class="fl">0.001</span>,
                             useTimeNumber <span class="op">=</span> <span class="cn">TRUE</span>,
                             timeNumber <span class="op">=</span> <span class="st">"thermalTime"</span><span class="op">)</span>
@@ -546,7 +554,7 @@
                                     predDat <span class="op">=</span> <span class="va">pred.DatRoot</span>,
                                     coefDat <span class="op">=</span> <span class="va">coef.DatRoot</span>,
                                     trait <span class="op">=</span> <span class="st">"tipPos_y"</span>,
-                                    genotypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="va">subGeno</span><span class="op">)</span>,
+                                    genotypes <span class="op">=</span> <span class="va">subGenoRoot</span>,
                                     thrCor <span class="op">=</span> <span class="fl">0.9</span>,
                                     thrPca <span class="op">=</span> <span class="fl">1.2</span><span class="op">)</span></pre></div>
 <div class="sourceCode" id="cb21"><pre class="downlit">
@@ -573,14 +581,14 @@
 <a href="#example-1-1" class="anchor"></a>Example 1</h2>
 <p>We will use the <code>fit.splineNumOut</code> previously created which contains the p-spline prediction without the time course outliers. We could estimate the maximum value of the trait at the beginning of the time course:</p>
 <div class="sourceCode" id="cb23"><pre class="downlit">
-<span class="va">subGeno</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"G70"</span>,<span class="st">"G160"</span>,<span class="st">"G151"</span>,<span class="st">"G179"</span>,<span class="st">"G175"</span>,<span class="st">"G4"</span>,<span class="st">"G55"</span><span class="op">)</span>
+<span class="va">subGenoVator</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"G70"</span>,<span class="st">"G160"</span>,<span class="st">"G151"</span>,<span class="st">"G179"</span>,<span class="st">"G175"</span>,<span class="st">"G4"</span>,<span class="st">"G55"</span><span class="op">)</span>
 <span class="va">paramVator1</span> <span class="op">&lt;-</span>
   <span class="fu"><a href="../reference/estimateSplineParameters.html">estimateSplineParameters</a></span><span class="op">(</span>HTPSpline <span class="op">=</span> <span class="va">fit.splineNumOut</span>,
                            estimate <span class="op">=</span> <span class="st">"predictions"</span>,
                            what <span class="op">=</span> <span class="st">"max"</span>,
                            timeMin <span class="op">=</span> <span class="fl">330</span>,
                            timeMax <span class="op">=</span> <span class="fl">432</span>,
-                           genotypes <span class="op">=</span> <span class="va">subGeno</span><span class="op">)</span>
+                           genotypes <span class="op">=</span> <span class="va">subGenoVator</span><span class="op">)</span>
 <span class="co">#</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">paramVator1</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">genotype</span>, y <span class="op">=</span> <span class="va">x</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> 
@@ -601,7 +609,7 @@
                            what <span class="op">=</span> <span class="st">"max"</span>,
                            timeMin <span class="op">=</span> <span class="fl">210</span>,
                            timeMax <span class="op">=</span> <span class="fl">312</span>,
-                           genotypes <span class="op">=</span> <span class="va">subGeno</span><span class="op">)</span>
+                           genotypes <span class="op">=</span> <span class="va">subGenoVator</span><span class="op">)</span>
 <span class="co">#</span>
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">paramVator2</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">genotype</span>, y <span class="op">=</span> <span class="va">x</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html">geom_boxplot</a></span><span class="op">(</span>na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">+</span>
@@ -612,15 +620,15 @@
 <div id="references" class="section level2 unnumbered">
 <h2 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h2>
-<div id="refs" class="references hanging-indent">
-<div id="ref-Eilers2015">
-<p>Eilers, Paul H. C., Brian D. Marx, and Maria Durbán. 2015. “Twenty Years of P-Splines.” <em>Statistics and Operations Research Transactions</em> 39 (2): 149–86.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Eilers2015" class="csl-entry">
+Eilers, Paul H. C., Brian D. Marx, and Maria Durbán. 2015. <span>“Twenty Years of p-Splines.”</span> <em>Statistics and Operations Research Transactions</em> 39 (2): 149–86.
 </div>
-<div id="ref-Eubank1999">
-<p>Eubank, Randall L. 1999. <em>Nonparametric Regression and Spline Smoothing</em>. Statistics: A Series of Textbooks and Monographs. CRC Press.</p>
+<div id="ref-Eubank1999" class="csl-entry">
+Eubank, Randall L. 1999. <em>Nonparametric Regression and Spline Smoothing</em>. Statistics: A Series of Textbooks and Monographs. CRC Press.
 </div>
-<div id="ref-Hugelier2016">
-<p>Hugelier, S., O. Devos, and C. Ruckebusch. 2016. “Chapter 14 - a Smoothness Constraint in Multivariate Curve Resolution-Alternating Least Squares of Spectroscopy Data.” In <em>Resolving Spectral Mixtures</em>, edited by Cyril Ruckebusch, 30:453–76. Data Handling in Science and Technology. Elsevier. <a href="https://doi.org/https://doi.org/10.1016/B978-0-444-63638-6.00014-0">https://doi.org/https://doi.org/10.1016/B978-0-444-63638-6.00014-0</a>.</p>
+<div id="ref-Hugelier2016" class="csl-entry">
+Hugelier, S., O. Devos, and C. Ruckebusch. 2016. <span>“Chapter 14 - a Smoothness Constraint in Multivariate Curve Resolution-Alternating Least Squares of Spectroscopy Data.”</span> In <em>Resolving Spectral Mixtures</em>, edited by Cyril Ruckebusch, 30:453–76. Data Handling in Science and Technology. Elsevier. https://doi.org/<a href="https://doi.org/10.1016/B978-0-444-63638-6.00014-0">https://doi.org/10.1016/B978-0-444-63638-6.00014-0</a>.
 </div>
 </div>
 </div>

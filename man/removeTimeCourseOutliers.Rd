@@ -39,10 +39,10 @@ these should be provided as input for the function.
 spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
 # Run the function to fit p-spline using the mgcv package on a subset of
 # genotypes
-subGeno <- c("G70","G160","G151","G179","G175","G4","G55")
+subGenoVator <- c("G70","G160","G151","G179","G175","G4","G55")
 fit.spline <- fitSpline(corrDat = spatCorrVator,
                         trait = "EffpsII_corr",
-                        genotypes = subGeno,
+                        genotypes = subGenoVator,
                         knots = 50,
                         perMinTP = 0.8)
 # Extracting the tables of predicted values and pspline coeficients
@@ -54,7 +54,7 @@ outVator <- detectTimeCourseOutliers(corrDat = spatCorrVator,
                          predDat = pred.Dat,
                          coefDat = coef.Dat,
                          trait = "EffpsII_corr",
-                         genotypes = subGeno,
+                         genotypes = subGenoVator,
                          thrCor = 0.9,
                          thrPca = 1)
 

@@ -41,7 +41,7 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
 ## Fit a SpATS model on few time points:
 modPhenoSp <- fitModels(TP = phenoTP,
                         trait = "EffpsII",
-                        timePoints = seq(1,73,by=5))
+                        timePoints = c(1,6,20))
 
 ## Extract the variances for all available time points in the model object:
 varianceSp <- getVar(modPhenoSp)

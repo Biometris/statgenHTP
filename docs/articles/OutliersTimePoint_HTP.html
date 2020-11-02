@@ -99,13 +99,14 @@
 
       
 
-      </header><script src="OutliersTimePoint_HTP_files/header-attrs-2.4/header-attrs.js"></script><script src="OutliersTimePoint_HTP_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><script src="OutliersTimePoint_HTP_files/header-attrs-2.5/header-attrs.js"></script><link href="OutliersTimePoint_HTP_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
+<script src="OutliersTimePoint_HTP_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>statgenHTP tutorial: 2. Outlier detection Time points</h1>
                         <h4 class="author">Emilie Millet, Bart-Jan van Rossum, Isabelle Sanchez, Nadine Hilgert</h4>
             
-            <h4 class="date">2020-10-21</h4>
+            <h4 class="date">2020-11-02</h4>
       
       
       <div class="hidden name"><code>OutliersTimePoint_HTP.Rmd</code></div>
@@ -120,36 +121,38 @@
 <p>An outlier is usually defined as an observation that appears to be inconsistent with the remainder of the data set <span class="citation">(Barnett and Lewis 1994)</span>. Observations may be time points <span class="citation">(Grubbs 1950)</span> or whole time courses of one or more variables <span class="citation">(Hubert, Rousseeuw, and Segaert 2015)</span>. An illustration is given below, where we see the difficulty of deciding whether a biomass time course (red curve at the bottom left) is atypical in a set of time courses from plants of the same genotype, or whether this slow growth is due to the plant’s position in the platform.</p>
 <center>
 <div class="figure">
-<img src="figures/heatmap.png" style="width:80.0%" alt=""><p class="caption">Heatmap of the biomass estimated at a specific time point (with a color gradient) of each plant according to its location in the platform (line, position). Well-watered (WW) treatment on the left, water deficit (WD) on the right. The graphs below show the biomass time courses for a given genotype (3 repetitions in each treatment). The question is whether the red growth curve on the left corresponds to an outlier plant (seed problem for example) or whether this slow growth is due to the plant’s location in the platform (PhenoArch Platform, INRA). <em>Courtesy: Llorenç Cabrera-Bosquet and Santiago Alvarez Prado.</em></p>
+<img src="figures/heatmap.png" style="width:80.0%" alt=""><p class="caption">Heatmap of the biomass estimated at a specific time point (with a color gradient) of each plant according to its location in the platform (line, position). Well-watered (WW) treatment on the left, water deficit (WD) on the right. The graphs below show the biomass time courses for a given genotype (3 repetitions in each treatment). The question is whether the red growth curve on the left corresponds to an outlier plant (seed problem for example) or whether this slow growth is due to the plant’s location in the platform (PhenoArch Platform, INRAE). <em>Courtesy: Llorenç Cabrera-Bosquet and Santiago Alvarez Prado.</em></p>
 </div>
 </center>
-<p>The concept of outlier can be extended to “outlier plants”, defined here as biological replicates deviating from the overall distribution of plants on a multi-criteria basis, regardless of the quality of measurements <span class="citation">(Alvarez Prado et al. 2019)</span>.</p>
-<p>This documents describes the procedures to detect outlying points in a time course with examples on experimental data sets (see Intro_HTP). The data on which the procedures apply are the variables of interest. They may be variables measured directly or indirectly (through image analysis for example). The way they were obtained doesn’t matter.</p>
+<p>The concept of outlier can be extended to “outlier plants,” defined here as biological replicates deviating from the overall distribution of plants on a multi-criteria basis, regardless of the quality of measurements <span class="citation">(Alvarez Prado et al. 2019)</span>.</p>
+<p>This documents describes the procedures to detect outlying points in a time course with examples on experimental data sets. The data on which the procedures apply are the variables of interest. They may be variables measured directly on the plants or indirectly via image analysis for example.</p>
 <hr>
 </div>
 <div id="definition-of-outlying-points" class="section level1">
 <h1 class="hasAnchor">
 <a href="#definition-of-outlying-points" class="anchor"></a>Definition of outlying points</h1>
-<p>Time courses of phenotypic data are viewed as continuous time-related functions. The first cleaning step consists in roughly checking the consistency of each point with its neighbors within a time course. Outlying points are measurements at a given time that do not follow the expected behavior. The detection of outlying points is done “one time course after the other”. Identifying and removing these points will facilitate the detection of outlier time courses or plants, as proposed later in sections 3 and 4.</p>
-<p>The detection requires fitting a model from the data, as a function of time. Two types of models can be used, one based on nonlinear parametric regression (Gompertz Model or sigmoidal function for example) and the other on non parametric regression. Data annotation is based on the comparison of the experimental data with its estimated value from the model. If they significantly differ, the data will be annotated as suspect.</p>
-<p><em>blablabla use of non-parametric regression because blablabla…</em></p>
+<p>Time courses of phenotypic data are viewed as continuous time-related functions. The first cleaning step consists in roughly checking the consistency of each point with its neighbors within a time course. Outlying points are measurements at a given time that do not follow the expected behavior. The detection of outlying points is done “one time course after the other.” Identifying and removing these points will facilitate the detection of outlier time courses or plants, as proposed in <strong>statgenHTP tutorial: 4. Outlier detection Time course</strong>.</p>
+<p>The detection requires fitting a model from the data, as a function of time. Two types of models can be used, one based on nonlinear parametric regression (Gompertz Model or sigmoidal function for example) and the other on non-parametric regression. Data annotation is based on the comparison of the experimental data with its estimated value from the model. If they significantly differ, the data will be annotated as suspect.</p>
+<blockquote>
+<p><em>NOTE: We only considered the non-parametric regression in this package because of its flexibility to fit any type of curve.</em></p>
+</blockquote>
 </div>
 <div id="illustration-of-the-non-parametric-function" class="section level1">
 <h1 class="hasAnchor">
 <a href="#illustration-of-the-non-parametric-function" class="anchor"></a>Illustration of the non-parametric function</h1>
-<p>The local regression is a well known smoothing technique which locally approximates an unknown function by parametric functions. It is a two-step procedure included in the <code>detectPointOutliers</code> function: the <code>locfit()</code> function fits a local regression at a set of points, then, the <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code> function is used to interpolate this fit to other points. A confidence interval can then be calculated. Points outside this interval will be annotated as outliers.</p>
+<p>The local regression is a well known smoothing technique which locally approximates an unknown function by parametric functions. It is a two-step procedure included in the <code>detectPointOutliers</code> function: the <code>locfit()</code> <a href="https://cran.r-project.org/web/packages/locfit/index.html">function</a> fits a local regression at a set of points, then, the <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code> function is used to interpolate this fit to other points. A confidence interval can then be calculated. Points outside this interval will be annotated as outliers.</p>
 <p>The user can set:</p>
 <ul>
 <li><p>the smoothing parameter <code>mylocfit</code>. It is the parameter <code>nn</code> from the locfit package (Nearest neighbor component of the smoothing parameter). This parameter values range from 0 to 1, with the higher the value, the smoother the curve.</p></li>
 <li><p>the level at which the confidence interval <code>confIntSize</code> is calculated. Large value makes a wide interval and fewer outliers are annotated.</p></li>
 </ul>
-<p>The functions are illustrated with the three example data sets. For more information about the data, see <em>Intro_HTP</em>.</p>
+<p>The functions are illustrated with the three example data sets. For more information about the data, see <strong>statgenHTP tutorial: 1. Introduction, data description and preparation</strong>.</p>
 <div id="example-1" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example-1" class="anchor"></a>Example 1</h2>
 <p>First a <code>TP</code> object is created containing all the time points.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="va">PhenovatorDat1</span> <span class="op">&lt;-</span> <span class="va">PhenovatorDat1</span><span class="op">[</span><span class="op">!</span><span class="va">PhenovatorDat1</span><span class="op">$</span><span class="va">pos</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"c24r41"</span>, <span class="st">"c7r18"</span>, <span class="st">"c7r49"</span><span class="op">)</span>,<span class="op">]</span>
+<span class="va">PhenovatorDat1</span> <span class="op">&lt;-</span> <span class="va">PhenovatorDat1</span><span class="op">[</span><span class="op">!</span><span class="va">PhenovatorDat1</span><span class="op">$</span><span class="va">pos</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"c24r41"</span>, <span class="st">"c7r18"</span>, <span class="st">"c7r49"</span><span class="op">)</span>, <span class="op">]</span>
 <span class="co">## Create a TP object containing the data from the Phenovator.</span>
 <span class="va">phenoTP</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/createTimePoints.html">createTimePoints</a></span><span class="op">(</span>dat <span class="op">=</span> <span class="va">PhenovatorDat1</span>,
                             experimentName <span class="op">=</span> <span class="st">"Phenovator"</span>,
@@ -160,11 +163,10 @@
                             rowNum <span class="op">=</span> <span class="st">"y"</span>, colNum <span class="op">=</span> <span class="st">"x"</span>,
                             addCheck <span class="op">=</span> <span class="cn">TRUE</span>,
                             checkGenotypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"check1"</span>, <span class="st">"check2"</span>, <span class="st">"check3"</span>, <span class="st">"check4"</span><span class="op">)</span><span class="op">)</span></pre></div>
-<p>We are then running the function on a subset of plant to set the parameters, using the <code>plotIds</code> option. The smoothing parameter <code>mylocfit</code> is set at 0.1. The curve are atypical and to detect only the very strange point, fitted curves have to be not too smooth. The confidence interval size <code>confIntSize</code> is set at 3 which is a relatively narrow interval.</p>
+<p>We are then running the function on a subset of plant to set the parameters, using the <code>plotIds</code> option. The smoothing parameter <code>mylocfit</code> is set at 0.1. The curves are atypical and to detect only the very strange points, fitted curves cannot be too smooth. The confidence interval size <code>confIntSize</code> is set at 3 which is a relatively narrow interval.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="co"># First select a subset of plants, for example here 10 plants </span>
+<span class="co"># First select a subset of plants, for example here 9 plants </span>
 <span class="va">plantSel</span> <span class="op">&lt;-</span> <span class="va">phenoTP</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">plotId</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">9</span><span class="op">]</span>
-<span class="co"># plantSel &lt;- c("c11r55","c6r49","c21r16","c13r45")</span>
 <span class="co"># Then run on the subset</span>
 <span class="va">resuVatorHTP</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectPointOutliers.html">detectPointOutliers</a></span><span class="op">(</span>TP <span class="op">=</span> <span class="va">phenoTP</span>,
                                     trait <span class="op">=</span> <span class="st">"EffpsII"</span>,
@@ -253,7 +255,7 @@
 </tbody>
 </table>
 <p>The function output is a <code>data.frame</code> containing for each plant at each time point: the predicted value, <code>yPred</code>, the standard deviation of the prediction, <code>sd_yPred</code>, the limits of the confidence interval, <code>lwr</code> and <code>upr</code>, and the <code>outlier</code> status. When a point is annotated as outlying, the last column value is 1, it is 0 otherwise.</p>
-<p>The prediction values can be visualize to adjust the smoothing parameter and the confidence interval using the <code>plot</code> function. The option <code>outOnly</code>, default value <code>TRUE</code>, enables visualizing only plants with annotated outliers. Here, we are visualizing one plant and then all the selected plants to check the prediction.</p>
+<p>The prediction values can be visualized to adjust the smoothing parameter and the confidence interval using the <code>plot</code> function. The option <code>outOnly</code>, default value <code>TRUE</code>, enables visualizing only plants with annotated outliers. Here, we are visualizing one plant and then all the selected plants to check the prediction.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit">
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">resuVatorHTP</span>,
      plotIds <span class="op">=</span> <span class="st">"c21r24"</span>,
@@ -269,11 +271,11 @@
 <span class="va">phenoTPOut</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/removePointOutliers.html">removePointOutliers</a></span><span class="op">(</span><span class="va">phenoTP</span>,
                                   <span class="va">resuVatorHTP</span><span class="op">)</span>
 <span class="co"># Check one value annotated as outlier in the original TP object</span>
-<span class="va">phenoTP</span><span class="op">[[</span><span class="fl">16</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="va">phenoTP</span><span class="op">[[</span><span class="fl">16</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">plotId</span><span class="op">==</span><span class="st">"c14r32"</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"plotId"</span>,<span class="st">"EffpsII"</span><span class="op">)</span><span class="op">]</span>
+<span class="va">phenoTP</span><span class="op">[[</span><span class="fl">16</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="va">phenoTP</span><span class="op">[[</span><span class="fl">16</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">plotId</span><span class="op">==</span><span class="st">"c14r32"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"plotId"</span>, <span class="st">"EffpsII"</span><span class="op">)</span><span class="op">]</span>
 <span class="co">#&gt;    plotId EffpsII</span>
 <span class="co">#&gt; 16 c14r32    0.63</span>
 <span class="co"># Check the same value in the new TP object</span>
-<span class="va">phenoTPOut</span><span class="op">[[</span><span class="fl">16</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="va">phenoTPOut</span><span class="op">[[</span><span class="fl">16</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">plotId</span><span class="op">==</span><span class="st">"c14r32"</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"plotId"</span>,<span class="st">"EffpsII"</span><span class="op">)</span><span class="op">]</span>
+<span class="va">phenoTPOut</span><span class="op">[[</span><span class="fl">16</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="va">phenoTPOut</span><span class="op">[[</span><span class="fl">16</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">plotId</span><span class="op">==</span><span class="st">"c14r32"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"plotId"</span>, <span class="st">"EffpsII"</span><span class="op">)</span><span class="op">]</span>
 <span class="co">#&gt;    plotId EffpsII</span>
 <span class="co">#&gt; 16 c14r32      NA</span></pre></div>
 </div>
@@ -289,10 +291,10 @@
                                 plotId <span class="op">=</span> <span class="st">"pos"</span>,
                                 rowNum <span class="op">=</span> <span class="st">"Row"</span>,
                                 colNum <span class="op">=</span> <span class="st">"Col"</span><span class="op">)</span></pre></div>
-<p>We are then running the function on a subset of plant to set the parameters, using the <code>plotIds</code> option. The smoothing parameter <code>mylocfit</code> is set at 0.5. The curve are linear and medium smooth is enough. The confidence interval size <code>confIntSize</code> is set at 5 which is a medium interval.</p>
+<p>We are then running the function on a subset of plants to set the parameters, using the <code>plotIds</code> option. The smoothing parameter <code>mylocfit</code> is set at 0.5. The curves are linear and medium smooth is enough. The confidence interval size <code>confIntSize</code> is set at 5 which is a medium interval.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit">
-<span class="co"># First select a subset of plants, for example here 10 plants </span>
-<span class="va">plantSelArch</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"c22r7"</span>,<span class="st">"c8r22"</span>,<span class="st">"c1r10"</span>,<span class="st">"c21r43"</span>,<span class="st">"c12r31"</span>,<span class="st">"c25r12"</span>,<span class="st">"c6r54"</span>,<span class="st">"c21r43"</span><span class="op">)</span>
+<span class="co"># First select a subset of plants, for example here 7 plants </span>
+<span class="va">plantSelArch</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"c22r7"</span>, <span class="st">"c8r22"</span>, <span class="st">"c1r10"</span>, <span class="st">"c21r43"</span>, <span class="st">"c12r31"</span>, <span class="st">"c25r12"</span>, <span class="st">"c6r54"</span><span class="op">)</span>
 <span class="co"># Then run on the subset</span>
 <span class="va">resuArchHTP</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectPointOutliers.html">detectPointOutliers</a></span><span class="op">(</span>TP <span class="op">=</span> <span class="va">phenoTParch</span>,
                                    trait <span class="op">=</span> <span class="st">"LA_Estimated"</span>,
@@ -369,7 +371,7 @@
 </tr>
 </tbody>
 </table>
-<p>The prediction values can be visualise to adjust the smoothing parameter and the confidence interval using the <code>plot</code> function.</p>
+<p>The prediction values can be visualized to adjust the smoothing parameter and the confidence interval using the <code>plot</code> function.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit">
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">resuArchHTP</span>,
      plotIds <span class="op">=</span> <span class="st">"c12r31"</span>,
@@ -385,11 +387,11 @@
 <span class="va">phenoTParchOut</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/removePointOutliers.html">removePointOutliers</a></span><span class="op">(</span><span class="va">phenoTParch</span>,
                                       <span class="va">resuArchHTP</span><span class="op">)</span>
 <span class="co"># Check one value annotated as outlier in the original TP object</span>
-<span class="va">phenoTParch</span><span class="op">[[</span><span class="fl">30</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="va">phenoTParch</span><span class="op">[[</span><span class="fl">30</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">plotId</span><span class="op">==</span><span class="st">"c12r31"</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"plotId"</span>,<span class="st">"LA_Estimated"</span><span class="op">)</span><span class="op">]</span>
+<span class="va">phenoTParch</span><span class="op">[[</span><span class="fl">30</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="va">phenoTParch</span><span class="op">[[</span><span class="fl">30</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">plotId</span><span class="op">==</span><span class="st">"c12r31"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"plotId"</span>, <span class="st">"LA_Estimated"</span><span class="op">)</span><span class="op">]</span>
 <span class="co">#&gt;       plotId LA_Estimated</span>
 <span class="co">#&gt; 37368 c12r31    0.2447164</span>
 <span class="co"># Check the same value in the new TP object</span>
-<span class="va">phenoTParchOut</span><span class="op">[[</span><span class="fl">30</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="va">phenoTParchOut</span><span class="op">[[</span><span class="fl">30</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">plotId</span><span class="op">==</span><span class="st">"c12r31"</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"plotId"</span>,<span class="st">"LA_Estimated"</span><span class="op">)</span><span class="op">]</span>
+<span class="va">phenoTParchOut</span><span class="op">[[</span><span class="fl">30</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="va">phenoTParchOut</span><span class="op">[[</span><span class="fl">30</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">plotId</span><span class="op">==</span><span class="st">"c12r31"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"plotId"</span>, <span class="st">"LA_Estimated"</span><span class="op">)</span><span class="op">]</span>
 <span class="co">#&gt;       plotId LA_Estimated</span>
 <span class="co">#&gt; 37368 c12r31           NA</span></pre></div>
 </div>
@@ -405,11 +407,10 @@
                            plotId <span class="op">=</span> <span class="st">"plantId"</span>,
                            rowNum <span class="op">=</span> <span class="st">"Strip"</span>,
                            colNum <span class="op">=</span> <span class="st">"Pos"</span><span class="op">)</span></pre></div>
-<p>We are then running the function on a subset of plant to set the parameters, using the <code>plotIds</code> option. The smoothing parameter <code>mylocfit</code> is set at 1. The curve are almost linear and a strong smooth is enough to get an accurate curve shape (line). The confidence interval size <code>confIntSize</code> is set at 5 which is a medium interval.</p>
+<p>We are then running the function on a subset of plant to set the parameters, using the <code>plotIds</code> option. The smoothing parameter <code>mylocfit</code> is set at 1. The curves are almost linear and a strong smooth is enough to get an accurate curve shape (line). The confidence interval size <code>confIntSize</code> is set at 5 which is a medium interval.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit">
-<span class="co"># First select a subset of plants, for example here 10 plants </span>
+<span class="co"># First select a subset of plants, for example here 7 plants </span>
 <span class="va">plantSelRoot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">RootDat1</span><span class="op">$</span><span class="va">plantId</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">7</span><span class="op">]</span>
-<span class="co"># plantSel &lt;- c("A_59_1","A_04_2","A_39_2","A_73_3")</span>
 <span class="co"># Then run on the subset</span>
 <span class="va">resuRootHTP</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectPointOutliers.html">detectPointOutliers</a></span><span class="op">(</span>TP <span class="op">=</span> <span class="va">rootTP</span>,
                                    trait <span class="op">=</span> <span class="st">"tipPos_y"</span>,
@@ -497,7 +498,7 @@
 </tr>
 </tbody>
 </table>
-<p>The prediction values can be visualise to adjust the smoothing parameter and the confidence interval using the <code>plot</code> function.</p>
+<p>The prediction values can be visualize to adjust the smoothing parameter and the confidence interval using the <code>plot</code> function.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit">
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">resuRootHTP</span>,
      plotIds <span class="op">=</span> <span class="st">"A_03_2"</span>,
@@ -513,11 +514,11 @@
 <span class="va">rootTPOut</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/removePointOutliers.html">removePointOutliers</a></span><span class="op">(</span><span class="va">rootTP</span>,
                                  <span class="va">resuRootHTP</span><span class="op">)</span>
 <span class="co"># Check one value annotated as outlier in the original TP object</span>
-<span class="va">rootTP</span><span class="op">[[</span><span class="fl">11127</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="va">rootTP</span><span class="op">[[</span><span class="fl">11127</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">plotId</span><span class="op">==</span><span class="st">"A_01_2"</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"plotId"</span>,<span class="st">"tipPos_y"</span><span class="op">)</span><span class="op">]</span>
+<span class="va">rootTP</span><span class="op">[[</span><span class="fl">11127</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="va">rootTP</span><span class="op">[[</span><span class="fl">11127</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">plotId</span> <span class="op">==</span> <span class="st">"A_01_2"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"plotId"</span>, <span class="st">"tipPos_y"</span><span class="op">)</span><span class="op">]</span>
 <span class="co">#&gt;    plotId tipPos_y</span>
 <span class="co">#&gt; 42 A_01_2 6.014286</span>
 <span class="co"># Check the same value in the new TP object</span>
-<span class="va">rootTPOut</span><span class="op">[[</span><span class="fl">11127</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="va">rootTPOut</span><span class="op">[[</span><span class="fl">11127</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">plotId</span><span class="op">==</span><span class="st">"A_01_2"</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"plotId"</span>,<span class="st">"tipPos_y"</span><span class="op">)</span><span class="op">]</span>
+<span class="va">rootTPOut</span><span class="op">[[</span><span class="fl">11127</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="va">rootTPOut</span><span class="op">[[</span><span class="fl">11127</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">plotId</span> <span class="op">==</span> <span class="st">"A_01_2"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"plotId"</span>, <span class="st">"tipPos_y"</span><span class="op">)</span><span class="op">]</span>
 <span class="co">#&gt;    plotId tipPos_y</span>
 <span class="co">#&gt; 42 A_01_2       NA</span></pre></div>
 <hr>
@@ -525,18 +526,18 @@
 <div id="references" class="section level2 unnumbered">
 <h2 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h2>
-<div id="refs" class="references hanging-indent">
-<div id="ref-AlvarezPrado2019">
-<p>Alvarez Prado, Santiago, Isabelle Sanchez, Llorenç Cabrera-Bosquet, Antonin Grau, Claude Welcker, François Tardieu, and Nadine Hilgert. 2019. “To Clean or Not to Clean Phenotypic Datasets for Outlier Plants in Genetic Analyses?” <em>Journal of Experimental Botany</em> 70 (15): 3693–8. <a href="https://doi.org/10.1093/jxb/erz191">https://doi.org/10.1093/jxb/erz191</a>.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-AlvarezPrado2019" class="csl-entry">
+Alvarez Prado, Santiago, Isabelle Sanchez, Llorenç Cabrera-Bosquet, Antonin Grau, Claude Welcker, François Tardieu, and Nadine Hilgert. 2019. <span>“To Clean or Not to Clean Phenotypic Datasets for Outlier Plants in Genetic Analyses?”</span> <em>Journal of Experimental Botany</em> 70 (15): 3693–98. <a href="https://doi.org/10.1093/jxb/erz191">https://doi.org/10.1093/jxb/erz191</a>.
 </div>
-<div id="ref-BarnettLewis1994">
-<p>Barnett, Vic, and Tobby Lewis. 1994. <em>Outliers in Statistical Data</em>. Wiley Series in Probability and Statistics. Wiley. <a href="https://books.google.nl/books?id=B44QAQAAIAAJ">https://books.google.nl/books?id=B44QAQAAIAAJ</a>.</p>
+<div id="ref-BarnettLewis1994" class="csl-entry">
+Barnett, Vic, and Tobby Lewis. 1994. <em>Outliers in Statistical Data</em>. Wiley Series in Probability and Statistics. Wiley. <a href="https://books.google.nl/books?id=B44QAQAAIAAJ">https://books.google.nl/books?id=B44QAQAAIAAJ</a>.
 </div>
-<div id="ref-Grubbs1950">
-<p>Grubbs, Frank E. 1950. “Sample Criteria for Testing Outlying Observations.” <em>Ann. Math. Statist.</em> 21 (1): 27–58. <a href="https://doi.org/10.1214/aoms/1177729885">https://doi.org/10.1214/aoms/1177729885</a>.</p>
+<div id="ref-Grubbs1950" class="csl-entry">
+Grubbs, Frank E. 1950. <span>“Sample Criteria for Testing Outlying Observations.”</span> <em>Ann. Math. Statist.</em> 21 (1): 27–58. <a href="https://doi.org/10.1214/aoms/1177729885">https://doi.org/10.1214/aoms/1177729885</a>.
 </div>
-<div id="ref-Hubert2015">
-<p>Hubert, Mia, Peter J. Rousseeuw, and Pieter Segaert. 2015. “Multivariate Functional Outlier Detection.” <em>Statistical Methods &amp; Applications</em> 24 (2): 177–202. <a href="https://doi.org/10.1007/s10260-015-0297-8">https://doi.org/10.1007/s10260-015-0297-8</a>.</p>
+<div id="ref-Hubert2015" class="csl-entry">
+Hubert, Mia, Peter J. Rousseeuw, and Pieter Segaert. 2015. <span>“Multivariate Functional Outlier Detection.”</span> <em>Statistical Methods <span>&amp;</span> Applications</em> 24 (2): 177–202. <a href="https://doi.org/10.1007/s10260-015-0297-8">https://doi.org/10.1007/s10260-015-0297-8</a>.
 </div>
 </div>
 </div>
