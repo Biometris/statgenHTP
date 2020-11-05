@@ -82,14 +82,14 @@ When SpATS is used for modeling, an extra spatial term is included in the model.
 
 The model specifications are listed in the table below with a simplified model. 
 
-option | model fitted | spatial term |
+OPTION | MODEL FITTED | SPATIAL TERM |
 ------------------|---------------------------------------------|---------------|
 default | $y$ = $\mu$ + **genotype** + **rowId** + **colId** + **$\epsilon$** | PSANOVA |
 extraFixedFactors = c("A", "B") | $y$ = $\mu$ + *A* + *B* + **genotype** + **rowId** + **colId** + **$\epsilon$** | PSANOVA |
 useRepId = TRUE | $y$ = $\mu$ + *repId* + **genotype** + **repId:rowId** + **repId:colId** +  **$\epsilon$** | PSANOVA |
 useCheck = TRUE | $y$ = $\mu$ + *check* + **genoCheck** + **rowId** + **colId**  +  **$\epsilon$** | PSANOVA |
 
-In the models above, fixed effects are indicated in *italics* whereas random effects are indicated in **bold**. "genotype" can be fitted as **random** or *fixed* effect using the option `what`. The same model will run with genotype as fixed. The option `useCheck` allows treating some genotypes as check: it splits the column "genotype" into two columns as follows:
+In the models above, fixed effects are indicated in *italics* whereas random effects are indicated in **bold**. "genotype" can be fitted as **random** or *fixed* effect using the option `what`. The option `useCheck` allows treating some genotypes as check: it splits the column "genotype" into two columns as follows:
 
 <center>
 
@@ -208,7 +208,7 @@ Here is an illustration with three time points:
 
 All results that can be extracted are shown in the table below. The first column contains the function names. The second column contains a short description of the result that will be extracted and, where needed, states for which modeling engines it can be extracted.
 
-function | description |
+FUNCTION | DESCRIPTION |
 ------------- | --------------------------------------------------------------- |
 getGenoPred | Best Linear Unbiased Predictions (BLUPS, genotype as random) or Estimators (BLUEs, genotype as fixed) |
 getCorrected | Spatially corrected values at the experimental unit level |
@@ -308,7 +308,7 @@ The effective dimensions are also known as the effective degrees of freedom. The
 The table below gives an overview of the effective dimensions and an
 explanation of their meaning.
 
-| Effective Dimension | Explanation |
+| EFFECTIVE DIMENSION | EXPLANATION |
 | :---------------------------- |:----------------------------------|
 | colId | Linear trend along columns |
 | rowId | Linear trend along rows |
@@ -325,7 +325,7 @@ When ASReml is used for modeling and `spatial = TRUE`, four models are fitted wi
 
 > *Note that for the moment, it is only running with ASReml-R version 4 only.*
 
-| option | model fitted | spatial term |
+| OPTION | MODEL FITTED | SPATIAL TERM |
 |----------------------|------------------------------------------|-----------------|
 | spatial = TRUE | $y$ = $\mu$ + **genotype** + **row** + **col** + **$\epsilon$** | AR1(rowId):AR1(colId) |
 |                | $y$ = $\mu$ + **genotype** + **row** + **$\epsilon$** | AR1(rowId):colId |
@@ -341,7 +341,7 @@ When ASReml is used for modeling and `spatial = TRUE`, four models are fitted wi
 |                              | $y$ = $\mu$ + *repId* + **genotype** + **repId:row** + **repId:col** + **$\epsilon$** | - |
 
 In the models above, fixed effects are indicated in *italics* whereas random 
-effects are indicated in **bold**. "genotype" can be fitted as **random** or *fixed* effect using the option `what`. The same model will run with genotype as fixed. The option `useCheck` is not displayed in the table but works the same as for SpATS: treating some genotypes as check (see section [**2.1**](#SpATS) for details).
+effects are indicated in **bold**. "genotype" can be fitted as **random** or *fixed* effect using the option `what`. The option `useCheck` is not displayed in the table but works the same as for SpATS: treating some genotypes as check (see section [**2.1**](#SpATS) for details).
 
 Calling ASReml is done by changing the `engine` option in the `fitModels` function.
 
@@ -388,12 +388,12 @@ Note that when the engine is ASReml, the heritability is calculated using the fo
 
 When the row and column coordinates are not available, only ASReml can be used for modeling. In that case, the model simply uses the genotype and the extraFixedFactors, if any.
 
-| option | model fitted | spatial term |
+| OPTION | MODEL FITTED | SPATIAL TERM |
 |------------------------------------|------------------------|-------------------|
 | spatial = FALSE | $y_t$ = **genotype** + **$\epsilon$** |  - |
 | spatial = FALSE, extraFixedFactors = c("A", "B") | $y_t$ = *A* + *B* + **genotype** + **$\epsilon$** | - |
 
-In the models above and below, fixed effects are indicated in *italics* whereas random effects are indicated in **bold**. `genotype` can be fitted as **random** or *fixed* effect using the option `what`. The same model will run with genotype as fixed. The option `useCheck` is not displayed in the table, but works the same as for SpATS (see section [**3.1**](#SpATS)).
+In the models above and below, fixed effects are indicated in *italics* whereas random effects are indicated in **bold**. `genotype` can be fitted as **random** or *fixed* effect using the option `what`. The option `useCheck` is not displayed in the table, but works the same as for SpATS (see section [**3.1**](#SpATS)).
 
 ```{r ASRemlNoSpat, eval=FALSE }
 ## Fit a model on few time points without spatial function.
@@ -431,7 +431,7 @@ phenoTParchOut <- removePointOutliers(phenoTParch,
 Using the `geno.decomp` option when modeling will have two main consequences in the model: the `geno.decomp` variable(s) will be added as main fixed effect(s) and also as interaction(s) with the genotype effect (and the extraFixedFactors and/or check, if any, with SpATS only). 
 The table below provides one example with three models:
 
-| option | engine | model fitted | spatial term |
+| OPTION | ENGINE | MODEL FITTED | SPATIAL TERM |
 |--------------------|--------|-----------------------------------------|------------|
 | geno.decomp = "treatment" | SpATS | $y$ = $\mu$ + *treatment* + **treatment:genotype** + **rowId** + **colId** + **$\epsilon$** |  PSANOVA |
 | geno.decomp = "treatment", useCheck = TRUE, extraFixedFactors = "covar1" | SpATS | $y$ = $\mu$ + *treatment* + *treatment:covar1* + *treatment:check* + **treatment:genoCheck** + **rowId** + **colId** + **$\epsilon$** |  PSANOVA |
