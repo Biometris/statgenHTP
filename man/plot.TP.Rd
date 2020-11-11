@@ -34,8 +34,9 @@ attribute of the TP object.}
 \item{title}{A character string used as title for the plot. If \code{NULL} a
 default title is added to the plot depending on \code{plotType}.}
 
-\item{traits}{A character vector indicating the traits to be plotted in
-a boxplot. Only used if \code{plotType} = "box" or "cor".}
+\item{traits}{A character vector indicating the traits to be plotted.
+If \code{plotType} = "layout" only a single trait may be plotted. For the
+other plotTypes, providing multiple traits will create multiple plots.}
 
 \item{output}{Should the plot be output to the current device? If
 \code{FALSE} only a list of ggplot objects is invisibly returned. Ignored if

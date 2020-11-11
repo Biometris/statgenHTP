@@ -367,8 +367,9 @@ summary.TP <- function(object,
 #' value has to be an exact match to one of the existing timePoints. When using
 #' a number it will be matched by its number ("timeNumber") in the timePoints
 #' attribute of the TP object.
-#' @param traits A character vector indicating the traits to be plotted in
-#' a boxplot. Only used if \code{plotType} = "box" or "cor".
+#' @param traits A character vector indicating the traits to be plotted.
+#' If \code{plotType} = "layout" only a single trait may be plotted. For the
+#' other plotTypes, providing multiple traits will create multiple plots.
 #' @param title A character string used as title for the plot. If \code{NULL} a
 #' default title is added to the plot depending on \code{plotType}.
 #' @param output Should the plot be output to the current device? If
@@ -451,6 +452,9 @@ plot.TP <- function(x,
     if (!is.null(highlight) && !is.character(highlight)) {
       stop("highlight should be a character vector.\n")
     }
+    if (!is.null(traits) && (!is.character(traits) || length(traits) > 1)) {
+      stop("traits should be NULL or a character string.\n")
+    }
     plotTitle <- title
     p <- setNames(vector(mode = "list", length = length(timePoints)),
                   timePoints)
@@ -459,6 +463,9 @@ plot.TP <- function(x,
         plotTitle <- paste(experimentName, "-", timePoint)
       }
       tpDat <- x[[timePoint]]
+      if (!is.null(traits) && !hasName(x = tpDat, name = traits)) {
+        stop("traits should be a column in TP.\n")
+      }
       if (!chkRowCol(tpDat)) next
       if (length(highlight) > 0) {
         tpDat$highlight. <- ifelse(tpDat$genotype %in% highlight,
@@ -495,6 +502,11 @@ plot.TP <- function(x,
           ggplot2::labs(fill = "Highlighted") +
           ## Remove NA from scale.
           ggplot2::scale_fill_discrete(na.translate = FALSE)
+      } else if (!is.null(traits)) {
+        pTp <- pTp + ggplot2::geom_tile(
+          ggplot2::aes_string(fill = traits), color = "grey75") +
+          ## Adjust plot colors.
+          ggplot2::scale_fill_gradientn(colors = topo.colors(100))
       } else {
         ## No hightlights so just a single fill color.
         pTp <- pTp + ggplot2::geom_tile(fill = "white", color = "grey75")
@@ -507,7 +519,7 @@ plot.TP <- function(x,
       if (plotRep) {
         ## Add lines for replicates.
         pTp <- pTp +
-          ## Add verical lines as segment.
+          ## Add vertical lines as segment.
           ## adding/subtracting 0.5 assures plotting at the borders of
           ## the tiles.
           ggplot2::geom_segment(ggplot2::aes_string(x = "x - 0.5",
