@@ -205,6 +205,16 @@ plot(phenoTP,
      showGeno = TRUE)
 ```
 
+It is possible to visualize the raw data of a given trait on the layout, as a heatmap. 
+```{r layoutPlotheatmap, fig.height=7, fig.width=8, fig.align = 'center'}
+## Plot the layout for the third time point.
+plot(phenoTP, 
+     plotType = "layout",
+     timePoints = 3,  
+     traits = "EffpsII")
+```
+
+
 Raw data can be displayed per genotype. By default all genotypes are used but it can be restricted using `genotypes` and a subset of genotypes. By default, data are plotted as points but this can be changed to lines by setting `plotLine = TRUE`.
 ```{r rawVator, include=TRUE, fig.height=3, fig.width=7, fig.align = 'center'}
 ## Create the raw data time courses for three genotypes.

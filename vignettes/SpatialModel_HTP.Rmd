@@ -426,6 +426,21 @@ phenoTParchOut <- removePointOutliers(phenoTParch,
                                       resuArchHTP)
 ```
 
+We can first check the number of time points containing data for a given trait:
+
+```{r checkTP2, echo=TRUE}
+countValid(phenoTParchOut, "LA_Estimated")
+```
+
+In this case, time point "2017-05-14" has only 488 observation, less than half of the total number of observation. It can biased the modelling at this time point and one may want to remove it before running the spatial analysis. 
+
+```{r rmTP2, echo=TRUE}
+# getTimePoints(phenoTParchOut)
+phenoTParchOut <- removeTimePoints(phenoTParchOut,
+                                    timePoints = 32)
+```
+
+
 ## Modeling
 
 Using the `geno.decomp` option when modeling will have two main consequences in the model: the `geno.decomp` variable(s) will be added as main fixed effect(s) and also as interaction(s) with the genotype effect (and the extraFixedFactors and/or check, if any, with SpATS only). 

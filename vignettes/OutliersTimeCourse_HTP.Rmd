@@ -151,6 +151,16 @@ The figure above contains:
 -   (bottom left) A correlation matrix of the plant scores as a heatmap. The scale is centered on 0.9 to see at a glance the outlying plants with low correlations (usually correlation are high between plants).\
 -   (bottom right) A PCA plot of the plant scores. Usually, all plants are grouped and the first axis explained most of the variation. When a plant is outlying, it will be located apart from the other plants on the second axis.
 
+When numerical time was sued to fit the splines, it can be used also to plot the outliers using the same options `useTimeNumber = TRUE` and providing the column name in `timeNumber`.
+
+```{r plotOutVatorNum,  echo=TRUE, eval=FALSE}
+plot(outVator, 
+     genotypes = "G151",  
+     useTimeNumber = TRUE, 
+     timeNumber = "timeNumHour")
+```
+
+
 Finally, the outlying plants can be removed from the dataset...
 
 ```{r rmOutVator}
