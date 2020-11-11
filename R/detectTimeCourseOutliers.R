@@ -298,6 +298,10 @@ detectTimeCourseOutliers <- function(corrDat,
 #' @inheritParams plot.TP
 #'
 #' @param x An object of class timeCourseOutliers.
+#' @param useTimeNumber Should the timeNumber be used instead of the timePoint
+#' in the x-axis labels?
+#' @param timeNumber If \code{useTimeNumber = TRUE}, a character vector
+#' indicating the column containing the numerical time to use.
 #'
 #' @examples
 #' ## The data from the Phenovator platform have been corrected for spatial
@@ -333,8 +337,14 @@ detectTimeCourseOutliers <- function(corrDat,
 plot.timeCourseOutliers <- function(x,
                                     ...,
                                     genotypes = NULL,
+                                    useTimeNumber = FALSE,
+                                    timeNumber = NULL,
                                     title = NULL,
                                     output = TRUE) {
+  if (useTimeNumber && (is.null(timeNumber) || !is.character(timeNumber) ||
+                        length(timeNumber) > 1)) {
+    stop("timeNumber should be a character string of length 1.\n")
+  }
   thrCor <- attr(x = x, which = "thrCor")
   thrPca <- attr(x = x, which = "thrPca")
   trait <- attr(x = x, which = "trait")
@@ -361,8 +371,10 @@ plot.timeCourseOutliers <- function(x,
   ## Compute the number of breaks for the time scale based on all plants.
   ## If there are less than 3 time points use the number of time points.
   ## Otherwise use 3.
-  useTimePoint <- hasName(x = genoPreds[[1]], name = "timePoint")
+  useTimePoint <- hasName(x = genoPreds[[1]], name = "timePoint") &&
+    !useTimeNumber
   timeVar <- if (useTimePoint) "timePoint" else "timeNumber"
+  timeVar2 <- if (useTimeNumber) timeNumber else timeVar
   ## Create plots.
   if (!output) {
     ## When calling arrangeGrob a blank page is opened if no plotting
@@ -381,12 +393,13 @@ plot.timeCourseOutliers <- function(x,
     plotShapes[names(plotShapes) %in% x[["plotId"]]] <- 19
     ## Plot of time course per genotype: corrected data + spline per plant.
     kinetic <- ggplot2::ggplot(genoDats[[genotype]],
-                               ggplot2::aes_string(x = timeVar, y = trait,
+                               ggplot2::aes_string(x = timeVar2, y = trait,
                                                    color = "plotId")) +
       ggplot2::geom_point(ggplot2::aes_string(shape = "plotId"), size = 2,
                           na.rm = TRUE) +
       ggplot2::geom_line(data = genoPreds[[genotype]],
-                         ggplot2::aes_string(y = "pred.value"), size = 0.5) +
+                         ggplot2::aes_string(x = timeVar,
+                                             y = "pred.value"), size = 0.5) +
       ggplot2::scale_shape_manual(values = plotShapes) +
       ggplot2::theme_light() +
       ggplot2::theme(axis.text = ggplot2::element_text(size = 12),

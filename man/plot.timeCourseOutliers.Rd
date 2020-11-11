@@ -4,7 +4,15 @@
 \alias{plot.timeCourseOutliers}
 \title{plot.timeCourseOutliers}
 \usage{
-\method{plot}{timeCourseOutliers}(x, ..., genotypes = NULL, title = NULL, output = TRUE)
+\method{plot}{timeCourseOutliers}(
+  x,
+  ...,
+  genotypes = NULL,
+  useTimeNumber = FALSE,
+  timeNumber = NULL,
+  title = NULL,
+  output = TRUE
+)
 }
 \arguments{
 \item{x}{An object of class timeCourseOutliers.}
@@ -15,6 +23,12 @@ section.}
 \item{genotypes}{A character vector indicating the genotypes for which to
 detect outliers. If \code{NULL}, outlier detection will be done for all
 genotypes.}
+
+\item{useTimeNumber}{Should the timeNumber be used instead of the timePoint
+in the x-axis labels?}
+
+\item{timeNumber}{If \code{useTimeNumber = TRUE}, a character vector
+indicating the column containing the numerical time to use.}
 
 \item{title}{A character string used as title for the plot. If \code{NULL} a
 default title is added to the plot depending on \code{plotType}.}
