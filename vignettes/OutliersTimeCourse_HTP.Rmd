@@ -26,7 +26,7 @@ library(statgenHTP)
 
 It consists in detecting outliers in a set of time courses resulting from the observation of one single trait. The detection procedure is applied to each trait individually without considering other traits, meaning that distinct outlier datasets are associated with each considered trait.
 
-The final step consists in extracting interesting parameterd from the modelled time course, for example a maximum rate of growth, or a minimum value in a specific period. These parameters could then be further analysed, for example a GxE analysis (see [*statgenGxE*](https://cran.r-project.org/web/packages/statgenSTA/index.html)), or a genetic analysis (see [*statgenGWAS*](https://cran.r-project.org/web/packages/statgenGWAS/index.html)).
+*blablabla plant outlier function?*
 
 ## A nonparametric smoothing associated with a PCA
 
@@ -324,53 +324,10 @@ head(noCorrRoot[noCorrRoot$plotId=="A_53_4","tipPos_y"])
 head(noCorrRootOut[noCorrRootOut$plotId=="A_53_4","tipPos_y"])
 ```
 
-# Extraction parameters from curve
+------------------------------------------------------------------------
 
-After all the steps of cleaning and modeling... blablabla extract parameters from the curve that are relevant for biology. Some examples are provided below for the Phenovator data set (example 1).
+# Detection of whole plant outliers: an example with maize data set
 
-## Example 1
-
-We will use the `fit.splineNumOut` previously created which contains the p-spline prediction without the time course outliers. We could estimate the maximum value of the trait at the beginning of the time course:
-
-```{r paramVator, fig.height=3, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
-subGenoVator <- c("G70","G160","G151","G179","G175","G4","G55")
-paramVator1 <-
-  estimateSplineParameters(HTPSpline = fit.splineNumOut,
-                           estimate = "predictions",
-                           what = "max",
-                           timeMin = 330,
-                           timeMax = 432,
-                           genotypes = subGenoVator)
-#
-library(ggplot2)
-ggplot(paramVator1, aes(x = genotype, y = x)) + 
-  geom_boxplot(na.rm = TRUE) +
-  theme_minimal()
-```
-
-For this subset of genotypes, there is a variability in the maximum values of the psII efficiency after the light treatment. This could be used in genetic analysis and maybe to perform a GWAS.
-
-Another example is using the derivative during the recovery period to get the maximum slope, or the maximum rate of the psII per time unit during this period.
-
-<center>
-
-![P-spline](figures/psplinederiv.png){width="80%"}
-
-</center>
-
-```{r paramVator2, fig.height=3, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
-paramVator2 <-
-  estimateSplineParameters(HTPSpline = fit.splineNumOut,
-                           estimate = "derivatives",
-                           what = "max",
-                           timeMin = 210,
-                           timeMax = 312,
-                           genotypes = subGenoVator)
-#
-ggplot(paramVator2, aes(x = genotype, y = x)) + 
-  geom_boxplot(na.rm = TRUE) +
-  theme_minimal()
-```
 
 ------------------------------------------------------------------------
 
