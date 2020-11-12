@@ -50,7 +50,7 @@
 #'                             checkGenotypes = c("check1", "check2",
 #'                                                "check3", "check4"))
 #'
-#' ## First select a subset of plants, for example here 10 plants
+#' ## First select a subset of plants, for example here 9 plants
 #' plantSel <- phenoTP[[1]]$plotId[1:9]
 #' # Then run on the subset
 #' resuVatorHTP <- detectPointOutliers(TP = phenoTP,
@@ -67,26 +67,43 @@ detectPointOutliers <- function(TP,
                                 plotIds = NULL,
                                 confIntSize = 5,
                                 mylocfit = 0.5) {
+  ## Checks.
+  if (!inherits(TP, "TP")) {
+    stop("TP should be an object of class TP.\n")
+  }
   TPTot <- do.call(rbind, TP)
+  if (!is.character(trait) || length(trait) > 1) {
+    stop("trait should be a character string of length 1.\n")
+  }
+  if (!hasName(x = TPTot, name = trait)) {
+    stop("TP should contain a column ", trait, ".\n")
+  }
   if (!is.null(plotIds)) {
     if (!all(plotIds %in% TPTot[["plotId"]])) {
       stop("All plotIds should be in TP.\n")
     }
+    ## Restrict TPTot to selected plotIds
     TPTot <- TPTot[TPTot[["plotId"]] %in% plotIds, ]
   }
+  ## Remove missing values for trait.
   TPTotRest <- na.omit(TPTot[c("plotId", "timePoint", trait)])
+  ## Split data into a list of data.frames per plot.
   TPPlot <- split(x = TPTotRest, f = TPTotRest[["plotId"]], drop = TRUE)
+  ## Compute outliers per plot.
   plotPreds <- lapply(X = TPPlot, FUN = function(plotDat) {
+    ## Only makes sense for at least 6 time points.
     if (nrow(plotDat) <= 6) {
       warning("Not enough data points (<= 6) to fit a model for: ",
               plotDat[1, "plotId"], ".\n", call. = FALSE)
       return(NULL)
     }
+    ## Fit a model using locfit.
     y <- plotDat[[trait]]
     x <- plotDat[["timePoint"]]
     fitMod <- locfit::locfit(y ~ locfit::lp(x, nn = mylocfit, deg = 2))
-    ## Retrieving predictions for the x input interval.
+    ## Retrieve predictions for the x input interval.
     yPred <- predict(fitMod, newdata = x, se.fit = TRUE)
+    ## Compute upper and lower boundaries.
     lwr <- yPred$fit - confIntSize * yPred$se.fit
     upr <- yPred$fit + confIntSize * yPred$se.fit
     ## Add results to plotDat.
@@ -94,19 +111,23 @@ detectPointOutliers <- function(TP,
     plotDat[["sd_yPred"]] <- yPred$se.fit
     plotDat[["lwr"]] <- lwr
     plotDat[["upr"]] <- upr
+    ## All values outside the [lwr, upr] range are marked as outlier.
     plotDat[["outlier"]] <- ifelse(y < upr & y > lwr, 0, 1)
     return(plotDat)
   })
+  ## Bind everything together in a single data.frame.
   plotPred <- do.call(rbind, plotPreds)
+  ## Rownames are confusing and redundant.
   rownames(plotPred) <- NULL
+  ## Add class and trait as attribute.
   class(plotPred) <- c("pointOutliers", class(plotPred))
   attr(plotPred, which = "trait") <- trait
   return(plotPred)
 }
 
-#' plotDetectPointOutlierLocFit
+#' Plot point outliers
 #'
-#' graphical function to produce the modeled smoothing and detected outliers
+#' Graphical function to produce the modeled smoothing and detected outliers
 #' for each curve of a dataset using a local regression
 #'
 #' @inheritParams detectPointOutliers

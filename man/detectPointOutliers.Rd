@@ -63,7 +63,7 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             checkGenotypes = c("check1", "check2",
                                                "check3", "check4"))
 
-## First select a subset of plants, for example here 10 plants
+## First select a subset of plants, for example here 9 plants
 plantSel <- phenoTP[[1]]$plotId[1:9]
 # Then run on the subset
 resuVatorHTP <- detectPointOutliers(TP = phenoTP,

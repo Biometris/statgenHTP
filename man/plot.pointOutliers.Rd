@@ -2,7 +2,7 @@
 % Please edit documentation in R/detectPointOutliers.R
 \name{plot.pointOutliers}
 \alias{plot.pointOutliers}
-\title{plotDetectPointOutlierLocFit}
+\title{Plot point outliers}
 \usage{
 \method{plot}{pointOutliers}(x, ..., plotIds = NULL, outOnly = TRUE, output = TRUE)
 }
@@ -22,7 +22,7 @@ detected. If \code{NULL}, all plotId in TP are used.}
 \code{outFile} is specified.}
 }
 \description{
-graphical function to produce the modeled smoothing and detected outliers
+Graphical function to produce the modeled smoothing and detected outliers
 for each curve of a dataset using a local regression
 }
 \examples{
