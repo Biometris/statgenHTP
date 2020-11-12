@@ -4,15 +4,7 @@
 \alias{detectPointOutliers}
 \title{detectPointOutliers}
 \usage{
-detectPointOutliers(
-  TP,
-  trait,
-  plotIds = NULL,
-  confIntSize = 5,
-  mylocfit = 0.5,
-  useTimeNumber = FALSE,
-  timeNumber = NULL
-)
+detectPointOutliers(TP, trait, plotIds = NULL, confIntSize = 5, mylocfit = 0.5)
 }
 \arguments{
 \item{TP}{An object of class TP.}
@@ -26,11 +18,6 @@ detected. If \code{NULL}, all plotId in TP are used.}
 
 \item{mylocfit}{A numeric value defining the constant component of the
 smoothing parameter nn. (see the locfit())}
-
-\item{useTimeNumber}{Should the timeNumber be used instead of the timePoint?}
-
-\item{timeNumber}{If \code{useTimeNumber = TRUE}, a character vector
-indicating the column containing the numerical time to use.}
 }
 \value{
 An object of class pointOutliers, a data.frame with the following

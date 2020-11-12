@@ -20,9 +20,6 @@
 #' @param confIntSize A numeric value defining the confidence interval.
 #' @param mylocfit A numeric value defining the constant component of the
 #' smoothing parameter nn. (see the locfit())
-#' @param useTimeNumber Should the timeNumber be used instead of the timePoint?
-#' @param timeNumber If \code{useTimeNumber = TRUE}, a character vector
-#' indicating the column containing the numerical time to use.
 #'
 #' @return An object of class pointOutliers, a data.frame with the following
 #' columns.
@@ -69,9 +66,7 @@ detectPointOutliers <- function(TP,
                                 trait,
                                 plotIds = NULL,
                                 confIntSize = 5,
-                                mylocfit = 0.5,
-                                useTimeNumber = FALSE,
-                                timeNumber = NULL) {
+                                mylocfit = 0.5) {
   ## Checks.
   if (!inherits(TP, "TP")) {
     stop("TP should be an object of class TP.\n")
@@ -83,13 +78,6 @@ detectPointOutliers <- function(TP,
   if (!hasName(x = TPTot, name = trait)) {
     stop("TP should contain a column ", trait, ".\n")
   }
-  if (useTimeNumber && (is.null(timeNumber) || !is.character(timeNumber) ||
-                        length(timeNumber) > 1)) {
-    stop("timeNumber should be a character string of length 1.\n")
-  }
-  if (useTimeNumber && !hasName(x = TPTot, name = timeNumber)) {
-    stop("TP should contain a column ", timeNumber, ".\n")
-  }
   if (!is.null(plotIds)) {
     if (!all(plotIds %in% TPTot[["plotId"]])) {
       stop("All plotIds should be in TP.\n")
@@ -97,9 +85,8 @@ detectPointOutliers <- function(TP,
     ## Restrict TPTot to selected plotIds
     TPTot <- TPTot[TPTot[["plotId"]] %in% plotIds, ]
   }
-  timeVar <- if (useTimeNumber) timeNumber else "timePoint"
   ## Remove missing values for trait.
-  TPTotRest <- na.omit(TPTot[c("plotId", timeVar, trait)])
+  TPTotRest <- na.omit(TPTot[c("plotId", "timePoint", trait)])
   ## Split data into a list of data.frames per plot.
   TPPlot <- split(x = TPTotRest, f = TPTotRest[["plotId"]], drop = TRUE)
   ## Compute outliers per plot.
@@ -112,7 +99,7 @@ detectPointOutliers <- function(TP,
     }
     ## Fit a model using locfit.
     y <- plotDat[[trait]]
-    x <- plotDat[[timeVar]]
+    x <- plotDat[["timePoint"]]
     fitMod <- locfit::locfit(y ~ locfit::lp(x, nn = mylocfit, deg = 2))
     ## Retrieve predictions for the x input interval.
     yPred <- predict(fitMod, newdata = x, se.fit = TRUE)
@@ -132,10 +119,9 @@ detectPointOutliers <- function(TP,
   plotPred <- do.call(rbind, plotPreds)
   ## Rownames are confusing and redundant.
   rownames(plotPred) <- NULL
-  ## Add class and add trait and timeVar as attribute.
+  ## Add class and trait as attribute.
   class(plotPred) <- c("pointOutliers", class(plotPred))
   attr(plotPred, which = "trait") <- trait
-  attr(plotPred, which = "timeVar") <- timeVar
   return(plotPred)
 }
 
@@ -189,7 +175,7 @@ plot.pointOutliers <- function(x,
   plotDat <- x
   if (!is.null(plotIds)) {
     if (!all(plotIds %in% plotDat[["plotId"]])) {
-      stop("All plotIds should be in x.\n")
+      stop("All plotIds should be in x\n")
     }
     plotDat <- plotDat[plotDat[["plotId"]] %in% plotIds, ]
   }
@@ -203,9 +189,12 @@ plot.pointOutliers <- function(x,
   }
   plotDat <- droplevels(plotDat)
   trait <- attr(x = x, which = "trait")
-  timeVar <- attr(x = x, which = "timeVar")
+  ## Compute the number of breaks for the time scale.
+  ## If there are less than 3 time points use the number of time points.
+  ## Otherwise use 3.
+  nBr <- min(length(unique(plotDat[["timePoint"]])), 3)
   p <- ggplot2::ggplot(plotDat,
-                       ggplot2::aes_string(x = timeVar, y = trait)) +
+                       ggplot2::aes_string(x = "timePoint", y = trait)) +
     ggplot2::geom_point(na.rm = TRUE)  +
     ggplot2::geom_line(mapping = ggplot2::aes_string(y = "lwr"),
                        col = "green", size = .8) +
@@ -214,12 +203,10 @@ plot.pointOutliers <- function(x,
     ggplot2::geom_line(mapping = ggplot2::aes_string(y = "yPred"),
                        col = "red", size = .8) +
     ggplot2::geom_point(data = outliers, col = "blue", size = 2) +
-    ggplot2::theme(legend.position = "none")
-  if (timeVar == "timePoint") {
+    ggplot2::theme(legend.position = "none") +
     ## Format the time scale to Month + day.
-    p <- p + ggplot2::scale_x_datetime(breaks = prettier(n = 3),
+    ggplot2::scale_x_datetime(breaks = prettier(n = nBr),
                               labels = scales::date_format("%B %d"))
-  }
   ## Calculate the total number of plots.
   nPlots <- length(unique(plotDat[["plotId"]]))
   ## 25 Plots per page.
