@@ -75,7 +75,7 @@ pred.Dat <- fit.spline$predDat
 coef.Dat <- fit.spline$coefDat
 ```
 
-The object `fit.spline` contains the predicted value (`pred.value` in the table below), i.e the values predicted using the P-spline model coefficients. Conversion to numerical time is required by the mgcv package. In order to keep the same time scale as in the original `timePoint` column, a simple numerical transformation of the time points is made (column `timeNumber`). Predictions are made on a denser grid of time points: the time points for prediction are calculated as the smallest gap between two time points divided by 9, so dividing the smallest gap in 10 segments. The object `fit.spline` also contains the first derivatives (`deriv` **see part XXX about Parameters estimation**).
+The object `fit.spline` contains the predicted value (`pred.value` in the table below), i.e the values predicted using the P-spline model coefficients. Conversion to numerical time is required by the mgcv package. In order to keep the same time scale as in the original `timePoint` column, a simple numerical transformation of the time points is made (column `timeNumber`). Predictions are made on a denser grid of time points: the time points for prediction are calculated as the smallest gap between two time points divided by 9, so dividing the smallest gap in 10 segments. The object `fit.spline` also contains the first derivatives (`deriv` **statgenHTP tutorial: 5. Estimation of parameters from time courses**).
 
 ```{r headpredDat, echo=FALSE, message=FALSE, eval=TRUE}
 knitr::kable(head(pred.Dat), align=c('c','c'), booktabs = TRUE)
@@ -326,8 +326,58 @@ head(noCorrRootOut[noCorrRootOut$plotId=="A_53_4","tipPos_y"])
 
 ------------------------------------------------------------------------
 
-# Detection of whole plant outliers: an example with maize data set
+# Detection of outlier plants on a multi-criteria basis, with expert rules
 
+An outlier plant is defined as a biological replicate deviating from the overall distribution of plants on a multi-criteria basis, regardless of the quality of measurements. Detecting outlier plants can be done by monitoring a single criterion, such as plant height or biomass. In this case, a procedure for detecting outlier time courses should be used, as discussed in the previous section. But taking into account only one criterion can sometimes be limiting in deciding whether a plant is outlier or not. A multi-criteria approach will then be more relevant. A multi-criteria method consider several traits jointly, with rules set by experts depending on the species. We describe below the approach followed on a maize experiment, see [@AlvarezPrado2019].
+
+## Rules in the case of maize
+
+We consider two categories of potentially outlier plants, namely apparently __too small__ or __too large__ plants.
+For the detection of unexpectedly small plants with likely physiological disorders, the progression of leaf stages was considered in addition to the time course of shoot biomass. Indeed, leaf appearance rate carries a non-redundant information compared with biomass (confirmed by standard correlation calculations). It usually presents a low plant-to-plant variability excepted in case of severe disorders, and is relatively insensitive to environmental cues other than temperature.  For the detection of unexpectedly large plants, potentially associated with wrong genotype identification, combining plant height and biomass can result in an efficient identification.
+
+## Statistical modelling: a mixed model at a given time (defined by the expert)
+
+Each of the selected traits was measured (or estimated) at a specific time (for example 24 d20°C for the Phenoarch dataset), time just before the beginning of the differentiation of the two watering treatments. This allows to have more replicates by genotype. It also reduces the dimensionality of the time courses to only one point, which will simplify the statistical models to be implemented later.
+
+
+<center>
+
+![P-spline](figures/multi_trait_approach.png){width="90%"}
+Schematic representation of a multi-trait approach for detection of outlier plants (case of maize), from @AlvarezPrado2019.
+
+</center>
+
+As shown above, traits are modelled with a mixed model that considers fixed experiment (Env) effect and random genotypic (G), replicate (R) and spatial (C) effects. The model can be fitted with the SpATS R-package, (@RodAlv2018). Residuals (deviations) can be directly computed from the fitting, with a confidence interval. Plants, whose deviations for the criteria of leaf appearance rate and biomass are less than the lower bound of this interval, are considered as __outlier small plants__. Plants, whose deviations for the criteria of plant height and biomass are greater than the upper bound of the confidence interval, are considered as __outlier large plants__.
+
+## Implementation in R
+
+Mixed models are fitted with the R-package SpATS through the use of the `detectPointOutliersMaize` function, which was developed specifically for the maize data, as described above. This function fits a mixed model for each parameter, and tests whether the residual deviations are lower (for the criteria considered for small plants) or slower (for the criteria considered for big plants) than a specified threshold. 
+
+```{r maizPl}
+phenoTParch <- createTimePoints(dat = PhenoarchDat1,
+                                experimentName = "Phenoarch",
+                                genotype = "geno",
+                                timePoint = "Time",
+                                plotId = "pos",
+                                rowNum = "Row",
+                                colNum = "Col")
+
+test2 <- detectPointOutliersMaize(phenoTParch, 
+                                  timeBeforeTrt = "2017-04-27",
+                                  trait1 = "Biomass_Estimated",
+                                  trait2 = "Height_Estimated",
+                                  trait3 = "phyllocron")
+```
+
+The `detectPointOutliersMaize` returns a list of 3 elements : 
+
+* modDat: a data frame with the used data set, the fitted values and residuals calculated by the models, the plants flagged as outlier
+* smallPlants: a data.frame of the "small" plants detected as outliers
+* bigPlants: a data.frame of the "big" plants detected as outliers
+
+```{r headsmallPl, echo=FALSE, message=FALSE, eval=TRUE}
+knitr::kable(test2$smallPlants[1:6,1:5], align=c('c','c'), booktabs = TRUE)
+```
 
 ------------------------------------------------------------------------
 
