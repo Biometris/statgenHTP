@@ -37,7 +37,7 @@ The overall structure of the package is in 5 main parts:
 2. Outliers detection: time points -  *statgenHTP tutorial: 2. Outlier detection Time points*  
 3. Correction for spatial trends - *statgenHTP tutorial: 3. Correction for spatial trends*   
 4. Outliers detection: time course - *statgenHTP tutorial: 4. Outlier detection Time course*  
-5. Parameter extraction - *statgenHTP tutorial: 5. Parameters extraction*  
+5. Parameter extraction - *statgenHTP tutorial: 5. Estimation of parameters from time courses*  
 
 This document describes in detail the three data sets used to example the functions. It also contains description on how to prepare the data for analysis and how to visualize them.
 

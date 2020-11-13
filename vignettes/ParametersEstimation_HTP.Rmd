@@ -1,6 +1,6 @@
 ---
 title: "statgenHTP tutorial: 5. Estimation of parameters from time courses"
-author: "Emilie Millet, Bart-Jan van Rossum"
+author: "Emilie Millet, Bart-Jan van Rossum, Martin Boer"
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:
@@ -25,7 +25,25 @@ library(ggplot2)
 
 # Introduction
 
-This document presents the final step of the HTP data analysis: extracting interesting parameters from the modelled time course, for example a maximum rate of growth, or a minimum value in a specific period. These parameters could then be further analysed, for example a GxE analysis (see [*statgenGxE*](https://cran.r-project.org/web/packages/statgenSTA/index.html)), or a genetic analysis (see [*statgenGWAS*](https://cran.r-project.org/web/packages/statgenGWAS/index.html)).
+This document presents the final step of the HTP data analysis: extracting interesting parameters from the modelled time course. For example, in the second dataset from the PhenoArch platform, the maximum leaf area (from the p-splines) or the maximum leaf growth rate (from the first derivatives) are relevant parameters (see figure below). We could assess their variability in the genotypes and the difference between treatment, *e.g.* has the water scenario decreased the maximum leaf area?  
+
+<center>
+
+![P-spline](figures/psplinederiv_Arch.png){width="80%"}
+
+</center>
+
+It is also possible to specify a period for the parameter estimation. For example, in the first dataset from the Phenovator platform, we can select the period with the high light intensity (see figure below) and estimate the maximum slope during that period (from the first derivatives). This could be interpete as a recovery rate of the photosystem II efficiency. 
+
+<center>
+
+![P-spline](figures/psplinederiv_Vator.png){width="80%"}
+
+</center>
+
+
+These parameters could then be further analysed, for example a GxE analysis (see [*statgenGxE*](https://cran.r-project.org/web/packages/statgenSTA/index.html)), or a genetic analysis (see [*statgenGWAS*](https://cran.r-project.org/web/packages/statgenGWAS/index.html)).
+
 
 The following functions can be applied to corrected data (see **statgenHTP tutorial: 3. Correction for spatial trends**), genotypic means (BLUEs or BLUPS) (see **statgenHTP tutorial: 3. Correction for spatial trends**) or on raw data.
 
@@ -34,37 +52,6 @@ The following functions can be applied to corrected data (see **statgenHTP tutor
 # Extraction parameters from curve
 
 After all the steps of cleaning and modeling... blablabla extract parameters from the curve that are relevant for biology. Some examples are provided below for the Phenovator data set (example 1).
-
-## Example 2
-
-```{r fitSplineArch, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
-data(spatCorrArch)  
-spatCorrArch$timePoint <- lubridate::as_datetime(spatCorrArch$timePoint)
-subGenoArch <- c("GenoA36","GenoA26","GenoA1","GenoA2","GenoA3","GenoA4",
-                 "GenoB1","GenoB2","GenoB3","GenoA48","GenoA52")
-#
-fit.splineArch <- fitSpline(corrDat = spatCorrArch, 
-                            trait = "LA_Estimated_corr",
-                            genotypes = subGenoArch,
-                            knots = 15,
-                            perMinTP = 0.5)
-#
-# plot(fit.splineArch)
-```
-
-
-```{r paramArch1, fig.height=3, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
-paramArch1 <-
-  estimateSplineParameters(HTPSpline = fit.splineArch,
-                           estimate = "predictions",
-                           what = "max",
-                           genotypes = subGenoArch)
-#
-ggplot(paramArch1, aes(x = genotype, y = x)) + 
-  geom_boxplot(na.rm = TRUE) +
-  theme_minimal()
-```
-
 
 ## Example 1
 
@@ -82,18 +69,12 @@ paramVator1 <-
 #
 ggplot(paramVator1, aes(x = genotype, y = x)) + 
   geom_boxplot(na.rm = TRUE) +
-  theme_minimal()
+  theme_classic()
 ```
 
 For this subset of genotypes, there is a variability in the maximum values of the psII efficiency after the light treatment. This could be used in genetic analysis and maybe to perform a GWAS.
 
 Another example is using the derivative during the recovery period to get the maximum slope, or the maximum rate of the psII per time unit during this period.
-
-<center>
-
-![P-spline](figures/psplinederiv.png){width="80%"}
-
-</center>
 
 ```{r paramVator2, fig.height=3, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=FALSE}
 paramVator2 <-
@@ -108,6 +89,50 @@ ggplot(paramVator2, aes(x = genotype, y = x)) +
   geom_boxplot(na.rm = TRUE) +
   theme_minimal()
 ```
+
+## Example 2
+
+```{r fitSplineArch, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+data(spatCorrArch)  
+spatCorrArch$timePoint <- lubridate::as_datetime(spatCorrArch$timePoint)
+subGenoArch <- c("GenoA36","GenoA26","GenoA1","GenoA2","GenoA3","GenoA4",
+                 "GenoB1","GenoB2","GenoB3","GenoA48","GenoA52")
+#
+fit.splineArch <- fitSpline(corrDat = spatCorrArch, 
+                            trait = "LA_Estimated_corr",
+                            genotypes = subGenoArch,
+                            knots = 15,
+                            perMinTP = 0.5)
+#
+data(spatPredArch)  
+spatPredArch$timePoint <- lubridate::as_datetime(spatPredArch$timePoint)
+#
+fit.splineGenoArch <- fitSpline(corrDat = spatPredArch, 
+                                trait = "predicted.values",
+                                genotypes = subGenoArch,
+                                knots = 15,
+                                perMinTP = 0.5)
+# plot(fit.splineGenoArch)
+```
+
+
+```{r paramArch1, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+paramArch1 <-
+  estimateSplineParameters(HTPSpline = fit.splineArch,
+                           estimate = "predictions",
+                           what = "max",
+                           genotypes = subGenoArch)
+```
+
+
+```{r paramArch1fig, fig.height=3, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+ggplot(paramArch1, aes(x = genotype, y = x)) + 
+  geom_boxplot(na.rm = TRUE) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90))
+```
+
+
 
 ------------------------------------------------------------------------
 
