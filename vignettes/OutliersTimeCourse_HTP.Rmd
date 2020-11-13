@@ -65,7 +65,7 @@ spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
 # Run the function to fit p-spline using the mgcv package on a subset of genotypes
 subGenoVator <- c("G70","G160","G151","G179","G175","G4","G55")
 #
-fit.spline <- fitSpline(corrDat = spatCorrVator,
+fit.spline <- fitSpline(inDat = spatCorrVator,
                         trait = "EffpsII_corr",
                         genotypes = subGenoVator,
                         knots = 50,
@@ -84,7 +84,7 @@ knitr::kable(head(pred.Dat), align=c('c','c'), booktabs = TRUE)
 The numerical time can be provided by the user, for example when using thermal time or a manual conversion. In this example, we provide a new column with time in hour since first measurement.
 
 ```{r fitSplineVatorNum, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
-fit.splineNum <- fitSpline(corrDat = spatCorrVator,
+fit.splineNum <- fitSpline(inDat = spatCorrVator,
                            trait = "EffpsII_corr",
                            genotypes = subGenoVator,
                            knots = 50,
@@ -190,7 +190,7 @@ For one plant of the example 1, we fit the p-spline with 10 or 50 knots and visu
 *With 10 knots:*
 
 ```{r fitSplineVatorKnots10, fig.height=3, fig.width=4, echo=TRUE, warning=FALSE, eval=TRUE}
-sp10k <- fitSpline(corrDat = spatCorrVator,
+sp10k <- fitSpline(inDat = spatCorrVator,
                         trait = "EffpsII_corr",
                         plotIds = "c10r29",
                         knots = 10,
@@ -203,7 +203,7 @@ The predicted curve is very smooth and, in this case, it is not following precis
 *With 50 knots:*
 
 ```{r fitSplineVatorKnots50, fig.height=3, fig.width=4, echo=TRUE, warning=FALSE, eval=TRUE}
-sp50k <- fitSpline(corrDat = spatCorrVator,
+sp50k <- fitSpline(inDat = spatCorrVator,
                         trait = "EffpsII_corr",
                         plotIds = "c10r29",
                         knots = 50,
@@ -222,7 +222,7 @@ data(spatCorrArch)
 spatCorrArch$timePoint <- lubridate::as_datetime(spatCorrArch$timePoint)
 subGenoArch <- c("GenoA1","GenoA2","GenoA3","GenoA4","GenoB1","GenoB2","GenoB3")
 #
-fit.splineArch <- fitSpline(corrDat = spatCorrArch, 
+fit.splineArch <- fitSpline(inDat = spatCorrArch, 
                             trait = "LA_Estimated_corr",
                             genotypes = subGenoArch,
                             knots = 15,
@@ -281,7 +281,7 @@ The data from the RootPhAir platform have not been corrected for spatial trends 
 ```{r fitSplineRoot, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 noCorrRoot$timePoint <- lubridate::as_datetime(noCorrRoot$timePoint)
 subGenoRoot <- c( "2","6","8","9","10","520","522")
-fit.splineRoot <- fitSpline(corrDat = noCorrRoot,
+fit.splineRoot <- fitSpline(inDat = noCorrRoot,
                             trait = "tipPos_y",
                             knots = 10,
                             genotypes = subGenoRoot,

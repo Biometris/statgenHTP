@@ -98,7 +98,7 @@ spatCorrArch$timePoint <- lubridate::as_datetime(spatCorrArch$timePoint)
 subGenoArch <- c("GenoA36","GenoA26","GenoA1","GenoA2","GenoA3","GenoA4",
                  "GenoB1","GenoB2","GenoB3","GenoA48","GenoA52")
 #
-fit.splineArch <- fitSpline(corrDat = spatCorrArch, 
+fit.splineArch <- fitSpline(inDat = spatCorrArch, 
                             trait = "LA_Estimated_corr",
                             genotypes = subGenoArch,
                             knots = 15,
@@ -107,7 +107,7 @@ fit.splineArch <- fitSpline(corrDat = spatCorrArch,
 data(spatPredArch)  
 spatPredArch$timePoint <- lubridate::as_datetime(spatPredArch$timePoint)
 #
-fit.splineGenoArch <- fitSpline(corrDat = spatPredArch, 
+fit.splineGenoArch <- fitSpline(inDat = spatPredArch, 
                                 trait = "predicted.values",
                                 genotypes = subGenoArch,
                                 knots = 15,

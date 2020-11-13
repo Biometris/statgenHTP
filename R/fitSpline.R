@@ -2,7 +2,7 @@
 #'
 #' Function for fitting splines.
 #'
-#' @param corrDat A data.frame with corrected spatial data.
+#' @param inDat A data.frame with corrected spatial data.
 #' @param trait A character string indicating the trait for which the spline
 #' should be fitted.
 #' @param genotypes A character vector indicating the genotypes for which
@@ -22,7 +22,7 @@
 #' # Run the function to fit p-spline using the mgcv package on a subset of
 #' # genotypes
 #' subGeno <- c("G70","G160","G151","G179","G175","G4","G55")
-#' fit.spline <- fitSpline(corrDat = spatCorrVator,
+#' fit.spline <- fitSpline(inDat = spatCorrVator,
 #'                         trait = "EffpsII_corr",
 #'                         genotypes = subGeno,
 #'                         knots = 50,
@@ -41,7 +41,7 @@
 #' @family Fit splines
 #'
 #' @export
-fitSpline <- function(corrDat,
+fitSpline <- function(inDat,
                       trait,
                       genotypes = NULL,
                       plotIds = NULL,
@@ -53,29 +53,29 @@ fitSpline <- function(corrDat,
   if (!is.character(trait) || length(trait) > 1) {
     stop("trait should be a character string of length 1.\n")
   }
-  if (!inherits(corrDat, "data.frame")) {
-    stop("corrDat should be a data.frame.\n")
+  if (!inherits(inDat, "data.frame")) {
+    stop("inDat should be a data.frame.\n")
   }
   if (useTimeNumber && (is.null(timeNumber) || !is.character(timeNumber) ||
                         length(timeNumber) > 1)) {
     stop("timeNumber should be a character string of length 1.\n")
   }
-  fitLevel <- if (hasName(x = corrDat, name = "plotId")) "plotId" else
+  fitLevel <- if (hasName(x = inDat, name = "plotId")) "plotId" else
     "genotype"
   corrCols <- c("genotype", trait, if (fitLevel == "plotId") "plotId",
                 if (useTimeNumber) timeNumber else "timePoint")
-  if (!all(hasName(x = corrDat, name = corrCols))) {
-    stop("corrDat should at least contain the following columns: ",
+  if (!all(hasName(x = inDat, name = corrCols))) {
+    stop("inDat should at least contain the following columns: ",
          paste(corrCols, collapse = ", "))
   }
   if (!is.null(genotypes) &&
       (!is.character(genotypes) &&
-       !all(genotypes %in% corrDat[["genotype"]]))) {
-    stop("genotypes should be a character vector of genotypes in corrDat.\n")
+       !all(genotypes %in% inDat[["genotype"]]))) {
+    stop("genotypes should be a character vector of genotypes in inDat.\n")
   }
   if (!is.null(plotIds) &&
-      (!is.character(plotIds) && !all(plotIds %in% corrDat[["genotype"]]))) {
-    stop("plotIds should be a character vector of plotIds in corrDat.\n")
+      (!is.character(plotIds) && !all(plotIds %in% inDat[["genotype"]]))) {
+    stop("plotIds should be a character vector of plotIds in inDat.\n")
   }
   if (!is.numeric(knots) || length(knots) > 1 || knots < 0) {
     stop("knots should be a positive numerical value.\n")
@@ -85,37 +85,37 @@ fitSpline <- function(corrDat,
     stop("perMinTP should be a numerical value between 0 and 1.\n")
   }
   if (!useTimeNumber) {
-    corrDat[["timeNumber"]] <- as.numeric(corrDat[["timePoint"]])
+    inDat[["timeNumber"]] <- as.numeric(inDat[["timePoint"]])
   } else {
-    if (!is.numeric(corrDat[[timeNumber]])) {
+    if (!is.numeric(inDat[[timeNumber]])) {
       stop("timeNumber should be a numerical column.\n")
     }
-    corrDat[["timeNumber"]] <- corrDat[[timeNumber]]
+    inDat[["timeNumber"]] <- inDat[[timeNumber]]
   }
-  ## Restrict corrDat to selected genotypes and plotIds.
+  ## Restrict inDat to selected genotypes and plotIds.
   if (!is.null(genotypes)) {
-    corrDat <- corrDat[corrDat[["genotype"]] %in% genotypes, ]
+    inDat <- inDat[inDat[["genotype"]] %in% genotypes, ]
   }
   if (!is.null(plotIds)) {
-    corrDat <- corrDat[corrDat[["plotId"]] %in% plotIds, ]
+    inDat <- inDat[inDat[["plotId"]] %in% plotIds, ]
   }
-  if (nrow(corrDat) == 0) {
+  if (nrow(inDat) == 0) {
     stop("At least one valid combination of genotype and plotId should be ",
          "selected.\n")
   }
   if (fitLevel == "genotype") {
     ## If fitting at a genotype level set plotId to genotype.
     ## This way all further code can remain intact.
-    corrDat[["plotId"]] <- corrDat[["genotype"]]
+    inDat[["plotId"]] <- inDat[["genotype"]]
   }
-  corrDat <- droplevels(corrDat)
+  inDat <- droplevels(inDat)
   ## Create data.frame with plants and genotypes for adding genotype to results.
-  plantGeno <- unique(corrDat[c("plotId", "genotype")])
+  plantGeno <- unique(inDat[c("plotId", "genotype")])
   ## Determine minimum number of time points required.
-  minTP <- perMinTP * length(unique(corrDat[["timeNumber"]]))
+  minTP <- perMinTP * length(unique(inDat[["timeNumber"]]))
   ## Get number of non NA observations per plot for determining minimum
   ## number of knots.
-  plotObs <- aggregate(x = corrDat[[trait]], by = list(corrDat[["plotId"]]),
+  plotObs <- aggregate(x = inDat[[trait]], by = list(inDat[["plotId"]]),
                        FUN = function(plant) {
                          sum(!is.na(plant))
                        })
@@ -132,18 +132,18 @@ fitSpline <- function(corrDat,
                               knots, ")"))
   ## Compute step size for prediction grid.
   ## Use smallest time gap between two points and divide that in 10 segments.
-  minStep <- min(diff(sort(unique(corrDat[["timeNumber"]]))))
+  minStep <- min(diff(sort(unique(inDat[["timeNumber"]]))))
   timeNumStep <- minStep / 9
   ## Create time range for prediction.
   ## Get range for time number and time point from data.
-  timeNumRange <- range(corrDat[["timeNumber"]])
+  timeNumRange <- range(inDat[["timeNumber"]])
   ## Create data.frame with time number and, if present,
   ## time point on prediction scale.
   timeRange <- data.frame(timeNumber = seq(from = timeNumRange[1],
                                            to = timeNumRange[2],
                                            by = timeNumStep))
-  if (hasName(x = corrDat, name = "timePoint")) {
-    timePointRange <- range(corrDat[["timePoint"]])
+  if (hasName(x = inDat, name = "timePoint")) {
+    timePointRange <- range(inDat[["timePoint"]])
     timeRange[["timePoint"]] <- seq(from = timePointRange[1],
                                     to = timePointRange[2],
                                     by = timeNumStep * diff(timePointRange) /
@@ -152,7 +152,7 @@ fitSpline <- function(corrDat,
   ## Fit splines.
   fitSp <- lapply(X = levels(plantGeno[["plotId"]]), FUN = function(plant) {
     ## Restrict data to current plant.
-    dat <- corrDat[corrDat[["plotId"]] == plant, c("timeNumber", trait)]
+    dat <- inDat[inDat[["plotId"]] == plant, c("timeNumber", trait)]
     ## Manually select minimum number of time points.
     if (length(unique(dat[["timeNumber"]])) >= minTP) {
       ## Fit the P-spline using gam() function in mgcv.
@@ -201,7 +201,7 @@ fitSpline <- function(corrDat,
   }
   ## Create output.
   res <- structure(list(coefDat = coefTot, predDat = predTot),
-                   modDat = corrDat,
+                   modDat = inDat,
                    trait = trait,
                    useTimeNumber = useTimeNumber,
                    fitLevel = fitLevel,
@@ -351,7 +351,7 @@ plot.HTPSpline <- function(x,
 #' # Run the function to fit p-spline using the mgcv package on a subset of
 #' # genotypes
 #' subGeno <- c("G70","G160","G151","G179","G175","G4","G55")
-#' fit.spline <- fitSpline(corrDat = spatCorrVator,
+#' fit.spline <- fitSpline(inDat = spatCorrVator,
 #'                         trait = "EffpsII_corr",
 #'                         genotypes = subGeno,
 #'                         knots = 50,

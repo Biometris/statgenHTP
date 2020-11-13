@@ -40,7 +40,7 @@ spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
 # Run the function to fit p-spline using the mgcv package on a subset of
 # genotypes
 subGenoVator <- c("G70","G160","G151","G179","G175","G4","G55")
-fit.spline <- fitSpline(corrDat = spatCorrVator,
+fit.spline <- fitSpline(inDat = spatCorrVator,
                         trait = "EffpsII_corr",
                         genotypes = subGenoVator,
                         knots = 50,
