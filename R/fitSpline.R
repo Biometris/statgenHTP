@@ -103,14 +103,25 @@ fitSpline <- function(inDat,
     stop("At least one valid combination of genotype and plotId should be ",
          "selected.\n")
   }
+  ## Check if geno.decomp in present in inDat.
+  useGenoDecomp <- hasName(x = inDat, name = "geno.decomp")
   if (fitLevel == "genotype") {
     ## If fitting at a genotype level set plotId to genotype.
     ## This way all further code can remain intact.
-    inDat[["plotId"]] <- inDat[["genotype"]]
+    if (useGenoDecomp) {
+      inDat[["plotId"]] <- interaction(inDat[["genotype"]],
+                                       inDat[["geno.decomp"]], drop = TRUE)
+    } else {
+      inDat[["plotId"]] <- inDat[["genotype"]]
+    }
   }
   inDat <- droplevels(inDat)
   ## Create data.frame with plants and genotypes for adding genotype to results.
-  plantGeno <- unique(inDat[c("plotId", "genotype")])
+  if (useGenoDecomp) {
+    plantGeno <- unique(inDat[c("plotId", "genotype", "geno.decomp")])
+  } else {
+    plantGeno <- unique(inDat[c("plotId", "genotype")])
+  }
   ## Determine minimum number of time points required.
   minTP <- perMinTP * length(unique(inDat[["timeNumber"]]))
   ## Get number of non NA observations per plot for determining minimum
@@ -186,14 +197,15 @@ fitSpline <- function(inDat,
   ## Remove brackets in coefficient names.
   coefTot[["type"]] <- gsub(pattern = "[()]", replacement = "",
                             x =  coefTot[["type"]])
-  ## Add genotype.
-  coefTot[["genotype"]] <- plantGeno[match(coefTot[["plotId"]],
-                                           plantGeno[["plotId"]]), "genotype"]
+  ## Add genotype and optionally geno.decomp.
+  addCols <- colnames(plantGeno)[colnames(plantGeno) != "plotId"]
+  coefTot[addCols] <- plantGeno[match(coefTot[["plotId"]],
+                                           plantGeno[["plotId"]]), addCols]
   ## Bind all predictions into one data.frame.
   predTot <- do.call(rbind, lapply(fitSp, `[[`, 2))
   ## Add genotype.
-  predTot[["genotype"]] <- plantGeno[match(predTot[["plotId"]],
-                                           plantGeno[["plotId"]]), "genotype"]
+  predTot[addCols] <- plantGeno[match(predTot[["plotId"]],
+                                      plantGeno[["plotId"]]), addCols]
   if (fitLevel == "genotype") {
     ## Remove plotId (duplicated genotype) from output.
     coefTot[["plotId"]] <- NULL
@@ -205,6 +217,7 @@ fitSpline <- function(inDat,
                    trait = trait,
                    useTimeNumber = useTimeNumber,
                    fitLevel = fitLevel,
+                   useGenoDecomp = useGenoDecomp,
                    class = c("HTPSpline", "list"))
   return(res)
 }
@@ -233,6 +246,7 @@ plot.HTPSpline <- function(x,
   modDat <- attr(x, which = "modDat")
   trait <- attr(x, which = "trait")
   fitLevel <- attr(x, which = "fitLevel")
+  useGenoDecomp <- attr(x, which = "useGenoDecomp")
   useTimeNumber <- attr(x, which = "useTimeNumber")
   predDat <- x$predDat
   if (!is.null(genotypes) &&
@@ -255,7 +269,18 @@ plot.HTPSpline <- function(x,
   }
   ## Remove plotIds with only NA from data.
   ## This can be caused by removing outliers.
-  fitLevels <- unique(modDat[[fitLevel]])
+  if (fitLevel == "genotype" && useGenoDecomp) {
+    modDat[["fitLevInt"]] <-
+      interaction(modDat[["genotype"]], modDat[["geno.decomp"]], drop = TRUE)
+    predDat[["fitLevInt"]] <-
+      interaction(predDat[["genotype"]], predDat[["geno.decomp"]], drop = TRUE)
+    fitLevel <- "fitLevInt"
+    fitLevels <- levels(modDat[["fitLevInt"]])
+    plotLevel <- c("genotype", "geno.decomp")
+  } else {
+    fitLevels <- unique(modDat[[fitLevel]])
+    plotLevel <- fitLevel
+  }
   allNA <- sapply(X = fitLevels, FUN = function(x) {
     all(is.na(modDat[modDat[[fitLevel]] == x, trait]))
   })
@@ -316,8 +341,10 @@ plot.HTPSpline <- function(x,
   pPag <- vector(mode = "list", length = nPag)
   for (i in 1:nPag) {
     pPag[[i]] <- p +
-      ggforce::facet_wrap_paginate(facets = fitLevel, nrow = rowPag[i],
-                                   ncol = colPag[i], page = i)
+      ggforce::facet_wrap_paginate(facets = plotLevel, nrow = rowPag[i],
+                                   ncol = colPag[i],
+                                   labeller = ggplot2::label_wrap_gen(multi_line = FALSE),
+                                   page = i)
     if (output) {
       suppressMessages(plot(pPag[[i]]))
     }
@@ -380,6 +407,7 @@ estimateSplineParameters <- function(HTPSpline,
   what <- match.arg(what)
   estVar <- if (estimate == "predictions") "pred.value" else "deriv"
   useTimeNumber <- attr(HTPSpline, which = "useTimeNumber")
+  useGenoDecomp <- attr(HTPSpline, which = "useGenoDecomp")
   fitLevel <- attr(HTPSpline, which = "fitLevel")
   predDat <- HTPSpline$predDat
   if (!is.null(genotypes) &&
@@ -427,7 +455,7 @@ estimateSplineParameters <- function(HTPSpline,
                        predDat[[timeVar]] <= timeMax, ]
   ## Get estimates.
   res <- aggregate(x = predDat[[estVar]],
-                   by = predDat[c("genotype",
+                   by = predDat[c("genotype", if (useGenoDecomp) "geno.decomp",
                                   if (fitLevel == "plotId") "plotId")],
                    FUN = what)
   return(res)
