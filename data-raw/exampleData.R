@@ -61,6 +61,13 @@ spatCorrArch <- read.csv(system.file("extdata", "PhenoArchDat1_corr_OutPoint_LA.
 # Export to package
 usethis::use_data(spatCorrArch, overwrite = TRUE)
 
+#### 2.3. Genotypic prediction data - outliers removed
+# Read raw data.
+spatPredArch <- read.csv(system.file("extdata", "PhenoArchDat1_pred_OutPoint_LA.csv",
+                                     package = "statgenHTP"))
+# Export to package
+usethis::use_data(spatPredArch, overwrite = TRUE)
+
 
 ####### 3. RootUCL data set
 #### 3.1 Raw data
