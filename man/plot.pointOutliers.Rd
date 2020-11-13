@@ -57,6 +57,7 @@ plot(resuVatorHTP, plotIds = plantSel, outOnly = FALSE)
 }
 \seealso{
 Other Detect point outliers: 
+\code{\link{detectPointOutliersMaize}()},
 \code{\link{detectPointOutliers}()},
 \code{\link{removePointOutliers}()}
 }

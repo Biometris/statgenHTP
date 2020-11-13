@@ -77,6 +77,7 @@ resuVatorHTP <- detectPointOutliers(TP = phenoTP,
 plot.pointOutliers
 
 Other Detect point outliers: 
+\code{\link{detectPointOutliersMaize}()},
 \code{\link{plot.pointOutliers}()},
 \code{\link{removePointOutliers}()}
 }

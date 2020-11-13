@@ -55,6 +55,7 @@ phenoTPOut <- removePointOutliers(phenoTP, resuVatorHTP)
 }
 \seealso{
 Other Detect point outliers: 
+\code{\link{detectPointOutliersMaize}()},
 \code{\link{detectPointOutliers}()},
 \code{\link{plot.pointOutliers}()}
 }
