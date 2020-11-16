@@ -25,22 +25,17 @@ library(ggplot2)
 
 # Introduction
 
-This document presents the final step of the HTP data analysis: extracting interesting parameters from the modeled time course. For example, in the second data set from the PhenoArch platform, the maximum leaf area (from the P-splines) or the maximum leaf growth rate (from the first derivatives) are relevant parameters (see figure below). We could assess their variability in the genotypes and the difference between treatments, *e.g.* has the water scenario decreased the maximum leaf area?  
+This document presents the final step of the HTP data analysis: extracting interesting parameters from the modeled time course. For example, in the second data set from the PhenoArch platform, the maximum leaf area (from the P-splines) or the maximum leaf growth rate (from the first derivatives) are relevant parameters (see figure below). We could assess their variability in the genotypes and the difference between treatments, *e.g.* has the water scenario decreased the maximum leaf area? 
 
-<center>
-
-![P-spline](figures/psplinederiv_Arch.png){width="80%"}
-
-</center>
+```{r PSplineDerivArchFig, fig.cap='P-spline', out.width='80%', fig.pos='c', echo=FALSE}
+knitr::include_graphics("figures/psplinederiv_Arch.png", auto_pdf = TRUE)
+```
 
 It is also possible to specify a period for the parameter estimation. For example, in the first data set from the Phenovator platform, we can select the period with the high light intensity (see figure below) and estimate the maximum slope during that period (from the first derivatives). This could be interpreted as a recovery rate of the photosystem II efficiency. 
 
-<center>
-
-![P-spline](figures/psplinederiv_Vator.png){width="80%"}
-
-</center>
-
+```{r PSplineDerivVatorFig, fig.cap='P-spline', out.width='80%', fig.pos='c', echo=FALSE}
+knitr::include_graphics("figures/psplinederiv_Vator.png", auto_pdf = TRUE)
+```
 
 These parameters could then be further analyzed, for example a GxE analysis (see [*statgenGxE*](https://biometris.github.io/statgenGxE/index.html)), or a genetic analysis (see [*statgenGWAS*](https://biometris.github.io/statgenGWAS/index.html)).
 

@@ -26,10 +26,9 @@ library(statgenHTP)
 
 An outlier is usually defined as an observation that appears to be inconsistent with the remainder of the data set [@BarnettLewis1994]. Observations may be time points [@Grubbs1950] or whole time courses of one or more variables [@Hubert2015]. An illustration is given below, where we see the difficulty of deciding whether a biomass time course (red curve at the bottom left) is atypical in a set of time courses from plants of the same genotype, or whether this slow growth is due to the plant's position in the platform. 
 
-<center>
-![Heatmap of the biomass estimated at a specific time point (with a color gradient) of each plant according to its location in the platform (line, position). Well-watered (WW) treatment on the left, water deficit (WD) on the right. The graphs below show the biomass time courses for a given genotype (3 repetitions in each treatment). The question is whether the red growth curve on the left corresponds to an outlier plant (seed problem for example) or whether this slow growth is due to the plant's location in the platform (PhenoArch Platform, INRAE). *Courtesy: Llorenç Cabrera-Bosquet and Santiago Alvarez Prado.*](figures/heatmap.png){width=80%}
-
-</center>
+```{r HeatmapFig, fig.cap='Heatmap of the biomass estimated at a specific time point (with a color gradient) of each plant according to its location in the platform (line, position). Well-watered (WW) treatment on the left, water deficit (WD) on the right. The graphs below show the biomass time courses for a given genotype (3 repetitions in each treatment). The question is whether the red growth curve on the left corresponds to an outlier plant (seed problem for example) or whether this slow growth is due to the plant\'s location in the platform (PhenoArch Platform, INRAE). *Courtesy: Llorenç Cabrera-Bosquet and Santiago Alvarez Prado.*', out.width='80%', fig.pos='c', echo=FALSE}
+knitr::include_graphics("figures/heatmap.png", auto_pdf = TRUE)
+```
 
 The concept of outlier can be extended to “outlier plants”, defined here as biological replicates deviating from the overall distribution of plants on a multi-criteria basis, regardless of the quality of measurements [@AlvarezPrado2019].
 

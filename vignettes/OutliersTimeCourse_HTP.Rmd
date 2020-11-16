@@ -30,13 +30,9 @@ This document describes the procedure to detect outlying time courses with examp
 
 Each time course is modeled by a nonparametric smoothing spline with a fixed number of knots. This is a piecewise cubic polynomial ([@Eubank1999], [@Eilers2015]) fitted with the 'gam' function of the R-package 'mgcv'.
 
-<center>
-
-![P-spline](figures/pspline.png){width="40%"}
-
-P-spline illustration with 20 knots, from [@Hugelier2016]. The individual B-splines (with the correct coefficients) are shown (colored lines), as well as their sum representing the fit (thick black line).
-
-</center>
+```{r PSplineFig, fig.cap='P-spline \n\nP-spline illustration with 20 knots, from [@Hugelier2016]. The individual B-splines (with the correct coefficients) are shown (colored lines), as well as their sum representing the fit (thick black line).', out.width='40%', fig.pos='c', echo=FALSE}
+knitr::include_graphics("figures/pspline.png", auto_pdf = TRUE)
+```
 
 The estimates for the spline coefficients are then extracted per time course (typically per plant) and correlations between those coefficient vectors are calculated to identify outlying time courses, *i.e.*, plants. An outlying time course will have low correlation to the majority of time courses. To support the analysis by correlations, a principal component analysis can be done on the plant (time course) by spline coefficient matrix. A PCA plot of the plant scores will show the outlying plant.
 
@@ -48,7 +44,7 @@ The estimates for the spline coefficients are then extracted per time course (ty
 
 The function `fitSpline()` fits a P-spline per plant for the selected `trait` using the number of `knots` chosen by the user. In P-spline, the knots are equally spaced and their number can be large. The user should also chose an appropriate proportion of minimum number of time points that should be in the data set per plant `perMinTP`. When a plant has less time points than the minimum, it will be skipped from the analysis.
 
-The functions are illustrated with the three example data sets. For more information about the data, see *Intro\_HTP*.
+The functions are illustrated with the three example data sets. For more information about the data, see [*Intro\_HTP*](Intro_HTP.html).
 
 ## Example 1
 
@@ -337,13 +333,9 @@ For the detection of unexpectedly small plants with likely physiological disorde
 
 Each of the selected traits was measured (or estimated) at a specific time (for example 24 d20°C for the PhenoArch data set), time just before the beginning of the differentiation of the two watering treatments. This allows to have more replicates by genotype. It also reduces the dimensionality of the time courses to only one point, which will simplify the statistical models to be implemented later.
 
-
-<center>
-
-![P-spline](figures/multi_trait_approach.png){width="90%"}
-Schematic representation of a multi-trait approach for detection of outlier plants (case of maize), from @AlvarezPrado2019.
-
-</center>
+```{r MultiTraitFig, fig.cap='Schematic representation of a multi-trait approach for detection of outlier plants (case of maize), from @AlvarezPrado2019.', out.width='90%', fig.pos='c', echo=FALSE}
+knitr::include_graphics("figures/multi_trait_approach.png", auto_pdf = TRUE)
+```
 
 As shown above, traits are modeled with a mixed model that considers fixed experiment (Env) effect and random genotypic (G), replicate (R) and spatial (C) effects. The model can be fitted with the SpATS R-package, (@RodAlv2018). Residuals (deviations) can be directly computed from the fitting, with a confidence interval. Plants, whose deviations for the criteria of leaf appearance rate and biomass are less than the lower bound of this interval, are considered as __outlier small plants__. Plants, whose deviations for the criteria of plant height and biomass are greater than the upper bound of the confidence interval, are considered as __outlier large plants__.
 

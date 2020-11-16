@@ -199,10 +199,9 @@ plot(modPhenoSp,
 ```
 
 Here is an illustration with three time points:
-<center>
-![Timelapse1](figures/timelapse_nogif.png){width=80%}
-</center>
-
+```{r TimeLapseFig, out.width='80%', fig.pos='c', echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/timelapse_nogif.png", auto_pdf = TRUE)
+```
 
 ### Extracting model results
 
