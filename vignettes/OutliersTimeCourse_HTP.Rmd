@@ -9,7 +9,7 @@ output:
 bibliography: bibliography.bib
 vignette: >
   %\VignetteIndexEntry{TimeCourse} 
-  %\VignetteEncoding{UTF-8} 
+  %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 ---
 

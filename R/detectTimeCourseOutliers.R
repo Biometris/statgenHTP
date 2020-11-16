@@ -192,6 +192,12 @@ detectTimeCourseOutliers <- function(corrDat,
       cormat <- cor(plantDat)
       diag(cormat) <- NA
       attr(cormat, which = "genoDecomp") <- attr(plantDat, which = "genoDecomp")
+      if (!is.null(geno.decomp)) {
+        attr(cormat, which = "thrCor") <-
+          thrCor[attr(plantDat, which = "genoDecomp")]
+      } else {
+        attr(cormat, which = "thrCor") <- thrCor
+      }
       return(cormat)
     } else {
       ## ... if not, return a null matrix
@@ -214,11 +220,7 @@ detectTimeCourseOutliers <- function(corrDat,
   annotatePlantsCor <- lapply(X = names(cormats), FUN = function(geno) {
     if (!is.null(cormats[[geno]])) {
       meanCor <- rowMeans(cormats[[geno]], na.rm = TRUE)
-      if (!is.null(geno.decomp)) {
-        thrCorPlant <- thrCor[attr(cormats[[geno]], which = "genoDecomp")]
-      } else {
-        thrCorPlant <- thrCor
-      }
+      thrCorPlant <- attr(cormats[[geno]], which = "thrCor")
     } else {
       meanCor <- NULL
     }
@@ -237,6 +239,8 @@ detectTimeCourseOutliers <- function(corrDat,
     cormat[lower.tri(cormat)] <- NA
     ## Melt to format used by ggplot.
     meltedCormat <- reshape2::melt(cormat, na.rm = TRUE)
+    attr(meltedCormat, which = "thrCor") <- attr(cormat, which = "thrCor")
+    return(meltedCormat)
   })
   annotatePlantsPca <- lapply(X = names(plantPcas), FUN = function(geno) {
     ## Calculate the pairwise difference of coordinates on the 2nd axis and
@@ -251,7 +255,7 @@ detectTimeCourseOutliers <- function(corrDat,
     }
     ## Create shape for plotting.
     if (any(meanPc2 >= thrPcaPlant)) {
-      ## Create data.frame with info on plants with avarage difference.
+      ## Create data.frame with info on plants with average difference.
       ## above threshold.
       annPlotsPc2 <- meanPc2[meanPc2 >= thrPcaPlant]
       return(data.frame(plotId = names(annPlotsPc2), reason = "pc2",
@@ -362,7 +366,7 @@ plot.timeCourseOutliers <- function(x,
                                       c("genotype", geno.decomp)])
   }
   genotypes <- as.character(genotypes)
-  cormats <- cormats <- attr(x = x, which = "cormats")[genotypes]
+  cormats <- attr(x = x, which = "cormats")[genotypes]
   plantPcas <- attr(x = x, which = "plantPcas")[genotypes]
   genoPreds <- attr(x = x, which = "genoPreds")[genotypes]
   genoDats <- attr(x = x, which = "genoDats")[genotypes]
@@ -411,13 +415,14 @@ plot.timeCourseOutliers <- function(x,
                                   labels = scales::date_format("%B %d"))
     }
     ## Correlation plot.
+    thrCorGeno <- attr(cormats[[genotype]], which = "thrCor")
     correl <- ggplot2::ggplot(data = cormats[[genotype]],
                               ggplot2::aes_string("Var2", "Var1",
                                                   fill = "value")) +
       ggplot2::geom_tile(color = "white") +
       ggplot2::scale_fill_gradientn(colors = c("red", "white", "blue"),
                                     values = scales::rescale(c(minCor,
-                                                               thrCor, 1)),
+                                                               thrCorGeno, 1)),
                                     limits = c(minCor, 1),
                                     name = "Pearson\nCorrelation") +
       ## Move y-axis to the right.
