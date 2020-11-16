@@ -24,9 +24,7 @@ library(statgenHTP)
 
 # Introduction
 
-It consists in detecting outliers in a set of time courses resulting from the observation of one single trait. The detection procedure is applied to each trait individually without considering other traits, meaning that distinct outlier data sets are associated with each considered trait.
-
-*blablabla plant outlier function?*
+This document describes the procedure to detect outlying time courses with examples on experimental data sets. The data on which the procedures apply are the variables of interest. They may be variables measured directly or indirectly (through image analysis for example). The detection procedure is applied to each trait individually without considering other traits, meaning that distinct outlier data sets are associated with each considered trait. The following functions can be applied to corrected data (see **statgenHTP tutorial: 3. Correction for spatial trends**) or on raw data.
 
 ## A nonparametric smoothing associated with a PCA
 
@@ -43,8 +41,6 @@ P-spline illustration with 20 knots, from [@Hugelier2016]. The individual B-spli
 The estimates for the spline coefficients are then extracted per time course (typically per plant) and correlations between those coefficient vectors are calculated to identify outlying time courses, *i.e.*, plants. An outlying time course will have low correlation to the majority of time courses. To support the analysis by correlations, a principal component analysis can be done on the plant (time course) by spline coefficient matrix. A PCA plot of the plant scores will show the outlying plant.
 
 *To note,* for P-splines in a generalized additive model (gam), the smoothing coefficient is optimized by restricted maximum likelihood but the number of knots is chosen by the user.
-
-This document describes the procedure to detect outlying time courses with examples on experimental data sets. The data on which the procedures apply are the variables of interest. They may be variables measured directly or indirectly (through image analysis for example). The following functions can be applied to corrected data (see **statgenHTP tutorial: 3. Correction for spatial trends**) or on raw data.
 
 ------------------------------------------------------------------------
 
@@ -147,7 +143,7 @@ plot(outVator, genotypes = "G151")
 
 The figure above contains:
 
--   (top) A scatter plot of the trait value on the y-axis and time on the x-axis. Points are the raw or corrected data and lines are the P-spline predictions, with one color per plant (in legend).\
+-   (top) A scatter plot of the trait value on the y-axis and time on the x-axis. Points are the raw or corrected data and lines are the P-spline predictions, with one color per plant (in legend). Filled points represent outlying plants, open points non-outlying plants.\
 -   (bottom left) A correlation matrix of the plant scores as a heatmap. The scale is centered on 0.9 to see at a glance the outlying plants with low correlations (usually correlation is high between plants).\
 -   (bottom right) A PCA plot of the plant scores. Usually, all plants are grouped and the first axis explains most of the variation. When a plant is outlying, it will be located apart from the other plants on the second axis.
 
@@ -351,7 +347,7 @@ Schematic representation of a multi-trait approach for detection of outlier plan
 
 As shown above, traits are modeled with a mixed model that considers fixed experiment (Env) effect and random genotypic (G), replicate (R) and spatial (C) effects. The model can be fitted with the SpATS R-package, (@RodAlv2018). Residuals (deviations) can be directly computed from the fitting, with a confidence interval. Plants, whose deviations for the criteria of leaf appearance rate and biomass are less than the lower bound of this interval, are considered as __outlier small plants__. Plants, whose deviations for the criteria of plant height and biomass are greater than the upper bound of the confidence interval, are considered as __outlier large plants__.
 
-## Implementation in R
+## Implementation in statgenHTP
 
 Mixed models are fitted with the R-package SpATS through the use of the `detectPointOutliersMaize` function, which was developed specifically for the maize data, as described above. This function fits a mixed model for each parameter, and tests whether the residual deviations are lower (for the criteria considered for small plants) or higher (for the criteria considered for big plants) than a specified threshold. 
 
