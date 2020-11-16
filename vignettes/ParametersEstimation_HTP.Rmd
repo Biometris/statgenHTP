@@ -49,7 +49,7 @@ The following functions can be applied to corrected data (see **statgenHTP tutor
 
 ------------------------------------------------------------------------
 
-# Extraction parameters from curve
+# Estimation of relevant parameters from curves
 
 ## Example 1
 
@@ -150,6 +150,62 @@ ggplot(paramArch1, aes(x)) +
   facet_grid(. ~ geno.decomp, scales="free_x",space = "free_x")
 ```
 
+## Example 3
+
+For this example, we will use the raw data from the RootPhAir, corrected for time points outliers (see **statgenHTP tutorial: 2. Outlier detection Time points**) and time course (see **statgenHTP tutorial: 4. Outlier detection Time courses**). We will fit Psplines at the plant level on a subset of genotypes.
+
+```{r rmOutRoot, echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE}
+noCorrRoot$timePoint <- lubridate::as_datetime(noCorrRoot$timePoint)
+subGenoRoot <- c( "2","6","8","9","10","520","522")
+fit.splineRoot <- fitSpline(inDat = noCorrRoot,
+                            trait = "tipPos_y",
+                            knots = 10,
+                            genotypes = subGenoRoot,
+                            perMinTP = 0.001,
+                            useTimeNumber = TRUE,
+                            timeNumber = "thermalTime")
+#
+pred.DatRoot <- fit.splineRoot$predDat
+coef.DatRoot <- fit.splineRoot$coefDat
+#
+outRoot <- detectTimeCourseOutliers(corrDat = noCorrRoot,
+                                    predDat = pred.DatRoot,
+                                    coefDat = coef.DatRoot,
+                                    trait = "tipPos_y",
+                                    genotypes = subGenoRoot,
+                                    thrCor = 0.9,
+                                    thrPca = 1.2)
+#
+outRootFinal <- outRoot[outRoot$plotId %in% c("A_03_5","A_29_2"),]
+noCorrRootOut <- removeTimeCourseOutliers(dat = noCorrRoot,
+                                          timeCourseOutliers = outRootFinal)
+noCorrRootOut <- noCorrRootOut[!is.na(noCorrRootOut$tipPos_y),]
+noCorrRootOut <- droplevels(noCorrRootOut)
+```
+
+```{r fitSplineRoot, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+subGenoRoot <- c( "2","6","8","9","10","520","522")
+fit.splineRootOut <- fitSpline(inDat = noCorrRootOut,
+                               trait = "tipPos_y",
+                               knots = 10,
+                               genotypes = subGenoRoot,
+                               perMinTP = 0.001,
+                               useTimeNumber = TRUE,
+                               timeNumber = "thermalTime")
+```
+
+
+```{r paramRoot1, fig.height=2, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+paramRoot1 <-
+  estimateSplineParameters(HTPSpline = fit.splineRootOut,
+                           estimate = "derivatives",
+                           what = "max")
+#
+ggplot(paramRoot1, aes(x = as.factor(genotype), y = x)) + 
+    geom_boxplot(na.rm = TRUE) +
+    ylab("Max root tip growth rate") +
+    theme_classic()
+```
 
 
 ------------------------------------------------------------------------

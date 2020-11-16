@@ -276,7 +276,7 @@ head(spatCorrArchOut[spatCorrArchOut$plotId=="c7r55",
 
 ## Example 3
 
-The data from the RootPhAir platform have not been corrected for spatial trends but time points outliers have been removed (see **statgenHTP tutorial: 2. Outlier detection Time points** and **statgenHTP tutorial: 3. Correction for spatial trends**). At this stage, the cleaned data are used:
+The data from the RootPhAir platform have not been corrected for spatial trends but time points outliers have been removed (see **statgenHTP tutorial: 2. Outlier detection Time points**). At this stage, the cleaned data are used:
 
 ```{r fitSplineRoot, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 noCorrRoot$timePoint <- lubridate::as_datetime(noCorrRoot$timePoint)
@@ -315,13 +315,16 @@ plot(outRoot,
      genotypes = "2")
 ```
 
+After manual check, we will remove only two of the detected time courses:
+
 ```{r rmOutRoot}
+outRootFinal <- outRoot[outRoot$plotId %in% c("A_03_5","A_29_2"),]
 noCorrRootOut <- removeTimeCourseOutliers(dat = noCorrRoot,
-                                            timeCourseOutliers = outRoot)
+                                          timeCourseOutliers = outRootFinal)
 # Check one value annotated as outlier in the original corrected data frame
-head(noCorrRoot[noCorrRoot$plotId=="A_53_4","tipPos_y"])
+head(noCorrRoot[noCorrRoot$plotId=="A_29_2","tipPos_y"])
 # Check the same value in the new corrected data frame
-head(noCorrRootOut[noCorrRootOut$plotId=="A_53_4","tipPos_y"])
+head(noCorrRootOut[noCorrRootOut$plotId=="A_29_2","tipPos_y"])
 ```
 
 ------------------------------------------------------------------------
