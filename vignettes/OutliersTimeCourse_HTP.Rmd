@@ -24,7 +24,7 @@ library(statgenHTP)
 
 # Introduction
 
-This document describes the procedure to detect outlying time courses with examples on experimental data sets. The data on which the procedures apply are the variables of interest. They may be variables measured directly or indirectly (through image analysis for example). The detection procedure is applied to each trait individually without considering other traits, meaning that distinct outlier data sets are associated with each considered trait. The following functions can be applied to corrected data (see **statgenHTP tutorial: 3. Correction for spatial trends**) or on raw data.
+This document describes the procedure to detect outlying time courses with examples on experimental data sets. The data on which the procedures apply are the variables of interest. They may be variables measured directly or indirectly (through image analysis for example). The detection procedure is applied to each trait individually without considering other traits, meaning that distinct outlier data sets are associated with each considered trait. The following functions can be applied to corrected data (see [**statgenHTP tutorial: 3. Correction for spatial trends**](SpatialModel_HTP.html)) or on raw data.
 
 ## A nonparametric smoothing associated with a PCA
 
@@ -52,7 +52,7 @@ The functions are illustrated with the three example data sets. For more informa
 
 ## Example 1
 
-The data from the Phenovator platform have been corrected for spatial trends and time points outliers have been removed (see **statgenHTP tutorial: 2. Outlier detection Time points** and **statgenHTP tutorial: 3. Correction for spatial trends**). At this stage, the cleaned and corrected data are used:
+The data from the Phenovator platform have been corrected for spatial trends and time points outliers have been removed (see [**statgenHTP tutorial: 2. Outlier detection Time points**](OutliersTimePoint_HTP.html) and [**statgenHTP tutorial: 3. Correction for spatial trends**](SpatialModel_HTP.html)). At this stage, the cleaned and corrected data are used:
 
 ```{r fitSplineVator, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 data(spatCorrVator)  
@@ -71,7 +71,7 @@ pred.Dat <- fit.spline$predDat
 coef.Dat <- fit.spline$coefDat
 ```
 
-The object `fit.spline` contains the predicted value (`pred.value` in the table below), i.e the values predicted using the P-spline model coefficients. Conversion to numerical time is required by the mgcv package. In order to keep the same time scale as in the original `timePoint` column, a simple numerical transformation of the time points is made (column `timeNumber`). Predictions are made on a denser grid of time points: the time points for prediction are calculated as the smallest gap between two time points divided by 9, so dividing the smallest gap in 10 segments. The object `fit.spline` also contains the first derivatives (`deriv` **statgenHTP tutorial: 5. Estimation of parameters from time courses**).
+The object `fit.spline` contains the predicted value (`pred.value` in the table below), i.e the values predicted using the P-spline model coefficients. Conversion to numerical time is required by the mgcv package. In order to keep the same time scale as in the original `timePoint` column, a simple numerical transformation of the time points is made (column `timeNumber`). Predictions are made on a denser grid of time points: the time points for prediction are calculated as the smallest gap between two time points divided by 9, so dividing the smallest gap in 10 segments. The object `fit.spline` also contains the first derivatives (`deriv` [**statgenHTP tutorial: 5. Estimation of parameters from time courses**](ParameterEstimation_HTP.html)).
 
 ```{r headpredDat, echo=FALSE, message=FALSE, eval=TRUE}
 knitr::kable(head(pred.Dat), align=c('c','c'), booktabs = TRUE)
@@ -210,7 +210,7 @@ The predicted curve is less smooth and follows the actual curve shape. This seem
 
 ## Example 2
 
-The data from the PhenoArch platform have been corrected for spatial trends and time points outliers have been removed (see **statgenHTP tutorial: 2. Outlier detection Time points** and **statgenHTP tutorial: 3. Correction for spatial trends**). At this stage, the cleaned and corrected data are used:
+The data from the PhenoArch platform have been corrected for spatial trends and time points outliers have been removed (see [**statgenHTP tutorial: 2. Outlier detection Time points**](OutliersTimePoint_HTP.html) and [**statgenHTP tutorial: 3. Correction for spatial trends**](SpatialModel_HTP.html)). At this stage, the cleaned and corrected data are used:
 
 ```{r fitSplineArch, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 data(spatCorrArch)  
@@ -271,7 +271,7 @@ head(spatCorrArchOut[spatCorrArchOut$plotId=="c7r55",
 
 ## Example 3
 
-The data from the RootPhAir platform have not been corrected for spatial trends but time points outliers have been removed (see **statgenHTP tutorial: 2. Outlier detection Time points**). At this stage, the cleaned data are used:
+The data from the RootPhAir platform have not been corrected for spatial trends but time points outliers have been removed (see [**statgenHTP tutorial: 2. Outlier detection Time points**](OutliersTimePoint_HTP.html)). At this stage, the cleaned data are used:
 
 ```{r fitSplineRoot, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 noCorrRoot$timePoint <- lubridate::as_datetime(noCorrRoot$timePoint)

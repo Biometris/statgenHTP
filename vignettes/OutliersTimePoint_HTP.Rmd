@@ -39,7 +39,7 @@ This documents describes the procedures to detect outlying points in a time cour
 
 # Definition of outlying points
 
-Time courses of phenotypic data are viewed as continuous time-related functions. The first cleaning step consists in roughly checking the consistency of each point with its neighbors within a time course. Outlying points are measurements at a given time that do not follow the expected behavior. The detection of outlying points is done "one time course after the other". Identifying and removing these points will facilitate the detection of outlier time courses or plants, as proposed in **statgenHTP tutorial: 4. Outlier detection Time course**.
+Time courses of phenotypic data are viewed as continuous time-related functions. The first cleaning step consists in roughly checking the consistency of each point with its neighbors within a time course. Outlying points are measurements at a given time that do not follow the expected behavior. The detection of outlying points is done "one time course after the other". Identifying and removing these points will facilitate the detection of outlier time courses or plants, as proposed in [**statgenHTP tutorial: 4. Outlier detection Time course**](OutliersTimeCourse_HTP.html).
 
 The detection requires fitting a model from the data, as a function of time. Two types of models can be used, one based on nonlinear parametric regression (Gompertz Model or sigmoidal function for example) and the other on non-parametric regression. Data annotation is based on the comparison of the experimental data with its estimated value from the model. If they significantly differ, the data will be annotated as suspect.
 

@@ -32,12 +32,13 @@ It will provide the user with either genotypic values or corrected values that c
 
 **Structure of the package**
 
-The overall structure of the package is in 5 main parts:  
-1. Data description and preparation - *statgenHTP tutorial: 1. Introduction, data description and preparation*  
-2. Outliers detection: time points -  *statgenHTP tutorial: 2. Outlier detection Time points*  
-3. Correction for spatial trends - *statgenHTP tutorial: 3. Correction for spatial trends*   
-4. Outliers detection: time course - *statgenHTP tutorial: 4. Outlier detection Time course*  
-5. Parameter extraction - *statgenHTP tutorial: 5. Estimation of parameters from time courses*  
+The overall structure of the package is in 5 main parts:
+
+1. Data description and preparation - *statgenHTP tutorial: 1. Introduction, data description and preparation*
+2. Outliers detection: time points - [*statgenHTP tutorial: 2. Outlier detection Time points*](OutliersTimePoint_HTP.html)
+3. Correction for spatial trends - [*statgenHTP tutorial: 3. Correction for spatial trends*](SpatialModel_HTP.html)
+4. Outliers detection: time course - [*statgenHTP tutorial: 4. Outlier detection Time course*](OutliersTimeCourse_HTP.html)
+5. Parameter estimation - [*statgenHTP tutorial: 5. Estimation of parameters from time courses*](ParameterEstimation_HTP.html)
 
 This document describes in detail the three data sets used to example the functions. It also contains description on how to prepare the data for analysis and how to visualize them.
 
@@ -47,7 +48,7 @@ This document describes in detail the three data sets used to example the functi
 
 For more information on how to install R and RStudio and the statgen packages, please read the Getting started file. Once everything is installed and before functions of the statgenHTP R package can be used within R, it needs to be made available:
 ```{r label="library-statgenhtp", echo=TRUE, eval=FALSE}
-### Load the statgenHTP package
+## Load the statgenHTP package
 library(statgenHTP)
 ```
 
@@ -172,7 +173,7 @@ knitr::kable(head(timepoint), align=c('c','c'), padding = 0)
 ```
 
 The `TP` object just created is a `list` with 73 items, one for each time point 
-in the original `data.frame` (called "PhenovatorDat1"). The option `experimentName` is used for identifying the data set and is a requirement. The column "Genotype" in the original data is renamed to "genotype" and converted to a factor. The columns "Replicate" and "pos" are renamed and converted likewise. The newly created column "plotID" needs to be a unique identifier for a plot or a plant. It cannot occur more than once per time point. The columns "y" and "x" are renamed to "rowNum" and "colNum" respectively. Simultaneously, two columns "rowId" and "colId" are created containing the same information converted to a factor. This seemingly duplicate information is needed for spatial analysis. The information about which columns have been renamed when creating a `TP` object is stored as an attribute of each individual `data.frame` in the object. The option `addCheck` is set as `TRUE` to specify that the genotypes listed in `checkGenotypes` are reference genotypes (or checks). This option will create a column "check" with a value "noCheck" for the genotypes that are not in `checkGenotypes` and the name of the genotype for the `checkGenotypes`. Also a column "genoCheck" is added with the names of the genotypes that are not in `checkGenotypes` and `NA` for the `checkGenotypes` (see **statgenHTP tutorial: 3. Correction for spatial trends**). These columns are necessary for fitting models on data in case of augmented design [@Piepho2016].
+in the original `data.frame` (called "PhenovatorDat1"). The option `experimentName` is used for identifying the data set and is a requirement. The column "Genotype" in the original data is renamed to "genotype" and converted to a factor. The columns "Replicate" and "pos" are renamed and converted likewise. The newly created column "plotID" needs to be a unique identifier for a plot or a plant. It cannot occur more than once per time point. The columns "y" and "x" are renamed to "rowNum" and "colNum" respectively. Simultaneously, two columns "rowId" and "colId" are created containing the same information converted to a factor. This seemingly duplicate information is needed for spatial analysis. The information about which columns have been renamed when creating a `TP` object is stored as an attribute of each individual `data.frame` in the object. The option `addCheck` is set as `TRUE` to specify that the genotypes listed in `checkGenotypes` are reference genotypes (or checks). This option will create a column "check" with a value "noCheck" for the genotypes that are not in `checkGenotypes` and the name of the genotype for the `checkGenotypes`. Also a column "genoCheck" is added with the names of the genotypes that are not in `checkGenotypes` and `NA` for the `checkGenotypes` (see [**statgenHTP tutorial: 3. Correction for spatial trends**](SpatialModel_HTP.html)). These columns are necessary for fitting models on data in case of augmented design [@Piepho2016].
 
 ## Plotting a `TP` object
 
