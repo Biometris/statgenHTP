@@ -19,7 +19,7 @@
 #' # spatial trends and time points outliers have been removed
 #' # Format the timepoint
 #' spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
-#' # Run the function to fit p-spline using the mgcv package on a subset of
+#' # Run the function to fit P-spline using the mgcv package on a subset of
 #' # genotypes
 #' subGeno <- c("G70","G160","G151","G179","G175","G4","G55")
 #' fit.spline <- fitSpline(inDat = spatCorrVator,
@@ -27,11 +27,11 @@
 #'                         genotypes = subGeno,
 #'                         knots = 50,
 #'                         perMinTP = 0.8)
-#' # Extracting the tables of predicted values and pspline coeficients
+#' # Extracting the tables of predicted values and P-spline coeficients
 #' pred.Dat <- fit.spline$predDat
 #' coef.Dat <- fit.spline$coefDat
 #'
-#' ## We can then visualise the p-spline predictions and first derivatives
+#' ## We can then visualise the P-spline predictions and first derivatives
 #' # for a subset of genotypes...
 #' plot(fit.spline, genotypes = "G160")
 #' # ...or for a subset of plots.
@@ -240,6 +240,7 @@ plot.HTPSpline <- function(x,
                            plotType = c("predictions", "derivatives"),
                            genotypes = NULL,
                            plotIds = NULL,
+                           title = NULL,
                            output = TRUE) {
   plotType <- match.arg(plotType)
   plotVar <- if (plotType == "predictions") "pred.value" else "deriv"
@@ -292,17 +293,22 @@ plot.HTPSpline <- function(x,
     stop("At least one valid combination of genotype and plotId should be ",
          "selected.\n")
   }
+  ## Construct plot title.
+  if (is.null(title)) {
+    if (plotType == "predictions") {
+      title <- "Corrected data and P-spline prediction"
+    } else {
+      title <- "P-spline first derivatives"
+    }
+  }
   timeVar <- if (useTimeNumber) "timeNumber" else "timePoint"
   p <- ggplot2::ggplot(modDat, ggplot2::aes_string(x = timeVar, y = trait)) +
     ggplot2::geom_line(data = predDat,
                        ggplot2::aes_string(x = timeVar, y = plotVar),
                        col = "blue", na.rm = TRUE) +
-    ggplot2::labs(y = trait, x = timeVar)
+    ggplot2::labs(title = title, y = trait, x = timeVar)
   if (plotType == "predictions") {
-    p <- p + ggplot2::geom_point(na.rm = TRUE) +
-      ggplot2::ggtitle("Corrected data and Pspline prediction")
-  } else {
-    p <- p + ggplot2::ggtitle("Pspline first derivatives")
+    p <- p + ggplot2::geom_point(na.rm = TRUE)
   }
   if (!useTimeNumber) {
     ## Compute the number of breaks for the time scale.
@@ -375,7 +381,7 @@ plot.HTPSpline <- function(x,
 #'
 #' @examples # Format the timepoint
 #' spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
-#' # Run the function to fit p-spline using the mgcv package on a subset of
+#' # Run the function to fit P-spline using the mgcv package on a subset of
 #' # genotypes
 #' subGeno <- c("G70","G160","G151","G179","G175","G4","G55")
 #' fit.spline <- fitSpline(inDat = spatCorrVator,

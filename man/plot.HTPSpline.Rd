@@ -10,6 +10,7 @@
   plotType = c("predictions", "derivatives"),
   genotypes = NULL,
   plotIds = NULL,
+  title = NULL,
   output = TRUE
 )
 }
@@ -27,6 +28,9 @@ splines should be plotted.}
 
 \item{plotIds}{A character vector indicating the plotIds for which splines
 should be plotted.}
+
+\item{title}{A character string used as title for the plot. If \code{NULL} a
+default title is added to the plot depending on \code{plotType}.}
 
 \item{output}{Should the plot be output to the current device? If
 \code{FALSE} only a list of ggplot objects is invisibly returned. Ignored if

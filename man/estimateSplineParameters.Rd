@@ -44,7 +44,7 @@ specified interval.
 \examples{
 # Format the timepoint
 spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
-# Run the function to fit p-spline using the mgcv package on a subset of
+# Run the function to fit P-spline using the mgcv package on a subset of
 # genotypes
 subGeno <- c("G70","G160","G151","G179","G175","G4","G55")
 fit.spline <- fitSpline(inDat = spatCorrVator,
