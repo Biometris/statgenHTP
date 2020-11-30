@@ -80,6 +80,9 @@ fitSpline <- function(inDat,
   if (!is.numeric(knots) || length(knots) > 1 || knots < 0) {
     stop("knots should be a positive numerical value.\n")
   }
+  if (knots < 4) {
+    stop("Number of knots should be at least 4 for proper spline fitting.\n")
+  }
   if (!is.numeric(perMinTP) || length(perMinTP) > 1 || perMinTP < 0 ||
       perMinTP > 1) {
     stop("perMinTP should be a numerical value between 0 and 1.\n")
