@@ -165,7 +165,7 @@ fitSpline <- function(inDat,
     ## Restrict data to current plant.
     dat <- inDat[inDat[["plotId"]] == plant, c("timeNumber", trait)]
     ## Manually select minimum number of time points.
-    if (length(unique(dat[["timeNumber"]])) >= minTP) {
+    if (length(unique(dat[!is.na(dat[[trait]]), "timeNumber"])) >= minTP) {
       ## Fit the P-spline using gam() function in mgcv.
       ## Manually set the number of knots.
       ## Depends on the number of time points and shape of the curve.
