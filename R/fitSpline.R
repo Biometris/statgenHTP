@@ -244,7 +244,9 @@ plot.HTPSpline <- function(x,
                            genotypes = NULL,
                            plotIds = NULL,
                            title = NULL,
-                           output = TRUE) {
+                           output = TRUE,
+                           outFile = NULL,
+                           outFileOpts = NULL) {
   plotType <- match.arg(plotType)
   plotVar <- if (plotType == "predictions") "pred.value" else "deriv"
   modDat <- attr(x, which = "modDat")
@@ -261,6 +263,13 @@ plot.HTPSpline <- function(x,
   if (!is.null(plotIds) &&
       (!is.character(plotIds) && !all(plotIds %in% predDat[["genotype"]]))) {
     stop("plotIds should be a character vector of plotIds in predDat.\n")
+  }
+  if (!is.null(outFile)) {
+    chkFile(outFile, fileType = "pdf")
+    output <- TRUE
+    outFileOpts <- c(list(file = outFile), outFileOpts)
+    on.exit(dev.off(), add = TRUE)
+    do.call(pdf, args = outFileOpts)
   }
   ## Restrict predDat and modDat to selected genotypes and plotIds.
   if (!is.null(genotypes)) {

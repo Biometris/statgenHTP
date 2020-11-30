@@ -11,7 +11,9 @@
   genotypes = NULL,
   plotIds = NULL,
   title = NULL,
-  output = TRUE
+  output = TRUE,
+  outFile = NULL,
+  outFileOpts = NULL
 )
 }
 \arguments{
@@ -35,6 +37,12 @@ default title is added to the plot depending on \code{plotType}.}
 \item{output}{Should the plot be output to the current device? If
 \code{FALSE} only a list of ggplot objects is invisibly returned. Ignored if
 \code{outFile} is specified.}
+
+\item{outFile}{A character string indicating the .pdf file to which the
+plots should be written. If \code{NULL}, no file is written.}
+
+\item{outFileOpts}{A named list of extra options for the pdf outfile, e.g.
+width and height. See \code{\link[grDevices]{pdf}} for all possible options.}
 }
 \description{
 Plot the results of a fitted spline.

@@ -444,6 +444,7 @@ plot.TP <- function(x,
     chkFile(outFile, fileType = "pdf")
     output <- TRUE
     outFileOpts <- c(list(file = outFile), outFileOpts)
+    on.exit(dev.off(), add = TRUE)
     do.call(pdf, args = outFileOpts)
   }
   if (plotType == "layout") {
@@ -783,9 +784,6 @@ plot.TP <- function(x,
                   title = plotTitle, yLab = trait, output = output,
                   plotLine = plotLine)
     }
-  }
-  if (!is.null(outFile)) {
-    dev.off()
   }
   invisible(p)
 }
