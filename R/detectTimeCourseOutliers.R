@@ -268,8 +268,52 @@ detectTimeCourseOutliers <- function(corrDat,
       return(NULL)
     }
   })
+
+  angle <- function(M) {
+    dotProd <- M[1, ] %*% M[2, ]
+    norm1 <- norm(M[1, ], type = "2")
+    norm2 <- norm(M[2, ], type = "2")
+    theta <- acos(dotProd / (norm1 * norm2))
+    as.numeric(theta)
+  }
+
+  thrPcaAngle <- 1
+  annotatePlantsPcaAngle <- lapply(X = names(plantPcas), FUN = function(geno) {
+    ## Calculate the pairwise difference of coordinates on the 2nd axis and
+    ## annotate plant with average diff larger than threshold.
+    PcVecs <- plantPcas[[geno]]$rotation[, c("PC1", "PC2")]
+    PcAngles <- matrix(nrow = nrow(PcVecs), ncol = nrow(PcVecs),
+                       dimnames = list(rownames(PcVecs), rownames(PcVecs)))
+    PcAngles[lower.tri(PcAngles)] <-
+      combn(x = rownames(PcVecs), m = 2, FUN = function(plants) {
+      angle(PcVecs[plants, ])
+    }, simplify = TRUE)
+    PcAngles[upper.tri(PcAngles)] <- t(PcAngles)[upper.tri(PcAngles)]
+    meanPcAngles <- rowMeans(PcAngles, na.rm = TRUE)
+    if (!is.null(geno.decomp)) {
+      thrPcAnglePlant <- thrPcaAngle[attr(plantPcas[[geno]], which = "genoDecomp")]
+    } else {
+      thrPcAnglePlant <- thrPcaAngle
+    }
+    if (any(meanPcAngles >= thrPcAnglePlant)) {
+      ## Create data.frame with info on plants with average difference.
+      ## above threshold.
+      annPlotsPcAngle <- meanPcAngles[meanPcAngles >= thrPcAnglePlant]
+      return(data.frame(plotId = names(annPlotsPcAngle), reason = "angle",
+                        value = annPlotsPcAngle))
+    } else {
+      return(NULL)
+    }
+  })
+
+
+
+
+
+
   ## Create full data.frame with annotated plants.
-  annotatePlants <- do.call(rbind, c(annotatePlantsCor, annotatePlantsPca))
+  annotatePlants <- do.call(rbind, c(annotatePlantsCor, annotatePlantsPca,
+                                     annotatePlantsPcaAngle))
   if (!is.null(annotatePlants)) {
     ## Merge genotype and geno.decomp to annotated plants.
     annotatePlants <- merge(unique(corrDatPred[c("genotype", geno.decomp,
