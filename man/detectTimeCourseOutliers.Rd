@@ -66,7 +66,7 @@ outVator <- detectTimeCourseOutliers(corrDat = spatCorrVator,
                          genotypes = subGenoVator,
                          thrCor = 0.9,
                          thrPca = 1)
-# The `outVator` can be visualised by selecting genotypes
+# The `outVator` can be visualized by selecting genotypes
 plot(outVator, genotypes = "G151")
 
 }

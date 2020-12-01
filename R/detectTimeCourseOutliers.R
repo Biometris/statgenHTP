@@ -44,7 +44,7 @@
 #'                          genotypes = subGenoVator,
 #'                          thrCor = 0.9,
 #'                          thrPca = 1)
-#' # The `outVator` can be visualised by selecting genotypes
+#' # The `outVator` can be visualized by selecting genotypes
 #' plot(outVator, genotypes = "G151")
 #'
 #' @family Detect time course outliers
@@ -219,7 +219,11 @@ detectTimeCourseOutliers <- function(corrDat,
   })
   annotatePlantsCor <- lapply(X = names(cormats), FUN = function(geno) {
     if (!is.null(cormats[[geno]])) {
-      meanCor <- rowMeans(cormats[[geno]], na.rm = TRUE)
+      ## Compute mean based on all but the worst correlation per plant.
+      ## This prevents one bad correlation causing all plants to be outliers.
+      meanCor <- apply(cormats[[geno]], MARGIN = 1, FUN = function(plant) {
+        mean(plant[-which(rank(plant) == 1)], na.rm = TRUE)
+      })
       thrCorPlant <- attr(cormats[[geno]], which = "thrCor")
     } else {
       meanCor <- NULL
