@@ -178,6 +178,12 @@ detectTimeCourseOutliers <- function(corrDat,
                                                     value.var = "obj.coefficients")
                         ## Remove intercept.
                         plantDat <- plantDat[-1, ]
+                        ## Remove plants with only NA.
+                        NAplants <- apply(X = plantDat, MARGIN = 2,
+                                          FUN = function(plant) {
+                                            all(is.na(plant))
+                        })
+                        plantDat <- plantDat[, !NAplants]
                         ## Add geno.decomp as attribute for later use.
                         if (!is.null(geno.decomp)) {
                           attr(plantDat, which = "genoDecomp") <-
@@ -451,7 +457,8 @@ plot.timeCourseOutliers <- function(x,
                           na.rm = TRUE) +
       ggplot2::geom_line(data = genoPreds[[genotype]],
                          ggplot2::aes_string(x = timeVar,
-                                             y = "pred.value"), size = 0.5) +
+                                             y = "pred.value"),
+                         size = 0.5, na.rm = TRUE) +
       ggplot2::scale_shape_manual(values = plotShapes) +
       ggplot2::theme_light() +
       ggplot2::theme(axis.text = ggplot2::element_text(size = 12),
@@ -599,7 +606,8 @@ removeTimeCourseOutliers <- function(dat = NULL,
       dat[dat[["plotId"]] %in% timeCourseOutliers[["plotId"]], trait] <- NA
     } else if (!is.null(fitSpline)) {
       fitSpline$coefDat[fitSpline$coefDat[["plotId"]] %in%
-                          timeCourseOutliers[["plotId"]], trait] <- NA
+                          timeCourseOutliers[["plotId"]],
+                        "obj.coefficients"] <- NA
       fitSpline$predDat[fitSpline$predDat[["plotId"]] %in%
                           timeCourseOutliers[["plotId"]], c("pred.value",
                                                             "deriv")] <- NA
