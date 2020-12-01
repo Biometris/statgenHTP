@@ -161,7 +161,21 @@ fitSpline <- function(inDat,
     timeRange[["timePoint"]] <- seq(from = timePointRange[1],
                                     to = timePointRange[2],
                                     by = timeNumStep * diff(timePointRange) /
-                                      diff(timeNumRange))
+                                       diff(timeNumRange))
+  }
+  ## Check for plotIds that have a limited amount of observations.
+  plotTab <- table(inDat[!is.na(inDat[[trait]]), "plotId"])
+  plotLimObs <- names(plotTab[plotTab < minTP])
+  if (length(plotLimObs) > 5) {
+    warning("More than 5 ", fitLevel, "s have observations for less than the ",
+            "minimum number of time points, which is ", round(minTP), ". The  ",
+            "first 5 are printed, to see them all run attr(..., 'plotLimObs') ",
+            "on the output\n",
+            paste(plotLimObs[1:5], collapse = ", "), "\n", call. = FALSE)
+  } else if (length(plotLimObs) > 0) {
+    warning("The following ", fitLevel, "s have observations for less than ",
+            "the minimum number of time points, which is ", round(minTP), ":\n",
+            paste(plotLimObs, collapse = ", "), "\n", call. = FALSE)
   }
   ## Fit splines.
   fitSp <- lapply(X = levels(plantGeno[["plotId"]]), FUN = function(plant) {
@@ -221,6 +235,7 @@ fitSpline <- function(inDat,
                    useTimeNumber = useTimeNumber,
                    fitLevel = fitLevel,
                    useGenoDecomp = useGenoDecomp,
+                   plotLimObs = plotLimObs,
                    class = c("HTPSpline", "list"))
   return(res)
 }
