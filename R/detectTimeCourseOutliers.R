@@ -155,13 +155,21 @@ detectTimeCourseOutliers <- function(corrDat,
   if (!is.null(geno.decomp)) {
     predDat <- merge(predDat, unique(corrDat[c("plotId", geno.decomp)]))
   }
-  genoPreds <- split(x = predDat,
-                     f = predDat[c("genotype", geno.decomp)], drop = TRUE)
   ## Restrict to corrected plots that are also in predictions.
   ## Some plots are removed while predicting the splines.
   corrDatPred <- corrDat[corrDat[["plotId"]] %in% predDat[["plotId"]], ]
+  NAplants <- tapply(corrDatPred[[trait]], droplevels(corrDatPred[["plotId"]]),
+                     FUN = function(x) {
+                       all(is.na(x))
+                     })
+  corrDatPred <- corrDatPred[corrDatPred[["plotId"]] %in%
+                               names(NAplants)[!NAplants], ]
   genoDats <- split(x = corrDatPred,
                     f = corrDatPred[c("genotype", geno.decomp)], drop = TRUE)
+  predDat <- predDat[predDat[["plotId"]] %in%
+                       names(NAplants)[!NAplants], ]
+  genoPreds <- split(x = predDat,
+                     f = predDat[c("genotype", geno.decomp)], drop = TRUE)
   ## Reshape the spline coeficients per plant x geno.
   ## First restrict to selected genotypes.
   coefDat <- coefDat[coefDat[["genotype"]] %in% genotypes, ]
@@ -180,9 +188,9 @@ detectTimeCourseOutliers <- function(corrDat,
                         plantDat <- plantDat[-1, ]
                         ## Remove plants with only NA.
                         NAplants <- apply(X = plantDat, MARGIN = 2,
-                                          FUN = function(plant) {
-                                            all(is.na(plant))
-                        })
+                                           FUN = function(plant) {
+                                             all(is.na(plant))
+                         })
                         plantDat <- plantDat[, !NAplants]
                         ## Add geno.decomp as attribute for later use.
                         if (!is.null(geno.decomp)) {
@@ -296,11 +304,11 @@ detectTimeCourseOutliers <- function(corrDat,
     }, simplify = TRUE)
     PcAngles[upper.tri(PcAngles)] <- t(PcAngles)[upper.tri(PcAngles)]
     meanPcAngles <- rowMeans(PcAngles, na.rm = TRUE)
-    if (!is.null(geno.decomp)) {
-      thrPcAnglePlant <- thrPcaAngle[attr(plantPcas[[geno]], which = "genoDecomp")]
-    } else {
+    # if (!is.null(geno.decomp)) {
+    #   thrPcAnglePlant <- thrPcaAngle[attr(plantPcas[[geno]], which = "genoDecomp")]
+    # } else {
       thrPcAnglePlant <- thrPcaAngle
-    }
+    # }
     if (any(meanPcAngles >= thrPcAnglePlant)) {
       ## Create data.frame with info on plants with average difference.
       ## above threshold.
