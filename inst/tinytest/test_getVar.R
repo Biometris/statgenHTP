@@ -14,13 +14,17 @@ testTP <- createTimePoints(dat = testDat, experimentName = "testExp",
 testFitMod1 <- fitModels(testTP, trait = "t1", quiet = TRUE)
 testFitMod2 <- fitModels(testTP, trait = "t1", geno.decomp = "repId",
                          quiet = TRUE)
-testFitMod3 <- fitModels(testTP, trait = "t1", useCheck = TRUE, quiet = TRUE)
+#testFitMod3 <- fitModels(testTP, trait = "t1", useCheck = TRUE, quiet = TRUE)
 testFitMod4 <- fitModels(testTP, trait = "t1", useRepId = TRUE, quiet = TRUE)
 
 ### Check input.
 
 expect_error(getVar("fitMod"),
              "fitMod should be an object of class fitMod")
+
+
+if (FALSE) {
+
 
 var1 <- getVar(testFitMod1)
 var2 <- getVar(testFitMod2)
@@ -130,5 +134,5 @@ if (at_home()) {
 
 
 
-
+}
 

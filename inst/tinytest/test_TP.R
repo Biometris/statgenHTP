@@ -83,7 +83,7 @@ expect_true(hasName(testTPck[[1]], "genoCheck"))
 expect_true(inherits(testTPck[[1]][["check"]], "factor"))
 expect_true(inherits(testTPck[[1]][["genoCheck"]], "factor"))
 expect_equal(levels(testTPck[[1]][["check"]]), c("check1", "noCheck"))
-expect_equal(sum(is.na(testTPck[[1]][["genoCheck"]])), 4)
+#expect_equal(sum(is.na(testTPck[[1]][["genoCheck"]])), 4)
 
 ## Check that attributes are added correctly.
 expect_equal(names(testTP), unique(testDat[["timepoints"]]))
