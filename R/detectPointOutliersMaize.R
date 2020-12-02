@@ -20,8 +20,6 @@
 #' @param trait1 A character vector indicating the first trait to model in TP.
 #' @param trait2 A character vector indicating the second trait to model in TP.
 #' @param trait3 A character vector indicating the third trait to model in TP.
-#' @param plotIds A character vector of plotIds for which the outliers should be
-#' detected. If \code{NULL}, all plotId in TP are used.
 #' @param thr A numeric value indicating the threshold.
 #'
 #' @examples ## Create a TP object containing the data from the PhenoArch

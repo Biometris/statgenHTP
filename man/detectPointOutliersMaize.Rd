@@ -29,9 +29,6 @@ existing timePoints. When using a number it will be matched by its number
 \item{trait3}{A character vector indicating the third trait to model in TP.}
 
 \item{thr}{A numeric value indicating the threshold.}
-
-\item{plotIds}{A character vector of plotIds for which the outliers should be
-detected. If \code{NULL}, all plotId in TP are used.}
 }
 \description{
 Function to detect plant outliers in a temporal lattice experiment on Maize
