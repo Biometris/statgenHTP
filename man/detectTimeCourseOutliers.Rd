@@ -12,7 +12,7 @@ detectTimeCourseOutliers(
   genotypes = NULL,
   geno.decomp = NULL,
   thrCor = 0.9,
-  thrPca = 1
+  thrPca = 30
 )
 }
 \arguments{
@@ -36,7 +36,7 @@ group the genotypic variance in the model.}
 based on correlation between plots.}
 
 \item{thrPca}{A numerical value used as threshold for determining outliers
-based on PCA scores.}
+based on angles (in degrees) between PCA scores.}
 }
 \description{
 Function for detecting outliers.
@@ -46,7 +46,7 @@ Function for detecting outliers.
 ## spatial trends and time points outliers have been removed.
 # Format the timepoint
 spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
-# Run the function to fit p-spline using the mgcv package on a subset of
+# Run the function to fit P-spline using the mgcv package on a subset of
 # genotypes
 subGenoVator <- c("G70","G160","G151","G179","G175","G4","G55")
 fit.spline <- fitSpline(inDat = spatCorrVator,
@@ -54,7 +54,7 @@ fit.spline <- fitSpline(inDat = spatCorrVator,
                         genotypes = subGenoVator,
                         knots = 50,
                         perMinTP = 0.8)
-# Extracting the tables of predicted values and pspline coeficients
+# Extracting the tables of predicted values and P-spline coeficients
 pred.Dat <- fit.spline$predDat
 coef.Dat <- fit.spline$coefDat
 

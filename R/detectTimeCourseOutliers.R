@@ -15,7 +15,7 @@
 #' @param thrCor A numerical value used as threshold for determining outliers
 #' based on correlation between plots.
 #' @param thrPca A numerical value used as threshold for determining outliers
-#' based on PCA scores.
+#' based on angles (in degrees) between PCA scores.
 #'
 #' @importFrom stats dist
 #'
@@ -24,7 +24,7 @@
 #' ## spatial trends and time points outliers have been removed.
 #' # Format the timepoint
 #' spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
-#' # Run the function to fit p-spline using the mgcv package on a subset of
+#' # Run the function to fit P-spline using the mgcv package on a subset of
 #' # genotypes
 #' subGenoVator <- c("G70","G160","G151","G179","G175","G4","G55")
 #' fit.spline <- fitSpline(inDat = spatCorrVator,
@@ -32,7 +32,7 @@
 #'                         genotypes = subGenoVator,
 #'                         knots = 50,
 #'                         perMinTP = 0.8)
-#' # Extracting the tables of predicted values and pspline coeficients
+#' # Extracting the tables of predicted values and P-spline coeficients
 #' pred.Dat <- fit.spline$predDat
 #' coef.Dat <- fit.spline$coefDat
 #'
@@ -49,6 +49,7 @@
 #'
 #' @family Detect time course outliers
 #'
+#' @importFrom utils combn
 #' @export
 detectTimeCourseOutliers <- function(corrDat,
                                      predDat,
@@ -57,7 +58,7 @@ detectTimeCourseOutliers <- function(corrDat,
                                      genotypes = NULL,
                                      geno.decomp = NULL,
                                      thrCor = 0.9,
-                                     thrPca = 1) {
+                                     thrPca = 30) {
   ## Checks.
   if (!is.character(trait) || length(trait) > 1) {
     stop("trait should be a character string of length 1.\n")
@@ -260,42 +261,11 @@ detectTimeCourseOutliers <- function(corrDat,
     attr(meltedCormat, which = "thrCor") <- attr(cormat, which = "thrCor")
     return(meltedCormat)
   })
-  annotatePlantsPca <- lapply(X = names(plantPcas), FUN = function(geno) {
-    ## Calculate the pairwise difference of coordinates on the 2nd axis and
-    ## annotate plant with average diff larger than threshold.
-    diffPc2 <- as.matrix(dist(plantPcas[[geno]]$rotation[, "PC2"]))
-    diag(diffPc2) <- NA
-    meanPc2 <- rowMeans(diffPc2, na.rm = TRUE)
-    if (!is.null(geno.decomp)) {
-      thrPcaPlant <- thrPca[attr(plantPcas[[geno]], which = "genoDecomp")]
-    } else {
-      thrPcaPlant <- thrPca
-    }
-    ## Create shape for plotting.
-    if (any(meanPc2 >= thrPcaPlant)) {
-      ## Create data.frame with info on plants with average difference.
-      ## above threshold.
-      annPlotsPc2 <- meanPc2[meanPc2 >= thrPcaPlant]
-      return(data.frame(plotId = names(annPlotsPc2), reason = "pc2",
-                        value = annPlotsPc2))
-    } else {
-      return(NULL)
-    }
-  })
-
-  angle <- function(M) {
-    dotProd <- M[1, ] %*% M[2, ]
-    norm1 <- norm(M[1, ], type = "2")
-    norm2 <- norm(M[2, ], type = "2")
-    theta <- acos(dotProd / (norm1 * norm2))
-    as.numeric(theta)
-  }
-
-  thrPcaAngle <- 1
   annotatePlantsPcaAngle <- lapply(X = names(plantPcas), FUN = function(geno) {
     ## Calculate the pairwise difference of coordinates on the 2nd axis and
     ## annotate plant with average diff larger than threshold.
-    PcVecs <- plantPcas[[geno]]$rotation[, c("PC1", "PC2")]
+    plantPcaPlot <- factoextra::fviz_pca_var(plantPcas[[geno]])
+    PcVecs <- as.matrix(plantPcaPlot$data[, 2:3])
     PcAngles <- matrix(nrow = nrow(PcVecs), ncol = nrow(PcVecs),
                        dimnames = list(rownames(PcVecs), rownames(PcVecs)))
     PcAngles[lower.tri(PcAngles)] <-
@@ -304,30 +274,23 @@ detectTimeCourseOutliers <- function(corrDat,
     }, simplify = TRUE)
     PcAngles[upper.tri(PcAngles)] <- t(PcAngles)[upper.tri(PcAngles)]
     meanPcAngles <- rowMeans(PcAngles, na.rm = TRUE)
-    # if (!is.null(geno.decomp)) {
-    #   thrPcAnglePlant <- thrPcaAngle[attr(plantPcas[[geno]], which = "genoDecomp")]
-    # } else {
-      thrPcAnglePlant <- thrPcaAngle
-    # }
-    if (any(meanPcAngles >= thrPcAnglePlant)) {
+    if (!is.null(geno.decomp)) {
+      thrPcaPlant <- thrPca[attr(plantPcas[[geno]], which = "genoDecomp")]
+    } else {
+      thrPcaPlant <- thrPca
+    }
+    if (any(meanPcAngles >= thrPcaPlant)) {
       ## Create data.frame with info on plants with average difference.
       ## above threshold.
-      annPlotsPcAngle <- meanPcAngles[meanPcAngles >= thrPcAnglePlant]
+      annPlotsPcAngle <- meanPcAngles[meanPcAngles >= thrPcaPlant]
       return(data.frame(plotId = names(annPlotsPcAngle), reason = "angle",
                         value = annPlotsPcAngle))
     } else {
       return(NULL)
     }
   })
-
-
-
-
-
-
   ## Create full data.frame with annotated plants.
-  annotatePlants <- do.call(rbind, c(annotatePlantsCor, annotatePlantsPca,
-                                     annotatePlantsPcaAngle))
+  annotatePlants <- do.call(rbind, c(annotatePlantsCor, annotatePlantsPcaAngle))
   if (!is.null(annotatePlants)) {
     ## Merge genotype and geno.decomp to annotated plants.
     annotatePlants <- merge(unique(corrDatPred[c("genotype", geno.decomp,
@@ -374,7 +337,7 @@ detectTimeCourseOutliers <- function(corrDat,
 #' ## trends and time points outliers have been removed.
 #' # Format the timepoint
 #' spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
-#' # Run the function to fit p-spline using the mgcv package on a subset of
+#' # Run the function to fit P-spline using the mgcv package on a subset of
 #' # genotypes
 #' subGenoVator <- c("G70","G160","G151","G179","G175","G4","G55")
 #' fit.spline <- fitSpline(inDat = spatCorrVator,
@@ -382,7 +345,7 @@ detectTimeCourseOutliers <- function(corrDat,
 #'                         genotypes = subGenoVator,
 #'                         knots = 50,
 #'                         perMinTP = 0.8)
-#' # Extracting the tables of predicted values and pspline coeficients
+#' # Extracting the tables of predicted values and P-spline coeficients
 #' pred.Dat <- fit.spline$predDat
 #' coef.Dat <- fit.spline$coefDat
 #'
@@ -550,7 +513,7 @@ plot.timeCourseOutliers <- function(x,
 #'
 #' @examples # Format the timepoint
 #' spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
-#' # Run the function to fit p-spline using the mgcv package on a subset of
+#' # Run the function to fit P-spline using the mgcv package on a subset of
 #' # genotypes
 #' subGenoVator <- c("G70","G160","G151","G179","G175","G4","G55")
 #' fit.spline <- fitSpline(inDat = spatCorrVator,
@@ -558,7 +521,7 @@ plot.timeCourseOutliers <- function(x,
 #'                         genotypes = subGenoVator,
 #'                         knots = 50,
 #'                         perMinTP = 0.8)
-#' # Extracting the tables of predicted values and pspline coeficients
+#' # Extracting the tables of predicted values and P-spline coeficients
 #' pred.Dat <- fit.spline$predDat
 #' coef.Dat <- fit.spline$coefDat
 #'

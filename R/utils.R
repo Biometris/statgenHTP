@@ -447,6 +447,18 @@ dfBind <- function(dfList) {
   )
 }
 
+#' Helper function for computing angles
+#'
+#' @noRd
+#' @keywords internal
+angle <- function(M) {
+  dotProd <- M[1, ] %*% M[2, ]
+  norm1 <- norm(M[1, ], type = "2")
+  norm2 <- norm(M[2, ], type = "2")
+  theta <- acos(dotProd / (norm1 * norm2))
+  return(as.numeric(theta) * 180 / pi)
+}
+
 #' Count valid observations per time point for a given trait
 #'
 #' Count valid observations per time point for a given trait.
@@ -509,3 +521,4 @@ countValidPlot <- function(TP,
     sum(plotIdsValid == plotId)
   })
 }
+

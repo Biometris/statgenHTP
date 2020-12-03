@@ -45,7 +45,7 @@ plot.timeCourseOutliers
 ## trends and time points outliers have been removed.
 # Format the timepoint
 spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
-# Run the function to fit p-spline using the mgcv package on a subset of
+# Run the function to fit P-spline using the mgcv package on a subset of
 # genotypes
 subGenoVator <- c("G70","G160","G151","G179","G175","G4","G55")
 fit.spline <- fitSpline(inDat = spatCorrVator,
@@ -53,7 +53,7 @@ fit.spline <- fitSpline(inDat = spatCorrVator,
                         genotypes = subGenoVator,
                         knots = 50,
                         perMinTP = 0.8)
-# Extracting the tables of predicted values and pspline coeficients
+# Extracting the tables of predicted values and P-spline coeficients
 pred.Dat <- fit.spline$predDat
 coef.Dat <- fit.spline$coefDat
 
