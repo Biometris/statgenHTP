@@ -34,7 +34,7 @@ Each time course is modeled by a nonparametric smoothing spline with a fixed num
 knitr::include_graphics("figures/pspline.png", auto_pdf = TRUE)
 ```
 
-The estimates for the spline coefficients are then extracted per time course (typically per plant) and correlations between those coefficient vectors are calculated to identify outlying time courses, *i.e.*, plants. An outlying time course will have low correlation to the majority of time courses. To support the analysis by correlations, a principal component analysis can be done on the plant (time course) by spline coefficient matrix. A PCA plot of the plant scores will show the outlying plant.
+The estimates for the spline coefficients are then extracted per time course (typically per plant) and correlations between those coefficient vectors are calculated to identify outlying time courses, *i.e.*, plants. An outlying time course will have low correlation to the majority of time courses. To support the analysis by correlations, a principal component analysis can be done on the plant (time course) by spline coefficient matrix. A PCA plot of the plant scores will show the outlying plants.
 
 *To note,* for P-splines in a generalized additive model (gam), the smoothing coefficient is optimized by restricted maximum likelihood but the number of knots is chosen by the user.
 
@@ -44,7 +44,7 @@ The estimates for the spline coefficients are then extracted per time course (ty
 
 The function `fitSpline()` fits a P-spline per plant for the selected `trait` using the number of `knots` chosen by the user. In P-spline, the knots are equally spaced and their number can be large. The user should also chose an appropriate proportion of minimum number of time points that should be in the data set per plant `perMinTP`. When a plant has less time points than the minimum, it will be skipped from the analysis.
 
-The functions are illustrated with the three example data sets. For more information about the data, see [*Intro\_HTP*](Intro_HTP.html).
+The functions are illustrated with the three example data sets. For more information about the data, see [*Intro_HTP*](Intro_HTP.html).
 
 ## Example 1
 
@@ -107,7 +107,7 @@ The object `fit.spline` also contains the values of the P-splines coefficients:
 knitr::kable(head(coef.Dat), align=c('c','c'), booktabs = TRUE)
 ```
 
-The coefficients are then used to tag suspect time courses with the function `detectOutliers()`. This function performs a PCA on the coefficients (from data.frame `coef.Dat`) per `genotype` and tags the plants that have a coordinate on the second PC axis above a threshold (`thrPca`), see the lines `reason = pc2` in the table below. The function also calculates the pairwise-correlation of the coefficients per genotype. Plants are tagged when the correlation is below a given threshold (`thrCor`), see the lines `reason = mean corr` in the table below.
+The coefficients are then used to tag suspect time courses with the function `detectOutliers()`. This function performs a PCA on the coefficients (from data.frame `coef.Dat`) per `genotype` and calculates the pairwise angle between the plants in the PCA plot. Plants are tagged when the mean angle is above threshold (`thrPca)`, see the lines `reason = angle` in the table below. The function also calculates the pairwise-correlation of the coefficients per genotype. Plants are tagged when the correlation is below a given threshold (`thrCor`), see the lines `reason = mean corr` in the table below.
 
 For obvious reasons, the detection will only work when there are at least three replicates per genotype. Genotypes with less than three replicates will be skipped.
 
@@ -119,7 +119,7 @@ outVator <-
                            trait = "EffpsII_corr",
                            genotypes = subGenoVator,
                            thrCor = 0.9,
-                           thrPca = 1) 
+                           thrPca = 30) 
 ```
 
 ```{r headOutPoint, echo=FALSE, message=FALSE, eval=TRUE}
@@ -128,8 +128,7 @@ knitr::kable(head(outVator), align=c('c','c'), booktabs = TRUE, row.names=F)
 
 For this subset of genotypes, 4 plants were tagged as outliers:
 
--   c21r25 and c9r4 had both low correlations and extreme PC axis coordinates,\
--   c11r55 and c4r13 had extreme PC axis coordinates.
+-   c21r25 and c9r4 had both low correlations and high angles.
 
 The `outVator` can be visualized by selecting genotypes. Here genotype G151 which has plant c21r25 tagged as outlier:
 
@@ -158,11 +157,11 @@ Finally, the outlying plants can be removed from the data set...
 spatCorrVatorOut <- removeTimeCourseOutliers(dat = spatCorrVator,
                                              timeCourseOutliers = outVator)
 # Check one value annotated as outlier in the original corrected data.frame
-head(spatCorrVator[spatCorrVator$plotId=="c21r25",
-                   c("EffpsII_corr","EffpsII")])
+head(spatCorrVator[spatCorrVator$plotId == "c21r25",
+                   c("EffpsII_corr", "EffpsII")])
 # Check the same value in the new corrected data.frame
-head(spatCorrVatorOut[spatCorrVatorOut$plotId=="c21r25",
-                      c("EffpsII_corr","EffpsII")])
+head(spatCorrVatorOut[spatCorrVatorOut$plotId == "c21r25",
+                      c("EffpsII_corr", "EffpsII")])
 ```
 
 ... and from the predictions.
@@ -242,9 +241,11 @@ outArch <-
                            trait = "LA_Estimated_corr",
                            genotypes = subGenoArch,
                            thrCor = 0.9,
-                           thrPca = 1,
+                           thrPca = 10,
                            geno.decomp = "geno.decomp")
 ```
+
+THERE ARE NO OUTLIERS. SHOULD WE PRINT THIS TABLE?
 
 ```{r headOutPointArch, echo=FALSE, message=FALSE, eval=TRUE}
 knitr::kable(head(outArch), align=c('c','c'), booktabs = TRUE, row.names=F)
@@ -297,7 +298,7 @@ outRoot <- detectTimeCourseOutliers(corrDat = noCorrRoot,
                                     trait = "tipPos_y",
                                     genotypes = subGenoRoot,
                                     thrCor = 0.9,
-                                    thrPca = 1.2)
+                                    thrPca = 25)
 
 ```
 
@@ -309,13 +310,13 @@ plot(outRoot,
 After manual check, we will remove only two of the detected time courses:
 
 ```{r rmOutRoot}
-outRootFinal <- outRoot[outRoot$plotId %in% c("A_03_5","A_29_2"),]
+outRootFinal <- outRoot[outRoot$plotId %in% c("A_03_5", "A_29_2"),]
 noCorrRootOut <- removeTimeCourseOutliers(dat = noCorrRoot,
                                           timeCourseOutliers = outRootFinal)
 # Check one value annotated as outlier in the original corrected data.frame
-head(noCorrRoot[noCorrRoot$plotId=="A_29_2","tipPos_y"])
+head(noCorrRoot[noCorrRoot$plotId == "A_29_2", "tipPos_y"])
 # Check the same value in the new corrected data.frame
-head(noCorrRootOut[noCorrRootOut$plotId=="A_29_2","tipPos_y"])
+head(noCorrRootOut[noCorrRootOut$plotId == "A_29_2", "tipPos_y"])
 ```
 
 ------------------------------------------------------------------------
@@ -326,8 +327,7 @@ An outlier plant is defined as a biological replicate deviating from the overall
 
 ## Rules in the case of maize
 
-We consider two categories of potentially outlier plants, namely apparently __too small__ or __too large__ plants.
-For the detection of unexpectedly small plants with likely physiological disorders, the progression of leaf stages was considered in addition to the time course of shoot biomass. Indeed, leaf appearance rate carries a non-redundant information compared with biomass (confirmed by standard correlation calculations). It usually presents a low plant-to-plant variability excepted in case of severe disorders, and is relatively insensitive to environmental cues other than temperature. For the detection of unexpectedly large plants, potentially associated with wrong genotype identification, combining plant height and biomass can result in an efficient identification.
+We consider two categories of potentially outlier plants, namely apparently **too small** or **too large** plants. For the detection of unexpectedly small plants with likely physiological disorders, the progression of leaf stages was considered in addition to the time course of shoot biomass. Indeed, leaf appearance rate carries a non-redundant information compared with biomass (confirmed by standard correlation calculations). It usually presents a low plant-to-plant variability excepted in case of severe disorders, and is relatively insensitive to environmental cues other than temperature. For the detection of unexpectedly large plants, potentially associated with wrong genotype identification, combining plant height and biomass can result in an efficient identification.
 
 ## Statistical modelling: a mixed model at a given time (defined by the expert)
 
@@ -337,11 +337,11 @@ Each of the selected traits was measured (or estimated) at a specific time (for 
 knitr::include_graphics("figures/multi_trait_approach.png", auto_pdf = TRUE)
 ```
 
-As shown above, traits are modeled with a mixed model that considers fixed experiment (Env) effect and random genotypic (G), replicate (R) and spatial (C) effects. The model can be fitted with the SpATS R-package, (@RodAlv2018). Residuals (deviations) can be directly computed from the fitting, with a confidence interval. Plants, whose deviations for the criteria of leaf appearance rate and biomass are less than the lower bound of this interval, are considered as __outlier small plants__. Plants, whose deviations for the criteria of plant height and biomass are greater than the upper bound of the confidence interval, are considered as __outlier large plants__.
+As shown above, traits are modeled with a mixed model that considers fixed experiment (Env) effect and random genotypic (G), replicate (R) and spatial (C) effects. The model can be fitted with the SpATS R-package, (@RodAlv2018). Residuals (deviations) can be directly computed from the fitting, with a confidence interval. Plants, whose deviations for the criteria of leaf appearance rate and biomass are less than the lower bound of this interval, are considered as **outlier small plants**. Plants, whose deviations for the criteria of plant height and biomass are greater than the upper bound of the confidence interval, are considered as **outlier large plants**.
 
 ## Implementation in statgenHTP
 
-Mixed models are fitted with the R-package SpATS through the use of the `detectPointOutliersMaize` function, which was developed specifically for the maize data, as described above. This function fits a mixed model for each parameter, and tests whether the residual deviations are lower (for the criteria considered for small plants) or higher (for the criteria considered for big plants) than a specified threshold. 
+Mixed models are fitted with the R-package SpATS through the use of the `detectPointOutliersMaize` function, which was developed specifically for the maize data, as described above. This function fits a mixed model for each parameter, and tests whether the residual deviations are lower (for the criteria considered for small plants) or higher (for the criteria considered for big plants) than a specified threshold.
 
 ```{r maizPl}
 phenoTParch <- createTimePoints(dat = PhenoarchDat1,
@@ -359,11 +359,11 @@ test2 <- detectPointOutliersMaize(phenoTParch,
                                   trait3 = "phyllocron")
 ```
 
-The `detectPointOutliersMaize` returns a list of 3 elements : 
+The `detectPointOutliersMaize` returns a list of 3 elements :
 
-* modDat: a data.frame with the used data set, the fitted values and residuals calculated by the models, and the plants flagged as outlier
-* smallPlants: a data.frame of the "small" plants detected as outliers
-* bigPlants: a data.frame of the "big" plants detected as outliers
+-   modDat: a data.frame with the used data set, the fitted values and residuals calculated by the models, and the plants flagged as outlier
+-   smallPlants: a data.frame of the "small" plants detected as outliers
+-   bigPlants: a data.frame of the "big" plants detected as outliers
 
 ```{r headsmallPl, echo=FALSE, message=FALSE, eval=TRUE}
 knitr::kable(test2$smallPlants[1:6,1:5], align=c('c','c'), booktabs = TRUE)
