@@ -228,7 +228,7 @@ plot.pointOutliers <- function(x,
     ## Less than 25 plots.
     ## Fill page by row of 5 plots.
     plotsPag <- nPlots %% 25
-    rowPag <- min(plotsPag %/% 5 + 1, 5)
+    rowPag <- min(ceiling(plotsPag / 5), 5)
     colPag <- ifelse(plotsPag >= 5, 5, plotsPag)
   }
   ## Build pages of plots.
