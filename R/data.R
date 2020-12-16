@@ -124,6 +124,26 @@
 #' }
 "spatCorrArch"
 
+#' Maize data, genotypic predictions.
+#'
+#' This dataset contains the genotypic predictions obtained by (1) removing point
+#' outliers and (2) running a spatial model on the PhenoarchDat1 dataset.
+#' See the vignettes for details.
+#'
+#' @format A data.frame with 6,120 rows and 6 columns:
+#' \describe{
+#'   \item{timeNumber}{Time number obtained after formatting the original
+#'   dataset with the function createTP.}
+#'   \item{timePoint}{Original time point.}
+#'   \item{geno.decomp}{Combination of treatment levels to decompose the
+#'   genotypic variance (see vignettes)}
+#'   \item{genotype}{Genotypes}
+#'   \item{predicted.values}{Biomass, predicted values}
+#'   \item{standard.errors}{Standard errors associated with the prediction}
+#' }
+"spatPredArch"
+
+
 #' Greenhouse data for an experiment in the RootPhAir platform.
 #'
 #' A dataset containing greenhouse data from two experiments in the RootPhAir
