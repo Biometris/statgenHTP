@@ -1,6 +1,13 @@
 #' Outlier detection
 #'
-#' Function for detecting outliers.
+#' Function for detecting strange time course. The function uses the estimates for
+#' the spline coefficients per time course (typically per plant). Correlations
+#' between those coefficient vectors are calculated to identify outlying time
+#' courses, i.e., plants. An outlying time course will have low correlation
+#' to the majority of time courses. To support the analysis by correlations,
+#' a principal component analysis can be done on the plant (time course)
+#' by spline coefficient matrix. A PCA plot of the plant scores will show
+#' the outlying plants.
 #'
 #' @param corrDat A data.frame with corrected spatial data.
 #' @param predDat A data.frame with predicted data from a fitted spline.
