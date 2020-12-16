@@ -35,6 +35,8 @@ timy$timeNumDiff <- c(0,timeNum[1:(length(timeNum)-1)])
 timy$timeNum <- cumsum(timy$timeNumDiff)
 # add to spatCorrVator
 spatCorrVator$timeNumHour <- timy$timeNum[match(spatCorrVator$timePoint,timy$timePoint)]
+# Format the timepoint
+spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
 # Export to package
 usethis::use_data(spatCorrVator, overwrite = TRUE)
 
@@ -52,6 +54,8 @@ usethis::use_data(PhenoarchDat1, overwrite = TRUE)
 # Read raw data.
 spatCorrArch <- read.csv(system.file("extdata", "PhenoArchDat1_corr_OutPoint_LA.csv",
                                      package = "statgenHTP"))
+# Format the timepoint
+spatCorrArch$timePoint <- lubridate::as_datetime(spatCorrArch$timePoint)
 # Export to package
 usethis::use_data(spatCorrArch, overwrite = TRUE)
 
@@ -59,6 +63,8 @@ usethis::use_data(spatCorrArch, overwrite = TRUE)
 # Read raw data.
 spatPredArch <- read.csv(system.file("extdata", "PhenoArchDat1_pred_OutPoint_LA.csv",
                                      package = "statgenHTP"))
+# Format the timepoint
+spatPredArch$timePoint <- lubridate::as_datetime(spatPredArch$timePoint)
 # Export to package
 usethis::use_data(spatPredArch, overwrite = TRUE)
 
@@ -78,6 +84,8 @@ usethis::use_data(RootDat1, overwrite = TRUE)
 noCorrRoot <- read.csv(system.file("extdata", "RootDat1_nocorr.csv",
                                    package = "statgenHTP"))
 noCorrRoot <- noCorrRoot[,c(11,12,3,2,4,6,5,7,8,10)]
+# Format the timepoint
+noCorrRoot$timePoint <- lubridate::as_datetime(noCorrRoot$timePoint)
 # Export to package
 usethis::use_data(noCorrRoot, overwrite = TRUE)
 

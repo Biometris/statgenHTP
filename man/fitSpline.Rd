@@ -37,7 +37,10 @@ indicating the column containing the numerical time to use.}
 \item{perMinTP}{The percentage of minimum number of time points to use.}
 }
 \description{
-Function for fitting splines.
+Fit p-splines on corrected or raw data using the mgcv package. The number of
+knots are chosen by the user. The function outputs are predicted p-spline values
+and its first derivative at a denser time step. The idea is to use the outputs for
+outlier detection and to estimate relevant parameters from the curve.
 }
 \examples{
 ## The data from the Phenovator platform have been corrected for

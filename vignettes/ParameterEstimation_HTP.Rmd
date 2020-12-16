@@ -114,7 +114,6 @@ For this example, we will use the genotypic prediction (BLUPs, see [**statgenHTP
 
 ```{r fitSplineArch,  fig.height=3, fig.width=6, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 data(spatPredArch)  
-spatPredArch$timePoint <- lubridate::as_datetime(spatPredArch$timePoint)
 fit.splineGenoArch <- fitSpline(inDat = spatPredArch, 
                                 trait = "predicted.values",
                                 knots = 15,
@@ -146,7 +145,6 @@ ggplot(paramArch1, aes(x)) +
 For this example, we will use the raw data from the RootPhAir, corrected for time point outliers (see [**statgenHTP tutorial: 2. Outlier detection Time points**](OutliersTimePoint_HTP.html)) and time course outliers (see [**statgenHTP tutorial: 4. Outlier detection Time course**](OutliersTimeCourse_HTP.html)). We will fit P-splines at the plant level on a subset of genotypes.
 
 ```{r rmOutRoot, echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE}
-noCorrRoot$timePoint <- lubridate::as_datetime(noCorrRoot$timePoint)
 subGenoRoot <- c( "2", "6", "8", "9", "10", "520", "522")
 fit.splineRoot <- fitSpline(inDat = noCorrRoot,
                             trait = "tipPos_y",

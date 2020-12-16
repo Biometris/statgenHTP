@@ -52,11 +52,9 @@ The data from the Phenovator platform have been corrected for spatial trends and
 
 ```{r fitSplineVator, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 data(spatCorrVator)  
-# Format the timepoint
-spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
 # Run the function to fit P-splines using the mgcv package on a subset of genotypes
 subGenoVator <- c("G70", "G160", "G151", "G179", "G175", "G4", "G55")
-
+#
 fit.spline <- fitSpline(inDat = spatCorrVator,
                         trait = "EffpsII_corr",
                         genotypes = subGenoVator,
@@ -209,9 +207,8 @@ The data from the PhenoArch platform have been corrected for spatial trends and 
 
 ```{r fitSplineArch, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 data(spatCorrArch)  
-spatCorrArch$timePoint <- lubridate::as_datetime(spatCorrArch$timePoint)
-subGenoArch <- c("GenoA1", "GenoA2", "GenoA3", "GenoA4", "GenoB1", "GenoB2", "GenoB3")
-
+subGenoArch <- c("GenoA1", "GenoA2", "GenoA34", "GenoA4", "GenoB1", "GenoB2", "GenoB7")
+#
 fit.splineArch <- fitSpline(inDat = spatCorrArch, 
                             trait = "LA_Estimated_corr",
                             genotypes = subGenoArch,
@@ -245,14 +242,13 @@ outArch <-
                            geno.decomp = "geno.decomp")
 ```
 
-THERE ARE NO OUTLIERS. SHOULD WE PRINT THIS TABLE?
 
 ```{r headOutPointArch, echo=FALSE, message=FALSE, eval=TRUE}
 knitr::kable(head(outArch), align=c('c','c'), booktabs = TRUE, row.names=F)
 ```
 
 ```{r plotOutArch,  fig.height=6, fig.width=6, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
-plot(outArch, genotypes = "GenoB3")
+plot(outArch, genotypes = "GenoB7") 
 ```
 
 ```{r rmOutArch}
@@ -271,7 +267,6 @@ head(spatCorrArchOut[spatCorrArchOut$plotId=="c7r55",
 The data from the RootPhAir platform have not been corrected for spatial trends but time points outliers have been removed (see [**statgenHTP tutorial: 2. Outlier detection Time points**](OutliersTimePoint_HTP.html)). At this stage, the cleaned data are used:
 
 ```{r fitSplineRoot, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
-noCorrRoot$timePoint <- lubridate::as_datetime(noCorrRoot$timePoint)
 subGenoRoot <- c( "2", "6", "8", "9", "10", "520", "522")
 fit.splineRoot <- fitSpline(inDat = noCorrRoot,
                             trait = "tipPos_y",
@@ -304,7 +299,7 @@ outRoot <- detectTimeCourseOutliers(corrDat = noCorrRoot,
 
 ```{r plotRootOut,  fig.height=6, fig.width=7, message=FALSE, eval=TRUE}
 plot(outRoot,
-     genotypes = "2")
+     genotypes = "520")
 ```
 
 After manual check, we will remove only two of the detected time courses:
