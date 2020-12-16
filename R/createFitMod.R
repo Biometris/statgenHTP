@@ -78,7 +78,8 @@ summary.fitMod <- function(object,
 #' }
 #'
 #' @section herit plot:
-#' Plots the heritability over time. If \code{geno.decomp} is used when fitting
+#' Plots the heritability over time. This plot is only available when genotype
+#' is set as random. If \code{geno.decomp} is used when fitting
 #' the model, heritabilities are plotted for each level of geno.decomp in a
 #' single plot. Extra parameter options:
 #' \describe{
