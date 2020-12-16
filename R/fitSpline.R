@@ -1,6 +1,9 @@
 #' Fit Splines
 #'
-#' Function for fitting splines.
+#' Fit p-splines on corrected or raw data using the mgcv package. The number of
+#' knots are chosen by the user. The function outputs are predicted p-spline values
+#' and its first derivative at a denser time step. The idea is to use the outputs for
+#' outlier detection and to estimate relevant parameters from the curve.
 #'
 #' @param inDat A data.frame with corrected spatial data.
 #' @param trait A character string indicating the trait for which the spline
