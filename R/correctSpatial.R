@@ -28,7 +28,7 @@ correctSpatialSpATS <- function(fitMod) {
   fixVars <- attr(terms(fitMod$model$fixed), "term.labels")
   ## Subset on order = 1 to remove interaction terms.
   fixVars <- fixVars[attr(terms(fitMod$model$fixed), "order") == 1]
-  fixVars <- setdiff(fixVars, c("genotype", "genoCheck", geno.decomp))
+  fixVars <- setdiff(fixVars, c("genotype", "genoCheck", "check", geno.decomp))
 
   randVars <- attr(terms(fitMod$model$random), "term.labels")
   ## Subset on order = 1 to remove interaction terms.
@@ -57,7 +57,8 @@ correctSpatialSpATS <- function(fitMod) {
   pred <- pred[, !colnames(pred) %in% c(fixVars, randVars)]
   ## Merge genotype and timepoint to data.
   modDat <- fitMod$data[c("genotype", "plotId", "timePoint", trait,
-                          geno.decomp, fixVars, randVars)]
+                          geno.decomp, fixVars, randVars,
+                          if (useCheck) c("check", "genoCheck"))]
   modDat[["resid"]] <- fitMod$residuals
   pred <- merge(modDat, pred, by = predVars, all.x = TRUE)
   if (!is.null(geno.decomp) && !useCheck) {
