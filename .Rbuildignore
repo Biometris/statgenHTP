@@ -14,4 +14,5 @@ testScript*
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
-testData/
+^testData$
+^gettingStarted$
