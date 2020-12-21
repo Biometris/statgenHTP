@@ -11,7 +11,7 @@ testScript*
 ^README\.Rmd$
 ^.apt$
 ^ci
-
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+testData/

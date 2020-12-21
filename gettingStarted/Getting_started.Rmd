@@ -6,7 +6,6 @@ output:
   rmarkdown::html_vignette:
     number_sections: yes
     toc: no
-bibliography: bibliography.bib
 vignette: >
   %\VignetteIndexEntry{Getting_started} 
   %\VignetteEncoding{UTF-8} 

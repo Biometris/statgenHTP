@@ -24,8 +24,6 @@
 #' @param thrPca A numerical value used as threshold for determining outliers
 #' based on angles (in degrees) between PCA scores.
 #'
-#' @importFrom stats dist
-#'
 #' @examples
 #' ## The data from the Phenovator platform have been corrected for
 #' ## spatial trends and time points outliers have been removed.

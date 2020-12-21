@@ -3,30 +3,30 @@
 ####### 1. Phenovator data set
 #### 1.1 Raw data
 # Read raw data.
-PhenovatorDat1 <- read.csv(system.file("extdata", "Phenovator_Data_Example1.csv",
-                                       package = "statgenHTP"))
+PhenovatorDat1 <- read.csv("./data-raw/Phenovator_Data_Example1.csv",
+                           stringsAsFactors = TRUE)
 # Remove data with missing phenotype.
 PhenovatorDat1 <- PhenovatorDat1[!is.na(PhenovatorDat1$EffpsII), ]
 # Create an indicator for each plot (according to the row and column position).
 PhenovatorDat1$pos <- paste0("c", PhenovatorDat1[["x"]],
                              "r", PhenovatorDat1[["y"]])
 # Remove a plant that has very few measurements.
-PhenovatorDat1 <- PhenovatorDat1[PhenovatorDat1$pos != "c1r54",]
+PhenovatorDat1 <- PhenovatorDat1[PhenovatorDat1$pos != "c1r54", ]
 # Export to package
 usethis::use_data(PhenovatorDat1, overwrite = TRUE)
 
 #### 1.2. Corrected data - outliers removed
 # Read raw data.
-spatCorrVator <- read.csv(system.file("extdata", "PhenovatorDat1_corr_outPoint.csv",
-                                      package = "statgenHTP"))
+spatCorrVator <- read.csv("./data-raw/PhenovatorDat1_corr_outPoint.csv",
+                          stringsAsFactors = TRUE)
 # Format the time in hour since first measurement
 spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
 timy <- data.frame(timePoint = unique(spatCorrVator$timePoint),
                    timePointP1 = c(unique(spatCorrVator$timePoint)[2:73],
                                    lubridate::ymd_hms("2018-06-18 16:37:00")),
                    timeNum = NA)
-# diff between two time point in hour
-timeNum <- sapply( 1:nrow(timy), function(x) {
+# diff between two time points in hours.
+timeNum <- sapply(1:nrow(timy), function(x) {
   as.numeric(lubridate::ymd_hms(timy$timePointP1[x])-
                lubridate::ymd_hms(timy$timePoint)[x])
 })
@@ -34,7 +34,8 @@ timy$timeNumDiff <- c(0,timeNum[1:(length(timeNum)-1)])
 # cum sum
 timy$timeNum <- cumsum(timy$timeNumDiff)
 # add to spatCorrVator
-spatCorrVator$timeNumHour <- timy$timeNum[match(spatCorrVator$timePoint,timy$timePoint)]
+spatCorrVator$timeNumHour <- timy$timeNum[match(spatCorrVator$timePoint,
+                                                timy$timePoint)]
 # Format the timepoint
 spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
 # Export to package
@@ -44,16 +45,15 @@ usethis::use_data(spatCorrVator, overwrite = TRUE)
 ####### 2. Phenoarch data set
 #### 2.1 Raw data
 # Read raw data.
-PhenoarchDat1 <- read.csv(system.file("extdata", "Phenoarch_ZA17_extraVariables.csv",
-                                      package = "statgenHTP"))
+PhenoarchDat1 <- read.csv("./data-raw/Phenoarch_ZA17_extraVariables.csv",
+                          stringsAsFactors = TRUE)
 # Export to package
 usethis::use_data(PhenoarchDat1, overwrite = TRUE)
 
-
 #### 2.2. Corrected data - outliers removed
 # Read raw data.
-spatCorrArch <- read.csv(system.file("extdata", "PhenoArchDat1_corr_OutPoint_LA.csv",
-                                     package = "statgenHTP"))
+spatCorrArch <- read.csv("./data-raw/PhenoArchDat1_corr_OutPoint_LA.csv",
+                         stringsAsFactors = TRUE)
 # Format the timepoint
 spatCorrArch$timePoint <- lubridate::as_datetime(spatCorrArch$timePoint)
 # Export to package
@@ -61,8 +61,8 @@ usethis::use_data(spatCorrArch, overwrite = TRUE)
 
 #### 2.3. Genotypic prediction data - outliers removed
 # Read raw data.
-spatPredArch <- read.csv(system.file("extdata", "PhenoArchDat1_pred_OutPoint_LA.csv",
-                                     package = "statgenHTP"))
+spatPredArch <- read.csv("./data-raw/PhenoArchDat1_pred_OutPoint_LA.csv",
+                         stringsAsFactors = TRUE)
 # Format the timepoint
 spatPredArch$timePoint <- lubridate::as_datetime(spatPredArch$timePoint)
 # Export to package
@@ -72,31 +72,27 @@ usethis::use_data(spatPredArch, overwrite = TRUE)
 ####### 3. RootUCL data set
 #### 3.1 Raw data
 # Read raw data.
-RootDat1 <- read.csv(system.file("extdata", "Data_tipclean_format.csv",
-                                 package = "statgenHTP"))
+RootDat1 <- read.csv("./data-raw/Data_tipclean_format.csv",
+                     stringsAsFactors = TRUE)
 # select one tank
-RootDat1 <- RootDat1[RootDat1$Tank == "A",]
+RootDat1 <- RootDat1[RootDat1$Tank == "A", ]
 # Export to package
 usethis::use_data(RootDat1, overwrite = TRUE)
 
 #### 3.2. not corrected data - outliers removed
 # Read raw data.
-noCorrRoot <- read.csv(system.file("extdata", "RootDat1_nocorr.csv",
-                                   package = "statgenHTP"))
-noCorrRoot <- noCorrRoot[,c(11,12,3,2,4,6,5,7,8,10)]
+noCorrRoot <- read.csv("./data-raw/RootDat1_nocorr.csv",
+                       stringsAsFactors = TRUE)
+noCorrRoot <- noCorrRoot[, c(11, 12, 3, 2, 4, 6, 5, 7, 8, 10)]
 # Format the timepoint
 noCorrRoot$timePoint <- lubridate::as_datetime(noCorrRoot$timePoint)
 # Export to package
 usethis::use_data(noCorrRoot, overwrite = TRUE)
 
-
-
 ## Create data for testing.
 
 # Read raw data.
-testDat <- read.csv(system.file("extdata",
-                                "Phenovator_Data_Example1.csv",
-                                package = "statgenHTP"),
+testDat <- read.csv("./data-raw/Phenovator_Data_Example1.csv",
                     stringsAsFactors = TRUE)
 # Restrict data.
 testDat <- with(testDat, testDat[x >= 10 & x < 15 & y <= 5 &
