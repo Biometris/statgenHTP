@@ -77,7 +77,7 @@ different plots is given in the sections below." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">statgenHTP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.4.1</span>
       </span>
     </div>
 
@@ -85,7 +85,7 @@ different plots is given in the sections below." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fa fa-home"></span>
+    <span class="fas fa-home"></span>
      
   </a>
 </li>
@@ -96,21 +96,21 @@ different plots is given in the sections below." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="../news/index.html">
-    <span class="fa fa-newspaper-o"></span>
+    <span class="fas fa-newspaper-o"></span>
      
     news
   </a>
 </li>
 <li>
   <a href="../reference/index.html">
-    <span class="fa fa-file-code-o"></span>
+    <span class="fas fa-file-code-o"></span>
      
     functions
   </a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    <span class="fa fa-seedling"></span>
+    <span class="fas fa-seedling"></span>
      
     other packages
      
@@ -130,7 +130,7 @@ different plots is given in the sections below." />
 </li>
 <li>
   <a href="https://github.com/Biometris/statgenHTP">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fas fa-github fa-lg"></span>
      
     github
   </a>
@@ -207,8 +207,9 @@ default title is added to the plot depending on <code>plotType</code>.</p></td>
     </tr>
     <tr>
       <th>traits</th>
-      <td><p>A character vector indicating the traits to be plotted in
-a boxplot. Only used if <code>plotType</code> = "box" or "cor".</p></td>
+      <td><p>A character vector indicating the traits to be plotted.
+If <code>plotType</code> = "layout" only a single trait may be plotted. For the
+other plotTypes, providing multiple traits will create multiple plots.</p></td>
     </tr>
     <tr>
       <th>output</th>

@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">statgenHTP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.4.1</span>
       </span>
     </div>
 
@@ -39,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fa fa-home"></span>
+    <span class="fas fa-home"></span>
      
   </a>
 </li>
@@ -50,21 +50,21 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="../news/index.html">
-    <span class="fa fa-newspaper-o"></span>
+    <span class="fas fa-newspaper-o"></span>
      
     news
   </a>
 </li>
 <li>
   <a href="../reference/index.html">
-    <span class="fa fa-file-code-o"></span>
+    <span class="fas fa-file-code-o"></span>
      
     functions
   </a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    <span class="fa fa-seedling"></span>
+    <span class="fas fa-seedling"></span>
      
     other packages
      
@@ -84,7 +84,7 @@
 </li>
 <li>
   <a href="https://github.com/Biometris/statgenHTP">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fas fa-github fa-lg"></span>
      
     github
   </a>
@@ -99,14 +99,13 @@
 
       
 
-      </header><script src="SpatialModel_HTP_files/header-attrs-2.5/header-attrs.js"></script><link href="SpatialModel_HTP_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
-<script src="SpatialModel_HTP_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
+      </header><script src="SpatialModel_HTP_files/header-attrs-2.6/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>statgenHTP tutorial: 3. Correction for spatial trends</h1>
                         <h4 class="author">Emilie Millet, Bart-Jan van Rossum</h4>
             
-            <h4 class="date">2020-11-02</h4>
+            <h4 class="date">2020-12-22</h4>
       
       
       <div class="hidden name"><code>SpatialModel_HTP.Rmd</code></div>
@@ -150,7 +149,7 @@
 <div id="modeling-with-spatial-terms-using-example-1" class="section level1">
 <h1 class="hasAnchor">
 <a href="#modeling-with-spatial-terms-using-example-1" class="anchor"></a>Modeling with spatial terms using Example 1</h1>
-<p>We will use the <code>TP</code> object <code>phenoTPOut</code> in which annotated time points have been replaced by NA (see <strong>statgenHTP tutorial: 2. Outlier detection Time points</strong>).</p>
+<p>We will use the <code>TP</code> object <code>phenoTPOut</code> in which annotated time points have been replaced by NA (see <a href="OutliersTimePoint_HTP.html"><strong>statgenHTP tutorial: 2. Outlier detection Time points</strong></a>).</p>
 <p>After creating a <code>TP</code> object, a model can be fitted on the data. This is done using the function <code>fitModels</code>, which uses two different engines for fitting the models, namely <em>SpATS</em> <span class="citation">(Rodríguez-Álvarez et al. 2018)</span> and <em>ASReml</em> <span class="citation">(Butler et al. 2017)</span>. For models with row and column coordinates, SpATS is the default engine (see section <a href="#SpATS"><strong>2.1</strong></a>). This can be overruled by specifying the function parameter <code>engine</code> and using ASReml for spatial models (see section <a href="#ASReml"><strong>2.2</strong></a>). When the row and column coordinates are not available, ASReml is used for modeling without spatial components (see section <a href="#ASRemlnoSP"><strong>3</strong></a>). Finally, it is possible to decompose the genotypic variance using, for example, a treatment effect (see section <a href="#genodecomp"><strong>4</strong></a>).</p>
 <p>The output of <code>fitModels</code> is an object of class <code>fitMod</code>, a list of fitted models with one item for each time point the model was fitted for.</p>
 <div id="SpATS" class="section level2">
@@ -165,9 +164,9 @@
 <col width="19%">
 </colgroup>
 <thead><tr class="header">
-<th>option</th>
-<th>model fitted</th>
-<th>spatial term</th>
+<th>OPTION</th>
+<th>MODEL FITTED</th>
+<th>SPATIAL TERM</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -200,7 +199,7 @@
 </tr>
 </tbody>
 </table>
-<p>In the models above, fixed effects are indicated in <em>italics</em> whereas random effects are indicated in <strong>bold</strong>. “genotype” can be fitted as <strong>random</strong> or <em>fixed</em> effect using the option <code>what</code>. The same model will run with genotype as fixed. The option <code>useCheck</code> allows treating some genotypes as check: it splits the column “genotype” into two columns as follows:</p>
+<p>In the models above, fixed effects are indicated in <em>italics</em> whereas random effects are indicated in <strong>bold</strong>. “genotype” can be fitted as <strong>random</strong> or <em>fixed</em> effect using the option <code>what</code>. The option <code>useCheck</code> allows treating some genotypes as check: it splits the column “genotype” into two columns as follows:</p>
 <center>
 <table class="table">
 <thead><tr class="header">
@@ -286,8 +285,8 @@
 <a href="#calling-spats" class="anchor"></a>Calling SpATS</h3>
 <p>Using the <code>TP</code> object <strong>phenoTPOut</strong> from the previous vignette, a model for a few time points and trait “EffpsII” can now be fitted on the data as follows. Since <code>engine</code> is not supplied as an option, SpATS is used for fitting the following model:<br>
 EffpsII = <span class="math inline">\(\mu\)</span> + <strong>genotype</strong> + <strong>rowId</strong> + <strong>colId</strong> + <strong><span class="math inline">\(\epsilon\)</span></strong></p>
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="co">## Fit a model for a few time points.</span>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Fit a model for a few time points.</span>
 <span class="va">modPhenoSp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitModels.html">fitModels</a></span><span class="op">(</span>TP <span class="op">=</span> <span class="va">phenoTPOut</span>, 
                         trait <span class="op">=</span> <span class="st">"EffpsII"</span>,
                         timePoints <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span>from <span class="op">=</span> <span class="fl">1</span>, to <span class="op">=</span> <span class="fl">73</span>, by <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span> 
@@ -295,67 +294,64 @@ EffpsII = <span class="math inline">\(\mu\)</span> + <strong>genotype</strong> +
 <span class="co">#&gt; Models in modPhenoSp where fitted for experiment Phenovator.</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; It contains 15 time points.</span>
-<span class="co">#&gt; The models were fitted using SpATS.</span></pre></div>
+<span class="co">#&gt; The models were fitted using SpATS.</span></code></pre></div>
 <p>The output is a <code>fitMod</code> object, a list containing one fitted model per time point. Note that by not supplying the <code>what</code> argument to the function, genotype is set as random. It can be run again with genotype as fixed using <code>what</code>:</p>
 <p>EffpsII = <span class="math inline">\(\mu\)</span> + genotype + <strong>rowId</strong> + <strong>colId</strong> + <strong><span class="math inline">\(\epsilon\)</span></strong></p>
-<div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="co">## Fit a model for a single time point.</span>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Fit a model for a single time point.</span>
 <span class="va">modPhenoSpFix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitModels.html">fitModels</a></span><span class="op">(</span>TP <span class="op">=</span> <span class="va">phenoTPOut</span>, 
                            trait <span class="op">=</span> <span class="st">"EffpsII"</span>,
                            timePoints <span class="op">=</span> <span class="fl">3</span>,
-                           what <span class="op">=</span> <span class="st">"fixed"</span><span class="op">)</span></pre></div>
+                           what <span class="op">=</span> <span class="st">"fixed"</span><span class="op">)</span></code></pre></div>
 <p>The model can be extended by including extra main fixed effects:<br>
 EffpsII = <span class="math inline">\(\mu\)</span> + repId + Image_pos + <strong>genotype</strong> + <strong>rowId</strong> + <strong>colId</strong> + <strong><span class="math inline">\(\epsilon\)</span></strong></p>
-<div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="co">## Fit a model for a single time point with extra fixed factors.</span>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Fit a model for a single time point with extra fixed factors.</span>
 <span class="va">modPhenoSpCov</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitModels.html">fitModels</a></span><span class="op">(</span>TP <span class="op">=</span> <span class="va">phenoTPOut</span>, 
                            trait <span class="op">=</span> <span class="st">"EffpsII"</span>,
                            extraFixedFactors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"repId"</span>, <span class="st">"Image_pos"</span><span class="op">)</span>, 
-                           timePoints <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></pre></div>
+                           timePoints <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></code></pre></div>
 <p>It can be further extended by including check genotypes:<br>
 EffpsII = <span class="math inline">\(\mu\)</span> + repId + Image_pos + check + <strong>genoCheck</strong> + <strong>rowId</strong> + <strong>colId</strong> + <strong><span class="math inline">\(\epsilon\)</span></strong></p>
-<div class="sourceCode" id="cb4"><pre class="downlit">
-<span class="co">## Fit a model for a single time point with extra fixed effects and check genotypes.</span>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Fit a model for a single time point with extra fixed effects and check genotypes.</span>
 <span class="va">modPhenoSpCheck</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitModels.html">fitModels</a></span><span class="op">(</span>TP <span class="op">=</span> <span class="va">phenoTPOut</span>, 
                              trait <span class="op">=</span> <span class="st">"EffpsII"</span>,
                              extraFixedFactors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"repId"</span>, <span class="st">"Image_pos"</span><span class="op">)</span>,
                              useCheck <span class="op">=</span> <span class="cn">TRUE</span>,
-                             timePoints <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></pre></div>
+                             timePoints <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></code></pre></div>
 <p>Finally, a model following a resolvable row-column design can be fitted: including the interactions between replicate and row-col.<br>
 EffpsII = <span class="math inline">\(\mu\)</span> + repId + <strong>genoCheck</strong> + <strong>repId:rowId</strong> + <strong>repId:colId</strong> + <strong><span class="math inline">\(\epsilon\)</span></strong></p>
-<div class="sourceCode" id="cb5"><pre class="downlit">
-<span class="co">## Fit a model for a single time point.</span>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Fit a model for a single time point.</span>
 <span class="va">modPhenoSpRCD</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitModels.html">fitModels</a></span><span class="op">(</span>TP <span class="op">=</span> <span class="va">phenoTPOut</span>,
                            trait <span class="op">=</span> <span class="st">"EffpsII"</span>,
                            timePoints <span class="op">=</span> <span class="fl">3</span>,
-                           useRepId <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></pre></div>
+                           useRepId <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="model-plots" class="section level3">
 <h3 class="hasAnchor">
 <a href="#model-plots" class="anchor"></a>Model plots</h3>
 <p>The first type of plot that can be made for fitted models, is a spatial plot per time point using <code>plotType = "spatial"</code>. It consists of five plots, spatial plots of the raw data, fitted values, residuals and either BLUEs or BLUPs, and a histogram of the BLUEs or BLUPs. When SpATS is used for modeling an extra plot with the fitted spatial trend is included (see <span class="citation">(Rodríguez-Álvarez et al. 2018)</span> and <span class="citation">(Velazco et al. 2017)</span> for interpretation).</p>
 <p>Note that spatial plots can only be made if spatial information, i.e. <code>rowNum</code> and <code>colNum</code>, is available in the <code>TP</code> object.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">modPhenoSp</span>,
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">modPhenoSp</span>,
      timePoints <span class="op">=</span> <span class="fl">36</span>,
      plotType <span class="op">=</span> <span class="st">"spatial"</span>,
-     spaTrend <span class="op">=</span> <span class="st">"raw"</span><span class="op">)</span></pre></div>
+     spaTrend <span class="op">=</span> <span class="st">"raw"</span><span class="op">)</span></code></pre></div>
 <p><img src="SpatialModel_HTP_files/figure-html/plotSpatRaw-1.png" width="700.8"> For assessing the importance of the fitted spatial trends at one glance, and for comparison between time points, the plot of the fitted spatial trend can be displayed as a ratio of the raw phenotypic mean: SpatTrend(proportion) = Estimated SpatTrend / mean(raw EffpsII). In this case, the scale will be in percentage and the min/max will be adjusted based on all the time points used but will be at least 10%. This empirical threshold allows visualizing fitted trends that have a relatively small to large importance.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">modPhenoSp</span>,
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">modPhenoSp</span>,
      timePoints <span class="op">=</span> <span class="fl">36</span>,
      plotType <span class="op">=</span> <span class="st">"spatial"</span>,
-     spaTrend <span class="op">=</span> <span class="st">"percentage"</span><span class="op">)</span></pre></div>
+     spaTrend <span class="op">=</span> <span class="st">"percentage"</span><span class="op">)</span></code></pre></div>
 <p><img src="SpatialModel_HTP_files/figure-html/plotSpatPerc-1.png" width="672"></p>
 <p>It is also possible to create a time lapse of the ratio of spatial trends over time. The scale is the same as previously described. The time lapse is always written to an output file.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">modPhenoSp</span>, 
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">modPhenoSp</span>, 
      plotType <span class="op">=</span> <span class="st">"timeLapse"</span>,
-     outFile <span class="op">=</span> <span class="st">"TimeLapse_modPhenoSp.gif"</span><span class="op">)</span></pre></div>
-Here is an illustration with three time points:
-<center>
-<img src="figures/timelapse_nogif.png" title="fig:" style="width:80.0%" alt="Timelapse1">
-</center>
+     outFile <span class="op">=</span> <span class="st">"TimeLapse_modPhenoSp.gif"</span><span class="op">)</span></code></pre></div>
+<p>Here is an illustration with three time points: <img src="figures/timelapse_nogif.png" width="80%" style="display: block; margin: auto;"></p>
 </div>
 <div id="extracting-model-results" class="section level3">
 <h3 class="hasAnchor">
@@ -367,8 +363,8 @@ Here is an illustration with three time points:
 <col width="82%">
 </colgroup>
 <thead><tr class="header">
-<th>function</th>
-<th>description</th>
+<th>FUNCTION</th>
+<th>DESCRIPTION</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -395,15 +391,15 @@ Here is an illustration with three time points:
 </table>
 <p>By default, all the functions run for all the time points. It is possible to select some of them using <code>timePoints</code>. The ratio of the effective dimensions can also be extracted using <code>EDType = "ratio"</code> in the <code>getEffDims</code> function.</p>
 <p>The output of the function <code>getGenoPred</code> is a list of two dataframes: “genoPred” which contains the predicted values for all tested genotypes and “checkPred” which contains the predicted values of the check genotypes, when <code>useCheck = TRUE</code> in the model. “checkPred” is empty when <code>useCheck = FALSE</code>.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit">
-<span class="co">## Extract the genotypic predictions for one time point: </span>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Extract the genotypic predictions for one time point: </span>
 <span class="va">genoPredSp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getGenoPred.html">getGenoPred</a></span><span class="op">(</span><span class="va">modPhenoSp</span>, timePoints <span class="op">=</span> <span class="fl">6</span><span class="op">)</span>
 <span class="co">## Extract the corrected values for one time point: </span>
 <span class="va">spatCorrSp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getCorrected.html">getCorrected</a></span><span class="op">(</span><span class="va">modPhenoSp</span>, timePoints <span class="op">=</span> <span class="fl">6</span><span class="op">)</span>
 <span class="co">## Extract model components: </span>
 <span class="va">varianceSp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getVar.html">getVar</a></span><span class="op">(</span><span class="va">modPhenoSp</span><span class="op">)</span>
 <span class="va">heritSp</span>    <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getHerit.html">getHerit</a></span><span class="op">(</span><span class="va">modPhenoSp</span><span class="op">)</span>
-<span class="va">effDimSp</span>   <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getEffDims.html">getEffDims</a></span><span class="op">(</span><span class="va">modPhenoSp</span><span class="op">)</span></pre></div>
+<span class="va">effDimSp</span>   <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getEffDims.html">getEffDims</a></span><span class="op">(</span><span class="va">modPhenoSp</span><span class="op">)</span></code></pre></div>
 <p>The genotypic predictions of the test genotypes for one time point are displayed in a table like the following:</p>
 <table class="table">
 <thead><tr class="header">
@@ -552,47 +548,47 @@ where <span class="math inline">\(\widehat{fixed}_t\)</span> are the fixed covar
 <a href="#plotting-model-results" class="anchor"></a>Plotting model results</h3>
 <p>Different plots can be displayed for the <code>fitMod</code> object. The first one is <strong>rawPred</strong>, it plots the raw data (colored points) overlaid with the predicted values (black points) from the fitted model. For each genotype a plot is made per plot/plant over time. These plots are put together in a 5×5 grid.<br>
 By using the option <code>genotypes</code>, a subset of genotypes will be plotted. By default, data are plotted as point but this can be changed by setting <code>plotLine = TRUE</code>.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">modPhenoSp</span>, 
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">modPhenoSp</span>, 
      plotType <span class="op">=</span> <span class="st">"rawPred"</span>,
-     genotypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"check1"</span>, <span class="st">"check2"</span>, <span class="st">"G7"</span>, <span class="st">"G58"</span><span class="op">)</span><span class="op">)</span> </pre></div>
+     genotypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"check1"</span>, <span class="st">"check2"</span>, <span class="st">"G7"</span>, <span class="st">"G58"</span><span class="op">)</span><span class="op">)</span> </code></pre></div>
 <p><img src="SpatialModel_HTP_files/figure-html/plotSpPred-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>The second one is <strong>corrPred</strong>, it plots the spatially corrected data (colored points) overlaid with the predicted values from the fitted model (black points). For each genotype a plot is made per plot/plant over time. These plots are put together in a 5×5 grid. By using the option <code>genotypes</code>, a subset of genotypes will be plotted. By default, data are plotted as point but this can be changed by setting <code>plotLine = TRUE</code>.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">modPhenoSp</span>, 
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">modPhenoSp</span>, 
      plotType <span class="op">=</span> <span class="st">"corrPred"</span>,
-     genotypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"check1"</span>, <span class="st">"check2"</span>, <span class="st">"G7"</span>, <span class="st">"G58"</span><span class="op">)</span> <span class="op">)</span></pre></div>
+     genotypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"check1"</span>, <span class="st">"check2"</span>, <span class="st">"G7"</span>, <span class="st">"G58"</span><span class="op">)</span> <span class="op">)</span></code></pre></div>
 <p><img src="SpatialModel_HTP_files/figure-html/plotSpCorr-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>Note that when check genotypes are used for modeling, for the two previous plot types (<code>rawPred</code> and <code>corrPred</code>), the option <code>plotChecks</code> is required to display check genotypes.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">modPhenoSpCheck</span>, 
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">modPhenoSpCheck</span>, 
      plotType <span class="op">=</span> <span class="st">"rawPred"</span>,
      plotChecks <span class="op">=</span> <span class="cn">TRUE</span>,
-     genotypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"check1"</span>, <span class="st">"check2"</span>, <span class="st">"G7"</span>, <span class="st">"G58"</span><span class="op">)</span><span class="op">)</span> </pre></div>
+     genotypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"check1"</span>, <span class="st">"check2"</span>, <span class="st">"G7"</span>, <span class="st">"G58"</span><span class="op">)</span><span class="op">)</span> </code></pre></div>
 <p>The three last types of plot display different model parameters over time. Plot type <strong>herit</strong> plots the heritability over time. If <code>geno.decomp</code> is used when fitting the model, heritabilities are plotted for each level of variance decomposition in a single plot (see section <a href="#genodecomp"><strong>4</strong></a>). The scale of the plot can be adjusted using <code>yLim</code>.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">modPhenoSp</span>, 
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">modPhenoSp</span>, 
      plotType <span class="op">=</span> <span class="st">"herit"</span>,
-     yLim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.5</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span></pre></div>
+     yLim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.5</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p><img src="SpatialModel_HTP_files/figure-html/plotSpHerit-1.png" width="336" style="display: block; margin: auto;"></p>
 <p>Plot type <strong>variance</strong> plots the residual, column and row variances over time.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">modPhenoSp</span>, 
-     plotType <span class="op">=</span> <span class="st">"variance"</span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">modPhenoSp</span>, 
+     plotType <span class="op">=</span> <span class="st">"variance"</span><span class="op">)</span></code></pre></div>
 <p><img src="SpatialModel_HTP_files/figure-html/plotSpVar-1.png" width="480" style="display: block; margin: auto;"></p>
 <p>Plot type <strong>effDim</strong> plots the effective dimension from models fitted using SpATS over time. By default, all the spatial components are plotted. This can be restricted using the option <code>whichED</code>.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">modPhenoSp</span>, 
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">modPhenoSp</span>, 
      plotType <span class="op">=</span> <span class="st">"effDim"</span>,
      whichED <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"colId"</span>, <span class="st">"rowId"</span>, <span class="st">"fColRow"</span>,<span class="st">"colfRow"</span>, <span class="st">"surface"</span><span class="op">)</span>,
-     EDType <span class="op">=</span> <span class="st">"ratio"</span><span class="op">)</span></pre></div>
+     EDType <span class="op">=</span> <span class="st">"ratio"</span><span class="op">)</span></code></pre></div>
 <p><img src="SpatialModel_HTP_files/figure-html/plotSpED-1.png" width="480" style="display: block; margin: auto;"></p>
 <p>The effective dimensions are also known as the effective degrees of freedom. They can be interpreted as a measure of the complexity of the corresponding component: if the effective dimension of one component is large, it indicates that there are strong spatial trends in this direction. Here, for better comparison between components, the ratio of effective dimensions vs. total dimensions can be used. It has a value between 0, no spatial trend, and 1, strong spatial trend (almost all the degrees of freedom are used to model it).</p>
 <p>The table below gives an overview of the effective dimensions and an explanation of their meaning.</p>
 <table class="table">
 <thead><tr class="header">
-<th align="left">Effective Dimension</th>
-<th align="left">Explanation</th>
+<th align="left">EFFECTIVE DIMENSION</th>
+<th align="left">EXPLANATION</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -645,9 +641,9 @@ By using the option <code>genotypes</code>, a subset of genotypes will be plotte
 <col width="20%">
 </colgroup>
 <thead><tr class="header">
-<th>option</th>
-<th>model fitted</th>
-<th>spatial term</th>
+<th>OPTION</th>
+<th>MODEL FITTED</th>
+<th>SPATIAL TERM</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -736,10 +732,10 @@ By using the option <code>genotypes</code>, a subset of genotypes will be plotte
 </tr>
 </tbody>
 </table>
-<p>In the models above, fixed effects are indicated in <em>italics</em> whereas random effects are indicated in <strong>bold</strong>. “genotype” can be fitted as <strong>random</strong> or <em>fixed</em> effect using the option <code>what</code>. The same model will run with genotype as fixed. The option <code>useCheck</code> is not displayed in the table but works the same as for SpATS: treating some genotypes as check (see section <a href="#SpATS"><strong>2.1</strong></a> for details).</p>
+<p>In the models above, fixed effects are indicated in <em>italics</em> whereas random effects are indicated in <strong>bold</strong>. “genotype” can be fitted as <strong>random</strong> or <em>fixed</em> effect using the option <code>what</code>. The option <code>useCheck</code> is not displayed in the table but works the same as for SpATS: treating some genotypes as check (see section <a href="#SpATS"><strong>2.1</strong></a> for details).</p>
 <p>Calling ASReml is done by changing the <code>engine</code> option in the <code>fitModels</code> function.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit">
-<span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"asreml"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"asreml"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
   <span class="co">## Fit a model on few time points with spatial function:</span>
   <span class="va">modPhenoSpAs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitModels.html">fitModels</a></span><span class="op">(</span>TP <span class="op">=</span> <span class="va">phenoTPOut</span>, 
                             trait <span class="op">=</span> <span class="st">"EffpsII"</span>,
@@ -748,20 +744,20 @@ By using the option <code>genotypes</code>, a subset of genotypes will be plotte
                             spatial <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> 
   <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">modPhenoSpAs</span><span class="op">)</span>
 <span class="op">}</span>
-<span class="co">#&gt; Online License checked out Mon Nov  2 16:54:53 2020</span>
+<span class="co">#&gt; Online License checked out Tue Dec 22 12:48:50 2020</span>
 <span class="co">#&gt; Models in modPhenoSpAs where fitted for experiment Phenovator.</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; It contains 15 time points.</span>
 <span class="co">#&gt; The models were fitted using asreml.</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; The selected spatial model is AR1(x)AR1.</span>
-<span class="co">#&gt; 10 time points were used to select the best spatial model.</span></pre></div>
+<span class="co">#&gt; 10 time points were used to select the best spatial model.</span></code></pre></div>
 <p>Here the best spatial model is: trait = <strong>genotype</strong> + <strong>row</strong> + <strong>col</strong> + <strong><span class="math inline">\(\epsilon\)</span></strong>, with a spatial component: <strong>AR1(rowId):AR1(colId)</strong>. It has been selected using 10 time points.</p>
 <p>Plotting and extracting results is then done the same way as for SpATS. Below are a few examples.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit">
-<span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"asreml"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"asreml"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
   <span class="va">spatCorrSpAs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getCorrected.html">getCorrected</a></span><span class="op">(</span><span class="va">modPhenoSpAs</span>, timePoints <span class="op">=</span> <span class="fl">6</span><span class="op">)</span>
-<span class="op">}</span></pre></div>
+<span class="op">}</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="center">timeNumber</th>
@@ -843,12 +839,12 @@ By using the option <code>genotypes</code>, a subset of genotypes will be plotte
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb18"><pre class="downlit">
-<span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"asreml"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"asreml"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
   <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">modPhenoSpAs</span>, 
        plotType <span class="op">=</span> <span class="st">"herit"</span>,
        yLim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
-<span class="op">}</span></pre></div>
+<span class="op">}</span></code></pre></div>
 <p><img src="SpatialModel_HTP_files/figure-html/plotSpAsHerit-1.png" width="336" style="display: block; margin: auto;"></p>
 <p>Note that when the engine is ASReml, the heritability is calculated using the formula provided in <span class="citation">(Cullis, Smith, and Coombes 2006)</span>.</p>
 </div>
@@ -864,9 +860,9 @@ By using the option <code>genotypes</code>, a subset of genotypes will be plotte
 <col width="24%">
 </colgroup>
 <thead><tr class="header">
-<th>option</th>
-<th>model fitted</th>
-<th>spatial term</th>
+<th>OPTION</th>
+<th>MODEL FITTED</th>
+<th>SPATIAL TERM</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -885,20 +881,38 @@ By using the option <code>genotypes</code>, a subset of genotypes will be plotte
 </tr>
 </tbody>
 </table>
-<p>In the models above and below, fixed effects are indicated in <em>italics</em> whereas random effects are indicated in <strong>bold</strong>. <code>genotype</code> can be fitted as <strong>random</strong> or <em>fixed</em> effect using the option <code>what</code>. The same model will run with genotype as fixed. The option <code>useCheck</code> is not displayed in the table, but works the same as for SpATS (see section <a href="#SpATS"><strong>3.1</strong></a>).</p>
-<div class="sourceCode" id="cb19"><pre class="downlit">
-<span class="co">## Fit a model on few time points without spatial function.</span>
+<p>In the models above and below, fixed effects are indicated in <em>italics</em> whereas random effects are indicated in <strong>bold</strong>. <code>genotype</code> can be fitted as <strong>random</strong> or <em>fixed</em> effect using the option <code>what</code>. The option <code>useCheck</code> is not displayed in the table, but works the same as for SpATS (see section <a href="#SpATS"><strong>3.1</strong></a>).</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Fit a model on few time points without spatial function.</span>
 <span class="va">modPhenoAs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitModels.html">fitModels</a></span><span class="op">(</span>TP <span class="op">=</span> <span class="va">phenoTPOut</span>, 
                         trait <span class="op">=</span> <span class="st">"EffpsII"</span>,
                         timePoints <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span>from <span class="op">=</span> <span class="fl">1</span>, to <span class="op">=</span> <span class="fl">73</span>, by <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,
                         engine <span class="op">=</span> <span class="st">"asreml"</span>,
-                        spatial <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></pre></div>
+                        spatial <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="genodecomp" class="section level1">
 <h1 class="hasAnchor">
 <a href="#genodecomp" class="anchor"></a>Modeling with variance decomposition using Example 2</h1>
 <p>When an experimental treatment is applied, for example, a water scenario, it is required to decompose the genotypic variance into the levels of the treatment. In the following example, two water scenarios, well-watered (WW) and water deficit (WD), were applied. Thus, instead of modeling one genotypic variance, there will be one genotypic variance per treatment. In this part, we will describe briefly what is specific of such modeling with the statgenHTP package using a another example dataset.</p>
-<p>We will use the <code>TP</code> object <strong>phenoTParchOut</strong> in which annotated time points have been replaced by NA (see <em>statgenHTP tutorial: 2. Outlier detection Time points</em>).</p>
+<p>We will use the <code>TP</code> object <strong>phenoTParchOut</strong> in which annotated time points have been replaced by NA (see <a href="OutliersTimePoint_HTP.html"><strong>statgenHTP tutorial: 2. Outlier detection Time points</strong></a>).</p>
+<p>We can first check the number of time points containing data for a given trait:</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/countValid.html">countValid</a></span><span class="op">(</span><span class="va">phenoTParchOut</span>, <span class="st">"LA_Estimated"</span><span class="op">)</span>
+<span class="co">#&gt; 2017-04-13 2017-04-14 2017-04-15 2017-04-16 2017-04-17 2017-04-18 2017-04-19 </span>
+<span class="co">#&gt;        815       1346       1666       1665       1669       1671       1191 </span>
+<span class="co">#&gt; 2017-04-20 2017-04-21 2017-04-22 2017-04-23 2017-04-24 2017-04-25 2017-04-26 </span>
+<span class="co">#&gt;       1531        822       1671       1615       1220       1670       1071 </span>
+<span class="co">#&gt; 2017-04-27 2017-04-28 2017-04-29 2017-04-30 2017-05-01 2017-05-02 2017-05-03 </span>
+<span class="co">#&gt;       1671       1133       1133       1073       1133       1135       1084 </span>
+<span class="co">#&gt; 2017-05-04 2017-05-05 2017-05-06 2017-05-07 2017-05-08 2017-05-09 2017-05-10 </span>
+<span class="co">#&gt;       1448        779       1055       1224       1045        723        948 </span>
+<span class="co">#&gt; 2017-05-11 2017-05-12 2017-05-13 2017-05-14 2017-05-15 2017-05-16 2017-05-17 </span>
+<span class="co">#&gt;       1025       1192       1005        488        863       1157        845</span></code></pre></div>
+<p>In this case, time point “2017-05-14” has only 488 observation, less than half of the total number of observation. It can biased the modelling at this time point and one may want to remove it before running the spatial analysis.</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># getTimePoints(phenoTParchOut)</span>
+<span class="va">phenoTParchOut</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/removeTimePoints.html">removeTimePoints</a></span><span class="op">(</span><span class="va">phenoTParchOut</span>,
+                                    timePoints <span class="op">=</span> <span class="fl">32</span><span class="op">)</span></code></pre></div>
 <div id="modeling" class="section level2">
 <h2 class="hasAnchor">
 <a href="#modeling" class="anchor"></a>Modeling</h2>
@@ -911,10 +925,10 @@ By using the option <code>genotypes</code>, a subset of genotypes will be plotte
 <col width="14%">
 </colgroup>
 <thead><tr class="header">
-<th>option</th>
-<th>engine</th>
-<th>model fitted</th>
-<th>spatial term</th>
+<th>OPTION</th>
+<th>ENGINE</th>
+<th>MODEL FITTED</th>
+<th>SPATIAL TERM</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -947,11 +961,11 @@ By using the option <code>genotypes</code>, a subset of genotypes will be plotte
 <p><em>NOTE: At the moment, it is not possible to use the combination of <code>geno.decomp</code> and `what = “fixed.”</em></p>
 </blockquote>
 <p>Using the Phenoarch example, we will apply a variance decomposition using the variables “Scenario” and “population”:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit">
-<span class="va">modPhenoSpGD</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitModels.html">fitModels</a></span><span class="op">(</span>TP <span class="op">=</span> <span class="va">phenoTParchOut</span>,
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">modPhenoSpGD</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitModels.html">fitModels</a></span><span class="op">(</span>TP <span class="op">=</span> <span class="va">phenoTParchOut</span>,
                           trait <span class="op">=</span> <span class="st">"LA_Estimated"</span>,
                           geno.decomp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Scenario"</span>, <span class="st">"population"</span><span class="op">)</span>,
-                          timePoints <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span>from <span class="op">=</span> <span class="fl">1</span>, to <span class="op">=</span> <span class="fl">35</span>, by <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span></pre></div>
+                          timePoints <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span>from <span class="op">=</span> <span class="fl">1</span>, to <span class="op">=</span> <span class="fl">35</span>, by <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="output" class="section level2">
 <h2 class="hasAnchor">

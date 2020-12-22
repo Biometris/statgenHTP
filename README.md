@@ -18,18 +18,14 @@ automated analyses of HTP data.
 
 ## Installation
 
-  - Install from CRAN:
-
-<!-- end list -->
+-   Install from CRAN:
 
 ``` r
 install.packages("statgenHTP")
 ```
 
-  - Install latest development version from GitHub (requires
+-   Install latest development version from GitHub (requires
     [remotes](https://github.com/r-lib/remotes) package):
-
-<!-- end list -->
 
 ``` r
 remotes::install_github("Biometris/statgenHTP", ref = "develop", dependencies = TRUE)

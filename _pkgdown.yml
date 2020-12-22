@@ -34,11 +34,11 @@ articles:
       The vignettes provide a full description of the statgenHTP package
       including some fully worked examples.
     contents:
-      - Getting_started
       - Intro_HTP
       - OutliersTimePoint_HTP
       - SpatialModel_HTP
       - OutliersTimeCourse_HTP
+      - ParameterEstimation_HTP
 
 reference:
 - title: Data preparation
@@ -54,6 +54,7 @@ reference:
   - detectPointOutliers
   - removePointOutliers
   - plot.pointOutliers
+  - detectPointOutliersMaize
 - title: Spatial modeling
 - contents:
   - fitModels
@@ -82,3 +83,8 @@ reference:
   - spatCorrArch
   - spatCorrVator
   - noCorrRoot
+  - spatPredArch
+- title: Utility functions
+- contents:
+  - countValid
+  - countValidPlot
