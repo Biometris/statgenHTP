@@ -39,6 +39,7 @@ Extract predictions of the genotypic value from an object of class fitMod.
 }
 \examples{
 ## Using the first example dataset (PhenovatorDat1):
+\donttest{
 data("PhenovatorDat1")
 phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             experimentName = "Phenovator",
@@ -54,10 +55,12 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
 ## Fit a SpATS model on few time points:
 modPhenoSp <- fitModels(TP = phenoTP,
                         trait = "EffpsII",
-                        timePoints = c(1,6,20))
+                        timePoints = c(1, 6, 20))
 
 ## Extract the genotypic predictions for one time point:
-genoPredSp <- getGenoPred(modPhenoSp, timePoints = 6)
+genoPredSp <- getGenoPred(modPhenoSp,
+                          timePoints = 6)
+}
 
 }
 \seealso{

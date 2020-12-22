@@ -69,6 +69,7 @@
 #' @examples
 #' ## Using the first example dataset (PhenovatorDat1):
 #' ## Fit a SpATS model on few time points:
+#' \donttest{
 #' data("PhenovatorDat1")
 #' phenoTP <- createTimePoints(dat = PhenovatorDat1,
 #'                             experimentName = "Phenovator",
@@ -83,7 +84,7 @@
 #'
 #' modPhenoSp <- fitModels(TP = phenoTP,
 #'                         trait = "EffpsII",
-#'                         timePoints = c(3,6,20))
+#'                         timePoints = c(3, 6, 20))
 #' summary(modPhenoSp)
 #'
 #' ## Fit a model with SpATS for a single time point with extra fixed factors
@@ -95,17 +96,17 @@
 #'                              timePoints = 3)
 #'
 #'
-#' \dontrun{
 #' ## Fit a model with asreml on few time points with a spatial function:
-#' modPhenoSpAs <- fitModels(TP = phenoTP,
-#'                           trait = "EffpsII",
-#'                           timePoints = c(1,6,20),
-#'                           engine = "asreml",
-#'                           spatial = TRUE)
+#' if (requireNamespace("asreml", quietly = TRUE)) {
+#'   modPhenoSpAs <- fitModels(TP = phenoTP,
+#'                             trait = "EffpsII",
+#'                             timePoints = c(1, 6, 20),
+#'                             engine = "asreml",
+#'                             spatial = TRUE)
 #' }
 #'
 #' ## Using the second example dataset (PhenoarchDat1):
-#' ## Fit a model with SpATS on few time points with two variables for
+#' ## Fit a model with SpATS on one time points with two variables for
 #' ## geno.decomp:
 #' data("PhenoarchDat1")
 #' phenoTParch <- createTimePoints(dat = PhenoarchDat1,
@@ -118,8 +119,9 @@
 #'
 #' modPhenoSpGD <- fitModels(TP = phenoTParch,
 #'                           trait = "LA_Estimated",
-#'                           geno.decomp = c("Scenario","population"),
+#'                           geno.decomp = c("Scenario", "population"),
 #'                           timePoints = 16)
+#' }
 #'
 #'
 #' @references

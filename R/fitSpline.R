@@ -1,9 +1,10 @@
 #' Fit Splines
 #'
-#' Fit p-splines on corrected or raw data using the mgcv package. The number of
-#' knots are chosen by the user. The function outputs are predicted p-spline values
-#' and its first derivative at a denser time step. The idea is to use the outputs for
-#' outlier detection and to estimate relevant parameters from the curve.
+#' Fit P-Splines on corrected or raw data using the mgcv package. The number of
+#' knots are chosen by the user. The function outputs are predicted P-Spline
+#' values and its first derivative at a denser time step. The idea is to use
+#' the outputs for outlier detection and to estimate relevant parameters from
+#' the curve.
 #'
 #' @param inDat A data.frame with corrected spatial data.
 #' @param trait A character string indicating the trait for which the spline
@@ -18,26 +19,28 @@
 #' indicating the column containing the numerical time to use.
 #' @param perMinTP The percentage of minimum number of time points to use.
 #'
-#' @examples ## The data from the Phenovator platform have been corrected for
-#' # spatial trends and time points outliers have been removed
-#' # Format the timepoint
-#' spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
-#' # Run the function to fit P-spline using the mgcv package on a subset of
-#' # genotypes
-#' subGeno <- c("G70","G160","G151","G179","G175","G4","G55")
+#' @examples
+#' ## The data from the Phenovator platform have been corrected for
+#' ## spatial trends and time points outliers have been removed.
+#'
+#' ## Run the function to fit P-spline using the mgcv package on a subset of
+#' ## genotypes
+#' subGeno <- c("G70", "G160", "G151", "G179", "G175", "G4", "G55")
 #' fit.spline <- fitSpline(inDat = spatCorrVator,
 #'                         trait = "EffpsII_corr",
 #'                         genotypes = subGeno,
 #'                         knots = 50,
 #'                         perMinTP = 0.8)
-#' # Extracting the tables of predicted values and P-spline coeficients
+#'
+#' ## Extract the tables of predicted values and P-spline coefficients.
 #' pred.Dat <- fit.spline$predDat
 #' coef.Dat <- fit.spline$coefDat
 #'
-#' ## We can then visualise the P-spline predictions and first derivatives
-#' # for a subset of genotypes...
+#' ## We can then visualize the P-spline predictions and first derivatives
+#' ## for a subset of genotypes...
 #' plot(fit.spline, genotypes = "G160")
-#' # ...or for a subset of plots.
+#'
+#' ## ...or for a subset of plots.
 #' plot(fit.spline, plotIds = "c10r29", plotType =  "predictions")
 #' plot(fit.spline, plotIds = "c10r29", plotType =  "derivatives")
 #'
@@ -409,25 +412,23 @@ plot.HTPSpline <- function(x,
 #' @param plotIds A character vector indicating the plotIds for which splines
 #' are fitted. If \code{NULL}, splines will be fitted for all plotIds.
 #'
-#' @examples # Format the timepoint
-#' spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
-#' # Run the function to fit P-spline using the mgcv package on a subset of
-#' # genotypes
-#' subGeno <- c("G70","G160","G151","G179","G175","G4","G55")
+#' @examples
+#' ## Run the function to fit P-spline using the mgcv package on a subset of
+#' ## genotypes.
+#' subGeno <- c("G70", "G160", "G151", "G179", "G175", "G4", "G55")
 #' fit.spline <- fitSpline(inDat = spatCorrVator,
 #'                         trait = "EffpsII_corr",
 #'                         genotypes = subGeno,
 #'                         knots = 50,
 #'                         perMinTP = 0.8)
 #'
-#' # Estimate the maximum value of the trait at the beginning of the time course
-#' paramVator1 <-
-#'      estimateSplineParameters(HTPSpline = fit.spline,
-#'                               estimate = "predictions",
-#'                               what = "max",
-#'                               timeMin = 1527784620,
-#'                               timeMax = 1528500000,
-#'                               genotypes = subGeno)
+#' ## Estimate the maximum value of the trait at the beginning of the time course.
+#' paramVator1 <- estimateSplineParameters(HTPSpline = fit.spline,
+#'                                         estimate = "predictions",
+#'                                         what = "max",
+#'                                         timeMin = 1527784620,
+#'                                         timeMax = 1528500000,
+#'                                         genotypes = subGeno)
 #'
 #' @family Fit splines
 #'

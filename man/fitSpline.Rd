@@ -37,32 +37,34 @@ indicating the column containing the numerical time to use.}
 \item{perMinTP}{The percentage of minimum number of time points to use.}
 }
 \description{
-Fit p-splines on corrected or raw data using the mgcv package. The number of
-knots are chosen by the user. The function outputs are predicted p-spline values
-and its first derivative at a denser time step. The idea is to use the outputs for
-outlier detection and to estimate relevant parameters from the curve.
+Fit P-Splines on corrected or raw data using the mgcv package. The number of
+knots are chosen by the user. The function outputs are predicted P-Spline
+values and its first derivative at a denser time step. The idea is to use
+the outputs for outlier detection and to estimate relevant parameters from
+the curve.
 }
 \examples{
 ## The data from the Phenovator platform have been corrected for
-# spatial trends and time points outliers have been removed
-# Format the timepoint
-spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
-# Run the function to fit P-spline using the mgcv package on a subset of
-# genotypes
-subGeno <- c("G70","G160","G151","G179","G175","G4","G55")
+## spatial trends and time points outliers have been removed.
+
+## Run the function to fit P-spline using the mgcv package on a subset of
+## genotypes
+subGeno <- c("G70", "G160", "G151", "G179", "G175", "G4", "G55")
 fit.spline <- fitSpline(inDat = spatCorrVator,
                         trait = "EffpsII_corr",
                         genotypes = subGeno,
                         knots = 50,
                         perMinTP = 0.8)
-# Extracting the tables of predicted values and P-spline coeficients
+
+## Extract the tables of predicted values and P-spline coefficients.
 pred.Dat <- fit.spline$predDat
 coef.Dat <- fit.spline$coefDat
 
-## We can then visualise the P-spline predictions and first derivatives
-# for a subset of genotypes...
+## We can then visualize the P-spline predictions and first derivatives
+## for a subset of genotypes...
 plot(fit.spline, genotypes = "G160")
-# ...or for a subset of plots.
+
+## ...or for a subset of plots.
 plot(fit.spline, plotIds = "c10r29", plotType =  "predictions")
 plot(fit.spline, plotIds = "c10r29", plotType =  "derivatives")
 

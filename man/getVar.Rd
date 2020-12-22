@@ -25,6 +25,7 @@ A data.frame with variances per time point.
 Extract variances from an object of class fitMod.
 }
 \examples{
+\donttest{
 ## Using the first example dataset (PhenovatorDat1):
 data("PhenovatorDat1")
 phenoTP <- createTimePoints(dat = PhenovatorDat1,
@@ -41,10 +42,11 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
 ## Fit a SpATS model on few time points:
 modPhenoSp <- fitModels(TP = phenoTP,
                         trait = "EffpsII",
-                        timePoints = c(1,6,20))
+                        timePoints = c(1, 6, 20))
 
 ## Extract the variances for all available time points in the model object:
 varianceSp <- getVar(modPhenoSp)
+}
 
 }
 \seealso{

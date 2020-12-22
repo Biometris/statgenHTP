@@ -142,6 +142,7 @@ as a percentage of the original phenotypic values.}
 }
 
 \examples{
+\donttest{
 ## Using the first example dataset (PhenovatorDat1):
 data("PhenovatorDat1")
 phenoTP <- createTimePoints(dat = PhenovatorDat1,
@@ -152,19 +153,20 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             plotId = "pos",
                             rowNum = "y", colNum = "x",
                             addCheck = TRUE,
-                            checkGenotypes = c("check1","check2",
-                                               "check3","check4"))
+                            checkGenotypes = c("check1", "check2",
+                                               "check3", "check4"))
 
 ## Fit a SpATS model on few time points:
 modPhenoSp <- fitModels(TP = phenoTP,
                         trait = "EffpsII",
-                        timePoints = c(1,6,36))
+                        timePoints = c(1, 6, 36))
 
 ## Plot the spatial trends of one time point:
 plot(modPhenoSp,
      timePoints = 36,
      plotType = "spatial",
      spaTrend = "percentage")
+}
 
 \dontrun{
 ## Create a time lapse of all available time points:
@@ -173,6 +175,7 @@ plot(modPhenoSp,
      outFile = "TimeLapse_modPhenoSp.gif")
 }
 
+\donttest{
 ## Plot the corrected values for a subset of four genotypes:
 plot(modPhenoSp,
      plotType = "corrPred",
@@ -184,6 +187,7 @@ plot(modPhenoSp,
      plotType = "effDim",
      whichED = c("colId", "rowId", "fColRow","colfRow"),
      EDType = "ratio")
+}
 
 }
 \seealso{

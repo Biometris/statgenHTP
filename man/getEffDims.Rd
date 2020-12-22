@@ -46,6 +46,7 @@ explanation of their meaning.\tabular{ll}{
 }
 }
 \examples{
+\donttest{
 ## Using the first example dataset (PhenovatorDat1):
 data("PhenovatorDat1")
 phenoTP <- createTimePoints(dat = PhenovatorDat1,
@@ -62,11 +63,12 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
 ## Fit a SpATS model on few time points:
 modPhenoSp <- fitModels(TP = phenoTP,
                         trait = "EffpsII",
-                        timePoints = c(1,6,20))
+                        timePoints = c(1, 6, 20))
 
 ## Extract the effective dimensions for all available time points in the
 ## model object:
 effDimSp <- getEffDims(modPhenoSp)
+}
 
 }
 \seealso{

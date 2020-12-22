@@ -29,6 +29,7 @@ are of no interest (nuisances). This allows keeping the data resolution at
 the plot/plant level.
 }
 \examples{
+\donttest{
 ## Using the first example dataset (PhenovatorDat1):
 data("PhenovatorDat1")
 phenoTP <- createTimePoints(dat = PhenovatorDat1,
@@ -45,10 +46,12 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
 ## Fit a SpATS model on few time points:
 modPhenoSp <- fitModels(TP = phenoTP,
                         trait = "EffpsII",
-                        timePoints = c(1,6,20))
+                        timePoints = c(1, 6, 20))
 
 ## Extract the corrected values for one time point:
-spatCorrSp <- getCorrected(modPhenoSp, timePoints = 6)
+spatCorrSp <- getCorrected(modPhenoSp,
+                           timePoints = 6)
+}
 
 }
 \seealso{

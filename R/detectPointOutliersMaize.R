@@ -22,7 +22,9 @@
 #' @param trait3 A character vector indicating the third trait to model in TP.
 #' @param thr A numeric value indicating the threshold.
 #'
-#' @examples ## Create a TP object containing the data from the PhenoArch
+#' @examples
+#' \donttest{
+#' ## Create a TP object containing the data from the PhenoArch.
 #' phenoTParch <- createTimePoints(dat = PhenoarchDat1,
 #'                                 experimentName = "Phenoarch",
 #'                                 genotype = "geno",
@@ -36,6 +38,7 @@
 #'                                           trait2 = "Height_Estimated",
 #'                                           trait3 = "phyllocron",
 #'                                           thr = 0.95)
+#' }
 #'
 #' @family Detect point outliers
 #'

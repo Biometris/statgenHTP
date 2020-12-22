@@ -43,7 +43,8 @@ plant height \eqn{res_i > \mu_{res} + qnorm(threshold) * sd_{res}}}
 }
 }
 \examples{
-## Create a TP object containing the data from the PhenoArch
+\donttest{
+## Create a TP object containing the data from the PhenoArch.
 phenoTParch <- createTimePoints(dat = PhenoarchDat1,
                                 experimentName = "Phenoarch",
                                 genotype = "geno",
@@ -57,6 +58,7 @@ pointOutMaize <- detectPointOutliersMaize(phenoTParch,
                                           trait2 = "Height_Estimated",
                                           trait3 = "phyllocron",
                                           thr = 0.95)
+}
 
 }
 \seealso{

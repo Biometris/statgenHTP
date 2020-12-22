@@ -22,6 +22,7 @@
 #'
 #' @examples
 #' ## Using the first example dataset (PhenovatorDat1):
+#' \donttest{
 #' data("PhenovatorDat1")
 #' phenoTP <- createTimePoints(dat = PhenovatorDat1,
 #'                             experimentName = "Phenovator",
@@ -37,10 +38,12 @@
 #' ## Fit a SpATS model on few time points:
 #' modPhenoSp <- fitModels(TP = phenoTP,
 #'                         trait = "EffpsII",
-#'                         timePoints = c(1,6,20))
+#'                         timePoints = c(1, 6, 20))
 #'
 #' ## Extract the genotypic predictions for one time point:
-#' genoPredSp <- getGenoPred(modPhenoSp, timePoints = 6)
+#' genoPredSp <- getGenoPred(modPhenoSp,
+#'                           timePoints = 6)
+#' }
 #'
 #' @family Spatial modeling
 #'
@@ -123,6 +126,7 @@ getGenoPred <- function(fitMod,
 #' @return A data.frame with spatially corrected values per time point.
 #'
 #' @examples
+#' \donttest{
 #' ## Using the first example dataset (PhenovatorDat1):
 #' data("PhenovatorDat1")
 #' phenoTP <- createTimePoints(dat = PhenovatorDat1,
@@ -139,10 +143,12 @@ getGenoPred <- function(fitMod,
 #' ## Fit a SpATS model on few time points:
 #' modPhenoSp <- fitModels(TP = phenoTP,
 #'                         trait = "EffpsII",
-#'                         timePoints = c(1,6,20))
+#'                         timePoints = c(1, 6, 20))
 #'
 #' ## Extract the corrected values for one time point:
-#' spatCorrSp <- getCorrected(modPhenoSp, timePoints = 6)
+#' spatCorrSp <- getCorrected(modPhenoSp,
+#'                            timePoints = 6)
+#' }
 #'
 #' @family Spatial modeling
 #'
@@ -186,6 +192,7 @@ getCorrected <- function(fitMod,
 #' @return A data.frame with variances per time point.
 #'
 #' @examples
+#' \donttest{
 #' ## Using the first example dataset (PhenovatorDat1):
 #' data("PhenovatorDat1")
 #' phenoTP <- createTimePoints(dat = PhenovatorDat1,
@@ -202,10 +209,11 @@ getCorrected <- function(fitMod,
 #' ## Fit a SpATS model on few time points:
 #' modPhenoSp <- fitModels(TP = phenoTP,
 #'                         trait = "EffpsII",
-#'                         timePoints = c(1,6,20))
+#'                         timePoints = c(1, 6, 20))
 #'
 #' ## Extract the variances for all available time points in the model object:
 #' varianceSp <- getVar(modPhenoSp)
+#' }
 #'
 #' @family Spatial modeling
 #'
@@ -297,6 +305,7 @@ getVar <- function(fitMod,
 #' @return A data.frame with heritabilities per time point.
 #'
 #' @examples
+#' \donttest{
 #' ## Using the first example dataset (PhenovatorDat1):
 #' data("PhenovatorDat1")
 #' phenoTP <- createTimePoints(dat = PhenovatorDat1,
@@ -313,11 +322,12 @@ getVar <- function(fitMod,
 #' ## Fit a SpATS model on few time points:
 #' modPhenoSp <- fitModels(TP = phenoTP,
 #'                         trait = "EffpsII",
-#'                         timePoints = c(1,6,20))
+#'                         timePoints = c(1, 6, 20))
 #'
 #' ## Extract the heritabilities for all available time points in the model
 #' ## object:
-#' heritSp    <- getHerit(modPhenoSp)
+#' heritSp <- getHerit(modPhenoSp)
+#' }
 #'
 #' @family Spatial modeling
 #'
@@ -371,6 +381,7 @@ getHerit <- function(fitMod,
 #' @return A data.frame with effective dimensions per time point.
 #'
 #' @examples
+#' \donttest{
 #' ## Using the first example dataset (PhenovatorDat1):
 #' data("PhenovatorDat1")
 #' phenoTP <- createTimePoints(dat = PhenovatorDat1,
@@ -387,11 +398,12 @@ getHerit <- function(fitMod,
 #' ## Fit a SpATS model on few time points:
 #' modPhenoSp <- fitModels(TP = phenoTP,
 #'                         trait = "EffpsII",
-#'                         timePoints = c(1,6,20))
+#'                         timePoints = c(1, 6, 20))
 #'
 #' ## Extract the effective dimensions for all available time points in the
 #' ## model object:
 #' effDimSp <- getEffDims(modPhenoSp)
+#' }
 #'
 #' @family Spatial modeling
 #'

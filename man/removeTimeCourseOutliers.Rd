@@ -35,33 +35,31 @@ of the fitSpline function, specified in \code{fitSpline}. Exactly one of
 these should be provided as input for the function.
 }
 \examples{
-# Format the timepoint
-spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
-# Run the function to fit P-spline using the mgcv package on a subset of
-# genotypes
-subGenoVator <- c("G70","G160","G151","G179","G175","G4","G55")
+## Run the function to fit P-spline using the mgcv package on a subset of
+## genotypes.
+subGenoVator <- c("G70", "G160", "G151", "G179", "G175", "G4", "G55")
 fit.spline <- fitSpline(inDat = spatCorrVator,
                         trait = "EffpsII_corr",
                         genotypes = subGenoVator,
                         knots = 50,
                         perMinTP = 0.8)
-# Extracting the tables of predicted values and P-spline coeficients
+
+## Extract the tables of predicted values and P-spline coefficients.
 pred.Dat <- fit.spline$predDat
 coef.Dat <- fit.spline$coefDat
 
 ## The coefficients are then used to tag suspect time courses
 outVator <- detectTimeCourseOutliers(corrDat = spatCorrVator,
-                         predDat = pred.Dat,
-                         coefDat = coef.Dat,
-                         trait = "EffpsII_corr",
-                         genotypes = subGenoVator,
-                         thrCor = 0.9,
-                         thrPca = 1)
+                                     predDat = pred.Dat,
+                                     coefDat = coef.Dat,
+                                     trait = "EffpsII_corr",
+                                     genotypes = subGenoVator,
+                                     thrCor = 0.9,
+                                     thrPca = 30)
 
-## The outliers can be removed from the dataset
-spatCorrVatorOut <-
-       removeTimeCourseOutliers(dat = spatCorrVator,
-                                timeCourseOutliers = outVator)
+## The outliers can be removed from the dataset.
+spatCorrVatorOut <- removeTimeCourseOutliers(dat = spatCorrVator,
+                                             timeCourseOutliers = outVator)
 
 }
 \seealso{

@@ -67,7 +67,7 @@ outVator <-
                            trait = "EffpsII_corr",
                            genotypes = subGenoVator,
                            thrCor = 0.9,
-                           thrPca = 1) 
+                           thrPca = 30) 
 fit.splineNumOut <- removeTimeCourseOutliers(fitSpline = fit.splineNum,
                                              timeCourseOutliers = outVator)
 ```
@@ -163,7 +163,7 @@ outRoot <- detectTimeCourseOutliers(corrDat = noCorrRoot,
                                     trait = "tipPos_y",
                                     genotypes = subGenoRoot,
                                     thrCor = 0.9,
-                                    thrPca = 1.2)
+                                    thrPca = 25)
 
 outRootFinal <- outRoot[outRoot$plotId %in% c("A_03_5","A_29_2"),]
 noCorrRootOut <- removeTimeCourseOutliers(dat = noCorrRoot,

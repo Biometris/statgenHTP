@@ -27,6 +27,7 @@ Extract heritabilities from an object of class fitMod. When
 of geno.decomp are stored in separate columns.
 }
 \examples{
+\donttest{
 ## Using the first example dataset (PhenovatorDat1):
 data("PhenovatorDat1")
 phenoTP <- createTimePoints(dat = PhenovatorDat1,
@@ -43,11 +44,12 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
 ## Fit a SpATS model on few time points:
 modPhenoSp <- fitModels(TP = phenoTP,
                         trait = "EffpsII",
-                        timePoints = c(1,6,20))
+                        timePoints = c(1, 6, 20))
 
 ## Extract the heritabilities for all available time points in the model
 ## object:
-heritSp    <- getHerit(modPhenoSp)
+heritSp <- getHerit(modPhenoSp)
+}
 
 }
 \seealso{
