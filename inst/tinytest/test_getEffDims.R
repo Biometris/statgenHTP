@@ -37,8 +37,6 @@ expect_equal(colnames(effDims2), c("timeNumber", "timePoint", "repId:colId",
                                    "repId:rowId", "fCol", "fRow", "fColRow",
                                    "colfRow", "fColfRow", "surface"))
 
-if (FALSE) {
-
 # Read expected results.
 
 effDimsOrig1 <- read.csv("ed1")
@@ -72,7 +70,4 @@ if (at_home()) {
                              quiet = TRUE)
   expect_error(getEffDims(testFitModAs1),
                "Models in testFitModAs1 should be fitted using SpATS")
-}
-
-
 }
