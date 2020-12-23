@@ -179,7 +179,7 @@ expect_error(plot(testFitMod, plotType = "effDim", EDType = "ED"),
              "should be one of")
 expect_silent(p3 <- plot(testFitMod, plotType = "effDim", EDType = "ratio",
                          outFile = tmpFile))
-expect_equal(as.list(p3$scales$get_scales("y"))$limits, c(0, 0.777319493997852))
+expect_equal(as.list(p3$scales$get_scales("y"))$limits, c(0, 0.777730459700606))
 
 ## Check option which in effDim plot.
 expect_silent(p4 <- plot(testFitMod, plotType = "effDim", whichED = "colId",
