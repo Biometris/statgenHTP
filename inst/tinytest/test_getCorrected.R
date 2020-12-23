@@ -136,7 +136,7 @@ corrIn <- read.csv(tmpFile)
 expect_equal(corrOut[["t1_corr"]], corrIn[["t1_corr"]])
 
 ## Test for models fitted using asreml.
-## Limited set of tests, focused on diferences between SpATS and asreml.
+## Limited set of tests, focused on differences between SpATS and asreml.
 
 if (at_home()) {
   ## Fit some models with different options that influence output
