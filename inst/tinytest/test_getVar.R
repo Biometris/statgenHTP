@@ -1,4 +1,4 @@
-### Test getCorrected.
+### Test getVar
 
 ## Read test data from .csv
 testDat <- read.csv("testDat.csv", stringsAsFactors = FALSE)
@@ -14,17 +14,13 @@ testTP <- createTimePoints(dat = testDat, experimentName = "testExp",
 testFitMod1 <- fitModels(testTP, trait = "t1", quiet = TRUE)
 testFitMod2 <- fitModels(testTP, trait = "t1", geno.decomp = "repId",
                          quiet = TRUE)
-#testFitMod3 <- fitModels(testTP, trait = "t1", useCheck = TRUE, quiet = TRUE)
+testFitMod3 <- fitModels(testTP, trait = "t1", useCheck = TRUE, quiet = TRUE)
 testFitMod4 <- fitModels(testTP, trait = "t1", useRepId = TRUE, quiet = TRUE)
 
 ### Check input.
 
 expect_error(getVar("fitMod"),
              "fitMod should be an object of class fitMod")
-
-
-if (FALSE) {
-
 
 var1 <- getVar(testFitMod1)
 var2 <- getVar(testFitMod2)
@@ -62,10 +58,10 @@ tmpFile <- tempfile(fileext = ".csv")
 expect_error(getVar(testFitMod1, outFile = "outfile"),
              "a single character string ending in .csv")
 varOut <- getVar(testFitMod1, outFile = tmpFile)
-varIn <- read.csv(tmpFile)
+varIn <- read.csv(tmpFile, stringsAsFactors = FALSE)
 
 # Ignore timePoint
-# It is imported as factor, but is a date in the original data.
+# It is imported as character, but is a date in the original data.
 expect_equal(varOut[, -2], varIn[, -2])
 
 ## Test for models fitted using asreml.
@@ -79,11 +75,9 @@ if (at_home()) {
                              geno.decomp = "repId", quiet = TRUE)
   testFitModAs3 <- fitModels(testTP, trait = "t1", useCheck = TRUE,
                              engine = "asreml", quiet = TRUE)
-  ## This gives a lot of warnings about oscillating parameters.
-  expect_warning(testFitModAs4 <-
-                   fitModels(testTP, trait = "t1", useRepId = TRUE,
-                             engine = "asreml", spatial = TRUE, quiet = TRUE),
-                 "Oscillating parameter")
+  ## This sometimes gives warnings about oscillating parameters.
+  testFitModAs4 <- fitModels(testTP, trait = "t1", useRepId = TRUE,
+                             engine = "asreml", spatial = TRUE, quiet = TRUE)
 
   varAs1 <- getVar(testFitModAs1)
   varAs2 <- getVar(testFitModAs2)
@@ -131,8 +125,3 @@ if (at_home()) {
                  0.000456828756440842, 0.000173447996381509,
                  0.000389710248725436))
 }
-
-
-
-}
-
