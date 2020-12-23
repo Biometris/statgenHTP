@@ -22,9 +22,9 @@ testFitMod <- fitModels(testTP, trait = "t1", quiet = TRUE)
 testFitMod2 <- fitModels(testTP, trait = "t1", geno.decomp = "repId",
                          quiet = TRUE)
 ## Create another fitMod object for testing with check.
-#testFitMod3 <- fitModels(testTP, trait = "t1", useCheck = TRUE, quiet = TRUE)
+testFitMod3 <- fitModels(testTP, trait = "t1", useCheck = TRUE, quiet = TRUE)
 
-if (at_home() && FALSE) {
+if (at_home()) {
   ## Create fitMods for additional testing with asreml.
   testFitModAs <- fitModels(testTP, trait = "t1", engine = "asreml",
                             quiet = TRUE)
@@ -74,11 +74,11 @@ expect_equal(nCol, 1)
 expect_silent(p3 <- plot(testFitMod2, plotType = "rawPred", outFile = tmpFile))
 
 ## Check that rawPred plot functions for model with check.
-# expect_silent(p4 <- plot(testFitMod3, plotType = "rawPred", outFile = tmpFile))
-# expect_silent(p5 <- plot(testFitMod3, plotType = "rawPred", plotChecks = TRUE,
-#                          outFile = tmpFile))
-# expect_equal(nrow(p4[[1]]$data), 105)
-# expect_equal(nrow(p5[[1]]$data), 125)
+expect_silent(p4 <- plot(testFitMod3, plotType = "rawPred", outFile = tmpFile))
+expect_silent(p5 <- plot(testFitMod3, plotType = "rawPred", plotChecks = TRUE,
+                         outFile = tmpFile))
+expect_equal(nrow(p4[[1]]$data), 105)
+expect_equal(nrow(p5[[1]]$data), 125)
 
 if (at_home() && FALSE) {
   ## Check that rawPred plot functions for asreml.
@@ -120,11 +120,11 @@ expect_equal(nCol, 1)
 expect_silent(p3 <- plot(testFitMod2, plotType = "corrPred", outFile = tmpFile))
 
 ## Check that rawPred plot functions for model with check.
-# expect_silent(p4 <- plot(testFitMod3, plotType = "corrPred", outFile = tmpFile))
-# expect_silent(p5 <- plot(testFitMod3, plotType = "corrPred", plotChecks = TRUE,
-#                          outFile = tmpFile))
-# expect_equal(nrow(p4[[1]]$data), 105)
-# expect_equal(nrow(p5[[1]]$data), 125)
+expect_silent(p4 <- plot(testFitMod3, plotType = "corrPred", outFile = tmpFile))
+expect_silent(p5 <- plot(testFitMod3, plotType = "corrPred", plotChecks = TRUE,
+                         outFile = tmpFile))
+expect_equal(nrow(p4[[1]]$data), 105)
+expect_equal(nrow(p5[[1]]$data), 125)
 
 if (at_home() && FALSE) {
   ## Check that rawPred plot functions for asreml.
@@ -235,12 +235,12 @@ expect_silent(p1 <- plot(testFitMod, plotType = "spatial",
                          spaTrend = "percentage", outFile = tmpFile))
 
 ## Check that spatial plot functions for model with check.
-# expect_silent(plot(testFitMod3, plotType = "spatial", outFile = tmpFile))
+expect_silent(plot(testFitMod3, plotType = "spatial", outFile = tmpFile))
 
 ## Check that effDim plot functions for model with geno.decomp.
 expect_silent(p2 <- plot(testFitMod2, plotType = "spatial", outFile = tmpFile))
 
-if (at_home() && FALSE) {
+if (at_home()) {
   ## Check that spatial plots cannot be made for asreml when spatial = FALSE.
   expect_error(plot(testFitModAs, plotType = "spatial"),
                "when setting spatial = TRUE when fitting the asreml models")

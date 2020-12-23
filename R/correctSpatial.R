@@ -1,5 +1,6 @@
 #' Correct for spatial effects and other unnecessary factors.
 #'
+#' @noRd
 #' @keywords internal
 correctSpatial <- function(fitMod) {
   ## All steps are different for SpATS and asreml so just move them to
@@ -13,6 +14,7 @@ correctSpatial <- function(fitMod) {
   return(pred)
 }
 
+#' @noRd
 #' @keywords internal
 correctSpatialSpATS <- function(fitMod) {
   ## Check if check was used when fitting model.
@@ -72,10 +74,11 @@ correctSpatialSpATS <- function(fitMod) {
   ## Obtain the corrected trait.
   pred[[newTrait]] <- pred[["predicted.values"]] + pred[["resid"]]
   ## Select the variables needed for subsequent analyses.
-  pred <- pred[c(newTrait, trait, "wt", "genotype", geno.decomp,
-               fixVars, randVars, "plotId", "timePoint")]
+  pred <- pred[c(newTrait, trait, "wt", "genotype", if (useCheck) "check",
+                 geno.decomp, fixVars, randVars, "plotId", "timePoint")]
 }
 
+#' @noRd
 #' @keywords internal
 correctSpatialAsreml <- function(fitMod) {
   ## Get trait from fitted model.
@@ -88,26 +91,51 @@ correctSpatialAsreml <- function(fitMod) {
   genoCol <- if (useCheck) "genoCheck" else "genotype"
   useGenoDecomp <- "geno.decomp" %in% all.vars(fitMod$formulae$random) |
     "geno.decomp" %in% all.vars(fitMod$formulae$fixed)
+
   ## Genotype prediction (including the effect of geno.decomp as well as
   ## the intercept).
   classForm <- paste0(if (useGenoDecomp) "geno.decomp:", genoCol)
-  pred <- predictAsreml(fitMod, classify = classForm,
-                        present = c(genoCol,
-                                    if (useGenoDecomp) "geno.decomp",
-                                    if (useCheck) "check"),
-                        vcov = TRUE)
-  ## Compute Weights based on the inverse of the var-cov (vcov) matrix.
-  ## Get the vcov matrix from pred.
-  vcov <- pred$vcov
-  vcov <- vcov[pred$pvals[["status"]] == "Estimable",
-               pred$pvals[["status"]] == "Estimable"]
-  ## Add the residual error to the diagonal of the vcov matrix
-  ## Required since the residuals are added to the predictions.
-  vcovComb <- as.matrix(vcov) + fitMod$sigma2 * diag(nrow(vcov))
+  predGeno <- predictAsreml(fitMod, classify = classForm,
+                            present = c(genoCol,
+                                        if (useGenoDecomp) "geno.decomp",
+                                        if (useCheck) "check"))
   genoGenoDecomp <- unique(fitMod$call$data[c(genoCol,
                                               if (useGenoDecomp) "geno.decomp")])
-  pred <- merge(pred$pvals, genoGenoDecomp)
-  pred[["wt"]] <- sqrt(diag(solve(vcovComb)))
+  vcovGeno <- predGeno$vcov
+  vcovGeno <- vcovGeno[predGeno$pvals[["status"]] == "Estimable",
+                       predGeno$pvals[["status"]] == "Estimable"]
+  ## Add the residual error to the diagonal of the vcov matrix
+  ## Required since the residuals are added to the predictions.
+  vcovComb <- as.matrix(vcovGeno) + fitMod$sigma2 * diag(nrow(vcovGeno))
+  predGeno <- predGeno$pvals[predGeno$pvals[["status"]] == "Estimable", ]
+  predGeno[["wt"]] <- sqrt(diag(solve(vcovComb)))
+  ## Rename genoCol to genotype.
+  colnames(predGeno)[colnames(predGeno) == genoCol] <- "genotype"
+  ## Repeat for the check genotypes.
+  if (useCheck) {
+    ## Predict check genotypes.
+    classFormChk <- paste0(if (useGenoDecomp) "geno.decomp:", "check")
+    predCheck <- predictAsreml(fitMod, classify = classFormChk)
+    vcovCheck <- predCheck$vcov
+    vcovCheck <- vcovCheck[predCheck$pvals[["status"]] == "Estimable",
+                         predCheck$pvals[["status"]] == "Estimable"]
+    ## Add the residual error to the diagonal of the vcov matrix
+    ## Required since the residuals are added to the predictions.
+    vcovComb <- as.matrix(vcovCheck) + fitMod$sigma2 * diag(nrow(vcovCheck))
+    predCheck <- predCheck$pvals
+    ## Remove aliased observations
+    predCheck <- predCheck[predCheck[["status"]] != "Aliased", ]
+    ## Remove noCheck
+    predCheck[["wt"]] <- sqrt(diag(solve(vcovCheck)))
+    predCheck <- predCheck[predCheck[["check"]] != "noCheck", ]
+    ## Rename genoCol to genotype.
+    predCheck[["genotype"]] <- predCheck[["check"]]
+    ## Add check column to predGeno.
+    predGeno[["check"]] <- "noCheck"
+  } else {
+    predCheck <- NULL
+  }
+  predTot <- rbind(predGeno, predCheck)
   ## Include in the prediction the factors (variables) whose effect we are
   ## interested in removing.
   fixVars <- all.vars(update(fitMod$formulae$fixed, 0~.))
@@ -122,31 +150,15 @@ correctSpatialAsreml <- function(fitMod) {
                                      if (useGenoDecomp) "geno.decomp"),
                                    predVars)]
   modDat[["resid"]] <- residuals(fitMod)
-  # ## Predict fixed + random effects.
-  # if (length(predVars) > 0) {
-  #   predFix <- predictAsreml(fitMod,
-  #                            classify = paste0(predVars, collapse = ":"),
-  #                            vcov = FALSE, present = predVars)$pvals
-  #   pred <- merge(pred, predFix[c(predVars, "predicted.value")])
-  #   pred[[newTrait]] <- pred[[newTrait]] - pred[["predicted.value"]]
-  #   pred[["predicted.value"]] <- NULL
-  # }
-  # ## Predict intercept.
-  # if (length(predVars) > 0) {
-  #   ## Get the intercept from the coefficients.
-  #   intercept <- fitMod$coefficients$fixed["(Intercept)", ]
-  #   pred[[newTrait]] <- pred[[newTrait]] + intercept
-  # }
-
-  pred <- merge(modDat, pred, all.x = TRUE)
-  pred[[newTrait]] <- pred[["predicted.value"]] + pred[["resid"]]
+  predTot <- merge(modDat, predTot, all.x = TRUE)
+  predTot[[newTrait]] <- predTot[["predicted.value"]] + predTot[["resid"]]
   if (length(predVars) == 0) {
     warning("No spatial or fixed effects to correct for. Returning raw data.\n")
   }
   ## Remove row/col combinations added when fitting models.
-  pred <- pred[!is.na(pred[["plotId"]]), ]
+  predTot <- predTot[!is.na(predTot[["plotId"]]), ]
   ## Select the variables needed for subsequent analyses.
-  pred <- pred[c(newTrait, trait, "wt", "genotype",
-                 if (useGenoDecomp) "geno.decomp", fixVars, randVars,
-                 "plotId", "timePoint")]
+  predTot <- predTot[c(newTrait, trait, "wt", "genotype",
+                       if (useGenoDecomp) "geno.decomp", fixVars, randVars,
+                       "plotId", "timePoint")]
 }
