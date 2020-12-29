@@ -40,10 +40,10 @@ gp6b <- getGenoPred(testFitMod6, predictChecks = TRUE)
 
 ## Check output structure
 
-expect_true(inherits(gp1, "list"))
+expect_inherits(gp1, "list")
 expect_equal(names(gp1), c("genoPred", "checkPred"))
 expect_null(gp1$checkPred)
-expect_true(inherits(gp1$genoPred, "data.frame"))
+expect_inherits(gp1$genoPred, "data.frame")
 expect_equal(dim(gp1$genoPred), c(110, 5))
 expect_equal(colnames(gp1$genoPred), c("timeNumber", "timePoint", "genotype",
                                        "predicted.values", "standard.errors"))
@@ -55,7 +55,7 @@ expect_equal(setdiff(colnames(gp3$genoPred),
 
 # checkPred not empty for useCheck.
 expect_equal(gp4a$genoPred, gp4b$genoPred)
-expect_true(inherits(gp4b$checkPred, "data.frame"))
+expect_inherits(gp4b$checkPred, "data.frame")
 expect_equal(dim(gp4b$checkPred), c(5, 5))
 expect_equal(colnames(gp4b$checkPred), c("timeNumber", "timePoint", "check",
                                          "predicted.values", "standard.errors"))

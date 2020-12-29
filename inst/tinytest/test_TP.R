@@ -37,7 +37,7 @@ expect_error(createTimePoints(dat = testDat2, experimentName = "testExp",
 testTP <- createTimePoints(dat = testDat, experimentName = "testExp",
                            genotype = "Genotype", timePoint = "timepoints",
                            plotId = "pos")
-expect_true(inherits(testTP, "TP"))
+expect_inherits(testTP, "TP")
 
 ## Check that option timeFormat is used correctly.
 ## Supplying incompatible timeFormat should give an error.
@@ -67,10 +67,10 @@ expect_true(hasName(testTPrc[[1]], "colId"))
 expect_true(hasName(testTPrc[[1]], "rowId"))
 expect_true(hasName(testTPrc[[1]], "colNum"))
 expect_true(hasName(testTPrc[[1]], "rowNum"))
-expect_true(inherits(testTPrc[[1]][["colId"]], "factor"))
-expect_true(inherits(testTPrc[[1]][["rowId"]], "factor"))
-expect_true(inherits(testTPrc[[1]][["colNum"]], "numeric"))
-expect_true(inherits(testTPrc[[1]][["rowNum"]], "numeric"))
+expect_inherits(testTPrc[[1]][["colId"]], "factor")
+expect_inherits(testTPrc[[1]][["rowId"]], "factor")
+expect_inherits(testTPrc[[1]][["colNum"]], "numeric")
+expect_inherits(testTPrc[[1]][["rowNum"]], "numeric")
 
 ## Check that check genotypes are added correctly.
 ## When present two columns should be added: check and genoCheck.
@@ -80,8 +80,8 @@ testTPck <- createTimePoints(dat = testDat, experimentName = "testExp",
                              checkGenotypes = "check1")
 expect_true(hasName(testTPck[[1]], "check"))
 expect_true(hasName(testTPck[[1]], "genoCheck"))
-expect_true(inherits(testTPck[[1]][["check"]], "factor"))
-expect_true(inherits(testTPck[[1]][["genoCheck"]], "factor"))
+expect_inherits(testTPck[[1]][["check"]], "factor")
+expect_inherits(testTPck[[1]][["genoCheck"]], "factor")
 expect_equal(levels(testTPck[[1]][["check"]]), c("check1", "noCheck"))
 #expect_equal(sum(is.na(testTPck[[1]][["genoCheck"]])), 4)
 
@@ -91,7 +91,7 @@ expect_equal(attr(testTP, "experimentName"), "testExp")
 
 # Extract timePoints attribute.
 timePoints <- attr(testTP, "timePoints")
-expect_true(inherits(timePoints, "data.frame"))
+expect_inherits(timePoints, "data.frame")
 expect_equal(names(timePoints), c("timeNumber", "timePoint"))
 expect_equal(timePoints[["timeNumber"]], 1:5)
 expect_equal(timePoints[["timePoint"]], names(testTP))
@@ -105,13 +105,13 @@ expect_error(testTP["2018-05-01 16:37:00"], "All timePoints should be in x")
 
 ## Check that subsetting works with integer selection.
 testTP23 <- testTP[2:3]
-expect_true(inherits(testTP23, "TP"))
+expect_inherits(testTP23, "TP")
 expect_equal(names(testTP23), names(testTP)[2:3])
 expect_equal(attr(testTP23, "timePoints"), timePoints[2:3, ])
 
 ## Check that subsetting works with character selection.
 timePoints15 <- unique(testDat[["timepoints"]])[c(1, 5)]
 testTP15 <- testTP[timePoints15]
-expect_true(inherits(testTP15, "TP"))
+expect_inherits(testTP15, "TP")
 expect_equal(names(testTP15), names(testTP)[c(1, 5)])
 expect_equal(attr(testTP15, "timePoints"), timePoints[c(1, 5), ])

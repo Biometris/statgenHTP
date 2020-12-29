@@ -56,13 +56,13 @@ expect_error(suppressWarnings(fitModels(testTP3, trait = "t1", timePoints = 1)),
 ### Fit correct models and check that output is as expected.
 
 testFitMod <- fitModels(testTP, trait = "t1", quiet = TRUE)
-expect_true(inherits(testFitMod, "fitMod"))
+expect_inherits(testFitMod, "fitMod")
 
 ## Check that fitMod structure is correct.
 
 expect_equal(length(testFitMod), 5)
 expect_equal(names(testFitMod), names(testTP))
-expect_true(inherits(testFitMod[[1]], "SpATS"))
+expect_inherits(testFitMod[[1]], "SpATS")
 
 ## Check that attributes are added correctly to fitMod object.
 

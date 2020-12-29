@@ -36,7 +36,6 @@ predictGenoSpATS <- function(fitMod,
                                  colnames(predTot) != "geno.decomp"])
   if (predictChecks) {
     predCheck <- droplevels(predTot[is.na(predTot[[genoCol]]), ])
-                                    #colnames(predTot) != "geno.decomp"])
   } else {
     predCheck <- NULL
   }
@@ -50,13 +49,6 @@ predictGenoSpATS <- function(fitMod,
     genoStart <- nchar(as.character(predGeno[["geno.decomp"]])) + 2
     predGeno[[genoCol]] <- as.factor(substring(predGeno[[genoCol]],
                                                first = genoStart))
-    # if (predictChecks) {
-    #   checkGenoDecomp <- unique(fitMod$data[c("check", "geno.decomp")])
-    #   predCheck <- merge(predCheck, checkGenoDecomp, by = "check")
-    #   checkStart <- nchar(as.character(predCheck[["geno.decomp"]])) + 2
-    #   predCheck[["check"]] <- as.factor(substring(predCheck[["check"]],
-    #                                               first = checkStart))
-    # }
   }
   ## Rename genoCol to genotype for consistency with models without check.
   predGeno[["genotype"]] <- predGeno[[genoCol]]

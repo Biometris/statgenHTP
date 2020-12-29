@@ -5,10 +5,10 @@ tpDat <- data.frame(rowNum = rep(1:4, each = 4),
 
 ## No missing values. Borders between replicates and around edge.
 bord <- statgenHTP:::calcPlotBorders(tpDat = tpDat, bordVar = "repId")
-expect_true(inherits(bord, "list"))
+expect_inherits(bord, "list")
 expect_equal(names(bord), c("horW", "vertW"))
-expect_true(inherits(bord$horW, "data.frame"))
-expect_true(inherits(bord$vertW, "data.frame"))
+expect_inherits(bord$horW, "data.frame")
+expect_inherits(bord$vertW, "data.frame")
 expect_equal(bord$horW[["x"]], rep(1:4, each = 3))
 expect_equal(bord$horW[["y"]], rep(c(1, 3, 5), times = 4))
 expect_equal(bord$vertW[["x"]], rep(c(1, 5), times = 4))
@@ -59,8 +59,8 @@ df1 <- data.frame(timePoint = times[timeNums], timeNumber = timeNums,
 
 ## Check that single missing value is added when no extra columns present.
 dfOut1 <- statgenHTP:::addMissVals(df1, "trait")
-expect_true(inherits(dfOut1, "data.frame"))
-expect_true(inherits(dfOut1[["timePoint"]], "POSIXct"))
+expect_inherits(dfOut1, "data.frame")
+expect_inherits(dfOut1[["timePoint"]], "POSIXct")
 expect_equal(nrow(dfOut1), 4)
 expect_equivalent(unlist(dfOut1[4, ]), c("p2", "1567382400", NA))
 
@@ -130,7 +130,7 @@ expect_error(statgenHTP:::chkTimePoints(testTP, "2018-05-01 16:37:00"),
              "All timePoints should be in testTP")
 
 ## Check that integer subset is converted to character.
-expect_true(inherits(statgenHTP:::chkTimePoints(testTP, 1), "character"))
+expect_inherits(statgenHTP:::chkTimePoints(testTP, 1), "character")
 expect_equal(statgenHTP:::chkTimePoints(testTP, 1),
              statgenHTP:::chkTimePoints(testTP, "2018-06-01 16:37:00"))
 
@@ -139,6 +139,6 @@ expect_equal(statgenHTP:::chkTimePoints(testTP, 1),
 expect_error(getTimePoints(x = 1:3),
              "x should be an object of class TP or fitMod")
 ## Create TP object.
-expect_true(inherits(getTimePoints(testTP), "data.frame"))
+expect_inherits(getTimePoints(testTP), "data.frame")
 expect_equal(getTimePoints(testTP), attr(x = testTP, which = "timePoints"))
 

@@ -26,7 +26,7 @@ effRats2 <- getEffDims(testFitMod2, EDType = "ratio")
 
 ## Check output structure.
 
-expect_true(inherits(effDims1, "data.frame"))
+expect_inherits(effDims1, "data.frame")
 expect_equal(dim(effDims1), c(5, 10))
 expect_equal(colnames(effDims1), c("timeNumber", "timePoint", "colId", "rowId",
                                    "fCol", "fRow", "fColRow", "colfRow",

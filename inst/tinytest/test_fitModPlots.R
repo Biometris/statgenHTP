@@ -47,9 +47,9 @@ expect_error(plot(testFitMod, plotType = "rawPred", genotypes = "g1"),
              "All genotypes should be in testFitMod")
 
 expect_silent(p0 <- plot(testFitMod, plotType = "rawPred", outFile = tmpFile))
-expect_true(inherits(p0, "list"))
+expect_inherits(p0, "list")
 expect_equal(length(p0), 1)
-expect_true(inherits(p0[[1]], "ggplot"))
+expect_inherits(p0[[1]], "ggplot")
 
 geoms0 <- sapply(p0[[1]]$layers, function(x) class(x$geom)[1])
 expect_equal(geoms0, c("GeomPoint", "GeomPoint"))
@@ -93,9 +93,9 @@ expect_error(plot(testFitMod, plotType = "corrPred", genotypes = "g1"),
              "All genotypes should be in testFitMod")
 
 expect_silent(p0 <- plot(testFitMod, plotType = "corrPred", outFile = tmpFile))
-expect_true(inherits(p0, "list"))
+expect_inherits(p0, "list")
 expect_equal(length(p0), 1)
-expect_true(inherits(p0[[1]], "ggplot"))
+expect_inherits(p0[[1]], "ggplot")
 
 geoms0 <- sapply(p0[[1]]$layers, function(x) class(x$geom)[1])
 expect_equal(geoms0, c("GeomPoint", "GeomPoint"))
@@ -134,7 +134,7 @@ if (at_home() && FALSE) {
 ### Check heritability plot.
 
 expect_silent(p0 <- plot(testFitMod, plotType = "herit", outFile = tmpFile))
-expect_true(inherits(p0, "ggplot"))
+expect_inherits(p0, "ggplot")
 
 ## Output should be a combination of points and lines.
 geoms0 <- sapply(p0$layers, function(x) class(x$geom)[1])
@@ -156,7 +156,7 @@ expect_silent(p3 <- plot(testFitMod2, plotType = "herit", outFile = tmpFile))
 ### Check effective dimensions plot.
 
 expect_silent(p0 <- plot(testFitMod, plotType = "effDim", outFile = tmpFile))
-expect_true(inherits(p0, "ggplot"))
+expect_inherits(p0, "ggplot")
 
 ## Output should be a combination of points and lines.
 geoms0 <- sapply(p0$layers, function(x) class(x$geom)[1])
@@ -197,7 +197,7 @@ if (at_home() && FALSE) {
 ### Check variance plot.
 
 expect_silent(p0 <- plot(testFitMod, plotType = "variance", outFile = tmpFile))
-expect_true(inherits(p0, "ggplot"))
+expect_inherits(p0, "ggplot")
 
 ## Output should be a combination of points and lines.
 geoms0 <- sapply(p0$layers, function(x) class(x$geom)[1])
@@ -221,11 +221,11 @@ expect_silent(p3 <- plot(testFitMod2, plotType = "variance", outFile = tmpFile))
 ### Check spatial plots.
 
 expect_silent(p0 <- plot(testFitMod, plotType = "spatial", outFile = tmpFile))
-expect_true(inherits(p0, "list"))
+expect_inherits(p0, "list")
 expect_equal(length(p0), 5)
-expect_true(inherits(p0[[1]], "list"))
+expect_inherits(p0[[1]], "list")
 expect_equal(length(p0[[1]]), 6)
-expect_true(inherits(p0[[1]][[1]], "ggplot"))
+expect_inherits(p0[[1]][[1]], "ggplot")
 
 ## Check option spaTrend in spatial plots.
 

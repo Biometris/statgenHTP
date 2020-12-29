@@ -27,9 +27,9 @@ expect_true(file.size(tmpFile) > 0)
 ### Check layout plot.
 
 p0 <- plot(testTP, plotType = "layout", outFile = tmpFile)
-expect_true(inherits(p0, "list"))
+expect_inherits(p0, "list")
 expect_equal(length(p0), 5)
-expect_true(inherits(p0[[1]], "ggplot"))
+expect_inherits(p0[[1]], "ggplot")
 
 ## Create copy for testing row/column conditions.
 testTP1a <- testTP1b <- testTP1c <- testTP
@@ -71,9 +71,9 @@ expect_error(plot(testTP, plotType = "box", traits = 1),
 expect_warning(plot(testTP, plotType = "box", traits = "trait"),
                "trait isn't a column in any of the timePoints")
 p <- plot(testTP, plotType = "box", traits = "t1", outFile = tmpFile)
-expect_true(inherits(p, "list"))
+expect_inherits(p, "list")
 expect_equal(length(p), 1)
-expect_true(inherits(p[[1]], "ggplot"))
+expect_inherits(p[[1]], "ggplot")
 
 ## Check option groupBy for box plot.
 
@@ -117,9 +117,9 @@ expect_error(plot(testTP, plotType = "cor", traits = 1),
 expect_warning(plot(testTP, plotType = "cor", traits = "trait"),
                "trait isn't a column in any of the timePoints")
 p <- plot(testTP, plotType = "cor", traits = "t1", outFile = tmpFile)
-expect_true(inherits(p, "list"))
+expect_inherits(p, "list")
 expect_equal(length(p), 1)
-expect_true(inherits(p[[1]], "ggplot"))
+expect_inherits(p[[1]], "ggplot")
 
 ### Check raw plot.
 
@@ -128,7 +128,7 @@ expect_error(plot(testTP, plotType = "raw", traits = 1),
 expect_warning(plot(testTP, plotType = "raw", traits = "trait"),
                "trait isn't a column in any of the timePoints")
 p <- plot(testTP, plotType = "raw", traits = "t1", outFile = tmpFile)
-expect_true(inherits(p, "list"))
+expect_inherits(p, "list")
 expect_equal(length(p), 1)
 
 ## Check raw plot for single time point.

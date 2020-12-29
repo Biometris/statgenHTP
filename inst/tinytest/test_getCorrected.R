@@ -36,7 +36,7 @@ corr6 <- getCorrected(testFitMod6)
 
 ## Check output structure
 
-expect_true(inherits(corr1, "data.frame"))
+expect_inherits(corr1, "data.frame")
 expect_equal(dim(corr1), c(125, 9))
 expect_equal(colnames(corr1), c("timeNumber", "timePoint", "t1_corr", "t1",
                                 "wt", "genotype", "rowId", "colId", "plotId"))

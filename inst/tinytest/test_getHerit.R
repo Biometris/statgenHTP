@@ -25,7 +25,7 @@ herit2 <- getHerit(testFitMod2)
 
 ## Check output structure.
 
-expect_true(inherits(herit1, "data.frame"))
+expect_inherits(herit1, "data.frame")
 expect_equal(dim(herit1), c(5, 3))
 expect_equal(colnames(herit1), c("timeNumber", "timePoint", "h2"))
 

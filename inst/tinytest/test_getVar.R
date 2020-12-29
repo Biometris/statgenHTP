@@ -29,7 +29,7 @@ var4 <- getVar(testFitMod4)
 
 ## Check output structure.
 
-expect_true(inherits(var1, "data.frame"))
+expect_inherits(var1, "data.frame")
 expect_equal(dim(var1), c(5, 6))
 expect_equal(colnames(var1), c("timeNumber", "timePoint", "varGen", "varRes",
                                "varCol", "varRow"))
