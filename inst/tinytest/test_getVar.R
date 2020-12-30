@@ -40,17 +40,12 @@ expect_equal(colnames(var2), c("timeNumber", "timePoint", "var_geno.decomp_1",
                                "var_geno.decomp_2", "varRes", "varCol",
                                "varRow"))
 
-# Read expected results.
-var1Orig <- read.csv("var1")
-var2Orig <- read.csv("var2")
-var3Orig <- read.csv("var3")
-var4Orig <- read.csv("var4")
-
 # Compare results.
-expect_equal(var1[, 3:6], var1Orig[, 3:6])
-expect_equal(var2[, 3:7], var2Orig[, 3:7])
-expect_equal(var3[, 3:6], var3Orig[, 3:6])
-expect_equal(var4[, 3:6], var4Orig[, 3:6])
+
+expect_equal_to_reference(var1, file = "var1Comp")
+expect_equal_to_reference(var2, file = "var2Comp")
+expect_equal_to_reference(var3, file = "var3Comp")
+expect_equal_to_reference(var4, file = "var4Comp")
 
 ## Check that results can be written to a file.
 tmpFile <- tempfile(fileext = ".csv")

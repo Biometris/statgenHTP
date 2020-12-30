@@ -1,5 +1,7 @@
 ### Test getCorrected.
 
+Sys.setlocale("LC_COLLATE", "C")
+
 ## Read test data from .csv
 testDat <- read.csv("testDat.csv", stringsAsFactors = FALSE)
 ## Create TP object.
@@ -48,83 +50,12 @@ expect_equal(setdiff(colnames(corr3), colnames(corr1)), "geno.decomp")
 ## Check that results are as expected.
 ## Function is complicated and not always obvious so a thorough check is needed.
 
-# Read expected results.
-corr1Orig <- read.csv("corr1")
-corr2Orig <- read.csv("corr2")
-corr3Orig <- read.csv("corr3")
-corr4Orig <- read.csv("corr4")
-corr5Orig <- read.csv("corr5")
-corr6Orig <- read.csv("corr6")
-
-# timePoint, genotype, geno.decomp and plotId are imported from .csv as factors.
-# Therefore checking if character values match with new results.
-expect_equal(corr1[["timeNumber"]], corr1Orig[["timeNumber"]])
-expect_equal(as.character(corr1[["timePoint"]]),
-             as.character(corr1Orig[["timePoint"]]))
-expect_equal(as.character(corr1[["genotype"]]),
-             as.character(corr1Orig[["genotype"]]))
-expect_equal(corr1[["t1"]], corr1Orig[["t1"]])
-expect_equal(corr1[["t1_corr"]], corr1Orig[["t1_corr"]])
-expect_equal(as.character(corr1[["plotId"]]),
-             as.character(corr1Orig[["plotId"]]))
-
-expect_equal(corr2[["timeNumber"]], corr2Orig[["timeNumber"]])
-expect_equal(as.character(corr2[["timePoint"]]),
-             as.character(corr2Orig[["timePoint"]]))
-expect_equal(as.character(corr2[["genotype"]]),
-             as.character(corr2Orig[["genotype"]]))
-expect_equal(corr2[["t1"]], corr2Orig[["t1"]])
-expect_equal(corr2[["t1_corr"]], corr2Orig[["t1_corr"]])
-expect_equal(as.character(corr2[["plotId"]]),
-             as.character(corr2Orig[["plotId"]]))
-expect_equal(as.character(corr2[["Basin"]]),
-             as.character(corr2Orig[["Basin"]]))
-
-expect_equal(corr3[["timeNumber"]], corr3Orig[["timeNumber"]])
-expect_equal(as.character(corr3[["timePoint"]]),
-             as.character(corr3Orig[["timePoint"]]))
-expect_equal(as.character(corr3[["geno.decomp"]]),
-             as.character(corr3Orig[["geno.decomp"]]))
-expect_equal(as.character(corr3[["genotype"]]),
-             as.character(corr3Orig[["genotype"]]))
-expect_equal(corr3[["t1"]], corr3Orig[["t1"]])
-expect_equal(corr3[["t1_corr"]], corr3Orig[["t1_corr"]])
-expect_equal(as.character(corr3[["plotId"]]),
-             as.character(corr3Orig[["plotId"]]))
-
-expect_equal(corr4[["timeNumber"]], corr4Orig[["timeNumber"]])
-expect_equal(as.character(corr4[["timePoint"]]),
-             as.character(corr4Orig[["timePoint"]]))
-expect_equal(as.character(corr4[["genotype"]]),
-             as.character(corr4Orig[["genotype"]]))
-expect_equal(corr4[["t1"]], corr4Orig[["t1"]])
-expect_equal(corr4[["t1_corr"]], corr4Orig[["t1_corr"]])
-expect_equal(as.character(corr4[["plotId"]]),
-             as.character(corr4Orig[["plotId"]]))
-
-expect_equal(corr5[["timeNumber"]], corr5Orig[["timeNumber"]])
-expect_equal(as.character(corr5[["timePoint"]]),
-             as.character(corr5Orig[["timePoint"]]))
-expect_equal(as.character(corr5[["genotype"]]),
-             as.character(corr5Orig[["genotype"]]))
-expect_equal(corr5[["t1"]], corr5Orig[["t1"]])
-expect_equal(corr5[["t1_corr"]], corr5Orig[["t1_corr"]])
-expect_equal(as.character(corr5[["plotId"]]),
-             as.character(corr5Orig[["plotId"]]))
-expect_equal(as.character(corr5[["Basin"]]),
-             as.character(corr5Orig[["Basin"]]))
-
-expect_equal(corr6[["timeNumber"]], corr6Orig[["timeNumber"]])
-expect_equal(as.character(corr6[["timePoint"]]),
-             as.character(corr6Orig[["timePoint"]]))
-expect_equal(as.character(corr6[["geno.decomp"]]),
-             as.character(corr6Orig[["geno.decomp"]]))
-expect_equal(as.character(corr6[["genotype"]]),
-             as.character(corr6Orig[["genotype"]]))
-expect_equal(corr6[["t1"]], corr6Orig[["t1"]])
-expect_equal(corr6[["t1_corr"]], corr6Orig[["t1_corr"]], tol = 1e-6)
-expect_equal(as.character(corr6[["plotId"]]),
-             as.character(corr6Orig[["plotId"]]))
+expect_equal_to_reference(corr1, file = "corr1Comp")
+expect_equal_to_reference(corr2, file = "corr2Comp")
+expect_equal_to_reference(corr3, file = "corr3Comp")
+expect_equal_to_reference(corr4, file = "corr4Comp")
+expect_equal_to_reference(corr5, file = "corr5Comp")
+expect_equal_to_reference(corr6, file = "corr6Comp")
 
 ## Check that results can be written to a file.
 tmpFile <- tempfile(fileext = ".csv")
@@ -178,62 +109,10 @@ if (at_home()) {
   ## Check that results are as expected.
   ## Function is complicated and not always obvious so a thorough check is needed.
 
-  # Read expected results.
-  corrAs1Orig <- read.csv("corrAs1")
-  corrAs2Orig <- read.csv("corrAs2")
-  corrAs3Orig <- read.csv("corrAs3")
-  corrAs4Orig <- read.csv("corrAs4")
-  corrAs5Orig <- read.csv("corrAs5")
-  corrAs6Orig <- read.csv("corrAs6")
-
-  # Ignoring timePoint and timeNumber since there is no difference with SpATS.
-  expect_equal(as.character(corrAs1[["genotype"]]),
-               as.character(corrAs1Orig[["genotype"]]))
-  expect_equal(corrAs1[["t1"]], corrAs1Orig[["t1"]])
-  expect_equal(corrAs1[["t1_corrAs"]], corrAs1Orig[["t1_corrAs"]])
-  expect_equal(as.character(corrAs1[["plotId"]]),
-               as.character(corrAs1Orig[["plotId"]]))
-
-  expect_equal(as.character(corrAs2[["genotype"]]),
-               as.character(corrAs2Orig[["genotype"]]))
-  expect_equal(corrAs2[["t1"]], corrAs2Orig[["t1"]])
-  expect_equal(corrAs2[["t1_corrAs"]], corrAs2Orig[["t1_corrAs"]])
-  expect_equal(as.character(corrAs2[["plotId"]]),
-               as.character(corrAs2Orig[["plotId"]]))
-  expect_equal(as.character(corrAs2[["Basin"]]),
-               as.character(corrAs2Orig[["Basin"]]))
-
-  expect_equal(as.character(corrAs3[["geno.decomp"]]),
-               as.character(corrAs3Orig[["geno.decomp"]]))
-  expect_equal(as.character(corrAs3[["genotype"]]),
-               as.character(corrAs3Orig[["genotype"]]))
-  expect_equal(corrAs3[["t1"]], corrAs3Orig[["t1"]])
-  expect_equal(corrAs3[["t1_corrAs"]], corrAs3Orig[["t1_corrAs"]])
-  expect_equal(as.character(corrAs3[["plotId"]]),
-               as.character(corrAs3Orig[["plotId"]]))
-
-  expect_equal(as.character(corrAs4[["genotype"]]),
-               as.character(corrAs4Orig[["genotype"]]))
-  expect_equal(corrAs4[["t1"]], corrAs4Orig[["t1"]])
-  expect_equal(corrAs4[["t1_corrAs"]], corrAs4Orig[["t1_corrAs"]])
-  expect_equal(as.character(corrAs4[["plotId"]]),
-               as.character(corrAs4Orig[["plotId"]]))
-
-  expect_equal(as.character(corrAs5[["genotype"]]),
-               as.character(corrAs5Orig[["genotype"]]))
-  expect_equal(corrAs5[["t1"]], corrAs5Orig[["t1"]])
-  expect_equal(corrAs5[["t1_corrAs"]], corrAs5Orig[["t1_corrAs"]])
-  expect_equal(as.character(corrAs5[["plotId"]]),
-               as.character(corrAs5Orig[["plotId"]]))
-  expect_equal(as.character(corrAs5[["Basin"]]),
-               as.character(corrAs5Orig[["Basin"]]))
-
-  expect_equal(as.character(corrAs6[["geno.decomp"]]),
-               as.character(corrAs6Orig[["geno.decomp"]]))
-  expect_equal(as.character(corrAs6[["genotype"]]),
-               as.character(corrAs6Orig[["genotype"]]))
-  expect_equal(corrAs6[["t1"]], corrAs6Orig[["t1"]])
-  expect_equal(corrAs6[["t1_corrAs"]], corrAs6Orig[["t1_corrAs"]])
-  expect_equal(as.character(corrAs6[["plotId"]]),
-               as.character(corrAs6Orig[["plotId"]]))
+  expect_equal_to_reference(corrAs1, file = "corrAs1Comp")
+  expect_equal_to_reference(corrAs2, file = "corrAs2Comp")
+  expect_equal_to_reference(corrAs3, file = "corrAs3Comp")
+  expect_equal_to_reference(corrAs4, file = "corrAs4Comp")
+  expect_equal_to_reference(corrAs5, file = "corrAs5Comp")
+  expect_equal_to_reference(corrAs6, file = "corrAs6Comp")
 }

@@ -98,7 +98,7 @@ createTimePoints <- function(dat,
   }
   ## Convert input to data.frame. This needs to be done to be able to handle
   ## tibbles and possibly other data structures in the future.
-  dat <- as.data.frame(dat)
+  dat <- as.data.frame(dat, stringsAsFactors = FALSE)
   cols <- colnames(dat)
   ## Check that all columns to be renamed are columns in dat.
   for (param in c(genotype, timePoint, plotId, repId, rowNum, colNum)) {
@@ -199,15 +199,16 @@ createTimePoints <- function(dat,
     dat[["genoCheck"]] <- ifelse(dat[["genotype"]] %in% checkGenotypes,
                                  NA, as.character(dat[["genotype"]]))
   }
-  ## Convert columns to factor if neccessary.
+  ## Convert columns to factor if necessary.
   factorCols <-  c("genotype", "plotId", "repId", "rowId", "colId", "check",
                    "genoCheck")
   for (factorCol in factorCols) {
-    if (hasName(dat, factorCol)) {
-      dat[[factorCol]] <- as.factor(dat[[factorCol]])
+    if (hasName(dat, factorCol) && !is.factor(dat[[factorCol]])) {
+      dat[[factorCol]] <- factor(dat[[factorCol]],
+                                 levels = sort(unique(dat[[factorCol]])))
     }
   }
-  ## Convert columns to numeric if neccessary.
+  ## Convert columns to numeric if necessary.
   numCols <- c("rowNum", "colNum")
   for (numCol in numCols) {
     if (hasName(dat, numCol) && !is.numeric(dat[cols == numCol])) {

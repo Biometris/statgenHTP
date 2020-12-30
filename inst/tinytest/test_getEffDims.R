@@ -37,19 +37,12 @@ expect_equal(colnames(effDims2), c("timeNumber", "timePoint", "repId:colId",
                                    "repId:rowId", "fCol", "fRow", "fColRow",
                                    "colfRow", "fColfRow", "surface"))
 
-# Read expected results.
-
-effDimsOrig1 <- read.csv("ed1")
-effDimsOrig2 <- read.csv("ed2", check.names = FALSE)
-effRatsOrig1 <- read.csv("er1")
-effRatsOrig2 <- read.csv("er2", check.names = FALSE)
-
 # Compare results.
 
-expect_equal(effDims1[, -2], effDimsOrig1[, -2])
-expect_equal(effDims2[, -2], effDimsOrig2[, -2])
-expect_equal(effRats1[, -2], effRatsOrig1[, -2])
-expect_equal(effRats2[, -2], effRatsOrig2[, -2])
+expect_equal_to_reference(effDims1, file = "effDims1Comp")
+expect_equal_to_reference(effDims2, file = "effDims2Comp")
+expect_equal_to_reference(effRats1, file = "effRats1Comp")
+expect_equal_to_reference(effRats2, file = "effRats2Comp")
 
 ## Check that results can be written to a file.
 tmpFile <- tempfile(fileext = ".csv")
