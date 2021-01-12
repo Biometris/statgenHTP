@@ -1,12 +1,13 @@
 #' Growth chamber data for an Arabidopsis experiment in the Phenovator platform.
 #'
-#' A dataset containing growth chamber data from an experiment with Arabidopsis
+#' A dataset containing data from a growth chamber experiment with Arabidopsis
 #' in the Phenovator platform (WUR, Netherlands, Flood et al. 2016). It consists
-#' of one experiment with 1440 plants grown in a growth chamber. The number of
-#' tested genotypes is 192 with 6-7 replicates per genotype. Four reference
+#' of one experiment with 1,440 plants grown in a growth chamber. The number of
+#' tested genotypes is 192 with 6 to 7 replicates per genotype. Four reference
 #' genotypes were also tested with 15 or 30 replicates. The studied trait is
 #' the photosystem II efficiency (EffpsII) extracted from the pictures over
-#' time (van Rooijen et al. 2017).
+#' time (van Rooijen et al. 2017). This dataset was kindly provided by René Boesten
+#' and Mark Aarts.
 #'
 #' @format A data.frame with 103,839 rows and 10 columns:
 #' \describe{
@@ -28,14 +29,14 @@
 #' Fred A. van Eeuwijk, Jeremy Harbinson, and Mark G. M. Aarts. 2017.
 #' “Natural Variation of YELLOW SEEDLING1 Affects Photosynthetic Acclimation
 #' of Arabidopsis Thaliana.” Nature Communications 8 (1).
-#' doi:10.1038/s41467-017-01576-3.
+#' \doi{10.1038/s41467-017-01576-3}
 #'
 #' Flood, Pádraic J., Willem Kruijer, Sabine K. Schnabel, Rob van der Schoor,
 #' Henk Jalink, Jan F. H. Snel, Jeremy Harbinson, and Mark G. M. Aarts. 2016.
 #' “Phenomics for Photosynthesis, Growth and Reflectance in Arabidopsis
 #' Thaliana Reveals Circadian and Long-Term Fluctuations in Heritability.”
 #' Plant Methods 12 (1): 14.
-#' doi:10.1186/s13007-016-0113-y.
+#' \doi{10.1186/s13007-016-0113-y}
 "PhenovatorDat1"
 
 
@@ -63,18 +64,18 @@
 #' }
 "spatCorrVator"
 
-#' Greenhouse data for a maize experiment in the Phenoarch platform.
+#' Greenhouse data for a maize experiment in the PhenoArch platform.
 #'
-#' A dataset containing greenhouse data from an experiment with maize in the
+#' A dataset containing data from a greenhouse experiment with maize in the
 #' Phenoarch platform (INRAE, France, Cabrera-Bosquet et al. 2016). It consists
-#' of one experiment with 1671 plants grown in a greenhouse under two water
+#' of one experiment with 1,671 plants grown in a greenhouse under two water
 #' scenarios, well-watered (WW) and water deficit (WD). There are two
 #' populations of genotypes, panel 1 and panel 2. Panel 1 contains 60 genotypes
-#' with 14 replicates: 7 in WW and 7 in WD. Note that there are more plants per
-#' replicates than one (about 24 plants per genotypes). Panel 2 contains 30
+#' with 14 replicates: 7 in WW and 7 in WD. Panel 2 contains 30
 #' genotypes with 8 replicates, 4 in WW and 4 in WD. The studied trait is the
-#' leaf area extracted from the pictures over time. Plants were pictured every
-#' day for 35 days.
+#' leaf area extracted from the pictures over time (LA_Estimated).
+#' Plants were pictured every day for 35 days. This dataset was kindly
+#' provided by Llorenç Cabrera-Bosquet and Claude Welcker.
 #'
 #' @format A data.frame with 42,536 rows and 14 columns:
 #' \describe{
@@ -99,7 +100,7 @@
 #' “High-throughput estimation of incident light, light interception and
 #' radiation-use efficiency of thousands of plants in a phenotyping platform.”
 #' New Phytologist 212 (1): 269-81.
-#' doi:10.1111/nph.14027.
+#' \doi{10.1111/nph.14027}
 "PhenoarchDat1"
 
 #' Maize data corrected for spatial trends.
@@ -146,12 +147,12 @@
 
 #' Greenhouse data for an experiment in the RootPhAir platform.
 #'
-#' A dataset containing greenhouse data from two experiments in the RootPhAir
-#' platform (UCLouvain, France, ref). It consists of two experiments, each in
-#' two aeroponic tanks with a capacity of 495 plants each tank, located in the
-#' same greenhouse. with 1671 plants grown in a greenhouse in two tanks
-#' The studied traits are the root tip coordinates in y and x axis, extracted
-#' from the pictures over time. Plants were pictured every 2 hours for 10 days.
+#' A dataset containing greenhouse data from the RootPhAir platform
+#' (UCLouvain, Belgium). It consists of one experiment with one
+#' aeroponic tanks with 340 maize plants. The studied traits are the root tip
+#' coordinates in y and x axis, extracted from the pictures over time.
+#' Plants were pictured every 2 hours for 10 days.
+#' This dataset was kindly provided by Xavier Draye.
 #'
 #' @format A data.frame with 16,275 rows and 10 columns:
 #' \describe{
@@ -166,12 +167,6 @@
 #'   \item{tipPos_y}{Position of the root tip in y axis}
 #'   \item{Time}{Time of measurement}
 #' }
-#'
-#'
-#' @references Author 1 author 2. date.
-#' “A Title.”
-#' Journal.
-#' doi:xxxx.
 "RootDat1"
 
 #' Root data corrected for point outliers.

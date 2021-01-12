@@ -59,7 +59,7 @@ library(statgenHTP)
 The first example used in this package contains data from an experiment in the Phenovator platform (WUR, Netherlands, [@Flood2016]) with Arabidopsis plants. It consists of one experiment with 1440 plants grown in a growth chamber with different light intensity. 
 The data set called "PhenovatorDat1" is included in the package.
 
-```{r PFvatorFig, fig.cap = 'PFvator', out.width='70%', fig.pos='p', echo=FALSE}
+```{r PFvatorFig, out.width='70%', fig.pos='p', echo=FALSE}
 knitr::include_graphics("figures/phenovator_pf.png", auto_pdf = TRUE)
 ```
 
@@ -78,7 +78,7 @@ knitr::kable(head(PhenovatorDat1), align=c('c','c'), booktabs = TRUE)
 The second example used in this tutorial contains data from an experiment in the 
 [Phenoarch platform](https://www6.montpellier.inrae.fr/lepse/M3P/Plateformes/PHENOARCH) with maize plants (INRAE, France, [@Cabrera2016]). It consists of a greenhouse containing a conveyor belt structure of 28 lanes carrying 60 carts with one pot each (i.e. 1680 pots).
 
-```{r PFarchFig, fig.cap = 'PFarch', out.width='70%', fig.pos='p', echo=FALSE}
+```{r PFarchFig, out.width='70%', fig.pos='p', echo=FALSE}
 knitr::include_graphics("figures/phenoarch_pf.png", auto_pdf = TRUE)
 ```
 
@@ -106,7 +106,7 @@ knitr::kable(PhenoarchDat1[PhenoarchDat1$pos=="c16r1",1:8][5:10,],
 
 The tip root data set was obtained during an experiment performed at the [RootPhAir platform](https://uclouvain.be/en/research-institutes/eli/elia/aeroponics.html) (Louvain-La-Neuve University). This platform consists in two aeroponic tanks of 495 plants located in the same greenhouse. Plants are held on 5 plant strips with 99 strips per tank. Sprinklers are placed in the bottom of the tanks and spray a nutrient solution. Strips move constantly and plants are pictured when the strip passes in front of the camera. Plants are pictured every two hours. Root system is described in two dimensions, with the root tip position in depth and width (tipPos_y and tipPos_x respectively) deduced from image analysis.
 
-```{r PFroothFig, fig.cap = 'PFrooth', out.width='90%', fig.pos='p', echo=FALSE}
+```{r PFroothFig, out.width='90%', fig.pos='p', echo=FALSE}
 knitr::include_graphics("figures/ucl_pf.png", auto_pdf = TRUE)
 ```
 

@@ -3,7 +3,7 @@
 \docType{data}
 \name{PhenoarchDat1}
 \alias{PhenoarchDat1}
-\title{Greenhouse data for a maize experiment in the Phenoarch platform.}
+\title{Greenhouse data for a maize experiment in the PhenoArch platform.}
 \format{
 A data.frame with 42,536 rows and 14 columns:
 \describe{
@@ -26,16 +26,16 @@ A data.frame with 42,536 rows and 14 columns:
 PhenoarchDat1
 }
 \description{
-A dataset containing greenhouse data from an experiment with maize in the
+A dataset containing data from a greenhouse experiment with maize in the
 Phenoarch platform (INRAE, France, Cabrera-Bosquet et al. 2016). It consists
-of one experiment with 1671 plants grown in a greenhouse under two water
+of one experiment with 1,671 plants grown in a greenhouse under two water
 scenarios, well-watered (WW) and water deficit (WD). There are two
 populations of genotypes, panel 1 and panel 2. Panel 1 contains 60 genotypes
-with 14 replicates: 7 in WW and 7 in WD. Note that there are more plants per
-replicates than one (about 24 plants per genotypes). Panel 2 contains 30
+with 14 replicates: 7 in WW and 7 in WD. Panel 2 contains 30
 genotypes with 8 replicates, 4 in WW and 4 in WD. The studied trait is the
-leaf area extracted from the pictures over time. Plants were pictured every
-day for 35 days.
+leaf area extracted from the pictures over time (LA_Estimated).
+Plants were pictured every day for 35 days. This dataset was kindly
+provided by Llorenç Cabrera-Bosquet and Claude Welcker.
 }
 \references{
 Cabrera-Bosquet, Llorenç, Fournier Christian, Brichet Nicolas,
@@ -43,6 +43,6 @@ Welcker Claude, Suard Benoît, and Tardieu François. 2016.
 “High-throughput estimation of incident light, light interception and
 radiation-use efficiency of thousands of plants in a phenotyping platform.”
 New Phytologist 212 (1): 269-81.
-doi:10.1111/nph.14027.
+\doi{10.1111/nph.14027}
 }
 \keyword{datasets}
