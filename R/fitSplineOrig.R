@@ -23,7 +23,7 @@
 #' ## The data from the Phenovator platform have been corrected for
 #' ## spatial trends and time points outliers have been removed.
 #'
-#' ## Run the function to fit P-Spline using the mgcv package on a subset of
+#' ## Run the function to fit P-spline using the mgcv package on a subset of
 #' ## genotypes
 #' subGeno <- c("G70", "G160", "G151", "G179", "G175", "G4", "G55")
 #' fit.spline <- fitSpline(inDat = spatCorrVator,
@@ -32,11 +32,11 @@
 #'                         knots = 50,
 #'                         perMinTP = 0.8)
 #'
-#' ## Extract the tables of predicted values and P-Spline coefficients.
+#' ## Extract the tables of predicted values and P-spline coefficients.
 #' pred.Dat <- fit.spline$predDat
 #' coef.Dat <- fit.spline$coefDat
 #'
-#' ## We can then visualize the P-Spline predictions and first derivatives
+#' ## We can then visualize the P-spline predictions and first derivatives
 #' ## for a subset of genotypes...
 #' plot(fit.spline, genotypes = "G160")
 #'
@@ -47,14 +47,14 @@
 #' @family Fit splines
 #'
 #' @export
-fitSpline <- function(inDat,
-                      trait,
-                      genotypes = NULL,
-                      plotIds = NULL,
-                      knots = 50,
-                      useTimeNumber = FALSE,
-                      timeNumber = NULL,
-                      perMinTP = 0.8) {
+fitSplineOrig <- function(inDat,
+                          trait,
+                          genotypes = NULL,
+                          plotIds = NULL,
+                          knots = 50,
+                          useTimeNumber = FALSE,
+                          timeNumber = NULL,
+                          perMinTP = 0.8) {
   ## Checks.
   if (!is.character(trait) || length(trait) > 1) {
     stop("trait should be a character string of length 1.\n")
@@ -139,6 +139,17 @@ fitSpline <- function(inDat,
                        FUN = function(plant) {
                          sum(!is.na(plant))
                        })
+  ## Number of knots cannot be larger than the minimum number of observations
+  ## determined over all plots that have at least the number of required
+  ## observations.
+  minKnots <- min(plotObs[plotObs[["x"]] > minTP, "x"])
+  if (knots >= minKnots) {
+    stop("The number of knots cannot be larger than the minimum number of ",
+         "required time points, which is ", minKnots)
+  }
+  ## Construct formula for fitting model.
+  modForm <- as.formula(paste(trait, "~s(timeNumber, bs = 'ps', k = ",
+                              knots, ")"))
   ## Compute step size for prediction grid.
   ## Use smallest time gap between two points and divide that in 10 segments.
   minStep <- min(diff(sort(unique(inDat[["timeNumber"]]))))
@@ -156,7 +167,7 @@ fitSpline <- function(inDat,
     timeRange[["timePoint"]] <- seq(from = timePointRange[1],
                                     to = timePointRange[2],
                                     by = timeNumStep * diff(timePointRange) /
-                                       diff(timeNumRange))
+                                      diff(timeNumRange))
   }
   ## Check for plotIds that have a limited amount of observations.
   plotTab <- table(inDat[!is.na(inDat[[trait]]), "plotId"])
@@ -178,18 +189,13 @@ fitSpline <- function(inDat,
     dat <- inDat[inDat[["plotId"]] == plant, c("timeNumber", trait)]
     ## Manually select minimum number of time points.
     if (length(unique(dat[!is.na(dat[[trait]]), "timeNumber"])) >= minTP) {
+      ## Fit the P-spline using gam() function in mgcv.
       ## Manually set the number of knots.
-      xmin <- min(dat[["timeNumber"]]) - 1e-10
-      xmax <- max(dat[["timeNumber"]]) + 1e-10
-      ## Construct vector of knots.
-      knotsVec <- PsplinesKnots(xmin = xmin, xmax = xmax, degree = 3,
-                              nseg = knots)
-      ## Fit the P-spline using PsplinesREML.
-      obj <- PsplinesREML(x = dat[["timeNumber"]], y = dat[[trait]],
-                          knots = knotsVec)
+      ## Depends on the number of time points and shape of the curve.
+      obj <- mgcv::gam(modForm, data = dat, method = "REML")
       ## Extract the spline coefficients.
-      coeff <- data.frame(obj.coefficients = obj$b, plotId = plant)
-      coeff[["type"]] <- paste0("timeNumber", seq_len(nrow(coeff)))
+      coeff <- data.frame(obj$coefficients, plotId = plant)
+      coeff$type <- row.names(coeff)
       ## Restrict dense grid to points within observation range.
       timeRangePl <- timeRange[timeRange[["timeNumber"]] >=
                                  min(dat[["timeNumber"]]) &
@@ -197,23 +203,27 @@ fitSpline <- function(inDat,
                                  max(dat[["timeNumber"]]),
                                , drop = FALSE]
       ## Predictions on a dense grid.
-      yPred <- predict(obj, x = timeRangePl$timeNumber)
-      yDeriv <- predict(obj, x = timeRangePl$timeNumber, deriv = TRUE)
+      yPred <- predict(obj, newdata = timeRangePl)
+      yDeriv <- gratia::derivatives(obj, newdata = timeRangePl,
+                                    eps = 1e-7 * mean(timeNumRange[1:2]))
       ## Merge time, predictions and plotId.
       predDat <- data.frame(timeRangePl, pred.value = yPred,
-                             deriv = yDeriv, plotId = plant)
-
-      return(list(coeff = coeff, predDat = predDat))
+                            deriv = yDeriv[["derivative"]],
+                            plotId = plant)
+      return(list(coeff, predDat))
     } else {
       return(list(coeff = NULL, predDat = NULL))
     }
   })
   ## Bind all coefficients into one data.frame.
   coefTot <- do.call(rbind, lapply(fitSp, `[[`, 1))
+  ## Remove brackets in coefficient names.
+  coefTot[["type"]] <- gsub(pattern = "[()]", replacement = "",
+                            x =  coefTot[["type"]])
   ## Add genotype and optionally geno.decomp.
   addCols <- colnames(plantGeno)[colnames(plantGeno) != "plotId"]
   coefTot[addCols] <- plantGeno[match(coefTot[["plotId"]],
-                                           plantGeno[["plotId"]]), addCols]
+                                      plantGeno[["plotId"]]), addCols]
   ## Bind all predictions into one data.frame.
   predTot <- do.call(rbind, lapply(fitSp, `[[`, 2))
   ## Add genotype.
@@ -232,7 +242,7 @@ fitSpline <- function(inDat,
                    fitLevel = fitLevel,
                    useGenoDecomp = useGenoDecomp,
                    plotLimObs = plotLimObs,
-                   class = c("HTPSpline", "list"))
+                   class = c("HTPSplineOrig", "list"))
   return(res)
 }
 
@@ -249,15 +259,15 @@ fitSpline <- function(inDat,
 #' @family Fit splines
 #'
 #' @export
-plot.HTPSpline <- function(x,
-                           ...,
-                           plotType = c("predictions", "derivatives"),
-                           genotypes = NULL,
-                           plotIds = NULL,
-                           title = NULL,
-                           output = TRUE,
-                           outFile = NULL,
-                           outFileOpts = NULL) {
+plot.HTPSplineOrig <- function(x,
+                               ...,
+                               plotType = c("predictions", "derivatives"),
+                               genotypes = NULL,
+                               plotIds = NULL,
+                               title = NULL,
+                               output = TRUE,
+                               outFile = NULL,
+                               outFileOpts = NULL) {
   plotType <- match.arg(plotType)
   plotVar <- if (plotType == "predictions") "pred.value" else "deriv"
   modDat <- attr(x, which = "modDat")
@@ -423,13 +433,13 @@ plot.HTPSpline <- function(x,
 #' @family Fit splines
 #'
 #' @export
-estimateSplineParameters <- function(HTPSpline,
-                                     estimate = c("predictions", "derivatives"),
-                                     what = c("min", "max", "mean"),
-                                     timeMin = NULL,
-                                     timeMax = NULL,
-                                     genotypes = NULL,
-                                     plotIds = NULL) {
+estimateSplineParametersOrig <- function(HTPSpline,
+                                         estimate = c("predictions", "derivatives"),
+                                         what = c("min", "max", "mean"),
+                                         timeMin = NULL,
+                                         timeMax = NULL,
+                                         genotypes = NULL,
+                                         plotIds = NULL) {
   estimate <- match.arg(estimate)
   what <- match.arg(what)
   estVar <- if (estimate == "predictions") "pred.value" else "deriv"
@@ -487,117 +497,3 @@ estimateSplineParameters <- function(HTPSpline,
                    FUN = what)
   return(res)
 }
-
-
-#### Helper function for fitting splines.
-
-
-#' Spectral decompositoin of D'D
-#'
-#' Spectral decomposition of D'D, returns a q x (q - ord) matrix.
-#' @noRd
-#' @keywords internal
-calcUsc <- function(q,
-                    ord) {
-  D <- diff(diag(q), diff = ord)
-  DtD <- crossprod(D)
-  decomp <- eigen(DtD, symmetric = TRUE)
-  U <- decomp$vectors[, 1:(q - ord)]
-  d <- decomp$values[1:(q - ord)]
-  return(U %*% diag(1 / sqrt(d)))
-}
-
-#' Equally placed knots.
-#'
-#' @noRd
-#' @keywords internal
-PsplinesKnots <- function(xmin,
-                          xmax,
-                          degree,
-                          nseg) {
-  dx <- (xmax - xmin) / nseg
-  knots <- seq(xmin - degree * dx, xmax + degree * dx, by = dx)
-  attr(knots, "degree") <- degree
-  return(knots)
-}
-
-#' Fit P-Spline
-#'
-#' @noRd
-#' @keywords internal
-PsplinesREML <- function(x,
-                         y,
-                         knots,
-                         lambda = 1,
-                         optimize = TRUE) {
-  ## Remove missing values in y from x and y.
-  x <- x[!is.na(y)]
-  y <- y[!is.na(y)]
-  ## Set defaults.
-  pord <- 2
-  degree <- 3
-  ## Construct B-Spline base.
-  B <- splines::splineDesign(knots = knots, x = x, derivs = rep(0,length(x)),
-                             ord = degree + 1)
-  q <- ncol(B)
-  Usc <- calcUsc(q = q, ord = pord)
-  ## Calculate the linear/fixed parts.
-  UX1 <- cbind(1, scale(1:q))
-  UX1[, 2] <- UX1[, 2] / norm(UX1[, 2], type = "2")
-  X <- B %*% UX1
-  Z <- B %*% Usc
-  U <- cbind(X, Z)
-  UtU <- crossprod(U)
-  ## max ED for random part.
-  max_ED <- length(unique(x)) - pord
-  UtY <- t(U) %*% y
-  P <- diag(c(0, 0, rep(1, q - 2)))
-  phi <- 1
-  psi <- lambda
-  n <- length(x)
-  p <- 2
-  for (it in 1:100) {
-    C <- phi * UtU + psi * P
-    ## calculate EDs.
-    Cinv <- solve(C)
-    EDf_spline <- p
-    EDr_spline <- ncol(Z) - psi * sum(diag(Cinv %*% P))
-    EDres <- n - p - EDr_spline
-    ## calculate coefficients and residuals.
-    a <- phi * Cinv %*% UtY
-    r <- y - U %*% a
-    if (optimize) {
-      psi_new <- EDr_spline / (sum(a * (P %*% a)) + 1.0e-20)
-      phi_new <- EDres / (sum(r ^ 2) + 1.0e-20)
-      pold <- log(c(phi, psi))
-      pnew <- log(c(phi_new, psi_new))
-      dif <- max(abs(pold - pnew))
-      phi <- phi_new
-      psi <- psi_new
-      if (dif < 1.0e-12) break
-    }
-  }
-  ## Calculate spline coefficients
-  U <- cbind(UX1, Usc)
-  b <- U %*% a
-  L <- list(max_ED = max_ED, ED = EDr_spline + p, a = a, b = b, knots = knots,
-           Nobs = n, x = x, y = y, optimize = optimize, UX1 = UX1, Usc = Usc)
-  class(L) <- "PsplinesREML"
-  return(L)
-}
-
-#' Prediction from P-Spline.
-#'
-#' @noRd
-#' @keywords internal
-predict.PsplinesREML <- function(obj,
-                                 x,
-                                 deriv = FALSE) {
-  d <- ifelse(deriv, 1, 0)
-  Bgrid = splines::splineDesign(obj$knots, x, derivs = rep(d, length(x)),
-                                ord = 4)
-  U <- cbind(obj$UX1, obj$Usc)
-  pred <- as.vector(Bgrid %*% U %*% obj$a)
-  return(pred)
-}
-

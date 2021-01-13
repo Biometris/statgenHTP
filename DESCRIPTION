@@ -46,7 +46,8 @@ Imports:
     mgcv,
     reshape2,
     scales,
-    SpATS (>= 1.0-10)
+    SpATS (>= 1.0-10),
+    splines
 Suggests: 
    asreml (>= 4.0), 
    knitr, 
