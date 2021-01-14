@@ -100,9 +100,34 @@ detectPointOutliers <- function(TP,
     ## Fit a model using locfit.
     y <- plotDat[[trait]]
     x <- plotDat[["timePoint"]]
+    ## First check if first timepoint is an outlier.
+    ## Fit models including and excluding first timepoint.
+    fitMod0 <- locfit::locfit(y[-1] ~ locfit::lp(x[-1], nn = mylocfit, deg = 2))
     fitMod <- locfit::locfit(y ~ locfit::lp(x, nn = mylocfit, deg = 2))
-    ## Retrieve predictions for the x input interval.
+    ## Get predictions for both models.
+    yPred0 <- predict(fitMod0, newdata = x, se.fit = TRUE)
     yPred <- predict(fitMod, newdata = x, se.fit = TRUE)
+    ## If correlation between predictions is 'low', remove first timepoint.
+    if (cor(yPred0$fit, yPred$fit) < 0.99) {
+      y <- y[-1]
+      x <- x[-1]
+      yPred <- yPred0
+    }
+    ## Check if last timepoint is an outlier.
+    ## Get position of last timepoint.
+    posL <- length(x)
+    ## Fit model excluding last timepoint.
+    fitMod1 <- locfit::locfit(y[-posL] ~ locfit::lp(x[-posL],
+                                                    nn = mylocfit, deg = 2))
+    ## Get predictions for the model.
+    yPred1 <- predict(fitMod1, newdata = plotDat[["timePoint"]], se.fit = TRUE)
+    ## If correlation between predictions is 'low', remove last timepoint.
+    if (cor(yPred1$fit, yPred$fit) < 0.99) {
+      yPred <- yPred1
+    }
+    # fitMod <- locfit::locfit(y ~ locfit::lp(x, nn = mylocfit, deg = 2))
+    # ## Retrieve predictions for the x input interval.
+    # yPred <- predict(fitMod, newdata = x, se.fit = TRUE)
     ## Compute upper and lower boundaries.
     lwr <- yPred$fit - confIntSize * yPred$se.fit
     upr <- yPred$fit + confIntSize * yPred$se.fit
@@ -112,7 +137,8 @@ detectPointOutliers <- function(TP,
     plotDat[["lwr"]] <- lwr
     plotDat[["upr"]] <- upr
     ## All values outside the [lwr, upr] range are marked as outlier.
-    plotDat[["outlier"]] <- ifelse(y < upr & y > lwr, 0, 1)
+    plotDat[["outlier"]] <- ifelse(plotDat[[trait]] < plotDat[["upr"]] &
+                                     plotDat[[trait]] > plotDat[["lwr"]], 0, 1)
     return(plotDat)
   })
   ## Bind everything together in a single data.frame.
