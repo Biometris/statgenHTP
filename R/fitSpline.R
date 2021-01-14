@@ -156,7 +156,7 @@ fitSpline <- function(inDat,
     timeRange[["timePoint"]] <- seq(from = timePointRange[1],
                                     to = timePointRange[2],
                                     by = timeNumStep * diff(timePointRange) /
-                                       diff(timeNumRange))
+                                      diff(timeNumRange))
   }
   ## Check for plotIds that have a limited amount of observations.
   plotTab <- table(inDat[!is.na(inDat[[trait]]), "plotId"])
@@ -183,12 +183,12 @@ fitSpline <- function(inDat,
       xmax <- max(dat[["timeNumber"]]) + 1e-10
       ## Construct vector of knots.
       knotsVec <- PsplinesKnots(xmin = xmin, xmax = xmax, degree = 3,
-                              nseg = knots)
+                                nseg = knots)
       ## Fit the P-spline using PsplinesREML.
       obj <- PsplinesREML(x = dat[["timeNumber"]], y = dat[[trait]],
                           knots = knotsVec)
       ## Extract the spline coefficients.
-      coeff <- data.frame(obj.coefficients = obj$b, plotId = plant)
+      coeff <- data.frame(obj.coefficients = obj$splineCoeffs, plotId = plant)
       coeff[["type"]] <- paste0("timeNumber", seq_len(nrow(coeff)))
       ## Restrict dense grid to points within observation range.
       timeRangePl <- timeRange[timeRange[["timeNumber"]] >=
@@ -201,8 +201,7 @@ fitSpline <- function(inDat,
       yDeriv <- predict(obj, x = timeRangePl$timeNumber, deriv = TRUE)
       ## Merge time, predictions and plotId.
       predDat <- data.frame(timeRangePl, pred.value = yPred,
-                             deriv = yDeriv, plotId = plant)
-
+                            deriv = yDeriv, plotId = plant)
       return(list(coeff = coeff, predDat = predDat))
     } else {
       return(list(coeff = NULL, predDat = NULL))
@@ -213,7 +212,7 @@ fitSpline <- function(inDat,
   ## Add genotype and optionally geno.decomp.
   addCols <- colnames(plantGeno)[colnames(plantGeno) != "plotId"]
   coefTot[addCols] <- plantGeno[match(coefTot[["plotId"]],
-                                           plantGeno[["plotId"]]), addCols]
+                                      plantGeno[["plotId"]]), addCols]
   ## Bind all predictions into one data.frame.
   predTot <- do.call(rbind, lapply(fitSp, `[[`, 2))
   ## Add genotype.
@@ -549,7 +548,7 @@ PsplinesREML <- function(x,
   U <- cbind(X, Z)
   UtU <- crossprod(U)
   ## max ED for random part.
-  max_ED <- length(unique(x)) - pord
+  maxED <- length(unique(x)) - pord
   UtY <- t(U) %*% y
   P <- diag(c(0, 0, rep(1, q - 2)))
   phi <- 1
@@ -558,32 +557,37 @@ PsplinesREML <- function(x,
   p <- 2
   for (it in 1:100) {
     C <- phi * UtU + psi * P
-    ## calculate EDs.
+    ## calculate effective dimensions.
     Cinv <- solve(C)
-    EDf_spline <- p
-    EDr_spline <- ncol(Z) - psi * sum(diag(Cinv %*% P))
-    EDres <- n - p - EDr_spline
+    EDfSpline <- p
+    EDrSpline <- ncol(Z) - psi * sum(diag(Cinv %*% P))
+    EDRes <- n - p - EDrSpline
     ## calculate coefficients and residuals.
-    a <- phi * Cinv %*% UtY
-    r <- y - U %*% a
+    coeffs <- phi * Cinv %*% UtY
+    resid <- y - U %*% coeffs
     if (optimize) {
-      psi_new <- EDr_spline / (sum(a * (P %*% a)) + 1.0e-20)
-      phi_new <- EDres / (sum(r ^ 2) + 1.0e-20)
-      pold <- log(c(phi, psi))
-      pnew <- log(c(phi_new, psi_new))
-      dif <- max(abs(pold - pnew))
-      phi <- phi_new
-      psi <- psi_new
-      if (dif < 1.0e-12) break
+      ## Optimization steps.
+      ## Compute new values for psi and phi
+      psiNew <- EDrSpline / (sum(coeffs * (P %*% coeffs)) + 1.0e-20)
+      phiNew <- EDRes / (sum(resid ^ 2) + 1.0e-20)
+      pOld <- log(c(phi, psi))
+      pNew <- log(c(phiNew, psiNew))
+      diff <- max(abs(pOld - pNew))
+      phi <- phiNew
+      psi <- psiNew
+      if (diff < 1.0e-12) break
     }
   }
-  ## Calculate spline coefficients
+  ## Calculate spline coefficients.
   U <- cbind(UX1, Usc)
-  b <- U %*% a
-  L <- list(max_ED = max_ED, ED = EDr_spline + p, a = a, b = b, knots = knots,
-           Nobs = n, x = x, y = y, optimize = optimize, UX1 = UX1, Usc = Usc)
-  class(L) <- "PsplinesREML"
-  return(L)
+  splineCoeffs <- U %*% coeffs
+  ## Construct output.
+  res <- structure(
+    list(maxED = maxED, ED = EDrSpline + p, coeffs = coeffs,
+         splineCoeffs = splineCoeffs, knots = knots, nObs = n,
+         x = x, y = y, optimize = optimize, UX1 = UX1, Usc = Usc),
+    class = c("PsplinesREML", "list"))
+  return(res)
 }
 
 #' Prediction from P-Spline.
@@ -597,7 +601,7 @@ predict.PsplinesREML <- function(obj,
   Bgrid = splines::splineDesign(obj$knots, x, derivs = rep(d, length(x)),
                                 ord = 4)
   U <- cbind(obj$UX1, obj$Usc)
-  pred <- as.vector(Bgrid %*% U %*% obj$a)
+  pred <- as.vector(Bgrid %*% U %*% obj$coeffs)
   return(pred)
 }
 
