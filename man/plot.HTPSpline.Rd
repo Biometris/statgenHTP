@@ -49,10 +49,7 @@ Plot the results of a fitted spline.
 }
 \seealso{
 Other Fit splines: 
-\code{\link{estimateSplineParametersOrig}()},
 \code{\link{estimateSplineParameters}()},
-\code{\link{fitSplineOrig}()},
-\code{\link{fitSpline}()},
-\code{\link{plot.HTPSplineOrig}()}
+\code{\link{fitSpline}()}
 }
 \concept{Fit splines}

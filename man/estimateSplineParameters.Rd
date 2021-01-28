@@ -62,10 +62,7 @@ paramVator1 <- estimateSplineParameters(HTPSpline = fit.spline,
 }
 \seealso{
 Other Fit splines: 
-\code{\link{estimateSplineParametersOrig}()},
-\code{\link{fitSplineOrig}()},
 \code{\link{fitSpline}()},
-\code{\link{plot.HTPSplineOrig}()},
 \code{\link{plot.HTPSpline}()}
 }
 \concept{Fit splines}

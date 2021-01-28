@@ -20,14 +20,17 @@ Authors@R:
       person(given = "Bart-Jan",
              family = "van Rossum",
              role = "aut",
-             email = "bart-jan.vanrossum@wur.nl"))
+             email = "bart-jan.vanrossum@wur.nl"),
+      person(given = "Martin", 
+             family = "Boer",
+             role = "aut"))
 Description: The statgenHTP package is being developed within the EPPN2020 
     project (<https://eppn2020.plant-phenotyping.eu/>) to streamline the analysis 
     of data coming from high throughput phenotyping platforms. It can be used 
     for spatial analysis of time-series data. 
     Some functions have been created to be used in conjunction with the R 
     package 'asreml' for the 'ASReml' software, which can be obtained upon 
-    purchase from 'VSN' international (<http://www.vsni.co.uk/software/asreml>).
+    purchase from 'VSN' international (<https://www.vsni.co.uk/software/asreml>).
 License: GPL
 Encoding: UTF-8
 LazyData: true
@@ -38,12 +41,10 @@ Imports:
     factoextra,
     ggforce,
     ggplot2 (>= 3.3.0),
-    gratia,
     grid,
     gridExtra,
     locfit,
     lubridate,
-    mgcv,
     reshape2,
     scales,
     SpATS (>= 1.0-10),

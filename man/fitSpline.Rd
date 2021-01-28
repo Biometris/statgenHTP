@@ -71,10 +71,7 @@ plot(fit.spline, plotIds = "c10r29", plotType =  "derivatives")
 }
 \seealso{
 Other Fit splines: 
-\code{\link{estimateSplineParametersOrig}()},
 \code{\link{estimateSplineParameters}()},
-\code{\link{fitSplineOrig}()},
-\code{\link{plot.HTPSplineOrig}()},
 \code{\link{plot.HTPSpline}()}
 }
 \concept{Fit splines}

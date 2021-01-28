@@ -12,7 +12,7 @@ The statgenHTP package is being developed within the EPPN2020
     for spatial analysis of time-series data. 
     Some functions have been created to be used in conjunction with the R 
     package 'asreml' for the 'ASReml' software, which can be obtained upon 
-    purchase from 'VSN' international (<http://www.vsni.co.uk/software/asreml>).
+    purchase from 'VSN' international (<https://www.vsni.co.uk/software/asreml>).
 }
 \author{
 \strong{Maintainer}: Emilie J Millet \email{emilie.millet@wur.nl} (\href{https://orcid.org/0000-0002-2913-4892}{ORCID})
@@ -23,6 +23,7 @@ Authors:
   \item Isabelle Sanchez
   \item Nadine Hilgert
   \item Bart-Jan van Rossum \email{bart-jan.vanrossum@wur.nl}
+  \item Martin Boer
 }
 
 }
