@@ -30,7 +30,7 @@ This document describes the procedure to detect outlying time courses with examp
 
 Each time course is modeled by a nonparametric smoothing spline with a fixed number of knots. This is a piecewise cubic polynomial ([@Eubank1999], [@Eilers2015]) fitted with the 'gam' function of the R-package 'mgcv'.
 
-```{r PSplineFig, fig.cap='P-spline \n\nP-spline illustration with 20 knots, from [@Hugelier2016]. The individual B-splines (with the correct coefficients) are shown (colored lines), as well as their sum representing the fit (thick black line).', out.width='40%', fig.pos='c', echo=FALSE}
+```{r PSplineFig, fig.cap='P-spline smoothing with 20 knots and a low penalty, from [@Hugelier2016]. The individual B-splines (with the correct coefficients) are shown (colored lines), as well as their sum representing the fit (thick black line).', out.width='40%', fig.pos='c', echo=FALSE}
 knitr::include_graphics("figures/pspline.png", auto_pdf = TRUE)
 ```
 
@@ -212,7 +212,7 @@ subGenoArch <- c("GenoA1", "GenoA2", "GenoA34", "GenoA4", "GenoB1", "GenoB2", "G
 fit.splineArch <- fitSpline(inDat = spatCorrArch, 
                             trait = "LA_Estimated_corr",
                             genotypes = subGenoArch,
-                            knots = 15,
+                            knots = 30,
                             perMinTP = 0.5)
 
 pred.DatArch <- fit.splineArch$predDat
@@ -228,7 +228,7 @@ plot(fit.splineArch,
      plotType =  "derivatives")
 ```
 
-Here, the `geno.decomp` option is also to split the plants of each genotype into well watered and drought. The outlier detection is run per treatment.
+Here, the `geno.decomp` option is also to split the plants of each genotype into well watered and drought. The outlier detection is run per treatment with a narrow angle threshold
 
 ```{r OutArch, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 outArch <- 
@@ -238,7 +238,7 @@ outArch <-
                            trait = "LA_Estimated_corr",
                            genotypes = subGenoArch,
                            thrCor = 0.9,
-                           thrPca = 10,
+                           thrPca = 6,
                            geno.decomp = "geno.decomp")
 ```
 
@@ -248,17 +248,17 @@ knitr::kable(head(outArch), align=c('c','c'), booktabs = TRUE, row.names=F)
 ```
 
 ```{r plotOutArch,  fig.height=6, fig.width=6, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
-plot(outArch, genotypes = "GenoB7") 
+plot(outArch, genotypes = "GenoB7")
 ```
 
 ```{r rmOutArch}
 spatCorrArchOut <- removeTimeCourseOutliers(dat = spatCorrArch,
                                             timeCourseOutliers = outArch)
 # Check one value annotated as outlier in the original corrected data.frame
-head(spatCorrArch[spatCorrArch$plotId=="c7r55",
+head(spatCorrArch[spatCorrArch$plotId=="c7r2",
                   c("LA_Estimated_corr","LA_Estimated")])
 # Check the same value in the new corrected data.frame
-head(spatCorrArchOut[spatCorrArchOut$plotId=="c7r55",
+head(spatCorrArchOut[spatCorrArchOut$plotId=="c7r2",
                      c("LA_Estimated_corr","LA_Estimated")])
 ```
 
@@ -299,7 +299,7 @@ outRoot <- detectTimeCourseOutliers(corrDat = noCorrRoot,
 
 ```{r plotRootOut,  fig.height=6, fig.width=7, message=FALSE, eval=TRUE}
 plot(outRoot,
-     genotypes = "520")
+     genotypes = "10")
 ```
 
 After manual check, we will remove only two of the detected time courses:

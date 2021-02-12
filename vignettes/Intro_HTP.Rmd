@@ -82,9 +82,7 @@ The second example used in this tutorial contains data from an experiment in the
 knitr::include_graphics("figures/phenoarch_pf.png", auto_pdf = TRUE)
 ```
 
-In this dataset, there are two genotypic panels (`population`) and two water scenarios (`Scenario`), well-watered (WW) and water deficit (WD). The first panel contains 60 genotypes (`geno`) with 14 replicates: 7 in WW and 7 in WD. 
-Note that there are more plants per replicate than one for the first panel 
-(about 24 plants per genotype). The second population contains 30 genotypes with 8 replicates, 4 in WW and 4 in WD. 
+In this dataset, there are two genotypic panels (`population`) and two water scenarios (`Scenario`), well-watered (WW) and water deficit (WD). The first population contains 60 genotypes (`geno`) with 14 replicates: 7 in WW and 7 in WD. The second population contains 30 genotypes with 8 replicates, 4 in WW and 4 in WD. 
 
 ```{r importdatagh,echo=TRUE,message=FALSE, warning=FALSE}
 data("PhenoarchDat1")
@@ -120,7 +118,7 @@ data("RootDat1")
 knitr::kable(head(RootDat1), align=c('c','c'), booktabs = TRUE)
 ```
 
->  *TO NOTE: in this example, plants are constantly moving and it was not possible to get unique time points containing the full platform. As a consequence, it is not possible to perform a spatial analysis per time point, but the other functions for outliers detection and longitudinal modeling are available and illustrated in the following tutorials. The parameters extracted from the curves can be modeled for spatial trends using the [statgenSTA package](https://biometris.github.io/statgenSTA/index.html).*
+>  *TO NOTE: In this platform, plants are constantly moving to be pictured. Hence it is not possible to get unique time points containing the full platform. As a consequence, it is not possible to perform a spatial analysis per time point, but the other functions for outliers detection and longitudinal modeling are available and illustrated in the following tutorials. The parameters extracted from the curves can be further modeled, to correct for example for other trends, like blocks, using the [statgenSTA package](https://biometris.github.io/statgenSTA/index.html).*
 
 # Data preparation
 

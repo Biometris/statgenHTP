@@ -73,7 +73,7 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             checkGenotypes = c("check1", "check2", "check3", "check4"))
 ```
 
-We are then running the function on a subset of plant to set the parameters, using the `plotIds` option. The smoothing parameter `mylocfit` is set at 0.1. The curves are atypical and to detect only the very strange points, fitted curves cannot be too smooth. The confidence interval size `confIntSize` is set at 3 which is a relatively narrow interval.
+We are then running the function on a subset of plants to set the parameters, using the `plotIds` option. The smoothing parameter `mylocfit` is set at 0.1. The curves are atypical and to detect only the very strange points, fitted curves cannot be too smooth. The confidence interval size `confIntSize` is set at 3 which is a relatively narrow interval.
 ```{r setParamVator}
 # First select a subset of plants, for example here 9 plants 
 plantSel <- phenoTP[[1]]$plotId[1:9]
@@ -106,7 +106,7 @@ plot(resuVatorHTP,
 ```
 In the plots, the black points are the raw data, the red line is the predicted curve, the green lines are the lower and upper limits of the confidence interval. Outlying points are highlighted in blue.
 
-The annotated points can be replaced by NA for the studied trait using the function `removePointOutliers`. It creates an new `TP` object.
+The annotated points can be replaced by NA for the studied trait using the function `removePointOutliers`. It creates a new `TP` object.
 ```{r rmOutVator}
 phenoTPOut <- removePointOutliers(phenoTP,
                                   resuVatorHTP)
@@ -159,7 +159,7 @@ plot(resuArchHTP,
 ```
 In the plots, the black points are the raw data, the red line is the predicted curve, the green lines are the lower and upper limits of the confidence interval. Outlying points are highlighted in blue.
 
-The annotated points can be replaced by NA for the studied trait using the function `removePointOutliers`. It creates an new `TP` object.
+The annotated points can be replaced by NA for the studied trait using the function `removePointOutliers`. It creates a new `TP` object.
 ```{r rmOutArch}
 phenoTParchOut <- removePointOutliers(phenoTParch,
                                       resuArchHTP)
@@ -183,7 +183,7 @@ rootTP <- createTimePoints(dat = RootDat1,
                            colNum = "Pos")
 ```
 
-We are then running the function on a subset of plant to set the parameters, using the `plotIds` option. The smoothing parameter `mylocfit` is set at 1. The curves are almost linear and a strong smooth is enough to get an accurate curve shape (line). The confidence interval size `confIntSize` is set at 5 which is a medium interval.
+We are then running the function on a subset of plants to set the parameters, using the `plotIds` option. The smoothing parameter `mylocfit` is set at 1. The curves are almost linear and a strong smooth is enough to get an accurate curve shape (line). The confidence interval size `confIntSize` is set at 5 which is a medium interval.
 ```{r setParamRoot}
 # First select a subset of plants, for example here 7 plants 
 plantSelRoot <- unique(RootDat1$plantId)[1:7]

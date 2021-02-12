@@ -37,7 +37,7 @@ It is also possible to specify a period for the parameter estimation. For exampl
 knitr::include_graphics("figures/psplinederiv_Vator.png", auto_pdf = TRUE)
 ```
 
-These parameters could then be further analyzed, for example a GxE analysis (see [*statgenGxE*](https://biometris.github.io/statgenGxE/index.html)), or a genetic analysis (see [*statgenGWAS*](https://biometris.github.io/statgenGWAS/index.html)).
+These parameters could then be further analyzed, for example in a GxE analysis (see [*statgenGxE*](https://biometris.github.io/statgenGxE/index.html)), or a genetic analysis (see [*statgenGWAS*](https://biometris.github.io/statgenGWAS/index.html)).
 
 The following functions can be applied to corrected data (see [**statgenHTP tutorial: 3. Correction for spatial trends**](SpatialModel_HTP.html)), genotypic means (BLUEs or BLUPS) (see [**statgenHTP tutorial: 3. Correction for spatial trends**](SpatialModel_HTP.html)) or on raw data.
 
@@ -139,6 +139,7 @@ ggplot(paramArch1, aes(x)) +
   theme_classic() +
   facet_grid(. ~ geno.decomp, scales="free_x",space = "free_x")
 ```
+
 
 ## Example 3
 

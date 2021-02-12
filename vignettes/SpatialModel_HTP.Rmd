@@ -431,7 +431,7 @@ We can first check the number of time points containing data for a given trait:
 countValid(phenoTParchOut, "LA_Estimated")
 ```
 
-In this case, time point "2017-05-14" has only 488 observation, less than half of the total number of observation. It can biased the modelling at this time point and one may want to remove it before running the spatial analysis. 
+In this case, time point "2017-05-14" has only 488 observation, less than half of the total number of observation. It can bias the modelling at this time point and one may want to remove it before running the spatial analysis. 
 
 ```{r rmTP2, echo=TRUE}
 # getTimePoints(phenoTParchOut)
