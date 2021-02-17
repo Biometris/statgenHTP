@@ -52,7 +52,7 @@ usethis::use_data(PhenoarchDat1, overwrite = TRUE)
 
 #### 2.2. Corrected data - outliers removed
 # Read raw data.
-spatCorrArch <- read.csv("./data-raw/PhenoArchDat1_corr_OutPoint_LA.csv",
+spatCorrArch <- read.csv("./data-raw/PhenoArchDat1_corr_OutPoint_LA_2.csv",
                          stringsAsFactors = TRUE)
 # Format the timepoint
 spatCorrArch$timePoint <- lubridate::as_datetime(spatCorrArch$timePoint)
@@ -61,7 +61,7 @@ usethis::use_data(spatCorrArch, overwrite = TRUE)
 
 #### 2.3. Genotypic prediction data - outliers removed
 # Read raw data.
-spatPredArch <- read.csv("./data-raw/PhenoArchDat1_pred_OutPoint_LA.csv",
+spatPredArch <- read.csv("./data-raw/PhenoArchDat1_pred_OutPoint_LA_2.csv",
                          stringsAsFactors = TRUE)
 # Format the timepoint
 spatPredArch$timePoint <- lubridate::as_datetime(spatPredArch$timePoint)
