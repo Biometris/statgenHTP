@@ -4,6 +4,8 @@ stages:
 
 variables:
     APT_PKGS: "libmagick++-6.q16-dev"
+    _R_CHECK_FORCE_SUGGESTS_: "false"
+    TT_AT_HOME: "false"
 
 before_script:
   ## Make sure configure and cleanup files are executable.
@@ -12,7 +14,6 @@ before_script:
   - apt-get install -y --no-install-recommends qpdf pandoc pandoc-citeproc
   - export PATH="/usr/local/lib/R/site-library/littler/examples/:${PATH}"
   - echo "options(Ncpus = $(nproc --all))" >> /usr/local/lib/R/etc/Rprofile.site
-  - echo 'Sys.setenv(TT_AT_HOME = "TRUE")' >> /usr/local/lib/R/etc/Rprofile.site
   - install2.r devtools
   - r -e 'devtools::install_dev_deps()'
 
