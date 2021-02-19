@@ -28,7 +28,7 @@ This document describes the procedure to detect outlying time courses with examp
 
 ## A nonparametric smoothing associated with a PCA
 
-Each time course is modeled by a nonparametric smoothing spline with a fixed number of knots. This is a piecewise cubic polynomial ([@Eubank1999], [@Eilers2015]) fitted with the 'gam' function of the R-package 'mgcv'.
+Each time course is modeled by a nonparametric smoothing spline with a fixed number of knots. This is a piecewise cubic polynomial ([@Eubank1999], [@Eilers2015]) fitted  as a mixed model ([@Currie2002]).
 
 ```{r PSplineFig, fig.cap='P-spline smoothing with 20 knots and a low penalty, from [@Hugelier2016]. The individual B-splines (with the correct coefficients) are shown (colored lines), as well as their sum representing the fit (thick black line).', out.width='40%', fig.pos='c', echo=FALSE}
 knitr::include_graphics("figures/pspline.png", auto_pdf = TRUE)
@@ -36,7 +36,7 @@ knitr::include_graphics("figures/pspline.png", auto_pdf = TRUE)
 
 The estimates for the spline coefficients are then extracted per time course (typically per plant) and correlations between those coefficient vectors are calculated to identify outlying time courses, *i.e.*, plants. An outlying time course will have low correlation to the majority of time courses. To support the analysis by correlations, a principal component analysis can be done on the plant (time course) by spline coefficient matrix. A PCA plot of the plant scores will show the outlying plants.
 
-*To note,* for P-splines in a generalized additive model (gam), the smoothing coefficient is optimized by restricted maximum likelihood but the number of knots is chosen by the user.
+*To note,* for P-splines in a mixed model, the smoothing coefficient is optimized by restricted maximum likelihood but the number of knots is chosen by the user.
 
 ------------------------------------------------------------------------
 

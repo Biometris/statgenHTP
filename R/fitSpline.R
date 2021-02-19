@@ -1,6 +1,6 @@
 #' Fit Splines
 #'
-#' Fit P-Splines on corrected or raw data using the mgcv package. The number of
+#' Fit P-Splines on corrected or raw data. The number of
 #' knots are chosen by the user. The function outputs are predicted P-Spline
 #' values and its first derivative at a denser time step. The idea is to use
 #' the outputs for outlier detection and to estimate relevant parameters from
@@ -23,9 +23,9 @@
 #' ## The data from the Phenovator platform have been corrected for
 #' ## spatial trends and time points outliers have been removed.
 #'
-#' ## Run the function to fit P-Spline using the mgcv package on a subset of
+#' ## Run the function to fit P-Spline on a subset of
 #' ## genotypes
-#' subGeno <- c("G70", "G160", "G151", "G179", "G175", "G4", "G55")
+#' subGeno <- c("G70", "G160")
 #' fit.spline <- fitSpline(inDat = spatCorrVator,
 #'                         trait = "EffpsII_corr",
 #'                         genotypes = subGeno,
@@ -402,9 +402,8 @@ plot.HTPSpline <- function(x,
 #' are fitted. If \code{NULL}, splines will be fitted for all plotIds.
 #'
 #' @examples
-#' ## Run the function to fit P-spline using the mgcv package on a subset of
-#' ## genotypes.
-#' subGeno <- c("G70", "G160", "G151", "G179", "G175", "G4", "G55")
+#' ## Run the function to fit P-splines on a subset of genotypes.
+#' subGeno <- c("G160", "G151")
 #' fit.spline <- fitSpline(inDat = spatCorrVator,
 #'                         trait = "EffpsII_corr",
 #'                         genotypes = subGeno,

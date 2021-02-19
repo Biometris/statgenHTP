@@ -44,7 +44,7 @@ plot.timeCourseOutliers
 ## The data from the Phenovator platform have been corrected for spatial
 ## trends and time points outliers have been removed.
 
-## Run the function to fit P-splines using the mgcv package on a subset of
+## Run the function to fit P-splines on a subset of
 ## genotypes.
 subGenoVator <- c("G70", "G160", "G151", "G179", "G175", "G4", "G55")
 fit.spline <- fitSpline(inDat = spatCorrVator,

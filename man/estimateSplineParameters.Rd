@@ -42,9 +42,8 @@ Function for extracting parameter estimates from fitted splines on a
 specified interval.
 }
 \examples{
-## Run the function to fit P-spline using the mgcv package on a subset of
-## genotypes.
-subGeno <- c("G70", "G160", "G151", "G179", "G175", "G4", "G55")
+## Run the function to fit P-splines on a subset of genotypes.
+subGeno <- c("G160", "G151")
 fit.spline <- fitSpline(inDat = spatCorrVator,
                         trait = "EffpsII_corr",
                         genotypes = subGeno,

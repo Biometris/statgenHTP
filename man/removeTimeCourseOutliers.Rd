@@ -35,9 +35,8 @@ of the fitSpline function, specified in \code{fitSpline}. Exactly one of
 these should be provided as input for the function.
 }
 \examples{
-## Run the function to fit P-spline using the mgcv package on a subset of
-## genotypes.
-subGenoVator <- c("G70", "G160", "G151", "G179", "G175", "G4", "G55")
+## Run the function to fit P-spline on a subset of genotypes.
+subGenoVator <- c("G160", "G151")
 fit.spline <- fitSpline(inDat = spatCorrVator,
                         trait = "EffpsII_corr",
                         genotypes = subGenoVator,
