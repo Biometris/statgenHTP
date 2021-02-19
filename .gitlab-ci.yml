@@ -45,5 +45,5 @@ coverage:
   script:
     - install2.r covr
     - r -e 'devtools::install()'
-    - r -e 'covr::package_coverage(type = "none", code = "tinytest::run_test_dir()")'
+    - r -e 'covr::package_coverage(type = "none", code = "tinytest::run_test_dir(at_home = FALSE)")'
   coverage: '/Coverage:\s*(\d+.\d+\%)/'
