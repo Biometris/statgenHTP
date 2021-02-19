@@ -13,7 +13,7 @@ before_script:
   - apt-get install -y --no-install-recommends qpdf pandoc pandoc-citeproc
   - export PATH="/usr/local/lib/R/site-library/littler/examples/:${PATH}"
   - echo "options(Ncpus = $(nproc --all))" >> /usr/local/lib/R/etc/Rprofile.site
-  - install2.r devtools plot3Drgl  
+  - install2.r devtools plot3Drgl
   - r -e 'devtools::install_dev_deps()'
 
 r-release:
@@ -27,16 +27,16 @@ r-release:
     name: logs
     when: always
 
-r-devel:
-  stage: test
-  image: rocker/r-ver:devel
-  script:
-    - r -e 'devtools::check(check_dir = ".")'
-  artifacts:
-    paths:
-      - "*.Rcheck"
-    name: logs
-    when: always
+# r-devel:
+#   stage: test
+#   image: rocker/r-ver:devel
+#   script:
+#     - r -e 'devtools::check(check_dir = ".")'
+#   artifacts:
+#     paths:
+#       - "*.Rcheck"
+#     name: logs
+#     when: always
 
 coverage:
   stage: deploy
