@@ -107,14 +107,9 @@ detectPointOutliers <- function(TP,
     ## Get predictions for both models.
     yPred0 <- predict(fitMod0, newdata = x, se.fit = TRUE)
     yPred <- predict(fitMod, newdata = x, se.fit = TRUE)
-    ## If correlation between predictions is 'low', remove first timepoint.
-    # if (cor(yPred0$fit, yPred$fit) < 0.99) {
-    # if (sum((yPred0$fit - y) ^ 2) < sum((yPred$fit - y) ^ 2)) {
-
     m0 <- mean(y[1:5])
     s0 <- sqrt(sum((y[1:5] - m0) ^ 2) / 5)
-
-    if (y[1] < m0 - s0 || y[1] > m0 + s0) {
+    if (y[1] < m0 -  1.5 * s0 || y[1] > m0 + 1.2 * s0) {
       y <- y[-1]
       x <- x[-1]
       yPred <- yPred0
@@ -127,19 +122,11 @@ detectPointOutliers <- function(TP,
                                                     nn = mylocfit, deg = 2))
     ## Get predictions for the model.
     yPred1 <- predict(fitMod1, newdata = plotDat[["timePoint"]], se.fit = TRUE)
-    ## If correlation between predictions is 'low', remove last timepoint.
-    # if (sum((yPred1$fit - plotDat[[trait]]) ^ 2) >
-    #     sum((yPred$fit - plotDat[[trait]]) ^ 2)) {
-
     m1 <- mean(y[(posL - 4):posL])
     s1 <- sqrt(sum((y[(posL - 4):posL] - m1) ^ 2) / 5)
-
-    if (y[posL] < m1 - s1 || y[posL] > m1 + s1) {
+    if (y[posL] < m1 - 1.5 * s1 || y[posL] > m1 + 1.5 * s1) {
       yPred <- yPred1
     }
-    # fitMod <- locfit::locfit(y ~ locfit::lp(x, nn = mylocfit, deg = 2))
-    # ## Retrieve predictions for the x input interval.
-    # yPred <- predict(fitMod, newdata = x, se.fit = TRUE)
     ## Compute upper and lower boundaries.
     lwr <- yPred$fit - confIntSize * yPred$se.fit
     upr <- yPred$fit + confIntSize * yPred$se.fit
