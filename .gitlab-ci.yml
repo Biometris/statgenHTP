@@ -3,12 +3,11 @@ stages:
   - deploy
 
 variables:
-    APT_PKGS: "libmagick++-6.q16-dev"
+    APT_PKGS: "libcurl4-openssl-dev libssh2-1-dev libssl-dev libxml2-dev zlib1g-dev git build-essential gobjc++ libomp-dev libmagick++-6.q16-dev"
     _R_CHECK_FORCE_SUGGESTS_: "false"
     TT_AT_HOME: "false"
 
 before_script:
-  ## Make sure configure and cleanup files are executable.
   - apt-get update
   - apt-get install -y --no-install-recommends ${APT_PKGS}
   - apt-get install -y --no-install-recommends qpdf pandoc pandoc-citeproc
