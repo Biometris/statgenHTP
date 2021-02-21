@@ -39,7 +39,7 @@ where briefly,
 * $X_h \beta_{ht}$, corresponds to the factors/covariates whose effects we are interested in modeling,  
 * $X_q \beta_{qt}$, corresponds to the factors/covariates whose effects we are interested in removing,  
 * $Z_g c_{gt}$, corresponds the genotypic effects,
-* $f_t(u,v) + Z_r c_{rt} + Z_c c_{ct}$, are the spatial effects, with $f_t(u,v)$ corresponding to the spatial function, e.g. the PSANOVA function from the SpATS package,  
+* $f_t(u,v) + Z_r c_{rt} + Z_c c_{ct}$, represent the spatial effects, with $f_t(u,v)$ corresponding to the spatial function, e.g. the PSANOVA function from the SpATS package, $Z_r c_{rt}$ and $Z_c c_{ct}$ represent the design matrices and effects for the random row and column effects respectively, 
 * $\epsilon_t$, is the residual.
 
 > For more details see Pérez D.M. *et al.* (*in prep.*).
@@ -51,7 +51,7 @@ This tutorial describes in detail how to perform analyses to correct for spatial
 
 # Modeling with spatial terms using Example 1
 
-We will use the `TP` object `phenoTPOut` in which annotated time points have been replaced by NA (see [**statgenHTP tutorial: 2. Outlier detection Time points**](OutliersTimePoint_HTP.html)).
+We will use the `TP` object `phenoTPOut` in which annotated time points were replaced by NA because they were considered to be outliers. (see [**statgenHTP tutorial: 2. Outlier detection Time points**](OutliersTimePoint_HTP.html)).
 
 ```{r createTP, warning=FALSE, echo=FALSE}
 PhenovatorDat1 <- PhenovatorDat1[!PhenovatorDat1$pos %in% c("c24r41", "c7r18", "c7r49"),]
@@ -135,7 +135,7 @@ modPhenoSpFix <- fitModels(TP = phenoTPOut,
                            what = "fixed")
 ```
 
-The model can be extended by including extra main fixed effects:  
+The model can be extended by including extra main fixed effects, here to include extra experimental design factors:  
 EffpsII = $\mu$ + repId + Image_pos + **genotype** + **rowId** + **colId** + **$\epsilon$**
 
 ```{r fitSpCov, message=FALSE, eval=FALSE}
@@ -158,7 +158,7 @@ modPhenoSpCheck <- fitModels(TP = phenoTPOut,
                              timePoints = 3)
 ```
 
-Finally, a model following a resolvable row-column design can be fitted: including the interactions between replicate and row-col.  
+Finally, a model following a resolvable row-column design can be fitted: including the effects of row and column nested within replicate.  
 EffpsII = $\mu$ + repId + **genoCheck** + **repId:rowId** + **repId:colId** + **$\epsilon$**
 
 ```{r fitSpRCD, message=FALSE, eval=FALSE, eval=FALSE}
@@ -252,7 +252,7 @@ knitr::kable(head(spatCorrSp), align = c('c','c','c','c','c','c','c'), padding =
 
 ### Plotting model results
 
-Different plots can be displayed for the `fitMod` object. The first one is **rawPred**, it plots the raw data (colored points) overlaid with the predicted values (black points) from the fitted model. For each genotype a plot is made per plot/plant over time. These plots are put together in a 5×5 grid.   
+Different plots can be displayed for the `fitMod` object. The first one is **rawPred**, it plots the raw data (colored dots) overlaid with the predicted values (black points) from the fitted model. For each genotype a plot is made per plot/plant over time. These plots are put together in a 5×5 grid.   
 By using the option `genotypes`, a subset of genotypes will be plotted. By default, data are plotted as point but this can be changed by setting `plotLine = TRUE`.
 
 ```{r plotSpPred, message=FALSE, fig.height=2, fig.width=6, fig.align = 'center'}
@@ -441,7 +441,7 @@ phenoTParchOut <- removeTimePoints(phenoTParchOut,
 
 ## Modeling
 
-Using the `geno.decomp` option when modeling will have two main consequences in the model: the `geno.decomp` variable(s) will be added as main fixed effect(s) and also as interaction(s) with the genotype effect (and the extraFixedFactors and/or check, if any, with SpATS only). 
+Using the `geno.decomp` option when modeling will have two main consequences in the model: the `geno.decomp` variable(s) will be added as a fixed main effect for the grouping factor and separate variance components for the genotypes at each level of the grouping or decomposing factor (and the extraFixedFactors and/or check, if any, with SpATS only). 
 The table below provides one example with three models:
 
 | OPTION | ENGINE | MODEL FITTED | SPATIAL TERM |
@@ -485,7 +485,7 @@ row.names(toto) <- 1:nrow(toto)
 knitr::kable(toto, align = c('c','c','c','c','c','c'), padding = 0)
 ```
 
-The heritabilities are now split into `geno.decomp` levels and their plot now displays one line per level.
+The heritabilities are now given for each of the `geno.decomp` levels and their plot now displays one line per level.
 
 ```{r getHeritSpGD, echo=FALSE, message=FALSE}
 genoHeritSpGD <- getHerit(modPhenoSpGD)
