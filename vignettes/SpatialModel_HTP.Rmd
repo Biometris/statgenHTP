@@ -261,7 +261,7 @@ plot(modPhenoSp,
      genotypes = c("check1", "check2", "G7", "G58")) 
 ```
 
-The second one is **corrPred**, it plots the spatially corrected data (colored points) overlaid with the predicted values from the fitted model (black points). For each genotype a plot is made per plot/plant over time. These plots are put together in a 5×5 grid. 
+The second one is **corrPred**, it plots the spatially corrected data (colored points) overlaid with the predicted values from the fitted model (black points). For each genotype a plot is made per plot/plant over time. These plots are put together in a 5×5 grid per page. 
 By using the option `genotypes`, a subset of genotypes will be plotted. By default, data are plotted as point but this can be changed by setting `plotLine = TRUE`.
 
 ```{r plotSpCorr, message=FALSE, fig.height=2, fig.width=6, fig.align = 'center', eval=TRUE}
@@ -279,7 +279,7 @@ plot(modPhenoSpCheck,
      genotypes = c("check1", "check2", "G7", "G58")) 
 ```
 
-The three last types of plot display different model parameters over time. Plot type **herit** plots the heritability over time. If `geno.decomp` is used when fitting the model, heritabilities are plotted for each level of variance decomposition in a single plot (see section [**4**](#genodecomp)). The scale of the plot can be adjusted using `yLim`.
+The three last types of plot display different model parameters over time. Plot type **herit** plots the heritability over time. If `geno.decomp` is used when fitting the model, heritabilities are plotted for each level of the genotype groups in a single plot (see section [**4**](#genodecomp)). The scale of the plot can be adjusted using `yLim`.
 
 ```{r plotSpHerit, message=FALSE, fig.height=2.5, fig.width=3.5, fig.align = 'center'}
 plot(modPhenoSp, 
@@ -287,7 +287,7 @@ plot(modPhenoSp,
      yLim = c(0.5,1))
 ```
 
-Plot type **variance** plots the residual, column and row variances over time.
+Plot type **variance** plots the residual, column and row variances over time. These plots can serve as diagnostics of the experiment.
 ```{r plotSpVar, fig.height=3, fig.width=5, message=FALSE, fig.align = 'center'}
 plot(modPhenoSp, 
      plotType = "variance")
@@ -403,7 +403,7 @@ modPhenoAs <- fitModels(TP = phenoTPOut,
                         spatial = FALSE)
 ```
 
-# Modeling with variance decomposition using Example 2 {#genodecomp}
+# Modeling with decomposition of genotypes using Example 2 {#genodecomp}
 
 When an experimental treatment is applied, for example, a water scenario, it is required to decompose the genotypic variance into the levels of the treatment. In the following example, two water scenarios, well-watered (WW) and water deficit (WD), were applied. Thus, instead of modeling one genotypic variance, there will be one genotypic variance per treatment. In this part, we will describe briefly what is specific of such modeling with the statgenHTP package using a another example dataset.
 
@@ -452,7 +452,7 @@ The table below provides one example with three models:
 
 > *NOTE: At the moment, it is not possible to use the combination of `geno.decomp` and `what = "fixed".*
 
-Using the Phenoarch example, we will apply a variance decomposition using the variables "Scenario" and "population":
+Using the Phenoarch example, we will apply a genotype decomposition using the variables "Scenario" and "population":
 
 ```{r fitSpGD, message=FALSE, eval=TRUE}
 modPhenoSpGD <- fitModels(TP = phenoTParchOut,
@@ -476,7 +476,7 @@ plot(modPhenoSpGD,
 There are some significant differences in the display of some results and plots. 
 They are highlighted below.
 
-The predictions have two values per genotype, one per combined level of `geno.decomp`, here "Scenario_population", as illustrated in the table below for three genotypes predicted from the SpATS model `modPhenoSpGD`.
+The predictions have two values per genotype, one for each level of the decomposition `geno.decomp`, here "Scenario_population", as illustrated in the table below for three genotypes predicted from the SpATS model `modPhenoSpGD`.
 
 ```{r getPredSpGD, echo=FALSE, message=FALSE, eval=TRUE}
 genoPredSpGD <- getGenoPred(modPhenoSpGD, timePoints = 16)

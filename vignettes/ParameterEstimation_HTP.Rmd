@@ -39,11 +39,11 @@ knitr::include_graphics("figures/psplinederiv_Vator.png", auto_pdf = TRUE)
 
 These parameters could then be further analyzed, for example in a GxE analysis (see [*statgenGxE*](https://biometris.github.io/statgenGxE/index.html)), or a genetic analysis (see [*statgenGWAS*](https://biometris.github.io/statgenGWAS/index.html)).
 
-The following functions can be applied to corrected data (see [**statgenHTP tutorial: 3. Correction for spatial trends**](SpatialModel_HTP.html)), genotypic means (BLUEs or BLUPS) (see [**statgenHTP tutorial: 3. Correction for spatial trends**](SpatialModel_HTP.html)) or on raw data.
+The functions described in this tutorial can be applied to corrected data, genotypic means (BLUEs or BLUPS) (see [**statgenHTP tutorial: 3. Correction for spatial trends**](SpatialModel_HTP.html)) or on raw data.
 
 ------------------------------------------------------------------------
 
-# Estimation of relevant parameters from curves
+# Estimation of parameters from curves
 
 ## Example 1
 

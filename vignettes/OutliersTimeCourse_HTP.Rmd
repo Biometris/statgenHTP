@@ -174,7 +174,7 @@ fit.splineNumOut <- removeTimeCourseOutliers(fitSpline = fit.splineNum,
 
 ### Impact of the number of knots on the smoothing
 
-For one plant of the example 1, we fit the P-spline with 10 or 50 knots and visualize the predictions to compare the smoothness. We advise the user to perform tests of the number of knots on a subset of plants before running the function on all plants.
+For one plant of the same dataset, we fit the P-spline with 10 or 50 knots and visualize the predictions to compare the smoothness. We advise the user to perform tests of the number of knots on a subset of plants before running the function on all plants.
 
 *With 10 knots:*
 
@@ -282,6 +282,7 @@ pred.DatRoot <- fit.splineRoot$predDat
 coef.DatRoot <- fit.splineRoot$coefDat
 row.names(coef.DatRoot) <- 1:nrow(coef.DatRoot)
 ```
+
 
 ```{r plotRoot,  fig.height=4, fig.width=7, message=FALSE, eval=TRUE}
 plot(fit.splineRoot,
