@@ -64,12 +64,12 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             rowNum = "y", colNum = "x",
                             addCheck = TRUE,
                             checkGenotypes = c("check1", "check2", "check3", "check4"))
-resuVatorHTP <- detectPointOutliers(TP = phenoTP,
-                                    trait = "EffpsII",
-                                    confIntSize = 3,
-                                    mylocfit = 0.1)
-phenoTPOut <- removePointOutliers(phenoTP,
-                                  resuVatorHTP)
+resuVatorHTP <- detectSingleOut(TP = phenoTP,
+                                trait = "EffpsII",
+                                confIntSize = 3,
+                                mylocfit = 0.1)
+phenoTPOut <- removeSingleOut(phenoTP,
+                              resuVatorHTP)
 ```
 
 After creating a `TP` object, a model can be fitted on the data. This is done  using the function `fitModels`, which uses two different engines for fitting the models, namely *SpATS* [@RodAlv2018] and *ASReml* [@Gilmour2017]. For models with row and column coordinates, SpATS is the default engine (see section [**2.1**](#SpATS)). This can  be overruled by specifying the function parameter `engine` and using ASReml for spatial models (see section [**2.2**](#ASReml)). When the row and column coordinates are not available, ASReml is used for modeling without spatial components (see section [**3**](#ASRemlnoSP)). Finally, it is possible to decompose the genotypic variance using, for example, a treatment effect (see section [**4**](#genodecomp)).
@@ -258,7 +258,7 @@ By using the option `genotypes`, a subset of genotypes will be plotted. By defau
 ```{r plotSpPred, message=FALSE, fig.height=2, fig.width=6, fig.align = 'center'}
 plot(modPhenoSp, 
      plotType = "rawPred",
-     genotypes = c("check1", "check2", "G7", "G58")) 
+     genotypes = c("check1", "check2", "G007", "G058")) 
 ```
 
 The second one is **corrPred**, it plots the spatially corrected data (colored dots, one color per plotId) overlaid with the predicted values from the fitted model (black dots). One plot is made per genotype with all its plotId. These plots are put together in a 5×5 grid per page. 
@@ -267,7 +267,7 @@ By using the option `genotypes`, a subset of genotypes will be plotted. By defau
 ```{r plotSpCorr, message=FALSE, fig.height=2, fig.width=6, fig.align = 'center', eval=TRUE}
 plot(modPhenoSp, 
      plotType = "corrPred",
-     genotypes = c("check1", "check2", "G7", "G58") )
+     genotypes = c("check1", "check2", "G007", "G058") )
 ```
 
 Note that when check genotypes are used for modeling, for the two previous plot types (`rawPred` and `corrPred`), the option `plotChecks` is required to display check genotypes.
@@ -276,7 +276,7 @@ Note that when check genotypes are used for modeling, for the two previous plot 
 plot(modPhenoSpCheck, 
      plotType = "rawPred",
      plotChecks = TRUE,
-     genotypes = c("check1", "check2", "G7", "G58")) 
+     genotypes = c("check1", "check2", "G007", "G058")) 
 ```
 
 The three last types of plot display different model parameters over time. Plot type **herit** plots the heritability over time. If `geno.decomp` is used when fitting the model, heritabilities are plotted for each level of the genotype groups in a single plot (see section [**4**](#genodecomp)). The scale of the plot can be adjusted using `yLim`.
@@ -417,12 +417,12 @@ phenoTParch <- createTimePoints(dat = PhenoarchDat1,
                                 plotId = "pos",
                                 rowNum = "Row",
                                 colNum = "Col")
-resuArchHTP <- detectPointOutliers(TP = phenoTParch,
-                                   trait = "LA_Estimated",
-                                   confIntSize = 5,
-                                   mylocfit = 0.5)
-phenoTParchOut <- removePointOutliers(phenoTParch,
-                                      resuArchHTP)
+resuArchHTP <- detectSingleOut(TP = phenoTParch,
+                               trait = "LA_Estimated",
+                               confIntSize = 5,
+                               mylocfit = 0.5)
+phenoTParchOut <- removeSingleOut(phenoTParch,
+                                  resuArchHTP)
 ```
 
 We can first check the number of time points containing data for a given trait:
@@ -431,7 +431,7 @@ We can first check the number of time points containing data for a given trait:
 countValid(phenoTParchOut, "LA_Estimated")
 ```
 
-In this case, time point "2017-05-14" has only 488 observation, less than half of the total number of observation. It can bias the modelling at this time point and one may want to remove it before running the spatial analysis. 
+In this case, time point "2017-05-14" has only 488 observation, less than half of the total number of observation. It can bias the modeling at this time point and one may want to remove it before running the spatial analysis. 
 
 ```{r rmTP2, echo=TRUE}
 # getTimePoints(phenoTParchOut)
@@ -480,7 +480,7 @@ The predictions have two values per genotype, one for each level of the decompos
 
 ```{r getPredSpGD, echo=FALSE, message=FALSE, eval=TRUE}
 genoPredSpGD <- getGenoPred(modPhenoSpGD, timePoints = 16)
-toto <- head(genoPredSpGD$genoPred[genoPredSpGD$genoPred$genotype %in% c("GenoA1","GenoA2","GenoB1","GenoB2"),], 8)
+toto <- head(genoPredSpGD$genoPred[genoPredSpGD$genoPred$genotype %in% c("GenoA01","GenoA02","GenoB01","GenoB02"),], 8)
 row.names(toto) <- 1:nrow(toto)
 knitr::kable(toto, align = c('c','c','c','c','c','c'), padding = 0)
 ```
@@ -503,7 +503,7 @@ The prediction and corrected data plots display one plot per combination genotyp
 ```{r plotSprawGD, echo=FALSE, message=FALSE, fig.height=4, fig.width=7, fig.align = 'center', eval=TRUE}
 plot(modPhenoSpGD, 
      plotType = "rawPred",
-     genotypes = c("GenoA1","GenoA2","GenoA3","GenoB1","GenoB2") )
+     genotypes = c("GenoA01","GenoA02","GenoA03","GenoB01","GenoB02"))
 ```
 
 ----

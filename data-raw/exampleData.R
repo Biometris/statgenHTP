@@ -67,7 +67,7 @@ timeNum <- sapply(1:nrow(timy), function(x) {
 timy$timeNumDiff <- c(0,timeNum[1:(length(timeNum) - 1)])
 # cum sum
 timy$timeNum <- cumsum(timy$timeNumDiff)
-# add to spatCorrVator
+# add to spatCorrectedVator
 spatCorrectedVator$timeNumHour <- timy$timeNum[match(spatCorrectedVator$timePoint,
                                                      timy$timePoint)]
 # Export to package

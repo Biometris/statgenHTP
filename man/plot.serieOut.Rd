@@ -70,7 +70,7 @@ pred.Dat <- fit.spline$predDat
 coef.Dat <- fit.spline$coefDat
 
 ## The coefficients are then used to tag suspect time courses
-outVator <- detectserieOut(corrDat = spatCorrectedVator,
+outVator <- detectSerieOut(corrDat = spatCorrectedVator,
                             predDat = pred.Dat,
                             coefDat = coef.Dat,
                             trait = "EffpsII_corr",
@@ -98,7 +98,7 @@ pred.Dat <- fit.spline$predDat
 coef.Dat <- fit.spline$coefDat
 
 ## The coefficients are then used to tag suspect time courses
-outVator <- detectserieOut(corrDat = spatCorrectedVator,
+outVator <- detectSerieOut(corrDat = spatCorrectedVator,
                            predDat = pred.Dat,
                            coefDat = coef.Dat,
                            trait = "EffpsII_corr",
@@ -112,11 +112,11 @@ plot(outVator, genotypes = "G151")
 }
 \seealso{
 Other Detect time course outliers: 
-\code{\link{detectserieOut}()},
-\code{\link{removeserieOut}()}
+\code{\link{detectSerieOut}()},
+\code{\link{removeSerieOut}()}
 
 Other Detect time course outliers: 
-\code{\link{detectserieOut}()},
-\code{\link{removeserieOut}()}
+\code{\link{detectSerieOut}()},
+\code{\link{removeSerieOut}()}
 }
 \concept{Detect time course outliers}

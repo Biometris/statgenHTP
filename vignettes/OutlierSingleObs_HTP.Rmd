@@ -75,14 +75,14 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
 
 We are then running the function on a subset of plants to set the parameters, using the `plotIds` option. The smoothing parameter `mylocfit` is set at 0.1. The curves are atypical and to detect only the very strange points, fitted curves cannot be too smooth. The confidence interval size `confIntSize` is set at 3 which is a relatively narrow interval.
 ```{r setParamVator}
-# First select a subset of plants, for example here 9 plants 
-plantSel <- c("c1r17","c13r17","c6r51","c21r24","c5r54","c21r32","c14r48","c5r26") #phenoTP[[1]]$plotId[1:9]
+# First select a subset of plants, for example here 8 plants.
+plantSel <- c("c1r17","c13r17","c6r51","c21r24","c5r54","c21r32","c14r48","c5r26") 
 # Then run on the subset
-resuVatorHTP <- detectPointOutliers(TP = phenoTP,
-                                    trait = "EffpsII",
-                                    plotIds = plantSel,
-                                    confIntSize = 3,
-                                    mylocfit = 0.1)
+resuVatorHTP <- detectSingleOut(TP = phenoTP,
+                                trait = "EffpsII",
+                                plotIds = plantSel,
+                                confIntSize = 3,
+                                mylocfit = 0.1)
 ```
 
 ```{r headOutVator, echo=FALSE, message=FALSE}
@@ -106,10 +106,10 @@ plot(resuVatorHTP,
 ```
 In the plots, the black points are the raw data, the red line is the predicted curve, the green lines are the lower and upper limits of the confidence interval. Outlying points are highlighted in blue.
 
-The annotated points can be replaced by NA for the studied trait using the function `removePointOutliers`. It creates a new `TP` object.
+The annotated points can be replaced by NA for the studied trait using the function `removeSingleOut`. It creates a new `TP` object.
 ```{r rmOutVator}
-phenoTPOut <- removePointOutliers(phenoTP,
-                                  resuVatorHTP)
+phenoTPOut <- removeSingleOut(phenoTP,
+                              resuVatorHTP)
 # Check one value annotated as outlier in the original TP object
 phenoTP[[16]][phenoTP[[16]]$plotId=="c14r32", c("plotId", "EffpsII")]
 # Check the same value in the new TP object
@@ -134,11 +134,11 @@ We are then running the function on a subset of plants to set the parameters, us
 # First select a subset of plants, for example here 7 plants 
 plantSelArch <- c("c22r7", "c8r22", "c1r10", "c21r43", "c12r31", "c25r12", "c6r54")
 # Then run on the subset
-resuArchHTP <- detectPointOutliers(TP = phenoTParch,
-                                   trait = "LA_Estimated",
-                                   plotIds = plantSelArch,
-                                   confIntSize = 5,
-                                   mylocfit = 0.5)
+resuArchHTP <- detectSingleOut(TP = phenoTParch,
+                               trait = "LA_Estimated",
+                               plotIds = plantSelArch,
+                               confIntSize = 5,
+                               mylocfit = 0.5)
 ```
 
 ```{r headOutArch, echo=FALSE, message=FALSE}
@@ -159,10 +159,10 @@ plot(resuArchHTP,
 ```
 In the plots, the black points are the raw data, the red line is the predicted curve, the green lines are the lower and upper limits of the confidence interval. Outlying points are highlighted in blue.
 
-The annotated points can be replaced by NA for the studied trait using the function `removePointOutliers`. It creates a new `TP` object.
+The annotated points can be replaced by NA for the studied trait using the function `removeSingleOut`. It creates a new `TP` object.
 ```{r rmOutArch}
-phenoTParchOut <- removePointOutliers(phenoTParch,
-                                      resuArchHTP)
+phenoTParchOut <- removeSingleOut(phenoTParch,
+                                  resuArchHTP)
 # Check one value annotated as outlier in the original TP object
 phenoTParch[[30]][phenoTParch[[30]]$plotId=="c12r31", c("plotId", "LA_Estimated")]
 # Check the same value in the new TP object
@@ -188,11 +188,11 @@ We are then running the function on a subset of plants to set the parameters, us
 # First select a subset of plants, for example here 7 plants 
 plantSelRoot <- unique(RootDat1$plantId)[1:7]
 # Then run on the subset
-resuRootHTP <- detectPointOutliers(TP = rootTP,
-                                   trait = "tipPos_y",
-                                   plotIds = plantSelRoot,
-                                   confIntSize = 5,
-                                   mylocfit = 1)
+resuRootHTP <- detectSingleOut(TP = rootTP,
+                               trait = "tipPos_y",
+                               plotIds = plantSelRoot,
+                               confIntSize = 5,
+                               mylocfit = 1)
 ```
 
 ```{r headOutRoot, echo=FALSE, message=FALSE}
@@ -213,10 +213,10 @@ plot(resuRootHTP,
 ```
 In the plots, the black points are the raw data, the red line is the predicted curve, the green lines are the lower and upper limits of the confidence interval. Outlying points are highlighted in blue.
 
-The annotated points can be replaced by NA for the studied trait using the function `removePointOutliers`. It creates an new `TP` object.
+The annotated points can be replaced by NA for the studied trait using the function `removeSingleOut`. It creates an new `TP` object.
 ```{r rmOutRoot}
-rootTPOut <- removePointOutliers(rootTP,
-                                 resuRootHTP)
+rootTPOut <- removeSingleOut(rootTP,
+                             resuRootHTP)
 # Check one value annotated as outlier in the original TP object
 rootTP[[11127]][rootTP[[11127]]$plotId == "A_01_2", c("plotId", "tipPos_y")]
 # Check the same value in the new TP object

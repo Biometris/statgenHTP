@@ -50,32 +50,30 @@ The functions described in this tutorial can be applied to corrected data, genot
 We will use the `fit.splineNumOut` previously created (see [**statgenHTP tutorial: 4. Outlier detection for series of observations**](OutlierSerieObs_HTP.html)). It contains the P-spline prediction on a subset of plants without the time course outliers. We will estimate the maximum value of the trait at the end of the time course, so after the light change:
 
 ```{r fitSplineVatorNum, echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE}
-subGenoVator <- c("G70", "G160", "G151", "G179", "G175", "G4", "G55")
-fit.splineNum <- fitSpline(inDat = spatCorrVator,
+subGenoVator <- c("G070", "G160", "G151", "G179", "G175", "G004", "G055")
+fit.splineNum <- fitSpline(inDat = spatCorrectedVator,
                            trait = "EffpsII_corr",
                            genotypes = subGenoVator,
                            knots = 50,
-                           perMinTP = 0.8,
                            useTimeNumber = TRUE,
                            timeNumber = "timeNumHour")
 pred.Dat <- fit.splineNum$predDat
 coef.Dat <- fit.splineNum$coefDat
-outVator <-
-  detectTimeCourseOutliers(corrDat = spatCorrVator,
+outVator <- detectSerieOut(corrDat = spatCorrectedVator,
                            predDat = pred.Dat,
                            coefDat = coef.Dat,
                            trait = "EffpsII_corr",
                            genotypes = subGenoVator,
                            thrCor = 0.9,
                            thrPca = 30) 
-fit.splineNumOut <- removeTimeCourseOutliers(fitSpline = fit.splineNum,
-                                             timeCourseOutliers = outVator)
+fit.splineNumOut <- removeSerieOut(fitSpline = fit.splineNum,
+                                   serieOut = outVator)
 ```
 
 
 ```{r paramVator, fig.height=2, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
-subGenoVator <- c("G70","G160","G151","G179","G175","G4","G55")
-paramVator1 <-
+subGenoVator <- c("G070", "G160", "G151", "G179", "G175", "G004", "G055")
+paramVator1 <- 
   estimateSplineParameters(HTPSpline = fit.splineNumOut,
                            estimate = "predictions",
                            what = "max",
@@ -117,7 +115,7 @@ data(spatPredArch)
 fit.splineGenoArch <- fitSpline(inDat = spatPredArch, 
                                 trait = "predicted.values",
                                 knots = 15,
-                                perMinTP = 0.5)
+                                minNoTP = 18)
 
 plot(fit.splineGenoArch, 
      genotypes = "GenoA36")
@@ -147,28 +145,28 @@ For this example, we will use the raw data from the RootPhAir, corrected for ind
 
 ```{r rmOutRoot, echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE}
 subGenoRoot <- c( "2", "6", "8", "9", "10", "520", "522")
-fit.splineRoot <- fitSpline(inDat = noCorrRoot,
+fit.splineRoot <- fitSpline(inDat = noCorrectedRoot,
                             trait = "tipPos_y",
                             knots = 10,
                             genotypes = subGenoRoot,
-                            perMinTP = 0.001,
+                            minNoTP = 0,
                             useTimeNumber = TRUE,
                             timeNumber = "thermalTime")
 
 pred.DatRoot <- fit.splineRoot$predDat
 coef.DatRoot <- fit.splineRoot$coefDat
 
-outRoot <- detectTimeCourseOutliers(corrDat = noCorrRoot,
-                                    predDat = pred.DatRoot,
-                                    coefDat = coef.DatRoot,
-                                    trait = "tipPos_y",
-                                    genotypes = subGenoRoot,
-                                    thrCor = 0.9,
-                                    thrPca = 25)
+outRoot <- detectSerieOut(corrDat = noCorrRoot,
+                          predDat = pred.DatRoot,
+                          coefDat = coef.DatRoot,
+                          trait = "tipPos_y",
+                          genotypes = subGenoRoot,
+                          thrCor = 0.9,
+                          thrPca = 25)
 
 outRootFinal <- outRoot[outRoot$plotId %in% c("A_03_5","A_29_2"),]
-noCorrRootOut <- removeTimeCourseOutliers(dat = noCorrRoot,
-                                          timeCourseOutliers = outRootFinal)
+noCorrRootOut <- removeSerieOut(dat = noCorrRoot,
+                                serieOut = outRootFinal)
 noCorrRootOut <- noCorrRootOut[!is.na(noCorrRootOut$tipPos_y),]
 noCorrRootOut <- droplevels(noCorrRootOut)
 ```
@@ -179,7 +177,7 @@ fit.splineRootOut <- fitSpline(inDat = noCorrRootOut,
                                trait = "tipPos_y",
                                knots = 10,
                                genotypes = subGenoRoot,
-                               perMinTP = 0.001,
+                               minNoTP = 0,
                                useTimeNumber = TRUE,
                                timeNumber = "thermalTime")
 ```

@@ -90,11 +90,13 @@ fitSpline <- function(inDat,
   if (knots < 4) {
     stop("Number of knots should be at least 4 for proper spline fitting.\n")
   }
-  if (!is.numeric(minNoTP) || length(minNoTP) > 1) {
+  if (!is.null(minNoTP) && (!is.numeric(minNoTP) || length(minNoTP) > 1)) {
     stop("minNoTP should be a numerical value.\n")
   }
   if (!useTimeNumber) {
-    inDat[["timeNumber"]] <- as.numeric(inDat[["timePoint"]])
+    ## Convert time point to time number with the first time point as 0.
+    minTime <- min(inDat[["timePoint"]], na.rm = TRUE)
+    inDat[["timeNumber"]] <- as.numeric(inDat[["timePoint"]] - minTime)
   } else {
     if (!is.numeric(inDat[[timeNumber]])) {
       stop("timeNumber should be a numerical column.\n")

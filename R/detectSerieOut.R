@@ -43,7 +43,7 @@
 #' coef.Dat <- fit.spline$coefDat
 #'
 #' ## The coefficients are then used to tag suspect time courses.
-#' outVator <- detectserieOut(corrDat = spatCorrectedVator,
+#' outVator <- detectSerieOut(corrDat = spatCorrectedVator,
 #'                             predDat = pred.Dat,
 #'                             coefDat = coef.Dat,
 #'                             trait = "EffpsII_corr",
@@ -59,7 +59,7 @@
 #'
 #' @importFrom utils combn
 #' @export
-detectserieOut <- function(corrDat,
+detectSerieOut <- function(corrDat,
                             predDat,
                             coefDat,
                             trait,
@@ -331,7 +331,7 @@ detectserieOut <- function(corrDat,
 
 #' plot.serieOut
 #'
-#' @inheritParams detectserieOut
+#' @inheritParams detectSerieOut
 #' @inheritParams plot.TP
 #'
 #' @param x An object of class serieOut.
@@ -358,7 +358,7 @@ detectserieOut <- function(corrDat,
 #' coef.Dat <- fit.spline$coefDat
 #'
 #' ## The coefficients are then used to tag suspect time courses
-#' outVator <- detectserieOut(corrDat = spatCorrectedVator,
+#' outVator <- detectSerieOut(corrDat = spatCorrectedVator,
 #'                             predDat = pred.Dat,
 #'                             coefDat = coef.Dat,
 #'                             trait = "EffpsII_corr",
@@ -514,7 +514,7 @@ plot.serieOut <- function(x,
 #' @param serieOut A data.frame with at least the column plotId with
 #' values corresponding to those in dat.
 #' @param trait The trait that should be set to NA. Can be ignored when using
-#' the output of \code{detectserieOut} as input.
+#' the output of \code{detectSerieOut} as input.
 #'
 #' @return Depending on the input either a data.frame or an object of class
 #' HTPSpline for which the outliers specified in \code{serieOut} are
@@ -534,7 +534,7 @@ plot.serieOut <- function(x,
 #' coef.Dat <- fit.spline$coefDat
 #'
 #' ## The coefficients are then used to tag suspect time courses
-#' outVator <- detectserieOut(corrDat = spatCorrectedVator,
+#' outVator <- detectSerieOut(corrDat = spatCorrectedVator,
 #'                             predDat = pred.Dat,
 #'                             coefDat = coef.Dat,
 #'                             trait = "EffpsII_corr",
@@ -543,13 +543,13 @@ plot.serieOut <- function(x,
 #'                             thrPca = 30)
 #'
 #' ## The outliers can be removed from the dataset.
-#' spatCorrectedVatorOut <- removeserieOut(dat = spatCorrectedVator,
+#' spatCorrectedVatorOut <- removeSerieOut(dat = spatCorrectedVator,
 #'                                     serieOut = outVator)
 #'
 #' @family Detect time course outliers
 #'
 #' @export
-removeserieOut <- function(dat = NULL,
+removeSerieOut <- function(dat = NULL,
                             fitSpline = NULL,
                             serieOut,
                             trait = attr(x = serieOut,
