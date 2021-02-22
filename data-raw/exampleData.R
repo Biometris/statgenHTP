@@ -13,31 +13,26 @@ PhenovatorDat1$pos <- paste0("c", PhenovatorDat1[["x"]],
 # Remove a plant that has very few measurements.
 PhenovatorDat1 <- PhenovatorDat1[PhenovatorDat1$pos != "c1r54", ]
 # Rename genotypes to G001 - G192
-geno <- levels(PhenovatorDat1$Genotype)
-geno[substr(geno, 1, 1) == "G"] <-
-  paste0("G", formatC(as.numeric(substring(geno[substr(geno, 1, 1) == "G"], 2)),
+genoVator <- levels(PhenovatorDat1$Genotype)
+genoVator[substr(genoVator, 1, 1) == "G"] <-
+  paste0("G", formatC(as.numeric(substring(genoVator[substr(genoVator, 1, 1) == "G"], 2)),
                       digits = 2, flag = "0", format = "d"))
-levels(PhenovatorDat1$Genotype) <- geno
+levels(PhenovatorDat1$Genotype) <- genoVator
 
 # Export to package
 usethis::use_data(PhenovatorDat1, overwrite = TRUE)
 
 #### 1.2. Corrected data - outliers removed
-# Read raw data.
 
 ## Create csv containing corrected data.
 # Commented out since it runs a long time and the .csv is saved for later use.
 # PhenovatorDat1 <- PhenovatorDat1[!PhenovatorDat1$pos %in%
 #                                    c("c24r41", "c7r18", "c7r49"),]
 # # Create TP object.
-# phenoTP <- createTimePoints(dat = PhenovatorDat1,
-#                             experimentName = "Phenovator",
-#                             genotype = "Genotype",
-#                             timePoint = "timepoints",
-#                             repId = "Replicate",
-#                             plotId = "pos",
-#                             rowNum = "y", colNum = "x",
-#                             addCheck = TRUE,
+# phenoTP <- createTimePoints(dat = PhenovatorDat1, experimentName = "Phenovator",
+#                             genotype = "Genotype", timePoint = "timepoints",
+#                             repId = "Replicate", plotId = "pos", rowNum = "y",
+#                             colNum = "x", addCheck = TRUE,
 #                             checkGenotypes = c("check1", "check2",
 #                                                "check3", "check4"))
 # # Detect and remove outliers.
@@ -84,12 +79,47 @@ usethis::use_data(spatCorrectedVator, overwrite = TRUE)
 # Read raw data.
 PhenoarchDat1 <- read.csv("./data-raw/Phenoarch_ZA17_extraVariables.csv",
                           stringsAsFactors = TRUE)
+# Rename genotypes.
+genoArch <- levels(PhenoarchDat1$geno)
+genoArchRen <- genoArch[nchar(genoArch) == 6]
+genoArch[genoArch %in% genoArchRen] <-
+  paste0(substr(genoArchRen, 1, 5), "0", substr(genoArchRen, 6, 6))
+levels(PhenoarchDat1$geno) <- genoArch
+
 # Export to package
 usethis::use_data(PhenoarchDat1, overwrite = TRUE)
 
 #### 2.2. Corrected data - outliers removed
+
+## Create csv containing corrected data.
+# Commented out since it runs a long time and the .csv is saved for later use.
+
+# # Create TP object.
+# phenoTParch <- createTimePoints(dat = PhenoarchDat1,
+#                                 experimentName = "Phenoarch", genotype = "geno",
+#                                 timePoint = "Time", plotId = "pos",
+#                                 rowNum = "Row", colNum = "Col")
+# # Detect and remove outliers.
+# resuArchHTP <- detectSingleOut(TP = phenoTParch, trait = "LA_Estimated",
+#                                confIntSize = 5, mylocfit = 0.5)
+# # Fit models.
+# phenoTParchOut <- removeSingleOut(phenoTParch, resuArchHTP)
+#
+# modPhenoSpGD <- fitModels(TP = phenoTParchOut, trait = "LA_Estimated",
+#                           geno.decomp = c("Scenario", "population"))
+#
+# # Get and write corrected values and predictions.
+# spatCorrectedArch <- getCorrected(modPhenoSpGD)
+# write.table(spatCorrectedArch,
+#             file = "./data-raw/PhenoArchDat1_corr_OutPoint_LA.csv",
+#             sep = ",", row.names = FALSE)
+# spatPredArch <- getGenoPred(modPhenoSpGD)$genoPred
+# write.table(spatPredArch,
+#             file = "./data-raw/PhenoArchDat1_pred_OutPoint_LA.csv",
+#             sep = ",", row.names = FALSE)
+
 # Read raw data.
-spatCorrectedArch <- read.csv("./data-raw/PhenoArchDat1_corr_OutPoint_LA_2.csv",
+spatCorrectedArch <- read.csv("./data-raw/PhenoArchDat1_corr_OutPoint_LA.csv",
                               stringsAsFactors = TRUE)
 # Format the timepoint
 spatCorrectedArch$timePoint <- lubridate::as_datetime(spatCorrectedArch$timePoint)
@@ -98,7 +128,7 @@ usethis::use_data(spatCorrectedArch, overwrite = TRUE)
 
 #### 2.3. Genotypic prediction data - outliers removed
 # Read raw data.
-spatPredArch <- read.csv("./data-raw/PhenoArchDat1_pred_OutPoint_LA_2.csv",
+spatPredArch <- read.csv("./data-raw/PhenoArchDat1_pred_OutPoint_LA.csv",
                          stringsAsFactors = TRUE)
 # Format the timepoint
 spatPredArch$timePoint <- lubridate::as_datetime(spatPredArch$timePoint)

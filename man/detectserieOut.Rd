@@ -76,7 +76,7 @@ will show the outlying plants.
 # Run the function to fit P-splines on a subset of
 ## genotypes
 subGenoVator <- c("G160", "G151")
-fit.spline <- fitSpline(inDat = spatCorrVator,
+fit.spline <- fitSpline(inDat = spatCorrectedVator,
                         trait = "EffpsII_corr",
                         genotypes = subGenoVator,
                         knots = 50,
@@ -87,7 +87,7 @@ pred.Dat <- fit.spline$predDat
 coef.Dat <- fit.spline$coefDat
 
 ## The coefficients are then used to tag suspect time courses.
-outVator <- detectserieOut(corrDat = spatCorrVator,
+outVator <- detectserieOut(corrDat = spatCorrectedVator,
                             predDat = pred.Dat,
                             coefDat = coef.Dat,
                             trait = "EffpsII_corr",
@@ -106,7 +106,7 @@ plot(outVator, genotypes = "G151")
 # Run the function to fit P-splines on a subset of
 ## genotypes
 subGenoVator <- c("G160", "G151")
-fit.spline <- fitSpline(inDat = spatCorrVator,
+fit.spline <- fitSpline(inDat = spatCorrectedVator,
                         trait = "EffpsII_corr",
                         genotypes = subGenoVator,
                         knots = 50,
@@ -117,7 +117,7 @@ pred.Dat <- fit.spline$predDat
 coef.Dat <- fit.spline$coefDat
 
 ## The coefficients are then used to tag suspect time courses.
-outVator <- detectserieOut(corrDat = spatCorrVator,
+outVator <- detectserieOut(corrDat = spatCorrectedVator,
                            predDat = pred.Dat,
                            coefDat = coef.Dat,
                            trait = "EffpsII_corr",

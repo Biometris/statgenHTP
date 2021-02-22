@@ -53,7 +53,7 @@ of these should be provided as input for the function.
 \examples{
 ## Run the function to fit P-spline on a subset of genotypes.
 subGenoVator <- c("G160", "G151")
-fit.spline <- fitSpline(inDat = spatCorrVator,
+fit.spline <- fitSpline(inDat = spatCorrectedVator,
                         trait = "EffpsII_corr",
                         genotypes = subGenoVator,
                         knots = 50,
@@ -64,7 +64,7 @@ pred.Dat <- fit.spline$predDat
 coef.Dat <- fit.spline$coefDat
 
 ## The coefficients are then used to tag suspect time courses
-outVator <- detectserieOut(corrDat = spatCorrVator,
+outVator <- detectserieOut(corrDat = spatCorrectedVator,
                             predDat = pred.Dat,
                             coefDat = coef.Dat,
                             trait = "EffpsII_corr",
@@ -73,12 +73,12 @@ outVator <- detectserieOut(corrDat = spatCorrVator,
                             thrPca = 30)
 
 ## The outliers can be removed from the dataset.
-spatCorrVatorOut <- removeserieOut(dat = spatCorrVator,
+spatCorrectedVatorOut <- removeserieOut(dat = spatCorrectedVator,
                                     serieOut = outVator)
 
 ## Run the function to fit P-spline on a subset of genotypes.
 subGenoVator <- c("G160", "G151")
-fit.spline <- fitSpline(inDat = spatCorrVator,
+fit.spline <- fitSpline(inDat = spatCorrectedVator,
                         trait = "EffpsII_corr",
                         genotypes = subGenoVator,
                         knots = 50,
@@ -89,7 +89,7 @@ pred.Dat <- fit.spline$predDat
 coef.Dat <- fit.spline$coefDat
 
 ## The coefficients are then used to tag suspect time courses
-outVator <- detectserieOut(corrDat = spatCorrVator,
+outVator <- detectserieOut(corrDat = spatCorrectedVator,
                            predDat = pred.Dat,
                            coefDat = coef.Dat,
                            trait = "EffpsII_corr",
@@ -98,7 +98,7 @@ outVator <- detectserieOut(corrDat = spatCorrVator,
                            thrPca = 30)
 
 ## The outliers can be removed from the dataset.
-spatCorrVatorOut <- removeserieOut(dat = spatCorrVator,
+spatCorrectedVatorOut <- removeserieOut(dat = spatCorrectedVator,
                                     serieOut = outVator)
 
 }

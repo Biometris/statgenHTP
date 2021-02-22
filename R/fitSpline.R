@@ -17,7 +17,9 @@
 #' @param useTimeNumber Should the timeNumber be used instead of the timePoint?
 #' @param timeNumber If \code{useTimeNumber = TRUE}, a character vector
 #' indicating the column containing the numerical time to use.
-#' @param perMinTP The percentage of minimum number of time points to use.
+#' @param minNoTP The minimum number of time point for which data should be
+#' available for a plot. Defaults to 80% of all time points present in the
+#' TP object.
 #'
 #' @examples
 #' ## The data from the Phenovator platform have been corrected for
@@ -29,8 +31,7 @@
 #' fit.spline <- fitSpline(inDat = spatCorrectedVator,
 #'                         trait = "EffpsII_corr",
 #'                         genotypes = subGeno,
-#'                         knots = 50,
-#'                         perMinTP = 0.8)
+#'                         knots = 50)
 #'
 #' ## Extract the tables of predicted values and P-Spline coefficients.
 #' pred.Dat <- fit.spline$predDat
@@ -54,7 +55,7 @@ fitSpline <- function(inDat,
                       knots = 50,
                       useTimeNumber = FALSE,
                       timeNumber = NULL,
-                      perMinTP = 0.8) {
+                      minNoTP = NULL) {
   ## Checks.
   if (!is.character(trait) || length(trait) > 1) {
     stop("trait should be a character string of length 1.\n")
@@ -89,9 +90,8 @@ fitSpline <- function(inDat,
   if (knots < 4) {
     stop("Number of knots should be at least 4 for proper spline fitting.\n")
   }
-  if (!is.numeric(perMinTP) || length(perMinTP) > 1 || perMinTP < 0 ||
-      perMinTP > 1) {
-    stop("perMinTP should be a numerical value between 0 and 1.\n")
+  if (!is.numeric(minNoTP) || length(minNoTP) > 1) {
+    stop("minNoTP should be a numerical value.\n")
   }
   if (!useTimeNumber) {
     inDat[["timeNumber"]] <- as.numeric(inDat[["timePoint"]])
@@ -132,7 +132,14 @@ fitSpline <- function(inDat,
     plantGeno <- unique(inDat[c("plotId", "genotype")])
   }
   ## Determine minimum number of time points required.
-  minTP <- perMinTP * length(unique(inDat[["timeNumber"]]))
+  nTimeNumber <- length(unique(inDat[["timeNumber"]]))
+  if (is.null(minNoTP)) {
+    minTP <- 0.8 * nTimeNumber
+  } else if (minNoTP < 0 || minNoTP > nTimeNumber) {
+    stop("minNoTP should be a number bewtween 0 and ", nTimeNumber, ".\n")
+  } else {
+    minTP <- minNoTP
+  }
   ## Get number of non NA observations per plot for determining minimum
   ## number of knots.
   plotObs <- aggregate(x = inDat[[trait]], by = list(inDat[["plotId"]]),

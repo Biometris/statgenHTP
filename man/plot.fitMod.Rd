@@ -179,7 +179,7 @@ plot(modPhenoSp,
 ## Plot the corrected values for a subset of four genotypes:
 plot(modPhenoSp,
      plotType = "corrPred",
-     genotypes = c("check1", "check2", "G7", "G58") )
+     genotypes = c("check1", "check2", "G007", "G058") )
 
 ## Plot the variances of all available time points in the model
 ## for a subset of effective dimensions:

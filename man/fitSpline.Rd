@@ -12,7 +12,7 @@ fitSpline(
   knots = 50,
   useTimeNumber = FALSE,
   timeNumber = NULL,
-  perMinTP = 0.8
+  minNoTP = NULL
 )
 }
 \arguments{
@@ -34,7 +34,9 @@ are fitted. If \code{NULL}, splines will be fitted for all plotIds.}
 \item{timeNumber}{If \code{useTimeNumber = TRUE}, a character vector
 indicating the column containing the numerical time to use.}
 
-\item{perMinTP}{The percentage of minimum number of time points to use.}
+\item{minNoTP}{The minimum number of time point for which data should be
+available for a plot. Defaults to 80\% of all time points present in the
+TP object.}
 }
 \description{
 Fit P-Splines on corrected or raw data. The number of
@@ -49,12 +51,11 @@ the curve.
 
 ## Run the function to fit P-Spline on a subset of
 ## genotypes
-subGeno <- c("G70", "G160")
-fit.spline <- fitSpline(inDat = spatCorrVator,
+subGeno <- c("G070", "G160")
+fit.spline <- fitSpline(inDat = spatCorrectedVator,
                         trait = "EffpsII_corr",
                         genotypes = subGeno,
-                        knots = 50,
-                        perMinTP = 0.8)
+                        knots = 50)
 
 ## Extract the tables of predicted values and P-Spline coefficients.
 pred.Dat <- fit.spline$predDat
