@@ -1,13 +1,13 @@
 #' Outlier detection
 #'
-#' Function for detecting strange time course. The function uses the estimates for
-#' the spline coefficients per time course (typically per plant). Correlations
-#' between those coefficient vectors are calculated to identify outlying time
-#' courses, i.e., plants. An outlying time course will have low correlation
-#' to the majority of time courses. To support the analysis by correlations,
-#' a principal component analysis can be done on the plant (time course)
-#' by spline coefficient matrix. A PCA plot of the plant scores will show
-#' the outlying plants.
+#' Function for detecting strange time courses. The function uses the estimates
+#' for the spline coefficients per time course (typically per plant).
+#' Correlations between those coefficient vectors are calculated to identify
+#' outlying time courses, i.e., plants. An outlying time course will have low
+#' correlation to the majority of time courses. To support the analysis by
+#' correlations, a principal component analysis can be done on the plant
+#' (time course) by spline coefficient matrix. A PCA plot of the plant scores
+#' will show the outlying plants.
 #'
 #' @param corrDat A data.frame with corrected spatial data.
 #' @param predDat A data.frame with predicted data from a fitted spline.
@@ -43,13 +43,13 @@
 #' coef.Dat <- fit.spline$coefDat
 #'
 #' ## The coefficients are then used to tag suspect time courses.
-#' outVator <- detectTimeCourseOutliers(corrDat = spatCorrVator,
-#'                                      predDat = pred.Dat,
-#'                                      coefDat = coef.Dat,
-#'                                      trait = "EffpsII_corr",
-#'                                      genotypes = subGenoVator,
-#'                                      thrCor = 0.9,
-#'                                      thrPca = 30)
+#' outVator <- detectserieOut(corrDat = spatCorrVator,
+#'                             predDat = pred.Dat,
+#'                             coefDat = coef.Dat,
+#'                             trait = "EffpsII_corr",
+#'                             genotypes = subGenoVator,
+#'                             thrCor = 0.9,
+#'                             thrPca = 30)
 #'
 #' ## The `outVator` can be visualized for selected genotypes.
 #' plot(outVator, genotypes = "G151")
@@ -59,14 +59,14 @@
 #'
 #' @importFrom utils combn
 #' @export
-detectTimeCourseOutliers <- function(corrDat,
-                                     predDat,
-                                     coefDat,
-                                     trait,
-                                     genotypes = NULL,
-                                     geno.decomp = NULL,
-                                     thrCor = 0.9,
-                                     thrPca = 30) {
+detectserieOut <- function(corrDat,
+                            predDat,
+                            coefDat,
+                            trait,
+                            genotypes = NULL,
+                            geno.decomp = NULL,
+                            thrCor = 0.9,
+                            thrPca = 30) {
   ## Checks.
   if (!is.character(trait) || length(trait) > 1) {
     stop("trait should be a character string of length 1.\n")
@@ -197,9 +197,9 @@ detectTimeCourseOutliers <- function(corrDat,
                         plantDat <- plantDat[-1, ]
                         ## Remove plants with only NA.
                         NAplants <- apply(X = plantDat, MARGIN = 2,
-                                           FUN = function(plant) {
-                                             all(is.na(plant))
-                         })
+                                          FUN = function(plant) {
+                                            all(is.na(plant))
+                                          })
                         plantDat <- plantDat[, !NAplants]
                         ## Add geno.decomp as attribute for later use.
                         if (!is.null(geno.decomp)) {
@@ -278,8 +278,8 @@ detectTimeCourseOutliers <- function(corrDat,
                        dimnames = list(rownames(PcVecs), rownames(PcVecs)))
     PcAngles[lower.tri(PcAngles)] <-
       combn(x = rownames(PcVecs), m = 2, FUN = function(plants) {
-      angle(PcVecs[plants, ])
-    }, simplify = TRUE)
+        angle(PcVecs[plants, ])
+      }, simplify = TRUE)
     PcAngles[upper.tri(PcAngles)] <- t(PcAngles)[upper.tri(PcAngles)]
     meanPcAngles <- rowMeans(PcAngles, na.rm = TRUE)
     if (!is.null(geno.decomp)) {
@@ -316,7 +316,7 @@ detectTimeCourseOutliers <- function(corrDat,
     annotatePlants <- data.frame()
   }
   plotInfo <- unique(corrDatPred[c("genotype", geno.decomp)])
-  class(annotatePlants) <- c("timeCourseOutliers", class(annotatePlants))
+  class(annotatePlants) <- c("serieOut", class(annotatePlants))
   attr(x = annotatePlants, which = "thrCor") <- thrCor
   attr(x = annotatePlants, which = "thrPca") <- thrPca
   attr(x = annotatePlants, which = "trait") <- trait
@@ -329,12 +329,12 @@ detectTimeCourseOutliers <- function(corrDat,
   return(annotatePlants)
 }
 
-#' plot.timeCourseOutliers
+#' plot.serieOut
 #'
-#' @inheritParams detectTimeCourseOutliers
+#' @inheritParams detectserieOut
 #' @inheritParams plot.TP
 #'
-#' @param x An object of class timeCourseOutliers.
+#' @param x An object of class serieOut.
 #' @param useTimeNumber Should the timeNumber be used instead of the timePoint
 #' in the x-axis labels?
 #' @param timeNumber If \code{useTimeNumber = TRUE}, a character vector
@@ -358,13 +358,13 @@ detectTimeCourseOutliers <- function(corrDat,
 #' coef.Dat <- fit.spline$coefDat
 #'
 #' ## The coefficients are then used to tag suspect time courses
-#' outVator <- detectTimeCourseOutliers(corrDat = spatCorrVator,
-#'                                      predDat = pred.Dat,
-#'                                      coefDat = coef.Dat,
-#'                                      trait = "EffpsII_corr",
-#'                                      genotypes = subGenoVator,
-#'                                      thrCor = 0.9,
-#'                                      thrPca = 30)
+#' outVator <- detectserieOut(corrDat = spatCorrVator,
+#'                             predDat = pred.Dat,
+#'                             coefDat = coef.Dat,
+#'                             trait = "EffpsII_corr",
+#'                             genotypes = subGenoVator,
+#'                             thrCor = 0.9,
+#'                             thrPca = 30)
 #'
 #' ## The `outVator` can be visualized for selected genotypes.
 #' plot(outVator, genotypes = "G151")
@@ -372,13 +372,13 @@ detectTimeCourseOutliers <- function(corrDat,
 #' @family Detect time course outliers
 #'
 #' @export
-plot.timeCourseOutliers <- function(x,
-                                    ...,
-                                    genotypes = NULL,
-                                    useTimeNumber = FALSE,
-                                    timeNumber = NULL,
-                                    title = NULL,
-                                    output = TRUE) {
+plot.serieOut <- function(x,
+                           ...,
+                           genotypes = NULL,
+                           useTimeNumber = FALSE,
+                           timeNumber = NULL,
+                           title = NULL,
+                           output = TRUE) {
   if (useTimeNumber && (is.null(timeNumber) || !is.character(timeNumber) ||
                         length(timeNumber) > 1)) {
     stop("timeNumber should be a character string of length 1.\n")
@@ -505,19 +505,19 @@ plot.timeCourseOutliers <- function(x,
 #'
 #' Function for setting time course outliers in the data to NA.
 #' The input can either be a data.frame, specified in \code{dat}, or the output
-#' of the fitSpline function, specified in \code{fitSpline}. Exactly one of
-#' these should be provided as input for the function.
+#' of the \code{fitSpline} function, specified in \code{fitSpline}. Exactly one
+#' of these should be provided as input for the function.
 #'
 #' @param dat A data.frame.
 #' @param fitSpline An object of class HTPSpline, the output of the
 #' \code{\link{fitSpline}} function.
-#' @param timeCourseOutliers A data.frame with at least the column plotId with
+#' @param serieOut A data.frame with at least the column plotId with
 #' values corresponding to those in dat.
 #' @param trait The trait that should be set to NA. Can be ignored when using
-#' the output of \code{timeCourseOutliers} as input.
+#' the output of \code{detectserieOut} as input.
 #'
 #' @return Depending on the input either a data.frame or an object of class
-#' HTPSpline for which the outliers specified in \code{timeCourseOutliers} are
+#' HTPSpline for which the outliers specified in \code{serieOut} are
 #' set to NA.
 #'
 #' @examples
@@ -534,26 +534,26 @@ plot.timeCourseOutliers <- function(x,
 #' coef.Dat <- fit.spline$coefDat
 #'
 #' ## The coefficients are then used to tag suspect time courses
-#' outVator <- detectTimeCourseOutliers(corrDat = spatCorrVator,
-#'                                      predDat = pred.Dat,
-#'                                      coefDat = coef.Dat,
-#'                                      trait = "EffpsII_corr",
-#'                                      genotypes = subGenoVator,
-#'                                      thrCor = 0.9,
-#'                                      thrPca = 30)
+#' outVator <- detectserieOut(corrDat = spatCorrVator,
+#'                             predDat = pred.Dat,
+#'                             coefDat = coef.Dat,
+#'                             trait = "EffpsII_corr",
+#'                             genotypes = subGenoVator,
+#'                             thrCor = 0.9,
+#'                             thrPca = 30)
 #'
 #' ## The outliers can be removed from the dataset.
-#' spatCorrVatorOut <- removeTimeCourseOutliers(dat = spatCorrVator,
-#'                                              timeCourseOutliers = outVator)
+#' spatCorrVatorOut <- removeserieOut(dat = spatCorrVator,
+#'                                     serieOut = outVator)
 #'
 #' @family Detect time course outliers
 #'
 #' @export
-removeTimeCourseOutliers <- function(dat = NULL,
-                                     fitSpline = NULL,
-                                     timeCourseOutliers,
-                                     trait = attr(x = timeCourseOutliers,
-                                                  which = "trait")) {
+removeserieOut <- function(dat = NULL,
+                            fitSpline = NULL,
+                            serieOut,
+                            trait = attr(x = serieOut,
+                                         which = "trait")) {
   ## Check that one of dat and fitSpline are specified.
   if ((is.null(dat) && is.null(fitSpline)) || (
     !is.null(dat) && !is.null(fitSpline))) {
@@ -572,26 +572,23 @@ removeTimeCourseOutliers <- function(dat = NULL,
       stop("dat should be an object of class HTPSpline.\n")
     }
   }
-  if (!inherits(timeCourseOutliers, "data.frame")) {
-    stop("timeCourseOutliers should be a data.frame.\n")
+  if (!inherits(serieOut, "data.frame")) {
+    stop("serieOut should be a data.frame.\n")
   }
-  if (nrow(timeCourseOutliers) > 0) {
-    if (!hasName(timeCourseOutliers, "plotId")) {
-      stop("timeCourseOutliers should at least contain the column plotId.\n")
+  if (nrow(serieOut) > 0) {
+    if (!hasName(serieOut, "plotId")) {
+      stop("serieOut should at least contain the column plotId.\n")
     }
     if (!is.null(dat)) {
-      ## Remove plots that are in timeCourseOutliers.
-      dat[dat[["plotId"]] %in% timeCourseOutliers[["plotId"]], trait] <- NA
+      ## Remove plots that are in serieOut.
+      dat[dat[["plotId"]] %in% serieOut[["plotId"]], trait] <- NA
     } else if (!is.null(fitSpline)) {
       fitSpline$coefDat[fitSpline$coefDat[["plotId"]] %in%
-                          timeCourseOutliers[["plotId"]],
-                        "obj.coefficients"] <- NA
+                          serieOut[["plotId"]], "obj.coefficients"] <- NA
       fitSpline$predDat[fitSpline$predDat[["plotId"]] %in%
-                          timeCourseOutliers[["plotId"]], c("pred.value",
-                                                            "deriv")] <- NA
+                          serieOut[["plotId"]], c("pred.value", "deriv")] <- NA
       modDat <- attr(x = fitSpline, which = "modDat")
-      modDat[modDat[["plotId"]] %in% timeCourseOutliers[["plotId"]],
-             trait] <- NA
+      modDat[modDat[["plotId"]] %in% serieOut[["plotId"]], trait] <- NA
       attr(x = fitSpline, which = "modDat") <- modDat
     }
   }
