@@ -3,7 +3,7 @@ stages:
   - deploy
 
 variables:
-    APT_PKGS: "libcurl4-openssl-dev libssh2-1-dev libssl-dev libxml2-dev zlib1g-dev git build-essential gobjc++ libomp-dev tk8.6-dev libmagick++-6.q16-dev dialog apt-utils"
+    APT_PKGS: "libcurl4-openssl-dev libssh2-1-dev libssl-dev libxml2-dev zlib1g-dev git build-essential gobjc++ libomp-dev libmagick++-6.q16-dev"
     _R_CHECK_FORCE_SUGGESTS_: "false"
     TT_AT_HOME: "false"
 
@@ -26,17 +26,6 @@ r-release:
       - "*.Rcheck"
     name: logs
     when: always
-
-# r-devel:
-#   stage: test
-#   image: rocker/r-ver:devel
-#   script:
-#     - r -e 'devtools::check(check_dir = ".")'
-#   artifacts:
-#     paths:
-#       - "*.Rcheck"
-#     name: logs
-#     when: always
 
 coverage:
   stage: deploy

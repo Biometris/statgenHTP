@@ -1,17 +1,15 @@
-#' detectPointOutliers
+#' Detect outliers in a time series
 #'
-#' Function to model each curve of a dataset using a local regression. This is
-#' the first step of the detection of outlying points in a curve.
+#' Detect outlying observations in a time series by modeling each plotId using
+#' a local regression.
 #'
-#' see locfit() help function from the locfit R library. The user can act on:
+#' See locfit() help function from the locfit R library. The user can act on:
 #' \describe{
 #'   \item{mylocfit}{the constant of the smoothing parameter. Increase mylocfit
 #'   to have a very smooth curve}
 #'   \item{confIntSize}{the level to calculate the confidence interval. Increase
 #'   confIntSize to exclude less outliers}
 #' }
-#' to produce the grahics of the prediction and detected outliers, please use
-#' plotDetectPointOutlierLocFit() function.
 #'
 #' @param TP An object of class TP.
 #' @param trait A character vector indicating the trait to model in TP.
@@ -21,7 +19,7 @@
 #' @param mylocfit A numeric value defining the constant component of the
 #' smoothing parameter nn. (see the locfit())
 #'
-#' @return An object of class pointOutliers, a data.frame with the following
+#' @return An object of class singleOut, a data.frame with the following
 #' columns.
 #' \describe{
 #'   \item{plotId}{the id variable}
@@ -34,9 +32,10 @@
 #'   \item{outlier}{flag of detected outlier (0 is outlier, 1 is not)}
 #' }
 #'
-#' @seealso plot.pointOutliers
+#' @seealso plot.singleOut
 #'
-#' @examples ## Create a TP object containing the data from the Phenovator.
+#' @examples
+#' ## Create a TP object containing the data from the Phenovator.
 #' PhenovatorDat1 <- PhenovatorDat1[!PhenovatorDat1$pos %in%
 #'                                  c("c24r41", "c7r18", "c7r49"), ]
 #' phenoTP <- createTimePoints(dat = PhenovatorDat1,
@@ -53,20 +52,20 @@
 #' ## First select a subset of plants, for example here 9 plants
 #' plantSel <- phenoTP[[1]]$plotId[1:9]
 #' # Then run on the subset
-#' resuVatorHTP <- detectPointOutliers(TP = phenoTP,
-#'                                     trait = "EffpsII",
-#'                                     plotIds = plantSel,
-#'                                     confIntSize = 3,
-#'                                     mylocfit = 0.1)
+#' resuVatorHTP <- detectSingleOut (TP = phenoTP,
+#'                                  trait = "EffpsII",
+#'                                  plotIds = plantSel,
+#'                                  confIntSize = 3,
+#'                                  mylocfit = 0.1)
 #'
-#' @family Detect point outliers
+#' @family Detect outliers in a time series
 #'
 #' @export
-detectPointOutliers <- function(TP,
-                                trait,
-                                plotIds = NULL,
-                                confIntSize = 5,
-                                mylocfit = 0.5) {
+detectSingleOut <- function(TP,
+                            trait,
+                            plotIds = NULL,
+                            confIntSize = 5,
+                            mylocfit = 0.5) {
   ## Checks.
   if (!inherits(TP, "TP")) {
     stop("TP should be an object of class TP.\n")
@@ -145,20 +144,19 @@ detectPointOutliers <- function(TP,
   ## Rownames are confusing and redundant.
   rownames(plotPred) <- NULL
   ## Add class and trait as attribute.
-  class(plotPred) <- c("pointOutliers", class(plotPred))
+  class(plotPred) <- c("singleOut", class(plotPred))
   attr(plotPred, which = "trait") <- trait
   return(plotPred)
 }
 
-#' Plot point outliers
+#' Plot outliers in a time series
 #'
-#' Graphical function to produce the modeled smoothing and detected outliers
-#' for each curve of a dataset using a local regression
+#' Plot the modeled smoothing and detected outliers for each plotId.
 #'
-#' @inheritParams detectPointOutliers
+#' @inheritParams detectSingleOut
 #' @inheritParams plot.TP
 #'
-#' @param x An object of class pointOutliers.
+#' @param x An object of class singleOut
 #' @param outOnly Should only plots containing outliers be plotted?
 #'
 #' @examples ## Create a TP object containing the data from the Phenovator.
@@ -175,28 +173,28 @@ detectPointOutliers <- function(TP,
 #'                             checkGenotypes = c("check1", "check2",
 #'                                                "check3", "check4"))
 #'
-#' ## First select a subset of plants, for example here 10 plants
+#' ## First select a subset of plants, for example here 9 plants.
 #' plantSel <- phenoTP[[1]]$plotId[1:9]
 #' # Then run on the subset
-#' resuVatorHTP <- detectPointOutliers(TP = phenoTP,
-#'                                     trait = "EffpsII",
-#'                                     plotIds = plantSel,
-#'                                     confIntSize = 3,
-#'                                     mylocfit = 0.1)
+#' resuVatorHTP <- detectSingleOut(TP = phenoTP,
+#'                                trait = "EffpsII",
+#'                                plotIds = plantSel,
+#'                                confIntSize = 3,
+#'                                mylocfit = 0.1)
 #'
 #' ## We can then visualize the prediction by choosing a single plant...
 #' plot(resuVatorHTP, plotIds = "c21r24", outOnly = FALSE)
 #' ## ...or a subset of plants.
 #' plot(resuVatorHTP, plotIds = plantSel, outOnly = FALSE)
 #'
-#' @family Detect point outliers
+#' @family Detect outliers in a time series
 #'
 #' @export
-plot.pointOutliers <- function(x,
-                               ...,
-                               plotIds = NULL,
-                               outOnly = TRUE,
-                               output = TRUE) {
+plot.singleOut <- function(x,
+                           ...,
+                           plotIds = NULL,
+                           outOnly = TRUE,
+                           output = TRUE) {
   plotDat <- x
   if (!is.null(plotIds)) {
     if (!all(plotIds %in% plotDat[["plotId"]])) {
@@ -274,15 +272,16 @@ plot.pointOutliers <- function(x,
 #' Function for setting point outliers to NA.
 #'
 #' @param TP An object of class TP.
-#' @param pointOutliers A data.frame with at least the columns plotId and
+#' @param singleOut A data.frame with at least the columns plotId and
 #' timePoint with values corresponding to those in TP. If a column outlier is
-#' present, as in the output of \code{detectPointOutliers}, only plot x time
+#' present, as in the output of \code{detectSingleOut}, only plot x time
 #' combinations for which outlier = 1 will be set to NA. If no column outlier is
-#' present, all observations in pointOutliers will be set to NA.
+#' present, all observations in singleOut will be set to NA.
 #' @param trait The trait that should be set to NA. Can be ignored when using
-#' the output of \code{detectPointOutliers} as input.
+#' the output of \code{detectSingleOut} as input.
 
-#' @examples ## Create a TP object containing the data from the Phenovator.
+#' @examples
+#' ## Create a TP object containing the data from the Phenovator.
 #' PhenovatorDat1 <- PhenovatorDat1[!PhenovatorDat1$pos %in%
 #'                                  c("c24r41", "c7r18", "c7r49"), ]
 #' phenoTP <- createTimePoints(dat = PhenovatorDat1,
@@ -296,48 +295,48 @@ plot.pointOutliers <- function(x,
 #'                             checkGenotypes = c("check1", "check2",
 #'                                                "check3", "check4"))
 #'
-#' ## First select a subset of plants, for example here 10 plants
+#' ## First select a subset of plants, for example here 9 plants.
 #' plantSel <- phenoTP[[1]]$plotId[1:9]
 #' # Then run on the subset
-#' resuVatorHTP <- detectPointOutliers(TP = phenoTP,
-#'                                     trait = "EffpsII",
-#'                                     plotIds = plantSel,
-#'                                     confIntSize = 3,
-#'                                     mylocfit = 0.1)
+#' resuVatorHTP <- detectSingleOut(TP = phenoTP,
+#'                                 trait = "EffpsII",
+#'                                 plotIds = plantSel,
+#'                                 confIntSize = 3,
+#'                                 mylocfit = 0.1)
 #'
 #' ## The annotated points can be replaced by NA for the studied trait
-#' phenoTPOut <- removePointOutliers(phenoTP, resuVatorHTP)
+#' phenoTPOut <- removeSingleOut(phenoTP, resuVatorHTP)
 #'
 #' @family Detect point outliers
 #'
 #' @export
-removePointOutliers <- function(TP,
-                                pointOutliers,
-                                trait = attr(x = pointOutliers,
-                                             which = "trait")) {
+removeSingleOut <- function(TP,
+                            singleOut,
+                            trait = attr(x = singleOut,
+                                         which = "trait")) {
   if (!inherits(TP, "TP")) {
     stop("TP should be an object of class TP.\n")
   }
-  if (!inherits(pointOutliers, "data.frame")) {
-    stop("pointOutliers should be a data.frame.\n")
+  if (!inherits(singleOut, "data.frame")) {
+    stop("singleOut should be a data.frame.\n")
   }
-  if (!all(hasName(pointOutliers, c("plotId", "timePoint")))) {
-    stop("pointOutliers should at least contain the columns plotId ",
+  if (!all(hasName(singleOut, c("plotId", "timePoint")))) {
+    stop("singleOut should at least contain the columns plotId ",
          "and timePoint.\n")
   }
-  if (!all(as.character(pointOutliers[["timePoint"]]) %in% names(TP))) {
-    stop("All time points in pointOutliers should be in TP.\n")
+  if (!all(as.character(singleOut[["timePoint"]]) %in% names(TP))) {
+    stop("All time points in singleOut should be in TP.\n")
   }
-  if (!any(pointOutliers[["outlier"]] == 1)) {
+  if (!any(singleOut[["outlier"]] == 1)) {
     stop("There are no outlying points in TP.\n")
   }
-  if (hasName(x = pointOutliers, "outlier")) {
+  if (hasName(x = singleOut, "outlier")) {
     ## Remove observations that are not actually outliers.
-    pointOutliers <- pointOutliers[pointOutliers[["outlier"]] == 1, ]
+    singleOut <- singleOut[singleOut[["outlier"]] == 1, ]
   }
-  for (i in seq_len(nrow(pointOutliers))) {
-    plotI <- pointOutliers[i, "plotId"]
-    timeI <- as.character(pointOutliers[i, "timePoint"])
+  for (i in seq_len(nrow(singleOut))) {
+    plotI <- singleOut[i, "plotId"]
+    timeI <- as.character(singleOut[i, "timePoint"])
     if (!plotI %in% TP[[timeI]][["plotId"]]) {
       warning(plotI, " not present in timePoint ", timeI, ".\n", call. = FALSE)
     }

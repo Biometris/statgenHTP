@@ -573,7 +573,7 @@ removeTimeCourseOutliers <- function(dat = NULL,
     }
   }
   if (!inherits(timeCourseOutliers, "data.frame")) {
-    stop("pointOutliers should be a data.frame.\n")
+    stop("timeCourseOutliers should be a data.frame.\n")
   }
   if (nrow(timeCourseOutliers) > 0) {
     if (!hasName(timeCourseOutliers, "plotId")) {

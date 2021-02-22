@@ -1,4 +1,4 @@
-#' detectPointOutliersMaize
+#' detectSingleOutMaize
 #'
 #' Function to detect plant outliers in a temporal lattice experiment on Maize
 #' which can be extended to other experiment types.
@@ -32,23 +32,23 @@
 #'                                 plotId = "pos",
 #'                                 rowNum = "Row",
 #'                                 colNum = "Col")
-#' pointOutMaize <- detectPointOutliersMaize(phenoTParch,
-#'                                           timeBeforeTrt = "2017-04-27",
-#'                                           trait1 = "Biomass_Estimated",
-#'                                           trait2 = "Height_Estimated",
-#'                                           trait3 = "phyllocron",
-#'                                           thr = 0.95)
+#' singleOutMaize <- detectSingleOutMaize(phenoTParch,
+#'                                        timeBeforeTrt = "2017-04-27",
+#'                                        trait1 = "Biomass_Estimated",
+#'                                        trait2 = "Height_Estimated",
+#'                                        trait3 = "phyllocron",
+#'                                        thr = 0.95)
 #' }
 #'
 #' @family Detect point outliers
 #'
 #' @export
-detectPointOutliersMaize <- function(TP,
-                                     timeBeforeTrt,
-                                     trait1 = "Biomass_Estimated",
-                                     trait2 = "Height_Estimated",
-                                     trait3 = "phyllocron",
-                                     thr = 0.95) {
+detectSingleOutMaize <- function(TP,
+                                 timeBeforeTrt,
+                                 trait1 = "Biomass_Estimated",
+                                 trait2 = "Height_Estimated",
+                                 trait3 = "phyllocron",
+                                 thr = 0.95) {
   ## Checks.
   if (!inherits(TP, "TP")) {
     stop("TP should be an object of class TP.\n")
