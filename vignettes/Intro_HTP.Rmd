@@ -35,9 +35,9 @@ It will provide the user with either genotypic values or corrected values that c
 The overall structure of the package is in 5 main parts:
 
 1. Data description and preparation - *statgenHTP tutorial: 1. Introduction, data description and preparation*
-2. Outliers detection: time points - [*statgenHTP tutorial: 2. Outlier detection Time points*](OutliersTimePoint_HTP.html)
+2. Outlier detection: single observation - [*statgenHTP tutorial: 2. Outlier detection for single observations*](OutlierSingleObs_HTP.html)
 3. Correction for spatial trends - [*statgenHTP tutorial: 3. Correction for spatial trends*](SpatialModel_HTP.html)
-4. Outliers detection: time course - [*statgenHTP tutorial: 4. Outlier detection Time course*](OutliersTimeCourse_HTP.html)
+4. Outlier detection: series of observations - [*statgenHTP tutorial: 4. Outlier detection for series of observations*](OutlierSerieObs_HTP.html)
 5. Parameter estimation - [*statgenHTP tutorial: 5. Estimation of parameters for time courses*](ParameterEstimation_HTP.html)
 
 This document describes in detail the three data sets used to examplify the functions. It also contains description on how to prepare the data for analysis and how to visualize them.
@@ -177,7 +177,7 @@ in the original `data.frame` (called "PhenovatorDat1"). The option `experimentNa
 
 Several plots can be made to further investigate the content of a `TP` object.
 
-The first type of plot displays the layout of the experiment as a grid using the row and column coordinates in "plotID". The default option creates plots of all time points in the `TP` object. This can be restricted to selected time points using their number in the option `timePoints`. If replicates ("repId") are available, a black line is plotted between them. Missing plots are indicated in white circled with a bold black line.
+The first type of plot displays the layout of the experiment as a grid using the row and column coordinates in "plotID". The default option creates plots of all time points in the `TP` object. This can be restricted to selected time points using their number in the option `timePoints`. If replicates ("repId") are available, a black line is plotted between them. Missing plots are indicated in white circled with a bold black line. This type of plot allows checking the design of the experiment.
 ```{r layoutPlot, fig.height=4, fig.width=5, fig.align = 'center'}
 ## Plot the layout for the third time point.
 plot(phenoTP, 
@@ -204,7 +204,7 @@ plot(phenoTP,
      showGeno = TRUE)
 ```
 
-We can visualize the raw data of a given trait on the layout, as a heatmap. 
+We can visualize the raw data of a given trait on the layout, as a heatmap. This type of plot gives a first indication of the spatial variability at a given time point. This will be further investigate with the spatial modelling (see [*statgenHTP tutorial: 3. Correction for spatial trends*](SpatialModel_HTP.html)).
 ```{r layoutPlotheatmap, fig.height=7, fig.width=8, fig.align = 'center'}
 ## Plot the layout for the third time point.
 plot(phenoTP, 
@@ -214,7 +214,12 @@ plot(phenoTP,
 ```
 
 
-Raw data can be displayed per genotype. By default all genotypes are used but it can be restricted using `genotypes` to a subset of genotypes. By default, data are plotted as points but this can be changed to lines by setting `plotLine = TRUE`.
+Raw data can be displayed per genotype with one color per plotId. By default all genotypes are used but it can be restricted using `genotypes` to a subset of genotypes. By default, data are plotted as points but this can be changed to lines by setting `plotLine = TRUE`. 
+
+> NOTE: the color of the plotId is the same whether point or lines are used. However, the color might change between vignettes. The color is not assign per plotId but generated using a color shade depending on the total number of plotId to visualize. 
+
+Plot of the raw data per genotype gives a first indication of the plant-to-plant variability and may already help visualizing strange points or plants for a genotype. This will have to be confirm with the detection of (i) individually outlying observation (see [*statgenHTP tutorial: 2. Outlier detection for single observations*](OutlierSingleObs_HTP.html)) and (ii) outlying series of observation (see [*statgenHTP tutorial: 4. Outlier detection for series of observations*](OutlierSerieObs_HTP.html))
+
 ```{r rawVator, include=TRUE, fig.height=3, fig.width=7, fig.align = 'center'}
 ## Create the raw data time courses for three genotypes.
 plot(phenoTP, 
@@ -223,7 +228,7 @@ plot(phenoTP,
      genotypes = c("G1", "G2", "check1"))
 ```
 
-Boxplots can be made to visually assess the variability of the trait(s) in the `TP` object. By default a box is plotted per time point for the specified trait using all time points.
+Boxplots can be made to visually assess the variability of the trait(s) in the `TP` object. By default a box is plotted per time point for the specified trait using all time points. For example, in the Phenovator data, the variability is larger at the beginning of the experiment (before the change in light) and is reduced at the end (after the change of light intensity).
 ```{r boxPlot, fig.height=4.5, fig.width=7, fig.align = 'center'}
 ## Create a boxplot for "EffpsII" using the default all time points.
 plot(phenoTP, 
@@ -231,7 +236,7 @@ plot(phenoTP,
      traits = "EffpsII") 
 ```
 
-Colors can be applied to groups within time points using the option `colorBy`. The boxes for the (groups of) time points can be ordered using `orderBy`. Boxes can be ordered by alphabetical order ("alphabetic") or by the group mean ("ascending","descending").
+Colors can be applied to further investigate the variability of a factor within time points using the option `colorBy`. For example here, we investigate the variability between replicates within time point 1 to 5, with one box per replicate per time point.  
 ```{r boxPlotCL, fig.height=4.5, fig.width=6, fig.align = 'center'}
 ## Create a boxplot for "EffpsII" with 5 time points and boxes colored by "repId" within
 ## time point.
@@ -242,7 +247,7 @@ plot(phenoTP,
      colorBy = "repId")
 ```
 
-The time points in the boxplot can be grouped using the option `groupBy`. 
+The option `groupBy` allows assessing the variability of a factor combining multiple time points. For example, we investigate the replicate variability of grouped time points 1 to 5, with one box per replicate.
 ```{r boxPlotGP, fig.height=4, fig.width=4, fig.align = 'center'}
 ## Create a boxplot for "EffpsII" with 5 time points and boxes grouped by "repId".
 plot(phenoTP, 
@@ -251,6 +256,9 @@ plot(phenoTP,
      timePoints = 1:5,
      groupBy = "repId")
 ```
+
+The boxes for the can be ordered using `orderBy`. Boxes can be ordered by alphabetical order ("alphabetic") or by the group mean ("ascending","descending").
+
 
 Finally, a plot of the correlations between the observations in time for a specified trait can be made. The order of the plot is chronological and by default all time points are used.
 ```{r corPlot, fig.height=5, fig.width=6, fig.align = 'center'}
@@ -288,7 +296,7 @@ plot(phenoTParch,
 ```
 
 Note that for the raw data, we can already use the `geno.decomp` option to split 
-the genotypes using the water scenario:
+the genotypes using the water scenario. We can already visualize the difference between the irrigation levels for two genotypes: the leaf area in WW is bigger than in WD and the slope of the leaf area progression also seems to be bigger:
 ```{r rawArch, include=TRUE, fig.height=3, fig.width=7, fig.align = 'center'}
 plot(phenoTParch, 
      traits = "LA_Estimated",

@@ -1,5 +1,5 @@
 ---
-title: "statgenHTP tutorial: 2. Outlier detection Time points"
+title: "statgenHTP tutorial: 2. Outlier detection for single observations"
 author: "Emilie Millet, Bart-Jan van Rossum, Isabelle Sanchez, Nadine Hilgert"
 date: "`r Sys.Date()`"
 output:
@@ -24,7 +24,7 @@ library(statgenHTP)
 
 # Introduction 
 
-An outlier is usually defined as an observation that appears to be inconsistent with the remainder of the data set [@BarnettLewis1994]. Observations may be time points [@Grubbs1950] or whole time courses of one or more variables [@Hubert2015]. An illustration is given below, where we see the difficulty of deciding whether a biomass time course (red curve at the bottom left) is atypical in a set of time courses from plants of the same genotype, or whether this slow growth is due to the plant's position in the platform. 
+An outlier is usually defined as an observation that appears to be inconsistent with the remainder of the data set [@BarnettLewis1994]. Observations may be single time points [@Grubbs1950] or whole time courses of one or more variables [@Hubert2015]. An illustration is given below, where we see the difficulty of deciding whether a biomass time course (red curve at the bottom left) is atypical in a set of time courses from plants of the same genotype, or whether this slow growth is due to the plant's position in the platform. 
 
 ```{r HeatmapFig, fig.cap='Heatmap of the biomass estimated at a specific time point (with a color gradient) of each plant according to its location in the platform (line, position). Well-watered (WW) treatment on the left, water deficit (WD) on the right. The plots show the biomass time courses for a given genotype (3 repetitions in each treatment). The question is whether the red growth curve on the left corresponds to an outlier plant (seed problem for example) or whether this slow growth is due to the plant\'s location in the platform (PhenoArch Platform, INRAE). *Courtesy: Llorenç Cabrera-Bosquet and Santiago Alvarez Prado.*', out.width='80%', fig.pos='c', echo=FALSE}
 knitr::include_graphics("figures/heatmap.png", auto_pdf = TRUE)
@@ -32,13 +32,13 @@ knitr::include_graphics("figures/heatmap.png", auto_pdf = TRUE)
 
 The concept of outlier can be extended to “outlier plants”, defined here as biological replicates deviating from the overall distribution of plants on a multi-criteria basis, regardless of the quality of measurements [@AlvarezPrado2019].
 
-This documents describes the procedures to detect outlying points in a time course with examples on experimental data measured directly on the plants or indirectly via image analysis for example. 
+This documents describes the procedures to detect outlying single observations in a time course with examples on experimental data measured directly on the plants or indirectly via image analysis for example. 
 
 ----
 
-# Definition of outlying points
+# Definition of outlying single observation
 
-Time courses of phenotypic data are viewed as continuous time-related functions. The first cleaning step consists in roughly checking the consistency of each point with its neighbors within a time course. Outlying points are measurements at a given time that do not follow the expected behavior. The detection of outlying points is done "one time course after the other". Identifying and removing these points will facilitate the detection of outlier time courses or plants, as proposed in [**statgenHTP tutorial: 4. Outlier detection Time course**](OutliersTimeCourse_HTP.html).
+Time courses of phenotypic data are viewed as continuous time-related functions. The first cleaning step consists in roughly checking the consistency of each point with its neighbors within a time course. Outlying single observations are measurements at a given time that do not follow the expected behavior. The detection of outlying observations is done "one time course after the other". Identifying and removing these points will facilitate the outlier detection of serie of observations or plants, as proposed in [**statgenHTP tutorial: 4. Outlier detection for series of observations**](OutlierSerieObs_HTP.html).
 
 The detection requires fitting a model from the data, as a function of time. Two types of models can be used, one based on nonlinear parametric regression (Gompertz Model or sigmoidal function for example) and the other on non-parametric regression. Data annotation is based on the comparison of the experimental data with its estimated value from the model. If they significantly differ, the data will be annotated as suspect.
 
@@ -46,7 +46,7 @@ The detection requires fitting a model from the data, as a function of time. Two
 
 # Illustration of the non-parametric function
 
-The local regression is a well known smoothing technique which locally approximates an unknown function by parametric functions. It is a two-step procedure included in the `detectPointOutliers` function: the `locfit()` [function](https://cran.r-project.org/web/packages/locfit/index.html) fits a local regression at a set of points, then, the `predict()` function is used to interpolate this fit to other points. A confidence interval can then be calculated. Points outside this interval will be annotated as outliers. 
+The local regression is a well known smoothing technique which locally approximates an unknown function by parametric functions. It is a two-step procedure included in the `detectSingleOut` function: the `locfit()` [function](https://cran.r-project.org/web/packages/locfit/index.html) fits a local regression at a set of points, then, the `predict()` function is used to interpolate this fit to other points. A confidence interval can then be calculated. Points outside this interval will be annotated as outliers. 
 
 The user can set: 
 
@@ -54,7 +54,7 @@ The user can set:
 
 * the level at which the confidence interval `confIntSize` is calculated. Large value makes a wide interval and fewer outliers are annotated.
 
-The functions are illustrated with the three example data sets. For more information about the data, see **statgenHTP tutorial: 1. Introduction, data description and preparation**.
+The functions are illustrated with the three example data sets. For more information about the data, see [**statgenHTP tutorial: 1. Introduction, data description and preparation**](Intro_HTP.html).
 
 ## Example 1
 

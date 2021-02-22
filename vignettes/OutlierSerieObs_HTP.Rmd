@@ -1,5 +1,5 @@
 ---
-title: "statgenHTP tutorial: 4. Outlier detection Time courses"
+title: "statgenHTP tutorial: 4. Outlier detection for series of observations"
 author: "Emilie Millet, Bart-Jan van Rossum, Isabelle Sanchez, Nadine Hilgert"
 date: "`r Sys.Date()`"
 output:
@@ -44,7 +44,7 @@ For P-splines in a mixed model, the smoothing coefficient is optimized by restri
 
 The function `fitSpline()` fits a P-spline per plant for the selected `trait`. The penalty(i.e. the amount of smoothing) will be chosen by REML and the number of knots can be determined by the user using `knots`. In P-spline, the knots are equally spaced and their number can be large. The user should also chose an appropriate proportion of minimum number of time points that should be in the data set per plant `perMinTP`. When a plant has less time points than the minimum, it will be skipped from the analysis.
 
-The functions are illustrated with the three example data sets. For more information about the data, see [*Intro_HTP*](Intro_HTP.html).
+The functions are illustrated with the three example data sets. For more information about the data, see [**statgenHTP tutorial: 1. Introduction**](Intro_HTP.html).
 
 ## Example 1
 
@@ -65,13 +65,14 @@ pred.Dat <- fit.spline$predDat
 coef.Dat <- fit.spline$coefDat
 ```
 
-The object `fit.spline` contains the predicted value (`pred.value` in the table below), i.e the values predicted using the P-spline model coefficients. Conversion to numerical time is required by the mgcv package. To keep the same time scale as in the original `timePoint` column, a simple numerical transformation of the time points is made (column `timeNumber`). Predictions are made on a denser grid of time points: the time points for prediction are calculated as the smallest gap between two time points divided by 9, so dividing the smallest gap in 10 segments. The object `fit.spline` also contains the first derivatives (`deriv` [**statgenHTP tutorial: 5. Estimation of parameters from time courses**](ParameterEstimation_HTP.html)).
+The object `fit.spline` contains the P-spline model coefficients (`$coefDat`) and the predicted value (`pred.value` in the table below), i.e the values predicted using the P-spline model coefficients. Predictions are made on a denser grid of time points: the time points for prediction are calculated as the smallest gap between two time points divided by 9, so dividing the smallest gap in 10 segments. The object `fit.spline` also contains the first derivatives (`deriv` in the table below, see also [**statgenHTP tutorial: 5. Estimation of parameters from time courses**](ParameterEstimation_HTP.html)).
 
 ```{r headpredDat, echo=FALSE, message=FALSE, eval=TRUE}
 knitr::kable(head(pred.Dat), align=c('c','c'), booktabs = TRUE)
 ```
 
-The numerical time can be provided by the user, for example when using thermal time or a manual conversion. In this example, we provide a new column with time in hours since first measurement.
+Conversion to numerical time is required to fit P-spline. To keep the same time scale as in the original `timePoint` column, a numerical transformation of the time points is made using the first time point as origin (column `timeNumber` in the table above).  
+The numerical time can also be provided by the user using the option `useTimeNumber = TRUE`. It allows using thermal time or any other manual conversion. In this example, we provide a new column specified in `timeNumber` with time in hours since first measurement.
 
 ```{r fitSplineVatorNum, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 fit.splineNum <- fitSpline(inDat = spatCorrVator,
@@ -204,7 +205,7 @@ The predicted curve is less smooth and follows the actual curve shape. This seem
 
 ## Example 2
 
-The data from the PhenoArch platform have been corrected for spatial trends and time points outliers have been removed (see [**statgenHTP tutorial: 2. Outlier detection Time points**](OutliersTimePoint_HTP.html) and [**statgenHTP tutorial: 3. Correction for spatial trends**](SpatialModel_HTP.html)). At this stage, the cleaned and corrected data are used:
+The data from the PhenoArch platform have been corrected for spatial trends and individually outlying observations have been removed (see [**statgenHTP tutorial: 2. Outlier detection for single observations**](OutlierSingleObs_HTP.html) and [**statgenHTP tutorial: 3. Correction for spatial trends**](SpatialModel_HTP.html)). 
 
 ```{r fitSplineArch, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 data(spatCorrArch)  
@@ -266,7 +267,7 @@ head(spatCorrArchOut[spatCorrArchOut$plotId=="c7r2",
 
 ## Example 3
 
-The data from the RootPhAir platform have not been corrected for spatial trends but time points outliers have been removed (see [**statgenHTP tutorial: 2. Outlier detection Time points**](OutliersTimePoint_HTP.html)). At this stage, the cleaned data are used:
+The data from the RootPhAir platform have not been corrected for spatial trends but individually outlying observations have been removed (see [**statgenHTP tutorial: 2. Outlier detection for single observations**](OutlierSingleObs_HTP.html)). 
 
 ```{r fitSplineRoot, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 subGenoRoot <- c( "2", "6", "8", "9", "10", "520", "522")
@@ -321,7 +322,7 @@ head(noCorrRootOut[noCorrRootOut$plotId == "A_29_2", "tipPos_y"])
 
 # Detection of outlier plants on a multi-criteria basis, with expert rules
 
-An outlier plant is defined as a biological replicate deviating from the overall distribution of plants on a multi-criteria basis, regardless of the quality of measurements. Detecting outlier plants can be done by monitoring a single criterion, such as plant height or biomass. In this case, a procedure for detecting outlier time courses should be used, as discussed in the previous sections. But taking into account only one criterion can sometimes be restrictive in deciding whether a plant is outlier or not. A multi-criteria approach will then be more relevant. A multi-criteria method considers several traits jointly, with rules set by experts depending on the species. We describe below the approach followed on a maize experiment, see [@AlvarezPrado2019].
+An outlier plant is defined as a biological replicate deviating from the overall distribution of plants on a multi-criteria basis, regardless of the quality of measurements. Detecting outlier plants can be done by monitoring a single criterion, such as plant height or biomass. In this case, a procedure for detecting outlying series of observations should be used, as discussed in the previous sections. But taking into account only one criterion can sometimes be restrictive in deciding whether a plant is outlier or not. A multi-criteria approach will then be more relevant. A multi-criteria method considers several traits jointly, with rules set by experts depending on the species. We describe below the approach followed on a maize experiment, see [@AlvarezPrado2019].
 
 ## Rules in the case of maize
 

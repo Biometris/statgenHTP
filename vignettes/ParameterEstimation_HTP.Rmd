@@ -25,7 +25,7 @@ library(ggplot2)
 
 # Introduction
 
-This document presents the final step of the HTP data analysis: extracting interesting parameters from the modeled time course. For example, in the second data set from the PhenoArch platform, the maximum leaf area (from the P-splines) or the maximum leaf growth rate (from the first derivatives) are relevant parameters (see figure below). We could assess their variability in the genotypes and the difference between treatments, *e.g.* has the water scenario decreased the maximum leaf area? 
+This document presents the final step of the HTP data analysis: extracting interesting parameters from the modeled time course [@Brien2020]. For example, in the second data set from the PhenoArch platform, the maximum leaf area (from the P-splines) or the maximum leaf growth rate (from the first derivatives) are relevant parameters (see figure below). We could assess their variability in the genotypes and the difference between treatments, *e.g.* has the water scenario decreased the maximum leaf area? 
 
 ```{r PSplineDerivArchFig, fig.cap='P-spline', out.width='80%', fig.pos='c', echo=FALSE}
 knitr::include_graphics("figures/psplinederiv_Arch.png", auto_pdf = TRUE)
@@ -39,7 +39,7 @@ knitr::include_graphics("figures/psplinederiv_Vator.png", auto_pdf = TRUE)
 
 These parameters could then be further analyzed, for example in a GxE analysis (see [*statgenGxE*](https://biometris.github.io/statgenGxE/index.html)), or a genetic analysis (see [*statgenGWAS*](https://biometris.github.io/statgenGWAS/index.html)).
 
-The functions described in this tutorial can be applied to corrected data, genotypic means (BLUEs or BLUPS) (see [**statgenHTP tutorial: 3. Correction for spatial trends**](SpatialModel_HTP.html)) or on raw data.
+The functions described in this tutorial can be applied to corrected data, genotypic means (BLUEs or BLUPS) (see [**statgenHTP tutorial: 3. Correction for spatial trends**](SpatialModel_HTP.html)) or on raw data. It allows estimating maximum, minimum, mean or area under the curve (auc) using predicted values, first or second derivative, during a given period or for the whole time course. 
 
 ------------------------------------------------------------------------
 
@@ -47,7 +47,7 @@ The functions described in this tutorial can be applied to corrected data, genot
 
 ## Example 1
 
-We will use the `fit.splineNumOut` previously created (see [**statgenHTP tutorial: 4. Outlier detection Time course**](OutliersTimeCourse_HTP.html)). It contains the P-spline prediction on a subset of plants without the time course outliers. We will estimate the maximum value of the trait at the end of the time course, so after the light change:
+We will use the `fit.splineNumOut` previously created (see [**statgenHTP tutorial: 4. Outlier detection for series of observations**](OutlierSerieObs_HTP.html)). It contains the P-spline prediction on a subset of plants without the time course outliers. We will estimate the maximum value of the trait at the end of the time course, so after the light change:
 
 ```{r fitSplineVatorNum, echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE}
 subGenoVator <- c("G70", "G160", "G151", "G179", "G175", "G4", "G55")
@@ -135,7 +135,7 @@ paramArch1 <-
 
 ```{r paramArch1fig, fig.height=2, fig.width=6, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 ggplot(paramArch1, aes(x)) + 
-  geom_histogram(binwidth = 0.015,) +
+  geom_histogram(binwidth = 0.015) +
   theme_classic() +
   facet_grid(. ~ geno.decomp, scales="free_x",space = "free_x")
 ```
@@ -143,7 +143,7 @@ ggplot(paramArch1, aes(x)) +
 
 ## Example 3
 
-For this example, we will use the raw data from the RootPhAir, corrected for time point outliers (see [**statgenHTP tutorial: 2. Outlier detection Time points**](OutliersTimePoint_HTP.html)) and time course outliers (see [**statgenHTP tutorial: 4. Outlier detection Time course**](OutliersTimeCourse_HTP.html)). We will fit P-splines at the plant level on a subset of genotypes.
+For this example, we will use the raw data from the RootPhAir, corrected for individually outlying observations (see [**statgenHTP tutorial: 2. Outlier detection for single observations**](OutlierSingleObs_HTP.html)) and time course outliers (see [**statgenHTP tutorial: 4. Outlier detection Time course**](OutliersTimeCourse_HTP.html)). We will fit P-splines at the plant level on a subset of genotypes.
 
 ```{r rmOutRoot, echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE}
 subGenoRoot <- c( "2", "6", "8", "9", "10", "520", "522")
@@ -184,12 +184,12 @@ fit.splineRootOut <- fitSpline(inDat = noCorrRootOut,
                                timeNumber = "thermalTime")
 ```
 
-
+We will then estimate the mean growth rate using `what = "mean"` for the subset of genotypes:
 ```{r paramRoot1, fig.height=2, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 paramRoot1 <-
   estimateSplineParameters(HTPSpline = fit.splineRootOut,
                            estimate = "derivatives",
-                           what = "max")
+                           what = "mean")
 
 ggplot(paramRoot1, aes(x = as.factor(genotype), y = x)) + 
   geom_boxplot(na.rm = TRUE) +
@@ -197,3 +197,7 @@ ggplot(paramRoot1, aes(x = as.factor(genotype), y = x)) +
   xlab("genotype") +
   theme_classic()
 ```
+
+------------------------------------------------------------------------
+
+## References

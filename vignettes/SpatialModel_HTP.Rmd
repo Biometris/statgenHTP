@@ -51,7 +51,7 @@ This tutorial describes in detail how to perform analyses to correct for spatial
 
 # Modeling with spatial terms using Example 1
 
-We will use the `TP` object `phenoTPOut` in which annotated time points were replaced by NA because they were considered to be outliers. (see [**statgenHTP tutorial: 2. Outlier detection Time points**](OutliersTimePoint_HTP.html)).
+We will use the `TP` object `phenoTPOut` in which annotated time points were replaced by NA because they were considered to be outliers. (see [**statgenHTP tutorial: 2. Outlier detection for single observations**](OutlierSingleObs_HTP.html)).
 
 ```{r createTP, warning=FALSE, echo=FALSE}
 PhenovatorDat1 <- PhenovatorDat1[!PhenovatorDat1$pos %in% c("c24r41", "c7r18", "c7r49"),]
@@ -252,8 +252,8 @@ knitr::kable(head(spatCorrSp), align = c('c','c','c','c','c','c','c'), padding =
 
 ### Plotting model results
 
-Different plots can be displayed for the `fitMod` object. The first one is **rawPred**, it plots the raw data (colored dots) overlaid with the predicted values (black points) from the fitted model. For each genotype a plot is made per plot/plant over time. These plots are put together in a 5×5 grid.   
-By using the option `genotypes`, a subset of genotypes will be plotted. By default, data are plotted as point but this can be changed by setting `plotLine = TRUE`.
+Different plots can be displayed for the `fitMod` object. The first one is **rawPred**, it plots the raw data (colored dots, one color per plotId) overlaid with the predicted values (black points) from the fitted model. One plot is made per genotype with all its plotId. These plots are put together in a 5×5 grid per page.   
+By using the option `genotypes`, a subset of genotypes will be plotted. By default, data are plotted as dot but this can be changed by setting `plotLine = TRUE`.
 
 ```{r plotSpPred, message=FALSE, fig.height=2, fig.width=6, fig.align = 'center'}
 plot(modPhenoSp, 
@@ -261,8 +261,8 @@ plot(modPhenoSp,
      genotypes = c("check1", "check2", "G7", "G58")) 
 ```
 
-The second one is **corrPred**, it plots the spatially corrected data (colored points) overlaid with the predicted values from the fitted model (black points). For each genotype a plot is made per plot/plant over time. These plots are put together in a 5×5 grid per page. 
-By using the option `genotypes`, a subset of genotypes will be plotted. By default, data are plotted as point but this can be changed by setting `plotLine = TRUE`.
+The second one is **corrPred**, it plots the spatially corrected data (colored dots, one color per plotId) overlaid with the predicted values from the fitted model (black dots). One plot is made per genotype with all its plotId. These plots are put together in a 5×5 grid per page. 
+By using the option `genotypes`, a subset of genotypes will be plotted. By default, data are plotted as dot but this can be changed by setting `plotLine = TRUE`.
 
 ```{r plotSpCorr, message=FALSE, fig.height=2, fig.width=6, fig.align = 'center', eval=TRUE}
 plot(modPhenoSp, 
@@ -407,7 +407,7 @@ modPhenoAs <- fitModels(TP = phenoTPOut,
 
 When an experimental treatment is applied, for example, a water scenario, it is required to decompose the genotypic variance into the levels of the treatment. In the following example, two water scenarios, well-watered (WW) and water deficit (WD), were applied. Thus, instead of modeling one genotypic variance, there will be one genotypic variance per treatment. In this part, we will describe briefly what is specific of such modeling with the statgenHTP package using a another example dataset.
 
-We will use the `TP` object **phenoTParchOut** in which annotated time points have been replaced by NA (see [**statgenHTP tutorial: 2. Outlier detection Time points**](OutliersTimePoint_HTP.html)).
+We will use the `TP` object **phenoTParchOut** in which annotated time points have been replaced by NA (see [**statgenHTP tutorial: 2. Outlier detection for single observations**](OutlierSingleObs_HTP.html)).
 
 ```{r createTP2, warning=FALSE, echo=FALSE}
 phenoTParch <- createTimePoints(dat = PhenoarchDat1,
