@@ -6,7 +6,7 @@
 \usage{
 estimateSplineParameters(
   HTPSpline,
-  estimate = c("predictions", "derivatives"),
+  estimate = c("predictions", "derivatives", "derivatives2"),
   what = c("min", "max", "mean", "AUC", "p"),
   timeMin = NULL,
   timeMax = NULL,
@@ -19,7 +19,8 @@ estimateSplineParameters(
 \code{\link{fitSpline}} function.}
 
 \item{estimate}{The type of estimate that should be extracted,
-the predictions or the first derivatives.}
+the predictions, the first derivatives or the second derivatives
+("derivatives2")}
 
 \item{what}{The type of estimate that should be extracted. Either minimum
 ("min"), maximum ("max"), mean, area under the curve ("AUC") or a percentile.

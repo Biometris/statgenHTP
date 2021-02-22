@@ -2,9 +2,9 @@
 #'
 #' Fit P-Splines on corrected or raw data. The number of
 #' knots are chosen by the user. The function outputs are predicted P-Spline
-#' values and its first derivative at a denser time step. The idea is to use
-#' the outputs for outlier detection and to estimate relevant parameters from
-#' the curve.
+#' values and its first and second derivatives at a denser time step. The idea
+#' is to use the outputs for outlier detection and to estimate relevant
+#' parameters from the curve.
 #'
 #' @param inDat A data.frame with corrected spatial data.
 #' @param trait A character string indicating the trait for which the spline
@@ -208,9 +208,10 @@ fitSpline <- function(inDat,
       ## Predictions on a dense grid.
       yPred <- predict(obj, x = timeRangePl$timeNumber)
       yDeriv <- predict(obj, x = timeRangePl$timeNumber, deriv = TRUE)
+      yDeriv2 <-  predict(obj, x = timeRangePl$timeNumber, deriv2 = TRUE)
       ## Merge time, predictions and plotId.
       predDat <- data.frame(timeRangePl, pred.value = yPred,
-                            deriv = yDeriv, plotId = plant)
+                            deriv = yDeriv, deriv2 = yDeriv2, plotId = plant)
       return(list(coeff = coeff, predDat = predDat))
     } else {
       return(list(coeff = NULL, predDat = NULL))
@@ -249,6 +250,9 @@ fitSpline <- function(inDat,
 #' @inheritParams plot.TP
 #'
 #' @param x An object of class HTPSpline.
+#' @param plotType A character string indicating for which spline component
+#' should be plotted, either predictions, derivatives or second derivatives
+#' ("derivatives2").
 #' @param genotypes A character vector indicating the genotypes for which
 #' splines should be plotted.
 #' @param plotIds A character vector indicating the plotIds for which splines
@@ -259,7 +263,8 @@ fitSpline <- function(inDat,
 #' @export
 plot.HTPSpline <- function(x,
                            ...,
-                           plotType = c("predictions", "derivatives"),
+                           plotType = c("predictions", "derivatives",
+                                        "derivatives2"),
                            genotypes = NULL,
                            plotIds = NULL,
                            title = NULL,
@@ -397,7 +402,8 @@ plot.HTPSpline <- function(x,
 #' @param HTPSpline An object of class HTPSpline, the output of the
 #' \code{\link{fitSpline}} function.
 #' @param estimate The type of estimate that should be extracted,
-#' the predictions or the first derivatives.
+#' the predictions, the first derivatives or the second derivatives
+#' ("derivatives2")
 #' @param what The type of estimate that should be extracted. Either minimum
 #' ("min"), maximum ("max"), mean, area under the curve ("AUC") or a percentile.
 #' Percentiles should be given as p + percentile. E.g. for the 10th percentile
@@ -433,7 +439,8 @@ plot.HTPSpline <- function(x,
 #'
 #' @export
 estimateSplineParameters <- function(HTPSpline,
-                                     estimate = c("predictions", "derivatives"),
+                                     estimate = c("predictions", "derivatives",
+                                                  "derivatives2"),
                                      what = c("min", "max", "mean", "AUC", "p"),
                                      timeMin = NULL,
                                      timeMax = NULL,
@@ -448,7 +455,8 @@ estimateSplineParameters <- function(HTPSpline,
   } else {
     what <- match.arg(what)
   }
-  estVar <- if (estimate == "predictions") "pred.value" else "deriv"
+  estVar <- if (estimate == "predictions") "pred.value" else if
+  (estimate == "derivatives") "deriv" else "deriv2"
   useTimeNumber <- attr(HTPSpline, which = "useTimeNumber")
   useGenoDecomp <- attr(HTPSpline, which = "useGenoDecomp")
   fitLevel <- attr(HTPSpline, which = "fitLevel")
@@ -617,10 +625,10 @@ PsplinesREML <- function(x,
 #' @keywords internal
 predict.PsplinesREML <- function(obj,
                                  x,
-                                 deriv = FALSE) {
-  d <- ifelse(deriv, 1, 0)
-  Bgrid = splines::splineDesign(obj$knots, x, derivs = rep(d, length(x)),
-                                ord = 4)
+                                 deriv = FALSE,
+                                 deriv2 = FALSE) {
+  d <- if (deriv) 1 else if (deriv2) 2 else 0
+  Bgrid = splines::splineDesign(obj$knots, x, derivs = d, ord = 4)
   U <- cbind(obj$UX1, obj$Usc)
   pred <- as.vector(Bgrid %*% U %*% obj$coeffs)
   return(pred)

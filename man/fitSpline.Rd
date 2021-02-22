@@ -41,9 +41,9 @@ TP object.}
 \description{
 Fit P-Splines on corrected or raw data. The number of
 knots are chosen by the user. The function outputs are predicted P-Spline
-values and its first derivative at a denser time step. The idea is to use
-the outputs for outlier detection and to estimate relevant parameters from
-the curve.
+values and its first and second derivatives at a denser time step. The idea
+is to use the outputs for outlier detection and to estimate relevant
+parameters from the curve.
 }
 \examples{
 ## The data from the Phenovator platform have been corrected for

@@ -7,7 +7,7 @@
 \method{plot}{HTPSpline}(
   x,
   ...,
-  plotType = c("predictions", "derivatives"),
+  plotType = c("predictions", "derivatives", "derivatives2"),
   genotypes = NULL,
   plotIds = NULL,
   title = NULL,
@@ -22,8 +22,9 @@
 \item{...}{Extra plot options. Described per plotType in their respective
 section.}
 
-\item{plotType}{A single character string indicating which plot should be
-made. See the sections below for a detailed explanation of the plots.}
+\item{plotType}{A character string indicating for which spline component
+should be plotted, either predictions, derivatives or second derivatives
+("derivatives2").}
 
 \item{genotypes}{A character vector indicating the genotypes for which
 splines should be plotted.}
