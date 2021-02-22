@@ -7,7 +7,7 @@
 estimateSplineParameters(
   HTPSpline,
   estimate = c("predictions", "derivatives"),
-  what = c("min", "max", "mean"),
+  what = c("min", "max", "mean", "AUC", "p"),
   timeMin = NULL,
   timeMax = NULL,
   genotypes = NULL,
@@ -21,7 +21,10 @@ estimateSplineParameters(
 \item{estimate}{The type of estimate that should be extracted,
 the predictions or the first derivatives.}
 
-\item{what}{The type of estimate that should be extracted.}
+\item{what}{The type of estimate that should be extracted. Either minimum
+("min"), maximum ("max"), mean, area under the curve ("AUC") or a percentile.
+Percentiles should be given as p + percentile. E.g. for the 10th percentile
+specify what = "p10"}
 
 \item{timeMin}{The lower bound of the time interval from which the
 estimates should be extracted. If \code{NULL} the smallest time value for
@@ -47,8 +50,7 @@ subGeno <- c("G160", "G151")
 fit.spline <- fitSpline(inDat = spatCorrectedVator,
                         trait = "EffpsII_corr",
                         genotypes = subGeno,
-                        knots = 50,
-                        perMinTP = 0.8)
+                        knots = 50)
 
 ## Estimate the maximum value of the trait at the beginning of the time course.
 paramVator1 <- estimateSplineParameters(HTPSpline = fit.spline,

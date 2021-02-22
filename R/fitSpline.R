@@ -398,7 +398,10 @@ plot.HTPSpline <- function(x,
 #' \code{\link{fitSpline}} function.
 #' @param estimate The type of estimate that should be extracted,
 #' the predictions or the first derivatives.
-#' @param what The type of estimate that should be extracted.
+#' @param what The type of estimate that should be extracted. Either minimum
+#' ("min"), maximum ("max"), mean, area under the curve ("AUC") or a percentile.
+#' Percentiles should be given as p + percentile. E.g. for the 10th percentile
+#' specify what = "p10"
 #' @param timeMin The lower bound of the time interval from which the
 #' estimates should be extracted. If \code{NULL} the smallest time value for
 #' which the splines were fitted is used.
@@ -416,8 +419,7 @@ plot.HTPSpline <- function(x,
 #' fit.spline <- fitSpline(inDat = spatCorrectedVator,
 #'                         trait = "EffpsII_corr",
 #'                         genotypes = subGeno,
-#'                         knots = 50,
-#'                         perMinTP = 0.8)
+#'                         knots = 50)
 #'
 #' ## Estimate the maximum value of the trait at the beginning of the time course.
 #' paramVator1 <- estimateSplineParameters(HTPSpline = fit.spline,
@@ -432,13 +434,20 @@ plot.HTPSpline <- function(x,
 #' @export
 estimateSplineParameters <- function(HTPSpline,
                                      estimate = c("predictions", "derivatives"),
-                                     what = c("min", "max", "mean"),
+                                     what = c("min", "max", "mean", "AUC", "p"),
                                      timeMin = NULL,
                                      timeMax = NULL,
                                      genotypes = NULL,
                                      plotIds = NULL) {
   estimate <- match.arg(estimate)
-  what <- match.arg(what)
+  if (substr(what, 1, 1) == "p") {
+    percentile <- suppressWarnings(as.numeric(substring(what, 2))) / 100
+    if (is.na(percentile) || percentile < 0 || percentile > 1) {
+      stop("A percentile should be give as pN, with N between 0 and 100.\n")
+    }
+  } else {
+    what <- match.arg(what)
+  }
   estVar <- if (estimate == "predictions") "pred.value" else "deriv"
   useTimeNumber <- attr(HTPSpline, which = "useTimeNumber")
   useGenoDecomp <- attr(HTPSpline, which = "useGenoDecomp")
@@ -487,11 +496,15 @@ estimateSplineParameters <- function(HTPSpline,
   ## Restrict predDat to time interval.
   predDat <- predDat[predDat[[timeVar]] >= timeMin &
                        predDat[[timeVar]] <= timeMax, ]
+  ## Area under the curve corresponds to sum.
+  if (what == "AUC") what <- "sum"
+  ## Percentiles are calculated using quantile
+  if (substr(what, 1, 1) == "p") what <- "quantile"
   ## Get estimates.
   res <- aggregate(x = predDat[[estVar]],
                    by = predDat[c("genotype", if (useGenoDecomp) "geno.decomp",
                                   if (fitLevel == "plotId") "plotId")],
-                   FUN = what)
+                   FUN = what, probs = if (what == "quantile") percentile)
   return(res)
 }
 

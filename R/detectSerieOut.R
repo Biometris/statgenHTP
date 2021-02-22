@@ -35,8 +35,7 @@
 #' fit.spline <- fitSpline(inDat = spatCorrectedVator,
 #'                         trait = "EffpsII_corr",
 #'                         genotypes = subGenoVator,
-#'                         knots = 50,
-#'                         perMinTP = 0.8)
+#'                         knots = 50)
 #'
 #' ## Extract the tables of predicted values and P-spline coefficients
 #' pred.Dat <- fit.spline$predDat
@@ -350,8 +349,7 @@ detectSerieOut <- function(corrDat,
 #' fit.spline <- fitSpline(inDat = spatCorrectedVator,
 #'                         trait = "EffpsII_corr",
 #'                         genotypes = subGenoVator,
-#'                         knots = 50,
-#'                         perMinTP = 0.8)
+#'                         knots = 50)
 #'
 #' ## Extract the tables of predicted values and P-spline coefficients.
 #' pred.Dat <- fit.spline$predDat
@@ -526,8 +524,7 @@ plot.serieOut <- function(x,
 #' fit.spline <- fitSpline(inDat = spatCorrectedVator,
 #'                         trait = "EffpsII_corr",
 #'                         genotypes = subGenoVator,
-#'                         knots = 50,
-#'                         perMinTP = 0.8)
+#'                         knots = 50)
 #'
 #' ## Extract the tables of predicted values and P-spline coefficients.
 #' pred.Dat <- fit.spline$predDat
@@ -535,12 +532,12 @@ plot.serieOut <- function(x,
 #'
 #' ## The coefficients are then used to tag suspect time courses
 #' outVator <- detectSerieOut(corrDat = spatCorrectedVator,
-#'                             predDat = pred.Dat,
-#'                             coefDat = coef.Dat,
-#'                             trait = "EffpsII_corr",
-#'                             genotypes = subGenoVator,
-#'                             thrCor = 0.9,
-#'                             thrPca = 30)
+#'                            predDat = pred.Dat,
+#'                            coefDat = coef.Dat,
+#'                            trait = "EffpsII_corr",
+#'                            genotypes = subGenoVator,
+#'                            thrCor = 0.9,
+#'                            thrPca = 30)
 #'
 #' ## The outliers can be removed from the dataset.
 #' spatCorrectedVatorOut <- removeSerieOut(dat = spatCorrectedVator,
