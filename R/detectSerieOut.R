@@ -32,7 +32,7 @@
 #' # Run the function to fit P-splines on a subset of
 #' ## genotypes
 #' subGenoVator <- c("G160", "G151")
-#' fit.spline <- fitSpline(inDat = spatCorrVator,
+#' fit.spline <- fitSpline(inDat = spatCorrectedVator,
 #'                         trait = "EffpsII_corr",
 #'                         genotypes = subGenoVator,
 #'                         knots = 50,
@@ -43,7 +43,7 @@
 #' coef.Dat <- fit.spline$coefDat
 #'
 #' ## The coefficients are then used to tag suspect time courses.
-#' outVator <- detectserieOut(corrDat = spatCorrVator,
+#' outVator <- detectserieOut(corrDat = spatCorrectedVator,
 #'                             predDat = pred.Dat,
 #'                             coefDat = coef.Dat,
 #'                             trait = "EffpsII_corr",
@@ -346,8 +346,8 @@ detectserieOut <- function(corrDat,
 #'
 #' ## Run the function to fit P-splines on a subset of
 #' ## genotypes.
-#' subGenoVator <- c("G70", "G160", "G151", "G179", "G175", "G4", "G55")
-#' fit.spline <- fitSpline(inDat = spatCorrVator,
+#' subGenoVator <- c("G070", "G160", "G151", "G179", "G175", "G004", "G055")
+#' fit.spline <- fitSpline(inDat = spatCorrectedVator,
 #'                         trait = "EffpsII_corr",
 #'                         genotypes = subGenoVator,
 #'                         knots = 50,
@@ -358,7 +358,7 @@ detectserieOut <- function(corrDat,
 #' coef.Dat <- fit.spline$coefDat
 #'
 #' ## The coefficients are then used to tag suspect time courses
-#' outVator <- detectserieOut(corrDat = spatCorrVator,
+#' outVator <- detectserieOut(corrDat = spatCorrectedVator,
 #'                             predDat = pred.Dat,
 #'                             coefDat = coef.Dat,
 #'                             trait = "EffpsII_corr",
@@ -523,7 +523,7 @@ plot.serieOut <- function(x,
 #' @examples
 #' ## Run the function to fit P-spline on a subset of genotypes.
 #' subGenoVator <- c("G160", "G151")
-#' fit.spline <- fitSpline(inDat = spatCorrVator,
+#' fit.spline <- fitSpline(inDat = spatCorrectedVator,
 #'                         trait = "EffpsII_corr",
 #'                         genotypes = subGenoVator,
 #'                         knots = 50,
@@ -534,7 +534,7 @@ plot.serieOut <- function(x,
 #' coef.Dat <- fit.spline$coefDat
 #'
 #' ## The coefficients are then used to tag suspect time courses
-#' outVator <- detectserieOut(corrDat = spatCorrVator,
+#' outVator <- detectserieOut(corrDat = spatCorrectedVator,
 #'                             predDat = pred.Dat,
 #'                             coefDat = coef.Dat,
 #'                             trait = "EffpsII_corr",
@@ -543,7 +543,7 @@ plot.serieOut <- function(x,
 #'                             thrPca = 30)
 #'
 #' ## The outliers can be removed from the dataset.
-#' spatCorrVatorOut <- removeserieOut(dat = spatCorrVator,
+#' spatCorrectedVatorOut <- removeserieOut(dat = spatCorrectedVator,
 #'                                     serieOut = outVator)
 #'
 #' @family Detect time course outliers

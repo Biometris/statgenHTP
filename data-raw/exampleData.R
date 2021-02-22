@@ -12,17 +12,56 @@ PhenovatorDat1$pos <- paste0("c", PhenovatorDat1[["x"]],
                              "r", PhenovatorDat1[["y"]])
 # Remove a plant that has very few measurements.
 PhenovatorDat1 <- PhenovatorDat1[PhenovatorDat1$pos != "c1r54", ]
+# Rename genotypes to G001 - G192
+geno <- levels(PhenovatorDat1$Genotype)
+geno[substr(geno, 1, 1) == "G"] <-
+  paste0("G", formatC(as.numeric(substring(geno[substr(geno, 1, 1) == "G"], 2)),
+                      digits = 2, flag = "0", format = "d"))
+levels(PhenovatorDat1$Genotype) <- geno
+
 # Export to package
 usethis::use_data(PhenovatorDat1, overwrite = TRUE)
 
 #### 1.2. Corrected data - outliers removed
 # Read raw data.
-spatCorrVator <- read.csv("./data-raw/PhenovatorDat1_corr_outPoint.csv",
-                          stringsAsFactors = TRUE)
+
+## Create csv containing corrected data.
+# Commented out since it runs a long time and the .csv is saved for later use.
+# PhenovatorDat1 <- PhenovatorDat1[!PhenovatorDat1$pos %in%
+#                                    c("c24r41", "c7r18", "c7r49"),]
+# # Create TP object.
+# phenoTP <- createTimePoints(dat = PhenovatorDat1,
+#                             experimentName = "Phenovator",
+#                             genotype = "Genotype",
+#                             timePoint = "timepoints",
+#                             repId = "Replicate",
+#                             plotId = "pos",
+#                             rowNum = "y", colNum = "x",
+#                             addCheck = TRUE,
+#                             checkGenotypes = c("check1", "check2",
+#                                                "check3", "check4"))
+# # Detect and remove outliers.
+# resuVatorHTP <- detectSingleOut(TP = phenoTP, trait = "EffpsII",
+#                                 confIntSize = 3, mylocfit = 0.1)
+# phenoTPOut <- removeSingleOut(phenoTP, resuVatorHTP)
+#
+# # Fit models and get corrected values.
+# modPhenoSpCheck <- fitModels(TP = phenoTPOut, trait = "EffpsII",
+#                              extraFixedFactors = c("repId", "Image_pos"),
+#                              useCheck = TRUE)
+# spatCorrectedVator <- getCorrected(modPhenoSpCheck)
+#
+# # Write to .csv
+# write.table(spatCorrectedVator, "./data-raw/PhenovatorDat1_corr_outPoint.csv",
+#             sep = ",", row.names = FALSE)
+
+# Read from .csv
+spatCorrectedVator <- read.csv("./data-raw/PhenovatorDat1_corr_outPoint.csv",
+                               stringsAsFactors = TRUE)
 # Format the time in hour since first measurement
-spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
-timy <- data.frame(timePoint = unique(spatCorrVator$timePoint),
-                   timePointP1 = c(unique(spatCorrVator$timePoint)[2:73],
+spatCorrectedVator$timePoint <- lubridate::as_datetime(spatCorrectedVator$timePoint)
+timy <- data.frame(timePoint = unique(spatCorrectedVator$timePoint),
+                   timePointP1 = c(unique(spatCorrectedVator$timePoint)[2:73],
                                    lubridate::ymd_hms("2018-06-18 16:37:00")),
                    timeNum = NA)
 # diff between two time points in hours.
@@ -30,16 +69,14 @@ timeNum <- sapply(1:nrow(timy), function(x) {
   as.numeric(lubridate::ymd_hms(timy$timePointP1[x])-
                lubridate::ymd_hms(timy$timePoint)[x])
 })
-timy$timeNumDiff <- c(0,timeNum[1:(length(timeNum)-1)])
+timy$timeNumDiff <- c(0,timeNum[1:(length(timeNum) - 1)])
 # cum sum
 timy$timeNum <- cumsum(timy$timeNumDiff)
 # add to spatCorrVator
-spatCorrVator$timeNumHour <- timy$timeNum[match(spatCorrVator$timePoint,
-                                                timy$timePoint)]
-# Format the timepoint
-spatCorrVator$timePoint <- lubridate::as_datetime(spatCorrVator$timePoint)
+spatCorrectedVator$timeNumHour <- timy$timeNum[match(spatCorrectedVator$timePoint,
+                                                     timy$timePoint)]
 # Export to package
-usethis::use_data(spatCorrVator, overwrite = TRUE)
+usethis::use_data(spatCorrectedVator, overwrite = TRUE)
 
 
 ####### 2. Phenoarch data set
@@ -52,12 +89,12 @@ usethis::use_data(PhenoarchDat1, overwrite = TRUE)
 
 #### 2.2. Corrected data - outliers removed
 # Read raw data.
-spatCorrArch <- read.csv("./data-raw/PhenoArchDat1_corr_OutPoint_LA_2.csv",
-                         stringsAsFactors = TRUE)
+spatCorrectedArch <- read.csv("./data-raw/PhenoArchDat1_corr_OutPoint_LA_2.csv",
+                              stringsAsFactors = TRUE)
 # Format the timepoint
-spatCorrArch$timePoint <- lubridate::as_datetime(spatCorrArch$timePoint)
+spatCorrectedArch$timePoint <- lubridate::as_datetime(spatCorrectedArch$timePoint)
 # Export to package
-usethis::use_data(spatCorrArch, overwrite = TRUE)
+usethis::use_data(spatCorrectedArch, overwrite = TRUE)
 
 #### 2.3. Genotypic prediction data - outliers removed
 # Read raw data.
@@ -81,13 +118,13 @@ usethis::use_data(RootDat1, overwrite = TRUE)
 
 #### 3.2. not corrected data - outliers removed
 # Read raw data.
-noCorrRoot <- read.csv("./data-raw/RootDat1_nocorr.csv",
+noCorrectedRoot <- read.csv("./data-raw/RootDat1_nocorr.csv",
                        stringsAsFactors = TRUE)
-noCorrRoot <- noCorrRoot[, c(11, 12, 3, 2, 4, 6, 5, 7, 8, 10)]
+noCorrectedRoot <- noCorrectedRoot[, c(11, 12, 3, 2, 4, 6, 5, 7, 8, 10)]
 # Format the timepoint
-noCorrRoot$timePoint <- lubridate::as_datetime(noCorrRoot$timePoint)
+noCorrectedRoot$timePoint <- lubridate::as_datetime(noCorrectedRoot$timePoint)
 # Export to package
-usethis::use_data(noCorrRoot, overwrite = TRUE)
+usethis::use_data(noCorrectedRoot, overwrite = TRUE)
 
 ## Create data for testing.
 

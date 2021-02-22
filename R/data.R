@@ -39,7 +39,6 @@
 #' \doi{10.1186/s13007-016-0113-y}
 "PhenovatorDat1"
 
-
 #' Arabidopsis data corrected for spatial trends.
 #'
 #' This dataset contains the corrected data obtained by (1) removing point
@@ -62,7 +61,7 @@
 #'   \item{rowId}{Row coordinate}
 #'   \item{plotId}{Unique pot ID using rowcol coordinates}
 #' }
-"spatCorrVator"
+"spatCorrectedVator"
 
 #' Greenhouse data for a maize experiment in the PhenoArch platform.
 #'
@@ -123,7 +122,7 @@
 #'   \item{rowId}{Row coordinate}
 #'   \item{plotId}{Unique pot ID using rowcol coordinates}
 #' }
-"spatCorrArch"
+"spatCorrectedArch"
 
 #' Maize data, genotypic predictions.
 #'
@@ -187,5 +186,5 @@
 #'   \item{colId}{Column coordinate}
 #'   \item{tipPos_y}{Position of the root tip in y axis}
 #' }
-"noCorrRoot"
+"noCorrectedRoot"
 

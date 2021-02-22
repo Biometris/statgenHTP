@@ -25,8 +25,8 @@
 #'
 #' ## Run the function to fit P-Spline on a subset of
 #' ## genotypes
-#' subGeno <- c("G70", "G160")
-#' fit.spline <- fitSpline(inDat = spatCorrVator,
+#' subGeno <- c("G070", "G160")
+#' fit.spline <- fitSpline(inDat = spatCorrectedVator,
 #'                         trait = "EffpsII_corr",
 #'                         genotypes = subGeno,
 #'                         knots = 50,
@@ -404,7 +404,7 @@ plot.HTPSpline <- function(x,
 #' @examples
 #' ## Run the function to fit P-splines on a subset of genotypes.
 #' subGeno <- c("G160", "G151")
-#' fit.spline <- fitSpline(inDat = spatCorrVator,
+#' fit.spline <- fitSpline(inDat = spatCorrectedVator,
 #'                         trait = "EffpsII_corr",
 #'                         genotypes = subGeno,
 #'                         knots = 50,
