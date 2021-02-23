@@ -22,43 +22,46 @@ options(rmarkdown.html_vignette.check_title = FALSE)
 library(statgenHTP)
 ```
 
-# Introduction 
+# Introduction
 
-An outlier is usually defined as an observation that appears to be inconsistent with the remainder of the data set [@BarnettLewis1994]. Observations may be single time points [@Grubbs1950] or whole time courses of one or more variables [@Hubert2015]. An illustration is given below, where we see the difficulty of deciding whether a biomass time course (red curve at the bottom left) is atypical in a set of time courses from plants of the same genotype, or whether this slow growth is due to the plant's position in the platform. 
+An outlier is usually defined as an observation that appears to be inconsistent with the remainder of the data set [@BarnettLewis1994]. Observations may be single time points [@Grubbs1950] or whole time courses of one or more variables [@Hubert2015]. An illustration is given below, where we see the difficulty of deciding whether a biomass time course (red curve at the bottom left) is atypical in a set of time courses from plants of the same genotype, or whether this slow growth is due to the plant's position in the platform.
 
 ```{r HeatmapFig, fig.cap='Heatmap of the biomass estimated at a specific time point (with a color gradient) of each plant according to its location in the platform (line, position). Well-watered (WW) treatment on the left, water deficit (WD) on the right. The plots show the biomass time courses for a given genotype (3 repetitions in each treatment). The question is whether the red growth curve on the left corresponds to an outlier plant (seed problem for example) or whether this slow growth is due to the plant\'s location in the platform (PhenoArch Platform, INRAE). *Courtesy: Llorenç Cabrera-Bosquet and Santiago Alvarez Prado.*', out.width='80%', fig.pos='c', echo=FALSE}
 knitr::include_graphics("figures/heatmap.png", auto_pdf = TRUE)
 ```
 
-The concept of outlier can be extended to “outlier plants”, defined here as biological replicates deviating from the overall distribution of plants on a multi-criteria basis, regardless of the quality of measurements [@AlvarezPrado2019].
+The concept of outlier can be extended to "outlier plants", defined here as biological replicates deviating from the overall distribution of plants on a multi-criteria basis, regardless of the quality of measurements [@AlvarezPrado2019].
 
-This documents describes the procedures to detect outlying single observations in a time course with examples on experimental data measured directly on the plants or indirectly via image analysis for example. 
+This documents describes the procedures to detect outlying single observations in a time course with examples on experimental data measured directly on the plants or indirectly via image analysis for example.
 
-----
+------------------------------------------------------------------------
 
 # Definition of outlying single observation
 
-Time courses of phenotypic data are viewed as continuous time-related functions. The first cleaning step consists in roughly checking the consistency of each point with its neighbors within a time course. Outlying single observations are measurements at a given time that do not follow the expected behavior. The detection of outlying observations is done "one time course after the other". Identifying and removing these points will facilitate the outlier detection of serie of observations or plants, as proposed in [**statgenHTP tutorial: 4. Outlier detection for series of observations**](OutlierSerieObs_HTP.html).
+Time courses of phenotypic data are viewed as continuous time-related functions. The first cleaning step consists in roughly checking the consistency of each point with its neighbors within a time course. Outlying single observations are measurements at a given time that do not follow the expected behavior. The detection of outlying observations is done "one time course after the other". Identifying and removing these points will facilitate the outlier detection of series of observations or plants, as proposed in [**statgenHTP tutorial: 4. Outlier detection for series of observations**](OutlierSerieObs_HTP.html).
 
 The detection requires fitting a model from the data, as a function of time. Two types of models can be used, one based on nonlinear parametric regression (Gompertz Model or sigmoidal function for example) and the other on non-parametric regression. Data annotation is based on the comparison of the experimental data with its estimated value from the model. If they significantly differ, the data will be annotated as suspect.
 
-> *NOTE: We only considered the non-parametric regression in this package because of its flexibility to fit any type of curve.*
+> *NOTE: We only consider non-parametric regression in this package because of its flexibility to fit any type of curve.*
 
 # Illustration of the non-parametric function
 
-The local regression is a well known smoothing technique which locally approximates an unknown function by parametric functions. It is a two-step procedure included in the `detectSingleOut` function: the `locfit()` [function](https://cran.r-project.org/web/packages/locfit/index.html) fits a local regression at a set of points, then, the `predict()` function is used to interpolate this fit to other points. A confidence interval can then be calculated. Points outside this interval will be annotated as outliers. 
+Local regression is a well known smoothing technique which locally approximates an unknown function by parametric functions. It is a two-step procedure included in the `detectSingleOut` function: the `locfit()` [function](https://cran.r-project.org/web/packages/locfit/index.html) fits a local regression at a set of points, then, the `predict()` function is used to interpolate this fit to other points. A confidence interval can then be calculated. Points outside this interval will be annotated as outliers.
 
-The user can set: 
+The user can set:
 
-* the smoothing parameter `mylocfit`. It is the parameter `nn` from the locfit package (Nearest neighbor component of the smoothing parameter). This parameter values range from 0 to 1, with the higher the value, the smoother the curve.
+-   the smoothing parameter `mylocfit`. This is the parameter `nn` from the locfit package (Nearest neighbor component of the smoothing parameter). This parameter values range from 0 to 1, with the higher the value, the smoother the curve.
 
-* the level at which the confidence interval `confIntSize` is calculated. Large value makes a wide interval and fewer outliers are annotated.
+-   the level at which the confidence interval `confIntSize` is calculated. A large value calculates a wide interval and fewer outliers are annotated.
+
+-   the parameter `checkEdges`. By setting this parameter to `TRUE` (the default), before the local regression a check is done to determine if the first and last time point in the time series for a plot are outliers. The `locfit` function sometimes has problems determining these outliers. The use of this parameter is demonstrated in example 2.
 
 The functions are illustrated with the three example data sets. For more information about the data, see [**statgenHTP tutorial: 1. Introduction, data description and preparation**](Intro_HTP.html).
 
 ## Example 1
 
-First a `TP` object is created containing all the time points. 
+First a `TP` object is created containing all the time points.
+
 ```{r createTP, warning=TRUE}
 PhenovatorDat1 <- PhenovatorDat1[!PhenovatorDat1$pos %in% c("c24r41", "c7r18", "c7r49"), ]
 ## Create a TP object containing the data from the Phenovator.
@@ -74,6 +77,7 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
 ```
 
 We are then running the function on a subset of plants to set the parameters, using the `plotIds` option. The smoothing parameter `mylocfit` is set at 0.1. The curves are atypical and to detect only the very strange points, fitted curves cannot be too smooth. The confidence interval size `confIntSize` is set at 3 which is a relatively narrow interval.
+
 ```{r setParamVator}
 # First select a subset of plants, for example here 8 plants.
 plantSel <- c("c1r17","c13r17","c6r51","c21r24","c5r54","c21r32","c14r48","c5r26") 
@@ -91,22 +95,24 @@ knitr::kable(head(resuVatorHTP[14:19, ]), align = c('c','c'), padding = 0)
 
 The function output is a `data.frame` containing for each plant at each time point: the predicted value, `yPred`, the standard deviation of the prediction, `sd_yPred`, the limits of the confidence interval, `lwr` and `upr`, and the `outlier` status. When a point is annotated as outlying, the last column value is 1, it is 0 otherwise.
 
-The prediction values can be visualized to adjust the smoothing parameter and the confidence interval using the `plot` function. The option `outOnly`, default value `TRUE`, enables visualizing only plants with annotated outliers. Here, we are visualizing one plant and then all the selected plants to check the prediction.
+The predicted values can be visualized to adjust the smoothing parameter and the confidence interval using the `plot` function. The option `outOnly`, default value `TRUE`, enables visualizing only plants with annotated outliers. Here, we are visualizing one plant and then all the selected plants to check the prediction.
+
 ```{r plotOutVatorFA1, fig.height=3, fig.width=5, fig.align = 'center'}
 plot(resuVatorHTP,
-       plotIds = "c13r17",
+     plotIds = "c13r17",
      outOnly = FALSE)
 ```
-
 
 ```{r plotOutVatorFA2, fig.height=3, fig.width=7, fig.align = 'center'}
 plot(resuVatorHTP,
      plotIds = plantSel,
      outOnly = FALSE)
 ```
+
 In the plots, the black points are the raw data, the red line is the predicted curve, the green lines are the lower and upper limits of the confidence interval. Outlying points are highlighted in blue.
 
 The annotated points can be replaced by NA for the studied trait using the function `removeSingleOut`. It creates a new `TP` object.
+
 ```{r rmOutVator}
 phenoTPOut <- removeSingleOut(phenoTP,
                               resuVatorHTP)
@@ -118,7 +124,8 @@ phenoTPOut[[16]][phenoTPOut[[16]]$plotId=="c14r32", c("plotId", "EffpsII")]
 
 ## Example 2
 
-First a `TP` object is created containing all the time points. 
+First a `TP` object is created containing all the time points.
+
 ```{r createTP2, warning=TRUE}
 phenoTParch <- createTimePoints(dat = PhenoarchDat1,
                                 experimentName = "Phenoarch",
@@ -130,9 +137,10 @@ phenoTParch <- createTimePoints(dat = PhenoarchDat1,
 ```
 
 We are then running the function on a subset of plants to set the parameters, using the `plotIds` option. The smoothing parameter `mylocfit` is set at 0.5. The curves are linear and medium smooth is enough. The confidence interval size `confIntSize` is set at 5 which is a medium interval.
+
 ```{r setParamArch}
 # First select a subset of plants, for example here 7 plants 
-plantSelArch <- c("c22r7", "c8r22", "c1r10", "c21r43", "c12r31", "c25r12", "c6r54")
+plantSelArch <- c("c22r7", "c8r22", "c1r10", "c21r43", "c14r15", "c25r12", "c6r54")
 # Then run on the subset
 resuArchHTP <- detectSingleOut(TP = phenoTParch,
                                trait = "LA_Estimated",
@@ -146,9 +154,10 @@ knitr::kable(head(resuArchHTP[22:26, ]), align = c('c','c'), padding = 0)
 ```
 
 The prediction values can be visualized to adjust the smoothing parameter and the confidence interval using the `plot` function.
+
 ```{r plotOutArchFA1, fig.height=3, fig.width=4, fig.align = 'center'}
 plot(resuArchHTP,
-     plotIds = "c12r31",
+     plotIds = "c14r15",
      outOnly = FALSE)
 ```
 
@@ -157,9 +166,27 @@ plot(resuArchHTP,
      plotIds = plantSelArch,
      outOnly = FALSE)
 ```
+
 In the plots, the black points are the raw data, the red line is the predicted curve, the green lines are the lower and upper limits of the confidence interval. Outlying points are highlighted in blue.
 
+It is possible to run the outlier detection without first checking if the first and last time point are outlying. Doing this could be useful is some cases, but might give undesired results as well as the example below shows.
+
+```{r setParamVatorNoEdge}
+# Detect outliers without first checking edges.
+resuArchHTPNoEdges <- detectSingleOut(TP = phenoTParch,
+                                      trait = "LA_Estimated",
+                                      plotIds = "c14r15",
+                                      checkEdges = FALSE,
+                                      confIntSize = 5,
+                                      mylocfit = 0.5)
+
+```
+```{r plotOutVatorFA3, fig.height=3, fig.width=7, fig.align = 'center'}
+plot(resuArchHTPNoEdges)
+```
+
 The annotated points can be replaced by NA for the studied trait using the function `removeSingleOut`. It creates a new `TP` object.
+
 ```{r rmOutArch}
 phenoTParchOut <- removeSingleOut(phenoTParch,
                                   resuArchHTP)
@@ -169,10 +196,10 @@ phenoTParch[[30]][phenoTParch[[30]]$plotId=="c12r31", c("plotId", "LA_Estimated"
 phenoTParchOut[[30]][phenoTParchOut[[30]]$plotId=="c12r31", c("plotId", "LA_Estimated")]
 ```
 
-
 ## Example 3
 
-First a `TP` object is created containing all the time points. 
+First a `TP` object is created containing all the time points.
+
 ```{r createTP3, warning=FALSE}
 rootTP <- createTimePoints(dat = RootDat1,
                            experimentName = "UCL1",
@@ -184,6 +211,7 @@ rootTP <- createTimePoints(dat = RootDat1,
 ```
 
 We are then running the function on a subset of plants to set the parameters, using the `plotIds` option. The smoothing parameter `mylocfit` is set at 1. The curves are almost linear and a strong smooth is enough to get an accurate curve shape (line). The confidence interval size `confIntSize` is set at 5 which is a medium interval.
+
 ```{r setParamRoot}
 # First select a subset of plants, for example here 7 plants 
 plantSelRoot <- unique(RootDat1$plantId)[1:7]
@@ -199,7 +227,8 @@ resuRootHTP <- detectSingleOut(TP = rootTP,
 knitr::kable(head(resuRootHTP[38:43, ]), align=c('c','c'), padding = 0)
 ```
 
-The prediction values can be visualize to adjust the smoothing parameter and the confidence interval using the `plot` function.
+The prediction values can be visualized to adjust the smoothing parameter and the confidence interval using the `plot` function.
+
 ```{r plotOutRootFA1, fig.height=3, fig.width=3, fig.align = 'center'}
 plot(resuRootHTP,
      plotIds = "A_03_2",
@@ -211,9 +240,11 @@ plot(resuRootHTP,
      plotIds = plantSelRoot,
      outOnly = FALSE)
 ```
+
 In the plots, the black points are the raw data, the red line is the predicted curve, the green lines are the lower and upper limits of the confidence interval. Outlying points are highlighted in blue.
 
 The annotated points can be replaced by NA for the studied trait using the function `removeSingleOut`. It creates an new `TP` object.
+
 ```{r rmOutRoot}
 rootTPOut <- removeSingleOut(rootTP,
                              resuRootHTP)
@@ -223,6 +254,6 @@ rootTP[[11127]][rootTP[[11127]]$plotId == "A_01_2", c("plotId", "tipPos_y")]
 rootTPOut[[11127]][rootTPOut[[11127]]$plotId == "A_01_2", c("plotId", "tipPos_y")]
 ```
 
-----
+------------------------------------------------------------------------
 
 ## References
