@@ -99,13 +99,13 @@
 
       
 
-      </header><script src="Intro_HTP_files/header-attrs-2.6/header-attrs.js"></script><div class="row">
+      </header><script src="Intro_HTP_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>statgenHTP tutorial: 1. Introduction, data description and preparation</h1>
                         <h4 class="author">Emilie Millet, Bart-Jan van Rossum</h4>
             
-            <h4 class="date">2020-12-22</h4>
+            <h4 class="date">2021-02-23</h4>
       
       
       <div class="hidden name"><code>Intro_HTP.Rmd</code></div>
@@ -125,16 +125,16 @@
 <ol style="list-style-type: decimal">
 <li>Data description and preparation - <em>statgenHTP tutorial: 1. Introduction, data description and preparation</em>
 </li>
-<li>Outliers detection: time points - <a href="OutliersTimePoint_HTP.html"><em>statgenHTP tutorial: 2. Outlier detection Time points</em></a>
+<li>Outlier detection: single observation - <a href="OutlierSingleObs_HTP.html"><em>statgenHTP tutorial: 2. Outlier detection for single observations</em></a>
 </li>
 <li>Correction for spatial trends - <a href="SpatialModel_HTP.html"><em>statgenHTP tutorial: 3. Correction for spatial trends</em></a>
 </li>
-<li>Outliers detection: time course - <a href="OutliersTimeCourse_HTP.html"><em>statgenHTP tutorial: 4. Outlier detection Time course</em></a>
+<li>Outlier detection: series of observations - <a href="OutlierSerieObs_HTP.html"><em>statgenHTP tutorial: 4. Outlier detection for series of observations</em></a>
 </li>
-<li>Parameter estimation - <a href="ParameterEstimation_HTP.html"><em>statgenHTP tutorial: 5. Estimation of parameters from time courses</em></a>
+<li>Parameter estimation - <a href="ParameterEstimation_HTP.html"><em>statgenHTP tutorial: 5. Estimation of parameters for time courses</em></a>
 </li>
 </ol>
-<p>This document describes in detail the three data sets used to example the functions. It also contains description on how to prepare the data for analysis and how to visualize them.</p>
+<p>This document describes in detail the three data sets used to examplify the functions. It also contains description on how to prepare the data for analysis and how to visualize them.</p>
 <hr>
 </div>
 <div id="load-the-statgenhtp-r-package" class="section level1">
@@ -152,11 +152,7 @@
 <h2 class="hasAnchor">
 <a href="#ex1" class="anchor"></a>Example 1: photosystem efficiency in Arabidopsis</h2>
 <p>The first example used in this package contains data from an experiment in the Phenovator platform (WUR, Netherlands, <span class="citation">(Flood et al. 2016)</span>) with Arabidopsis plants. It consists of one experiment with 1440 plants grown in a growth chamber with different light intensity. The data set called “PhenovatorDat1” is included in the package.</p>
-<div class="figure">
-<img src="figures/phenovator_pf.png" alt="PFvator" width="70%"><p class="caption">
-PFvator
-</p>
-</div>
+<p><img src="figures/phenovator_pf.png" width="70%"></p>
 <p>The number of tested genotypes (<code>Genotype</code>) is 192 with 6-7 replicates per genotype (<code>Replicate</code>). Four reference genotypes were also tested with 15 or 30 replicates. The studied trait is the photosystem II efficiency (<code>EffpsII</code>) extracted from the pictures over time <span class="citation">(Rooijen et al. 2017)</span>. The unique ID of the plant is recorded (<code>pos</code>), together with the pot position in row (<code>x</code>) and in column (<code>y</code>). The data set also includes factors from the design: the position of the camera (<code>Image_pos</code>) and the pots table (<code>Basin</code>).</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"PhenovatorDat1"</span><span class="op">)</span></code></pre></div>
@@ -175,7 +171,7 @@ PFvator
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="center">G1</td>
+<td align="center">G001</td>
 <td align="center">2</td>
 <td align="center">1b</td>
 <td align="center">8</td>
@@ -187,7 +183,7 @@ PFvator
 <td align="center">c14r32</td>
 </tr>
 <tr class="even">
-<td align="center">G1</td>
+<td align="center">G001</td>
 <td align="center">2</td>
 <td align="center">1b</td>
 <td align="center">8</td>
@@ -199,7 +195,7 @@ PFvator
 <td align="center">c14r32</td>
 </tr>
 <tr class="odd">
-<td align="center">G1</td>
+<td align="center">G001</td>
 <td align="center">2</td>
 <td align="center">1b</td>
 <td align="center">8</td>
@@ -211,7 +207,7 @@ PFvator
 <td align="center">c14r32</td>
 </tr>
 <tr class="even">
-<td align="center">G1</td>
+<td align="center">G001</td>
 <td align="center">2</td>
 <td align="center">1b</td>
 <td align="center">8</td>
@@ -223,7 +219,7 @@ PFvator
 <td align="center">c14r32</td>
 </tr>
 <tr class="odd">
-<td align="center">G1</td>
+<td align="center">G001</td>
 <td align="center">2</td>
 <td align="center">1b</td>
 <td align="center">8</td>
@@ -235,7 +231,7 @@ PFvator
 <td align="center">c14r32</td>
 </tr>
 <tr class="even">
-<td align="center">G1</td>
+<td align="center">G001</td>
 <td align="center">2</td>
 <td align="center">1b</td>
 <td align="center">8</td>
@@ -253,15 +249,11 @@ PFvator
 <h2 class="hasAnchor">
 <a href="#ex2" class="anchor"></a>Example 2: maize leaf growth in greenhouse</h2>
 <p>The second example used in this tutorial contains data from an experiment in the <a href="https://www6.montpellier.inrae.fr/lepse/M3P/Plateformes/PHENOARCH">Phenoarch platform</a> with maize plants (INRAE, France, <span class="citation">(Cabrera-Bosquet et al. 2016)</span>). It consists of a greenhouse containing a conveyor belt structure of 28 lanes carrying 60 carts with one pot each (i.e. 1680 pots).</p>
-<div class="figure">
-<img src="figures/phenoarch_pf.png" alt="PFarch" width="70%"><p class="caption">
-PFarch
-</p>
-</div>
-<p>In this dataset, there are two genotypic panels (<code>population</code>) and two water scenarios (<code>Scenario</code>), well-watered (WW) and water deficit (WD). The first panel contains 60 genotypes (<code>geno</code>) with 14 replicates: 7 in WW and 7 in WD. Note that there are more plants per replicate than one for the first panel (about 24 plants per genotype). The second population contains 30 genotypes with 8 replicates, 4 in WW and 4 in WD.</p>
+<p><img src="figures/phenoarch_pf.png" width="70%"></p>
+<p>In this dataset, there are two genotypic panels (<code>population</code>) and two water scenarios (<code>Scenario</code>), well-watered (WW) and water deficit (WD). The first population contains 60 genotypes (<code>geno</code>) with 14 replicates: 7 in WW and 7 in WD. The second population contains 30 genotypes with 8 replicates, 4 in WW and 4 in WD.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"PhenoarchDat1"</span><span class="op">)</span></code></pre></div>
-<p>The leaf area and the biomass of individual plants are estimated from images taken in 13 directions. Briefly, pixels extracted from RGB images are converted into biomass and leaf area using linear models derived from regression of data from multiple side view images and destructive measurements performed at different phenological stages, from 5 to 14 appeared leaves (i.e. from 15 to 50 days at 20°C after emergence). Time courses of biomass (<code>Biomass_Estimated</code>) and leaf area (<code>LA_Estimated</code>) are expressed as a function of thermal time (<code>TT</code>). The height of each plants (<code>Height_Estimated</code>) is also estimated from the pictures. The number of visible leaves (<code>count_leaf</code>) is counted at least once a week on each plant. To prevent errors in leaf counting, leaves 5 and 10 of each plant are marked soon after appearance. The <code>phyllocron</code> is calculated as the slope of the linear regression between the number of leaves and the thermal time at 2017-04-27, before the beginning of the water deficit.</p>
+<p>The leaf area and the biomass of individual plants are estimated from images taken in 13 directions. Briefly, pixels extracted from RGB images are converted into biomass and leaf area. Calibration is made using the regression of image data on destructive measurements data, at different phenological stages, from 5 to 14 appeared leaves (i.e. from 15 to 50 days at 20°C after emergence). Time courses of biomass (<code>Biomass_Estimated</code>) and leaf area (<code>LA_Estimated</code>) are expressed as a function of thermal time (<code>TT</code>). The height of each plants (<code>Height_Estimated</code>) is also estimated from the pictures. The number of visible leaves (<code>count_leaf</code>) is counted at least once a week on each plant. To prevent errors in leaf counting, leaves 5 and 10 of each plant are marked soon after appearance. The <code>phyllocron</code> is calculated as the slope of the linear regression of number of leaves on thermal time before the beginning of the water deficit.</p>
 <p>The unique ID of the plant is recorded (<code>pos</code>), together with the pot position in row (<code>Row</code>) and in column (<code>Col</code>).</p>
 <table class="table">
 <thead><tr class="header">
@@ -415,13 +407,9 @@ PFarch
 <div id="ex3" class="section level2">
 <h2 class="hasAnchor">
 <a href="#ex3" class="anchor"></a>Example 3: Tip root data set</h2>
-<p>The tip root data set was obtained during an experiment performed at the <a href="https://uclouvain.be/en/research-institutes/eli/elia/aeroponics.html">RootPhAir platform</a> (Louvain-La-Neuve University). This platform consists in two aeroponic tanks of 495 plants located in the same greenhouse. Plants are held on 5 plant strips with 99 strips per tank. Sprinklers are placed in the bottom of the tanks and spray a nutrient solution. Strips move constantly and plants are pictured when the strip passes in front of the camera. Plants are pictured every two hours. Root system is described in two dimensions, with the root tip position in depth and width (tipPos_y and tipPos_x respectively) deduced from image analysis.</p>
-<div class="figure">
-<img src="figures/ucl_pf.png" alt="PFrooth" width="90%"><p class="caption">
-PFrooth
-</p>
-</div>
-<p>This data set consists of two experiments (<code>Exp</code>) of root growth. For each genotype (<code>Genotype</code>), the tip position (<code>tipPos_x</code> and <code>tipPos_y</code>) of the main root was tracked over time (<code>Time</code>) for each plant (<code>plantId</code>).</p>
+<p>The tip root data set was obtained during an experiment performed at the <a href="https://uclouvain.be/en/research-institutes/eli/elia/aeroponics.html">RootPhAir platform</a> (Louvain-La-Neuve University). This platform consists of two aeroponic tanks of 495 plants located in the same greenhouse. Plants are held on a strip containing 5 plants, with 99 strips per tank. Sprinklers are placed in the bottom of the tanks and spray a nutrient solution. Strips move constantly and plants are pictured when the strip passes in front of the camera. Plants are pictured every two hours. Root system is described in two dimensions, with the root tip position in depth and width (tipPos_y and tipPos_x respectively) deduced from image analysis.</p>
+<p><img src="figures/ucl_pf.png" width="90%"></p>
+<p>This data set consists of two experiments (<code>Exp</code>) of root growth. For each genotype (<code>Genotype</code>), the tip position (<code>tipPos_x</code> and <code>tipPos_y</code>) of the main root was tracked over time (<code>Time</code>) for each plant (<code>plantId</code>). Plant coordinates are defined using the strip number (<code>Strip</code>) and the position on the strip (<code>Pos</code>), from 1 to 5.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"RootDat1"</span><span class="op">)</span></code></pre></div>
 <table class="table">
@@ -513,7 +501,7 @@ PFrooth
 </tbody>
 </table>
 <blockquote>
-<p><em>TO NOTE: in this example, plants are constantly moving and it was not possible to get unique time points containing the full platform. As a consequence, it is not possible to perform a spatial analysis per time point, but the other functions for outliers detection and longitudinal modeling are available and illustrated in the following tutorials. The parameters extracted from the curves can be modeled for spatial trends using the <a href="https://biometris.github.io/statgenSTA/index.html">statgenSTA package</a>.</em></p>
+<p><em>TO NOTE: In this platform, plants are constantly moving therefore observations at any particular time will always include only a limited number of plants. As a consequence, it is not possible to perform a spatial analysis per time point, but the other functions for outliers detection and longitudinal modeling are available and illustrated in various tutorials. Estimates for dynamical parameters can be submitted to spatial analysis in the <a href="https://biometris.github.io/statgenSTA/index.html">statgenSTA package</a>.</em></p>
 </blockquote>
 </div>
 </div>
@@ -529,13 +517,13 @@ PFrooth
 <a href="#creating-a-tp-object" class="anchor"></a>Creating a <code>TP</code> object</h2>
 <p>A <code>TP</code> object can be created from a <code>data.frame</code> with the function <code>createTimePoints</code>. This function does a number of things:</p>
 <ul>
-<li>Check the input data. For example, the plants containing less than 50% of the maximum number of time points will be displayed as warning.</li>
+<li>Quality control on the input data. For example, warnings will be given when more than 50% of observations are missing for a plant.</li>
 <li>Rename columns to default column names used by the functions in the statgenHTP package. For example, the column in the data containing variety/accession/genotype is renamed to “genotype.” Original column names are stored as an attribute of the individual data frames in the <code>TP</code> object.</li>
 <li>Convert column types to the default column types. For example, the column “genotype” is converted to a factor and “rowNum” to a numeric column.</li>
-<li>Convert the column containing time into time format. If needed, the time format can be provided in <code>timeFormat</code>. For example, with a date/time input of the form “day/month/year hour:minute,” use %d/%m/%Y %H:%M. For a full list of abbreviations see the R package strptime. <em>TO NOTE</em> when the input time is just a numeric, the function will convert it to time from 01-01-1970 (origin time of the package lubridate).</li>
+<li>Convert the column containing time into time format. If needed, the time format can be provided in <code>timeFormat</code>. For example, with a date/time input of the form “day/month/year hour:minute,” use %d/%m/%Y %H:%M. For a full list of abbreviations see the R package strptime. <em>NOTE</em> when the input time is just a numeric, the function will convert it to time from 01-01-1970 (origin time of the package lubridate).</li>
 <li>Add columns <code>check</code> and <code>checkGenotypes</code> when <code>addCheck=TRUE</code>.</li>
 <li>Split the data into separate data.frames by time points. A <code>TP</code> object is a <code>list</code> of <code>data.frames</code> where each <code>data.frame</code> contains the data for a single time point. If there is only one time points the output will be a <code>list</code> with only one item.</li>
-<li>Add a <code>data.frame</code> with columns <code>timeNumber</code> and <code>timePoint</code> as attribute “timePoints” to the <code>TP</code> object. This data.frame can be used for referencing the time points by their number.</li>
+<li>Add a <code>data.frame</code> with columns <code>timeNumber</code> and <code>timePoint</code> as attribute “timePoints” to the <code>TP</code> object. This data.frame can be used for referencing time points by a unique number.</li>
 </ul>
 <blockquote>
 <p><em>NOTE: It is possible to transform a TP object back into a data.frame with the <code><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame()</a></code> function.</em></p>
@@ -602,14 +590,14 @@ PFrooth
 </tr>
 </tbody>
 </table>
-<p>The <code>TP</code> object just created is a <code>list</code> with 73 items, one for each time point in the original <code>data.frame</code> (called “PhenovatorDat1”). The option <code>experimentName</code> is used for identifying the data set and is a requirement. The column “Genotype” in the original data is renamed to “genotype” and converted to a factor. The columns “Replicate” and “pos” are renamed and converted likewise. The newly created column “plotID” needs to be a unique identifier for a plot or a plant. It cannot occur more than once per time point. The columns “y” and “x” are renamed to “rowNum” and “colNum” respectively. Simultaneously, two columns “rowId” and “colId” are created containing the same information converted to a factor. This seemingly duplicate information is needed for spatial analysis. The information about which columns have been renamed when creating a <code>TP</code> object is stored as an attribute of each individual <code>data.frame</code> in the object. The option <code>addCheck</code> is set as <code>TRUE</code> to specify that the genotypes listed in <code>checkGenotypes</code> are reference genotypes (or checks). This option will create a column “check” with a value “noCheck” for the genotypes that are not in <code>checkGenotypes</code> and the name of the genotype for the <code>checkGenotypes</code>. Also a column “genoCheck” is added with the names of the genotypes that are not in <code>checkGenotypes</code> and <code>NA</code> for the <code>checkGenotypes</code> (see <a href="SpatialModel_HTP.html"><strong>statgenHTP tutorial: 3. Correction for spatial trends</strong></a>). These columns are necessary for fitting models on data in case of augmented design <span class="citation">(Piepho and Williams 2016)</span>.</p>
+<p>The <code>TP</code> object just created is a <code>list</code> with 73 items, one for each time point in the original <code>data.frame</code> (called “PhenovatorDat1”). The option <code>experimentName</code> is used for identifying the data set and is a requirement. The column “Genotype” in the original data is renamed to “genotype” and converted to a factor. The columns “Replicate” and “pos” are renamed and converted likewise. The option <code>repId</code> is used when replication blocks were defined in the design (i.e. one block contains one full replicate of all the genotypes). In that case, the column containing the replicate block should be specified here. The newly created column “plotID” needs to be a unique identifier for a plot or a plant. The columns “y” and “x” are renamed to “rowNum” and “colNum” respectively. Simultaneously, two columns “rowId” and “colId” are created containing the same information converted to a factor. This seemingly duplicate information is needed for spatial analysis. The information about which columns have been renamed when creating a <code>TP</code> object is stored as an attribute of each individual <code>data.frame</code> in the object. The option <code>addCheck</code> is set as <code>TRUE</code> to specify that the genotypes listed in <code>checkGenotypes</code> are reference genotypes (or checks). This option will create a column “check” with a value “noCheck” for the genotypes that are not in <code>checkGenotypes</code> and the name of the genotype for the <code>checkGenotypes</code>. Also a column “genoCheck” is added with the names of the genotypes that are not in <code>checkGenotypes</code> and <code>NA</code> for the <code>checkGenotypes</code> (see <a href="SpatialModel_HTP.html"><strong>statgenHTP tutorial: 3. Correction for spatial trends</strong></a>). These columns are necessary for fitting models on data of an augmented design <span class="citation">(Piepho and Williams 2016)</span>.</p>
 </div>
 </div>
 <div id="plotting-a-tp-object" class="section level2">
 <h2 class="hasAnchor">
 <a href="#plotting-a-tp-object" class="anchor"></a>Plotting a <code>TP</code> object</h2>
 <p>Several plots can be made to further investigate the content of a <code>TP</code> object.</p>
-<p>The first type of plot displays the layout of the experiment as a grid using the row and column coordinates in “plotID.” The default option creates plots of all time points in the <code>TP</code> object. This can be restricted to selected time points using their number in the option <code>timePoints</code>. If replicates (“repId”) are available, a black line is plotted between them. Missing plots are indicated in white circled with a bold black line.</p>
+<p>The first type of plot displays the layout of the experiment as a grid using the row and column coordinates in “plotID.” The default option creates plots of all time points in the <code>TP</code> object. This can be restricted to selected time points using their number in the option <code>timePoints</code>. If <code>repId</code> is specified in the TP object, replicate blocks are delineated by a black line. Missing plots are indicated in white circled with a bold black line. This type of plot allows checking the design of the experiment.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Plot the layout for the third time point.</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">phenoTP</span>, 
@@ -624,7 +612,7 @@ PFrooth
      timePoints <span class="op">=</span> <span class="fl">3</span>,  
      highlight <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"check1"</span>, <span class="st">"check2"</span>, <span class="st">"check3"</span>, <span class="st">"check4"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p><img src="Intro_HTP_files/figure-html/layoutPlotHL-1.png" width="480" style="display: block; margin: auto;"></p>
-<p>It is possible to add the names of the genotypes to the layout.</p>
+<p>It is possible to add the labels of the genotypes to the layout.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Plot the layout for the third time point.</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">phenoTP</span>, 
@@ -633,7 +621,7 @@ PFrooth
      highlight <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"check1"</span>, <span class="st">"check2"</span>, <span class="st">"check3"</span>, <span class="st">"check4"</span><span class="op">)</span>,
      showGeno <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p><img src="Intro_HTP_files/figure-html/layoutPlotSG-1.png" width="768" style="display: block; margin: auto;"></p>
-<p>It is possible to visualize the raw data of a given trait on the layout, as a heatmap.</p>
+<p>We can visualize the raw data of a given trait on the layout, as a heatmap. This type of plot gives a first indication of the spatial variability at a given time point. This will be further investigate with the spatial modelling (see <a href="SpatialModel_HTP.html"><em>statgenHTP tutorial: 3. Correction for spatial trends</em></a>).</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Plot the layout for the third time point.</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">phenoTP</span>, 
@@ -641,7 +629,11 @@ PFrooth
      timePoints <span class="op">=</span> <span class="fl">3</span>,  
      traits <span class="op">=</span> <span class="st">"EffpsII"</span><span class="op">)</span></code></pre></div>
 <p><img src="Intro_HTP_files/figure-html/layoutPlotheatmap-1.png" width="768" style="display: block; margin: auto;"></p>
-<p>Raw data can be displayed per genotype. By default all genotypes are used but it can be restricted using <code>genotypes</code> and a subset of genotypes. By default, data are plotted as points but this can be changed to lines by setting <code>plotLine = TRUE</code>.</p>
+<p>Raw data can be displayed per genotype with one color per plotId. By default all genotypes are used but it can be restricted using <code>genotypes</code> to a subset of genotypes. By default, data are plotted as points but this can be changed to lines by setting <code>plotLine = TRUE</code>.</p>
+<blockquote>
+<p>NOTE: the color of the plotId is the same whether point or lines are used. However, the color might change between vignettes. The color is not assign per plotId but generated using a color shade depending on the total number of plotId to visualize.</p>
+</blockquote>
+<p>Plot of the raw data per genotype gives a first indication of the plant-to-plant variability and may already help visualizing strange points or plants for a genotype. This will have to be confirm with the detection of (i) individually outlying observation (see <a href="OutlierSingleObs_HTP.html"><em>statgenHTP tutorial: 2. Outlier detection for single observations</em></a>) and (ii) outlying series of observation (see <a href="OutlierSerieObs_HTP.html"><em>statgenHTP tutorial: 4. Outlier detection for series of observations</em></a>)</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Create the raw data time courses for three genotypes.</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">phenoTP</span>, 
@@ -649,14 +641,14 @@ PFrooth
      plotType <span class="op">=</span> <span class="st">"raw"</span>,
      genotypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"G1"</span>, <span class="st">"G2"</span>, <span class="st">"check1"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p><img src="Intro_HTP_files/figure-html/rawVator-1.png" width="672" style="display: block; margin: auto;"></p>
-<p>Boxplots can be made to visually assess the variability of the trait(s) in the <code>TP</code> object. By default a box is plotted per time point for the specified trait using all time points.</p>
+<p>Boxplots can be made to visually assess the variability of the trait(s) in the <code>TP</code> object. By default a box is plotted per time point for the specified trait using all time points. For example, in the Phenovator data, the variability is larger at the beginning of the experiment (before the change in light) and is reduced at the end (after the change of light intensity).</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Create a boxplot for "EffpsII" using the default all time points.</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">phenoTP</span>, 
      plotType <span class="op">=</span> <span class="st">"box"</span>,
      traits <span class="op">=</span> <span class="st">"EffpsII"</span><span class="op">)</span> </code></pre></div>
 <p><img src="Intro_HTP_files/figure-html/boxPlot-1.png" width="672" style="display: block; margin: auto;"></p>
-<p>Colors can be applied to groups within time points using the option <code>colorBy</code>. The boxes for the (groups of) time points can be ordered using <code>orderBy</code>. Boxes can be ordered by alphabetical order (“alphabetic”) or by the group mean (“ascending,”“descending”).</p>
+<p>Colors can be applied to further investigate the variability of a factor within time points using the option <code>colorBy</code>. For example here, we investigate the variability between replicates within time point 1 to 5, with one box per replicate per time point.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Create a boxplot for "EffpsII" with 5 time points and boxes colored by "repId" within</span>
 <span class="co">## time point.</span>
@@ -666,7 +658,7 @@ PFrooth
      timePoints <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,
      colorBy <span class="op">=</span> <span class="st">"repId"</span><span class="op">)</span></code></pre></div>
 <p><img src="Intro_HTP_files/figure-html/boxPlotCL-1.png" width="576" style="display: block; margin: auto;"></p>
-<p>The time points in the boxplot can be grouped using the option <code>groupBy</code>.</p>
+<p>The option <code>groupBy</code> allows assessing the variability of a factor combining multiple time points. For example, we investigate the replicate variability of grouped time points 1 to 5, with one box per replicate.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Create a boxplot for "EffpsII" with 5 time points and boxes grouped by "repId".</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">phenoTP</span>, 
@@ -675,7 +667,8 @@ PFrooth
      timePoints <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,
      groupBy <span class="op">=</span> <span class="st">"repId"</span><span class="op">)</span></code></pre></div>
 <p><img src="Intro_HTP_files/figure-html/boxPlotGP-1.png" width="384" style="display: block; margin: auto;"></p>
-<p>Finally, a plot of the correlations between the time points for a specified trait can be made. The order of the plot is the time and by default all time points are used.</p>
+<p>The boxes for the can be ordered using <code>orderBy</code>. Boxes can be ordered by alphabetical order (“alphabetic”) or by the group mean (“ascending,”“descending”).</p>
+<p>Finally, a plot of the correlations between the observations in time for a specified trait can be made. The order of the plot is chronological and by default all time points are used.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Create a correlation plot for "EffpsII" for a selection of time points.</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">phenoTP</span>, 
@@ -690,7 +683,7 @@ PFrooth
 <div id="example-2" class="section level3">
 <h3 class="hasAnchor">
 <a href="#example-2" class="anchor"></a>Example 2</h3>
-<p>A second <code>TP</code> object is created containing all the time points:</p>
+<p>A second <code>TP</code> object is created containing all the observations in time:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">phenoTParch</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/createTimePoints.html">createTimePoints</a></span><span class="op">(</span>dat <span class="op">=</span> <span class="va">PhenoarchDat1</span>,
                                 experimentName <span class="op">=</span> <span class="st">"Phenoarch"</span>,
@@ -709,12 +702,12 @@ PFrooth
 <span class="co">#&gt; No check genotypes are defined.</span></code></pre></div>
 <p>The “phenoTParch” object just created is a <code>list</code> with 35 items, one for each time points in the original <code>data.frame</code> (called “PhenoarchDat1,” see section <a href="#ex2">3.2</a>). We can visualize the layout and the raw data the same way as for the Phenovator data.</p>
 <p><img src="Intro_HTP_files/figure-html/layoutArch-1.png" width="576" style="display: block; margin: auto;"></p>
-<p>Note that for the raw data, we can already use the <code>geno.decomp</code> option to split the genotypes using the water scenario:</p>
+<p>Note that for the raw data, we can already use the <code>geno.decomp</code> option to split the genotypes using the water scenario. We can already visualize the difference between the irrigation levels for two genotypes: the leaf area in WW is bigger than in WD and the slope of the leaf area progression also seems to be bigger:</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">phenoTParch</span>, 
      traits <span class="op">=</span> <span class="st">"LA_Estimated"</span>,
      plotType <span class="op">=</span> <span class="st">"raw"</span>,
-     genotypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"GenoA1"</span>, <span class="st">"GenoA2"</span><span class="op">)</span>,
+     genotypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"GenoA01"</span>, <span class="st">"GenoA02"</span><span class="op">)</span>,
      geno.decomp <span class="op">=</span> <span class="st">"Scenario"</span><span class="op">)</span></code></pre></div>
 <p><img src="Intro_HTP_files/figure-html/rawArch-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
@@ -738,7 +731,7 @@ PFrooth
 <span class="co">#&gt; Last time point: 2016-11-15 01:32:08 </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; No check genotypes are defined.</span></code></pre></div>
-<p>As explained in section <a href="#ex3">3.3</a>, there is no common time point for all the plants, i.e. no date at which all plants were pictured. Instead, plants are constantly moving and pictures are taken every 20 minutes. Hence, each rows of the data frame contains a unique time point. As a consequence, the “rootTP” object just created is a <code>list</code> with 16,275 items, one for each time points in the original <code>data.frame</code> (called “RootDat1”).</p>
+<p>As explained in section <a href="#ex3">3.3</a>, there is no common time point for all the plants, i.e. no date at which all plants were pictured. Instead, plants are constantly moving and pictures are taken every 20 minutes. Hence, each row of the data frame contains a unique time point. As a consequence, the “rootTP” object just created is a <code>list</code> with 16,275 items, one for each time points in the original <code>data.frame</code> (called “RootDat1”).</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">rootTP</span>, 
      traits <span class="op">=</span> <span class="st">"tipPos_y"</span>,
@@ -790,7 +783,7 @@ Tardieu, François, Llorenç Cabrera-Bosquet, Tony Pridmore, and Malcolm Bennett
 
 
       <footer><div class="copyright">
-  <p>Developed by Emilie J Millet, Maria Xose Rodriguez Alvarez, Isabelle Sanchez, Nadine Hilgert, Bart-Jan van Rossum.</p>
+  <p>Developed by Emilie J Millet, Maria Xose Rodriguez Alvarez, Diana Marcela Perez Valencia, Isabelle Sanchez, Nadine Hilgert, Bart-Jan van Rossum, Fred van Eeuwijk, Martin Boer.</p>
 </div>
 
 <div class="pkgdown">

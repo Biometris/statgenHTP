@@ -156,8 +156,8 @@ specified interval.</p>
 
     <pre class="usage"><span class='fu'>estimateSplineParameters</span><span class='op'>(</span>
   <span class='va'>HTPSpline</span>,
-  estimate <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"predictions"</span>, <span class='st'>"derivatives"</span><span class='op'>)</span>,
-  what <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"min"</span>, <span class='st'>"max"</span>, <span class='st'>"mean"</span><span class='op'>)</span>,
+  estimate <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"predictions"</span>, <span class='st'>"derivatives"</span>, <span class='st'>"derivatives2"</span><span class='op'>)</span>,
+  what <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"min"</span>, <span class='st'>"max"</span>, <span class='st'>"mean"</span>, <span class='st'>"AUC"</span>, <span class='st'>"p"</span><span class='op'>)</span>,
   timeMin <span class='op'>=</span> <span class='cn'>NULL</span>,
   timeMax <span class='op'>=</span> <span class='cn'>NULL</span>,
   genotypes <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -175,11 +175,15 @@ specified interval.</p>
     <tr>
       <th>estimate</th>
       <td><p>The type of estimate that should be extracted,
-the predictions or the first derivatives.</p></td>
+the predictions, the first derivatives or the second derivatives
+("derivatives2")</p></td>
     </tr>
     <tr>
       <th>what</th>
-      <td><p>The type of estimate that should be extracted.</p></td>
+      <td><p>The type of estimate that should be extracted. Either minimum
+("min"), maximum ("max"), mean, area under the curve ("AUC") or a percentile.
+Percentiles should be given as p + percentile. E.g. for the 10th percentile
+specify what = "p10"</p></td>
     </tr>
     <tr>
       <th>timeMin</th>
@@ -212,14 +216,12 @@ are fitted. If <code>NULL</code>, splines will be fitted for all plotIds.</p></t
 <code><a href='plot.HTPSpline.html'>plot.HTPSpline</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'>## Run the function to fit P-spline using the mgcv package on a subset of</span>
-<span class='co'>## genotypes.</span>
-<span class='va'>subGeno</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"G70"</span>, <span class='st'>"G160"</span>, <span class='st'>"G151"</span>, <span class='st'>"G179"</span>, <span class='st'>"G175"</span>, <span class='st'>"G4"</span>, <span class='st'>"G55"</span><span class='op'>)</span>
-<span class='va'>fit.spline</span> <span class='op'>&lt;-</span> <span class='fu'><a href='fitSpline.html'>fitSpline</a></span><span class='op'>(</span>inDat <span class='op'>=</span> <span class='va'>spatCorrVator</span>,
+    <pre class="examples"><div class='input'><span class='co'>## Run the function to fit P-splines on a subset of genotypes.</span>
+<span class='va'>subGeno</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"G160"</span>, <span class='st'>"G151"</span><span class='op'>)</span>
+<span class='va'>fit.spline</span> <span class='op'>&lt;-</span> <span class='fu'><a href='fitSpline.html'>fitSpline</a></span><span class='op'>(</span>inDat <span class='op'>=</span> <span class='va'>spatCorrectedVator</span>,
                         trait <span class='op'>=</span> <span class='st'>"EffpsII_corr"</span>,
                         genotypes <span class='op'>=</span> <span class='va'>subGeno</span>,
-                        knots <span class='op'>=</span> <span class='fl'>50</span>,
-                        perMinTP <span class='op'>=</span> <span class='fl'>0.8</span><span class='op'>)</span>
+                        knots <span class='op'>=</span> <span class='fl'>50</span><span class='op'>)</span>
 
 <span class='co'>## Estimate the maximum value of the trait at the beginning of the time course.</span>
 <span class='va'>paramVator1</span> <span class='op'>&lt;-</span> <span class='fu'>estimateSplineParameters</span><span class='op'>(</span>HTPSpline <span class='op'>=</span> <span class='va'>fit.spline</span>,
@@ -241,7 +243,7 @@ are fitted. If <code>NULL</code>, splines will be fitted for all plotIds.</p></t
 
       <footer>
       <div class="copyright">
-  <p>Developed by Emilie J Millet, Maria Xose Rodriguez Alvarez, Isabelle Sanchez, Nadine Hilgert, Bart-Jan van Rossum.</p>
+  <p>Developed by Emilie J Millet, Maria Xose Rodriguez Alvarez, Diana Marcela Perez Valencia, Isabelle Sanchez, Nadine Hilgert, Bart-Jan van Rossum, Fred van Eeuwijk, Martin Boer.</p>
 </div>
 
 <div class="pkgdown">

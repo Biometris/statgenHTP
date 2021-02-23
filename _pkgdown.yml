@@ -35,9 +35,9 @@ articles:
       including some fully worked examples.
     contents:
       - Intro_HTP
-      - OutliersTimePoint_HTP
+      - OutlierSingleObs_HTP
       - SpatialModel_HTP
-      - OutliersTimeCourse_HTP
+      - OutlierSerieObs_HTP
       - ParameterEstimation_HTP
 
 reference:
@@ -51,10 +51,10 @@ reference:
   - as.data.frame.TP
 - title: Detect point outliers
 - contents:
-  - detectPointOutliers
-  - removePointOutliers
-  - plot.pointOutliers
-  - detectPointOutliersMaize
+  - detectSingleOut
+  - removeSingleOut
+  - plot.singleOut
+  - detectSingleOutMaize
 - title: Spatial modeling
 - contents:
   - fitModels
@@ -72,17 +72,17 @@ reference:
   - estimateSplineParameters
 - title: Detect time course outliers
 - contents:
-  - detectTimeCourseOutliers
-  - removeTimeCourseOutliers
-  - plot.timeCourseOutliers
+  - detectSerieOut
+  - removeSerieOut
+  - plot.serieOut
 - title: Example data
 - contents:
   - PhenoarchDat1
   - PhenovatorDat1
   - RootDat1
-  - spatCorrArch
-  - spatCorrVator
-  - noCorrRoot
+  - spatCorrectedArch
+  - spatCorrectedVator
+  - noCorrectedRoot
   - spatPredArch
 - title: Utility functions
 - contents:
