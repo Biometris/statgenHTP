@@ -5,7 +5,7 @@
 #'
 #' See locfit() help function from the locfit R library. The user can act on:
 #' \describe{
-#'   \item{mylocfit}{the constant of the smoothing parameter. Increase mylocfit
+#'   \item{nnLocfit}{the constant of the smoothing parameter. Increase nnLocfit
 #'   to have a very smooth curve}
 #'   \item{confIntSize}{the level to calculate the confidence interval. Increase
 #'   confIntSize to exclude less outliers}
@@ -18,7 +18,7 @@
 #' @param checkEdges Before fitting the local regression should a check be done
 #' if the first and last time point for a plot are outlying observations?
 #' @param confIntSize A numeric value defining the confidence interval.
-#' @param mylocfit A numeric value defining the constant component of the
+#' @param nnLocfit A numeric value defining the constant component of the
 #' smoothing parameter nn. (see the locfit())
 #'
 #' @return An object of class singleOut, a data.frame with the following
@@ -58,7 +58,7 @@
 #'                                  trait = "EffpsII",
 #'                                  plotIds = plantSel,
 #'                                  confIntSize = 3,
-#'                                  mylocfit = 0.1)
+#'                                  nnLocfit = 0.1)
 #'
 #' @family Detect outliers in a time series
 #'
@@ -68,7 +68,7 @@ detectSingleOut <- function(TP,
                             plotIds = NULL,
                             checkEdges = TRUE,
                             confIntSize = 5,
-                            mylocfit = 0.5) {
+                            nnLocfit = 0.5) {
   ## Checks.
   if (!inherits(TP, "TP")) {
     stop("TP should be an object of class TP.\n")
@@ -103,12 +103,12 @@ detectSingleOut <- function(TP,
     y <- plotDat[[trait]]
     x <- plotDat[["timePoint"]]
     ## Fit model with all time points included.
-    fitMod <- locfit::locfit(y ~ locfit::lp(x, nn = mylocfit, deg = 2))
+    fitMod <- locfit::locfit(y ~ locfit::lp(x, nn = nnLocfit, deg = 2))
     yPred <- predict(fitMod, newdata = x, se.fit = TRUE)
     if (checkEdges) {
       ## Check if first timepoint is an outlier.
       ## Fit model excluding first timepoint.
-      fitMod0 <- locfit::locfit(y[-1] ~ locfit::lp(x[-1], nn = mylocfit, deg = 2))
+      fitMod0 <- locfit::locfit(y[-1] ~ locfit::lp(x[-1], nn = nnLocfit, deg = 2))
       ## Get predictions for new models.
       yPred0 <- predict(fitMod0, newdata = x, se.fit = TRUE)
       ## Compute mean and standard deviation for first 5 time points.
@@ -125,7 +125,7 @@ detectSingleOut <- function(TP,
       posL <- length(x)
       ## Fit model excluding last timepoint.
       fitMod1 <- locfit::locfit(y[-posL] ~ locfit::lp(x[-posL],
-                                                      nn = mylocfit, deg = 2))
+                                                      nn = nnLocfit, deg = 2))
       ## Get predictions for the model.
       yPred1 <- predict(fitMod1, newdata = plotDat[["timePoint"]], se.fit = TRUE)
       ## Compute mean and standard deviation for last 5 time points.
@@ -190,7 +190,7 @@ detectSingleOut <- function(TP,
 #'                                trait = "EffpsII",
 #'                                plotIds = plantSel,
 #'                                confIntSize = 3,
-#'                                mylocfit = 0.1)
+#'                                nnLocfit = 0.1)
 #'
 #' ## We can then visualize the prediction by choosing a single plant...
 #' plot(resuVatorHTP, plotIds = "c21r24", outOnly = FALSE)
@@ -312,7 +312,7 @@ plot.singleOut <- function(x,
 #'                                 trait = "EffpsII",
 #'                                 plotIds = plantSel,
 #'                                 confIntSize = 3,
-#'                                 mylocfit = 0.1)
+#'                                 nnLocfit = 0.1)
 #'
 #' ## The annotated points can be replaced by NA for the studied trait
 #' phenoTPOut <- removeSingleOut(phenoTP, resuVatorHTP)

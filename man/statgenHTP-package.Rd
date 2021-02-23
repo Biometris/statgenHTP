@@ -15,21 +15,17 @@ The statgenHTP package is being developed within the EPPN2020
     purchase from 'VSN' international (<https://www.vsni.co.uk/software/asreml>).
 }
 \author{
-\strong{Maintainer}: Emilie J Millet \email{emilie.millet@wur.nl} (\href{https://orcid.org/0000-0002-2913-4892}{ORCID})
+\strong{Maintainer}: Bart-Jan van Rossum \email{bart-jan.vanrossum@wur.nl} (\href{https://orcid.org/0000-0002-8673-2514}{ORCID})
 
 Authors:
 \itemize{
+  \item Emilie J Millet \email{emilie.millet@wur.nl} (\href{https://orcid.org/0000-0002-2913-4892}{ORCID})
   \item Maria Xose Rodriguez Alvarez (\href{https://orcid.org/0000-0002-1329-9238}{ORCID})
+  \item Diana Marcela Perez Valencia (\href{https://orcid.org/0000-0002-9053-2929}{ORCID})
   \item Isabelle Sanchez
   \item Nadine Hilgert
-  \item Bart-Jan van Rossum \email{bart-jan.vanrossum@wur.nl} (\href{https://orcid.org/0000-0002-8673-2514}{ORCID})
+  \item Fred van Eeuwijk (\href{https://orcid.org/0000-0003-3672-2921}{ORCID})
   \item Martin Boer
-}
-
-Other contributors:
-\itemize{
-  \item Diana Marcela Perez Valencia (\href{https://orcid.org/0000-0002-9053-2929}{ORCID}) [contributor]
-  \item Fred van Eeuwijk (\href{https://orcid.org/0000-0003-3672-2921}{ORCID}) [contributor]
 }
 
 }

@@ -46,7 +46,7 @@ resuVatorHTP <- detectSingleOut(TP = phenoTP,
                                trait = "EffpsII",
                                plotIds = plantSel,
                                confIntSize = 3,
-                               mylocfit = 0.1)
+                               nnLocfit = 0.1)
 
 ## We can then visualize the prediction by choosing a single plant...
 plot(resuVatorHTP, plotIds = "c21r24", outOnly = FALSE)

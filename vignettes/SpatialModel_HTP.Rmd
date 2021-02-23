@@ -67,7 +67,7 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
 resuVatorHTP <- detectSingleOut(TP = phenoTP,
                                 trait = "EffpsII",
                                 confIntSize = 3,
-                                mylocfit = 0.1)
+                                nnLocfit = 0.1)
 phenoTPOut <- removeSingleOut(phenoTP,
                               resuVatorHTP)
 ```
@@ -420,7 +420,7 @@ phenoTParch <- createTimePoints(dat = PhenoarchDat1,
 resuArchHTP <- detectSingleOut(TP = phenoTParch,
                                trait = "LA_Estimated",
                                confIntSize = 5,
-                               mylocfit = 0.5)
+                               nnLocfit = 0.5)
 phenoTParchOut <- removeSingleOut(phenoTParch,
                                   resuArchHTP)
 ```

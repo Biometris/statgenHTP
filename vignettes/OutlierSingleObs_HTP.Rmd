@@ -50,7 +50,7 @@ Local regression is a well known smoothing technique which locally approximates 
 
 The user can set:
 
--   the smoothing parameter `mylocfit`. This is the parameter `nn` from the locfit package (Nearest neighbor component of the smoothing parameter). This parameter values range from 0 to 1, with the higher the value, the smoother the curve.
+-   the smoothing parameter `nnLocfit`. This is the parameter `nn` from the locfit package (Nearest neighbor component of the smoothing parameter). This parameter values range from 0 to 1, with the higher the value, the smoother the curve.
 
 -   the level at which the confidence interval `confIntSize` is calculated. A large value calculates a wide interval and fewer outliers are annotated.
 
@@ -76,7 +76,7 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             checkGenotypes = c("check1", "check2", "check3", "check4"))
 ```
 
-We are then running the function on a subset of plants to set the parameters, using the `plotIds` option. The smoothing parameter `mylocfit` is set at 0.1. The curves are atypical and to detect only the very strange points, fitted curves cannot be too smooth. The confidence interval size `confIntSize` is set at 3 which is a relatively narrow interval.
+We are then running the function on a subset of plants to set the parameters, using the `plotIds` option. The smoothing parameter `nnLocfit` is set at 0.1. The curves are atypical and to detect only the very strange points, fitted curves cannot be too smooth. The confidence interval size `confIntSize` is set at 3 which is a relatively narrow interval.
 
 ```{r setParamVator}
 # First select a subset of plants, for example here 8 plants.
@@ -86,7 +86,7 @@ resuVatorHTP <- detectSingleOut(TP = phenoTP,
                                 trait = "EffpsII",
                                 plotIds = plantSel,
                                 confIntSize = 3,
-                                mylocfit = 0.1)
+                                nnLocfit = 0.1)
 ```
 
 ```{r headOutVator, echo=FALSE, message=FALSE}
@@ -136,7 +136,7 @@ phenoTParch <- createTimePoints(dat = PhenoarchDat1,
                                 colNum = "Col")
 ```
 
-We are then running the function on a subset of plants to set the parameters, using the `plotIds` option. The smoothing parameter `mylocfit` is set at 0.5. The curves are linear and medium smooth is enough. The confidence interval size `confIntSize` is set at 5 which is a medium interval.
+We are then running the function on a subset of plants to set the parameters, using the `plotIds` option. The smoothing parameter `nnLocfit` is set at 0.5. The curves are linear and medium smooth is enough. The confidence interval size `confIntSize` is set at 5 which is a medium interval.
 
 ```{r setParamArch}
 # First select a subset of plants, for example here 7 plants 
@@ -146,7 +146,7 @@ resuArchHTP <- detectSingleOut(TP = phenoTParch,
                                trait = "LA_Estimated",
                                plotIds = plantSelArch,
                                confIntSize = 5,
-                               mylocfit = 0.5)
+                               nnLocfit = 0.5)
 ```
 
 ```{r headOutArch, echo=FALSE, message=FALSE}
@@ -178,7 +178,7 @@ resuArchHTPNoEdges <- detectSingleOut(TP = phenoTParch,
                                       plotIds = "c14r15",
                                       checkEdges = FALSE,
                                       confIntSize = 5,
-                                      mylocfit = 0.5)
+                                      nnLocfit = 0.5)
 
 ```
 ```{r plotOutVatorFA3, fig.height=3, fig.width=7, fig.align = 'center'}
@@ -210,7 +210,7 @@ rootTP <- createTimePoints(dat = RootDat1,
                            colNum = "Pos")
 ```
 
-We are then running the function on a subset of plants to set the parameters, using the `plotIds` option. The smoothing parameter `mylocfit` is set at 1. The curves are almost linear and a strong smooth is enough to get an accurate curve shape (line). The confidence interval size `confIntSize` is set at 5 which is a medium interval.
+We are then running the function on a subset of plants to set the parameters, using the `plotIds` option. The smoothing parameter `nnLocfit` is set at 1. The curves are almost linear and a strong smooth is enough to get an accurate curve shape (line). The confidence interval size `confIntSize` is set at 5 which is a medium interval.
 
 ```{r setParamRoot}
 # First select a subset of plants, for example here 7 plants 
@@ -220,7 +220,7 @@ resuRootHTP <- detectSingleOut(TP = rootTP,
                                trait = "tipPos_y",
                                plotIds = plantSelRoot,
                                confIntSize = 5,
-                               mylocfit = 1)
+                               nnLocfit = 1)
 ```
 
 ```{r headOutRoot, echo=FALSE, message=FALSE}

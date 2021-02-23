@@ -43,7 +43,7 @@ resuVatorHTP <- detectSingleOut(TP = phenoTP,
                                 trait = "EffpsII",
                                 plotIds = plantSel,
                                 confIntSize = 3,
-                                mylocfit = 0.1)
+                                nnLocfit = 0.1)
 
 ## The annotated points can be replaced by NA for the studied trait
 phenoTPOut <- removeSingleOut(phenoTP, resuVatorHTP)

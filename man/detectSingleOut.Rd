@@ -10,7 +10,7 @@ detectSingleOut(
   plotIds = NULL,
   checkEdges = TRUE,
   confIntSize = 5,
-  mylocfit = 0.5
+  nnLocfit = 0.5
 )
 }
 \arguments{
@@ -26,7 +26,7 @@ if the first and last time point for a plot are outlying observations?}
 
 \item{confIntSize}{A numeric value defining the confidence interval.}
 
-\item{mylocfit}{A numeric value defining the constant component of the
+\item{nnLocfit}{A numeric value defining the constant component of the
 smoothing parameter nn. (see the locfit())}
 }
 \value{
@@ -50,7 +50,7 @@ a local regression.
 \details{
 See locfit() help function from the locfit R library. The user can act on:
 \describe{
-\item{mylocfit}{the constant of the smoothing parameter. Increase mylocfit
+\item{nnLocfit}{the constant of the smoothing parameter. Increase nnLocfit
 to have a very smooth curve}
 \item{confIntSize}{the level to calculate the confidence interval. Increase
 confIntSize to exclude less outliers}
@@ -78,7 +78,7 @@ resuVatorHTP <- detectSingleOut (TP = phenoTP,
                                  trait = "EffpsII",
                                  plotIds = plantSel,
                                  confIntSize = 3,
-                                 mylocfit = 0.1)
+                                 nnLocfit = 0.1)
 
 }
 \seealso{
