@@ -25,15 +25,15 @@ library(ggplot2)
 
 # Introduction
 
-This document presents the final step of the HTP data analysis: extracting interesting parameters from the modeled time course [@Brien2020]. For example, in the second data set from the PhenoArch platform, the maximum leaf area (from the P-splines) or the maximum leaf growth rate (from the first derivatives) are relevant parameters (see figure below). We could assess their variability in the genotypes and the difference between treatments, *e.g.* has the water scenario decreased the maximum leaf area? 
+This document presents the final step of the HTP data analysis: extracting interesting parameters from the modeled time courses [@Brien2020]. For example, in the second data set from the PhenoArch platform, the maximum leaf area (from the P-splines) or the maximum leaf growth rate (from the first derivatives) are relevant parameters (see figure below). We could assess their variability in the genotypes and the difference between treatments, *e.g.* has the water scenario decreased the maximum leaf area? 
 
-```{r PSplineDerivArchFig, fig.cap='P-spline', out.width='80%', fig.pos='c', echo=FALSE}
+```{r PSplineDerivArchFig, out.width='80%', fig.pos='c', echo=FALSE}
 knitr::include_graphics("figures/psplinederiv_Arch.png", auto_pdf = TRUE)
 ```
 
 It is also possible to specify a period for the parameter estimation. For example, in the first data set from the Phenovator platform, we can select the period with the high light intensity (see figure below) and estimate the maximum slope during that period (from the first derivatives). This could be interpreted as a recovery rate of the photosystem II efficiency. 
 
-```{r PSplineDerivVatorFig, fig.cap='P-spline', out.width='80%', fig.pos='c', echo=FALSE}
+```{r PSplineDerivVatorFig, out.width='80%', fig.pos='c', echo=FALSE}
 knitr::include_graphics("figures/psplinederiv_Vator.png", auto_pdf = TRUE)
 ```
 
@@ -149,7 +149,7 @@ ggplot(paramArch1, aes(max_predictions)) +
 
 ## Example 3
 
-For this example, we will use the raw data from the RootPhAir, corrected for individually outlying observations (see [**statgenHTP tutorial: 2. Outlier detection for single observations**](OutlierSingleObs_HTP.html)) and time course outliers (see [**statgenHTP tutorial: 4. Outlier detection Time course**](OutliersTimeCourse_HTP.html)). We will fit P-splines at the plant level on a subset of genotypes.
+For this example, we will use the raw data from the RootPhAir, corrected for individually outlying observations (see [**statgenHTP tutorial: 2. Outlier detection for single observations**](OutlierSingleObs_HTP.html)) and time course outliers (see [**statgenHTP tutorial: 4. Outlier detection Time course**](OutlierSerieObs_HTP.html)). We will fit P-splines at the plant level on a subset of genotypes.
 
 ```{r rmOutRoot, echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE}
 subGenoRoot <- c( "2", "6", "8", "9", "10", "520", "522")

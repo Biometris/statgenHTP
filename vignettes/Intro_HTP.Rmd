@@ -34,23 +34,14 @@ The aim of this package is to provide a suit of functions to (1) detect outliers
 The overall structure of the package is in 5 main parts:
 
 1.  Data description and preparation - *statgenHTP tutorial: 1. Introduction, data description and preparation*
-2.  Outlier detection: single observation - [*statgenHTP tutorial: 2. Outlier detection for single observations*](OutlierSingleObs_HTP.html)
+2.  Outlier detection: single observations - [*statgenHTP tutorial: 2. Outlier detection for single observations*](OutlierSingleObs_HTP.html)
 3.  Correction for spatial trends - [*statgenHTP tutorial: 3. Correction for spatial trends*](SpatialModel_HTP.html)
 4.  Outlier detection: series of observations - [*statgenHTP tutorial: 4. Outlier detection for series of observations*](OutlierSerieObs_HTP.html)
 5.  Parameter estimation - [*statgenHTP tutorial: 5. Estimation of parameters for time courses*](ParameterEstimation_HTP.html)
 
-This document describes in detail the three data sets used to examplify the functions. It also contains description on how to prepare the data for analysis and how to visualize them.
+This document describes in detail the three data sets used to exemplify the functions. It also contains descriptions on how to prepare the data for analysis and how to visualize them.
 
 ------------------------------------------------------------------------
-
-# Load the statgenHTP R package
-
-For more information on how to install R and RStudio and the statgen packages, please read the Getting started file. Once everything is installed and before functions of the statgenHTP R package can be used within R, it needs to be made available:
-
-```{r label="library-statgenhtp", echo=TRUE, eval=FALSE}
-## Load the statgenHTP package
-library(statgenHTP)
-```
 
 # Data description
 
@@ -86,27 +77,25 @@ In this dataset, there are two genotypic panels (`population`) and two water sce
 data("PhenoarchDat1")
 ```
 
-The leaf area and the biomass of individual plants are estimated from images taken in 13 directions. Briefly, pixels extracted from RGB images are converted into biomass and leaf area. Calibration is made using the regression of image data on destructive measurements data, at different phenological stages, from 5 to 14 appeared leaves (i.e. from 15 to 50 days at 20°C after emergence). Time courses of biomass (`Biomass_Estimated`) and leaf area (`LA_Estimated`) are expressed as a function of thermal time (`TT`). The height of each plants (`Height_Estimated`) is also estimated from the pictures. The number of visible leaves (`count_leaf`) is counted at least once a week on each plant. To prevent errors in leaf counting, leaves 5 and 10 of each plant are marked soon after appearance. The `phyllocron` is calculated as the slope of the linear regression of number of leaves on thermal time before the beginning of the water deficit.
+The leaf area and the biomass of individual plants are estimated from images taken in 13 directions. Briefly, pixels extracted from RGB images are converted into biomass and leaf area ([@Brichet2017]). Time courses for biomass (`Biomass_Estimated`) and leaf area (`LA_Estimated`) are expressed as a function of thermal time (`TT`). The height of each plants (`Height_Estimated`) is also estimated from the pictures. The number of visible leaves (`count_leaf`) is counted at least once a week on each plant. To prevent errors in leaf counting, leaves 5 and 10 of each plant are marked soon after appearance. The `phyllocron` is calculated as the slope of the linear regression of number of leaves on thermal time before the beginning of the water deficit.
 
 The unique ID of the plant is recorded (`pos`), together with the pot position in row (`Row`) and in column (`Col`).
 
 ```{r headdatagh, echo=FALSE, message=FALSE}
-knitr::kable(PhenoarchDat1[PhenoarchDat1$pos=="c15r1",1:8][5:10,], 
-             align=c('c','c'), row.names = FALSE,  booktabs = TRUE)
-knitr::kable(PhenoarchDat1[PhenoarchDat1$pos=="c16r1",1:8][5:10,], 
-             align=c('c','c'), row.names = FALSE,  booktabs = TRUE)
-
+knitr::kable(rbind(PhenoarchDat1[PhenoarchDat1$pos=="c15r1",1:8][5:7, ],
+                   PhenoarchDat1[PhenoarchDat1$pos=="c16r1",1:8][5:7, ]), 
+             align=c('c','c'), row.names = FALSE, booktabs = TRUE)
 ```
 
 ## Example 3: Tip root data set {#ex3}
 
-The tip root data set was obtained during an experiment performed at the [RootPhAir platform](https://uclouvain.be/en/research-institutes/eli/elia/aeroponics.html) (Louvain-La-Neuve University). This platform consists of two aeroponic tanks of 495 plants located in the same greenhouse. Plants are held on a strip containing 5 plants, with 99 strips per tank. Sprinklers are placed in the bottom of the tanks and spray a nutrient solution. Strips move constantly and plants are pictured when the strip passes in front of the camera. Plants are pictured every two hours. Root system is described in two dimensions, with the root tip position in depth and width (tipPos_y and tipPos_x respectively) deduced from image analysis.
+The tip root data set was obtained during an experiment performed at the [RootPhAir platform](https://uclouvain.be/en/research-institutes/eli/elia/rootphair.html) (Louvain-La-Neuve University). This platform consists of two aeroponic tanks of 495 plants located in the same greenhouse. Plants are held on a strip containing 5 plants, with 99 strips per tank. Sprinklers are placed in the bottom of the tanks and spray a nutrient solution. Strips move constantly and plants are pictured when the strip passes in front of the camera. Plants are pictured every two hours. The root system is described in two dimensions, with the root tip position in depth and width (tipPos_y and tipPos_x respectively) deduced from image analysis.
 
 ```{r PFroothFig, out.width='90%', fig.pos='p', echo=FALSE}
 knitr::include_graphics("figures/ucl_pf.png", auto_pdf = TRUE)
 ```
 
-This data set consists of two experiments (`Exp`) of root growth. For each genotype (`Genotype`), the tip position (`tipPos_x` and `tipPos_y`) of the main root was tracked over time (`Time`) for each plant (`plantId`). Plant coordinates are defined using the strip number (`Strip`) and the position on the strip (`Pos`), from 1 to 5.
+For each genotype (`Genotype`), the tip position (`tipPos_x` and `tipPos_y`) of the main root was tracked over time (`Time`) for each plant (`plantId`). Plant coordinates are defined using the strip number (`Strip`) and the position on the strip (`Pos`), from 1 to 5.
 
 ```{r importdataroot,echo=TRUE,message=FALSE, warning=FALSE, eval=FALSE}
 data("RootDat1")
@@ -116,29 +105,27 @@ data("RootDat1")
 knitr::kable(head(RootDat1), align=c('c','c'), booktabs = TRUE)
 ```
 
-> *TO NOTE: In this platform, plants are constantly moving therefore observations at any particular time will always include only a limited number of plants. As a consequence, it is not possible to perform a spatial analysis per time point, but the other functions for outliers detection and longitudinal modeling are available and illustrated in various tutorials. Estimates for dynamical parameters can be submitted to spatial analysis in the [statgenSTA package](https://biometris.github.io/statgenSTA/index.html).*
+> *NOTE: In this platform, plants are constantly moving therefore observations at any particular time will always include only a limited number of plants. As a consequence, it is not possible to perform a spatial analysis per time point, but the other functions for outliers detection and longitudinal modeling are available and illustrated in various tutorials. Estimates for dynamical parameters can be submitted to spatial analysis in the [statgenSTA package](https://biometris.github.io/statgenSTA/index.html).*
 
 # Data preparation
 
-The first step when modeling platform experiment data with the statgenHTP package is creating an object of class `TP` (Time Points). In this object, the time points are split into single data frames. It is then used throughout the statgenHTP package as input for analyses.
+The first step when modeling platform experiment data with the statgenHTP package is creating an object of class `TP` (Time Points). In this object, the time points are split into single `data.frames`. It is then used throughout the statgenHTP package as input for analyses.
 
-> *NOTE: It is possible to use the functions of this package with a phenotype measured at one time point only. In that case, the user has to create a column with time point containing the unique measurement time.*
-
-## Creating a `TP` object
+> *NOTE: It is possible to use the functions in this package with a phenotype measured at one time point only. In that case, the user has to create a column with time point containing the unique measurement time.*
 
 A `TP` object can be created from a `data.frame` with the function `createTimePoints`. This function does a number of things:
 
 -   Quality control on the input data. For example, warnings will be given when more than 50% of observations are missing for a plant.
--   Rename columns to default column names used by the functions in the statgenHTP package. For example, the column in the data containing variety/accession/genotype is renamed to "genotype". Original column names are stored as an attribute of the individual data frames in the `TP` object.
+-   Rename columns to default column names used by the functions in the statgenHTP package. For example, the column in the data containing variety/accession/genotype is renamed to "genotype". Original column names are stored as an attribute of the individual `data.frames` in the `TP` object.
 -   Convert column types to the default column types. For example, the column "genotype" is converted to a factor and "rowNum" to a numeric column.
--   Convert the column containing time into time format. If needed, the time format can be provided in `timeFormat`. For example, with a date/time input of the form "day/month/year hour:minute", use %d/%m/%Y %H:%M. For a full list of abbreviations see the R package strptime. *NOTE* when the input time is just a numeric, the function will convert it to time from 01-01-1970 (origin time of the package lubridate).
+-   Convert the column containing time into time format. If needed, the time format can be provided in `timeFormat`. For example, with a date/time input of the form "day/month/year hour:minute", use %d/%m/%Y %H:%M. For a full list of abbreviations see the R package strptime. *NOTE:* when the input time is just a numeric, the function will convert it to time from 01-01-1970 (origin time of the package lubridate).
 -   Add columns `check` and `checkGenotypes` when `addCheck=TRUE`.
--   Split the data into separate data.frames by time points. A `TP` object is a `list` of `data.frames` where each `data.frame` contains the data for a single time point. If there is only one time points the output will be a `list` with only one item.
+-   Split the data into separate data.frames by time points. A `TP` object is a `list` of `data.frames` where each `data.frame` contains the data for a single time point. If there is only one time point the output will be a `list` with only one item.
 -   Add a `data.frame` with columns `timeNumber` and `timePoint` as attribute "timePoints" to the `TP` object. This data.frame can be used for referencing time points by a unique number.
 
 > *NOTE: It is possible to transform a TP object back into a data.frame with the `as.data.frame()` function.*
 
-### Example 1
+## Example 1
 
 For the first data set (see section [3.1](#ex1)), a `TP` object is firstly created containing all the time points.
 
@@ -158,10 +145,10 @@ summary(phenoTP)
 
 In this data set, 3 plants contain less than 50% of the 73 time points. The user may choose to check the data for these plants and eventually to remove them from the data set.
 
-The function getTimePoints allows to generate a data frame containing the time points and their numbers in the `TP` object. Below is a example with the first 6 time points of the `phenoTP`:
+The function `getTimePoints` allows to generate a `data.frame` containing the time points and their numbers in the `TP` object. Below is an example with the first 6 time points of the `phenoTP`:
 
 ```{r getTimepoints}
-### Extract the time points table
+## Extract the time points table.
 timepoint <- getTimePoints(phenoTP)
 ```
 
@@ -169,14 +156,15 @@ timepoint <- getTimePoints(phenoTP)
 knitr::kable(head(timepoint), align=c('c','c'), padding = 0)
 ```
 
-The `TP` object just created is a `list` with 73 items, one for each time point in the original `data.frame` (called "PhenovatorDat1"). The option `experimentName` is used for identifying the data set and is a requirement. The column "Genotype" in the original data is renamed to "genotype" and converted to a factor. The columns "Replicate" and "pos" are renamed and converted likewise. The option `repId` is used when replication blocks were defined in the design (i.e. one block contains one full replicate of all the genotypes). In that case, the column containing the replicate block should be specified here. 
-The newly created column "plotID" needs to be a unique identifier for a plot or a plant. The columns "y" and "x" are renamed to "rowNum" and "colNum" respectively. Simultaneously, two columns "rowId" and "colId" are created containing the same information converted to a factor. This seemingly duplicate information is needed for spatial analysis. The information about which columns have been renamed when creating a `TP` object is stored as an attribute of each individual `data.frame` in the object. The option `addCheck` is set as `TRUE` to specify that the genotypes listed in `checkGenotypes` are reference genotypes (or checks). This option will create a column "check" with a value "noCheck" for the genotypes that are not in `checkGenotypes` and the name of the genotype for the `checkGenotypes`. Also a column "genoCheck" is added with the names of the genotypes that are not in `checkGenotypes` and `NA` for the `checkGenotypes` (see [**statgenHTP tutorial: 3. Correction for spatial trends**](SpatialModel_HTP.html)). These columns are necessary for fitting models on data of an augmented design [@Piepho2016].
+The `TP` object just created is a `list` with 73 items, one for each time point in the original `data.frame` (called "PhenovatorDat1"). The option `experimentName` is used for identifying the data set and is a requirement. The column "Genotype" in the original data is renamed to "genotype" and converted to a factor. The columns "Replicate" and "pos" are renamed and converted likewise. The option `repId` is used when replication blocks were defined in the design (i.e. one block contains one full replicate of all the genotypes). In that case, the column containing the replicate block should be specified here. The newly created column "plotId" needs to be a unique identifier for a plot or a plant. The columns "y" and "x" are renamed to "rowNum" and "colNum" respectively. Simultaneously, two columns "rowId" and "colId" are created containing the same information converted to a factor. This seemingly duplicate information is needed for spatial analysis. The information about which columns have been renamed when creating a `TP` object is stored as an attribute of each individual `data.frame` in the object. The option `addCheck` is set as `TRUE` to specify that the genotypes listed in `checkGenotypes` are reference genotypes (or checks). This option will create a column "check" with a value "noCheck" for the genotypes that are not in `checkGenotypes` and the name of the genotype for the `checkGenotypes`. Also a column "genoCheck" is added with the names of the genotypes that are not in `checkGenotypes` and `NA` for the `checkGenotypes` (see [**statgenHTP tutorial: 3. Correction for spatial trends**](SpatialModel_HTP.html)). These columns are necessary for fitting models on data of an augmented design [@Piepho2016].
 
-## Plotting a `TP` object
+# Data visualization
 
 Several plots can be made to further investigate the content of a `TP` object.
 
-The first type of plot displays the layout of the experiment as a grid using the row and column coordinates in "plotID". The default option creates plots of all time points in the `TP` object. This can be restricted to selected time points using their number in the option `timePoints`. If `repId` is specified in the TP object, replicate blocks are delineated by a black line. Missing plots are indicated in white circled with a bold black line. This type of plot allows checking the design of the experiment.
+## Layout plot
+
+The first type of plot displays the layout of the experiment as a grid using the row and column coordinates. The default option creates plots of all time points in the `TP` object. This can be restricted to a selection of time points using their number in the option `timePoints`. If `repId` was specified when creating the `TP` object, replicate blocks are delineated by a black line. Missing plots are indicated in white enclosed with a bold black line. This type of plot allows checking the design of the experiment.
 
 ```{r layoutPlot, fig.height=4, fig.width=5, fig.align = 'center'}
 ## Plot the layout for the third time point.
@@ -206,7 +194,7 @@ plot(phenoTP,
      showGeno = TRUE)
 ```
 
-We can visualize the raw data of a given trait on the layout, as a heatmap. This type of plot gives a first indication of the spatial variability at a given time point. This will be further investigate with the spatial modelling (see [*statgenHTP tutorial: 3. Correction for spatial trends*](SpatialModel_HTP.html)).
+We can visualize the raw data of a given trait on the layout, as a heatmap. This type of plot gives a first indication of the spatial variability at a given time point. This can be further investigated with the spatial modeling (see [*statgenHTP tutorial: 3. Correction for spatial trends*](SpatialModel_HTP.html)).
 
 ```{r layoutPlotheatmap, fig.height=7, fig.width=8, fig.align = 'center'}
 ## Plot the layout for the third time point.
@@ -216,19 +204,23 @@ plot(phenoTP,
      traits = "EffpsII")
 ```
 
-Raw data can be displayed per genotype with one color per plotId. By default all genotypes are used but it can be restricted using `genotypes` to a subset of genotypes. By default, data are plotted as points but this can be changed to lines by setting `plotLine = TRUE`.
+## Raw data plot
 
-> NOTE: the color of the plotId is the same whether point or lines are used. However, the color might change between vignettes. The color is not assign per plotId but generated using a color shade depending on the total number of plotId to visualize.
+Raw data can be displayed per genotype with one color per plotId. By default all genotypes are used but this can be restricted to a subset of genotypes using the parameter `genotypes`. By default, data is plotted as dots but this can be changed to lines by setting `plotLine = TRUE`.
 
-Plot of the raw data per genotype gives a first indication of the plant-to-plant variability and may already help visualizing strange points or plants for a genotype. This will have to be confirm with the detection of (i) individually outlying observation (see [*statgenHTP tutorial: 2. Outlier detection for single observations*](OutlierSingleObs_HTP.html)) and (ii) outlying series of observation (see [*statgenHTP tutorial: 4. Outlier detection for series of observations*](OutlierSerieObs_HTP.html))
+> NOTE: the color of the plotId is the same whether point or lines are used. However, the color might change between vignettes. The color is not assigned per plotId but generated using a color shade depending on the total number of plotIds that are visualized.
+
+The plot of the raw data per genotype gives a first indication of the plant-to-plant variability and may already help visualizing strange points or plants for a genotype. This will have to be confirmed with the detection of (i) individually outlying observations (see [*statgenHTP tutorial: 2. Outlier detection for single observations*](OutlierSingleObs_HTP.html)) and (ii) outlying series of observations (see [*statgenHTP tutorial: 4. Outlier detection for series of observations*](OutlierSerieObs_HTP.html))
 
 ```{r rawVator, include=TRUE, fig.height=3, fig.width=7, fig.align = 'center'}
 ## Create the raw data time courses for three genotypes.
 plot(phenoTP, 
      traits = "EffpsII",
      plotType = "raw",
-     genotypes = c("G1", "G2", "check1"))
+     genotypes = c("G001", "G002", "check1"))
 ```
+
+## Boxplot
 
 Boxplots can be made to visually assess the variability of the trait(s) in the `TP` object. By default a box is plotted per time point for the specified trait using all time points. For example, in the Phenovator data, the variability is larger at the beginning of the experiment (before the change in light) and is reduced at the end (after the change of light intensity).
 
@@ -262,7 +254,9 @@ plot(phenoTP,
      groupBy = "repId")
 ```
 
-The boxes for the can be ordered using `orderBy`. Boxes can be ordered by alphabetical order ("alphabetic") or by the group mean ("ascending","descending").
+The boxes for the can be ordered using `orderBy`. Boxes can be ordered alphabetically ("alphabetic") or by the group mean ("ascending", "descending").
+
+## Correlation plot
 
 Finally, a plot of the correlations between the observations in time for a specified trait can be made. The order of the plot is chronological and by default all time points are used.
 
@@ -278,7 +272,9 @@ plot(phenoTP,
 
 ------------------------------------------------------------------------
 
-### Example 2
+# Examples
+
+## Example 2
 
 A second `TP` object is created containing all the observations in time:
 
@@ -302,7 +298,7 @@ plot(phenoTParch,
      highlight = c("GenoA01", "GenoA02", "GenoB01", "GenoB02"))
 ```
 
-Note that for the raw data, we can already use the `geno.decomp` option to split the genotypes using the water scenario. We can already visualize the difference between the irrigation levels for two genotypes: the leaf area in WW is bigger than in WD and the slope of the leaf area progression also seems to be bigger:
+Note that for the raw data, we can use the `geno.decomp` option to split the genotypes using the water scenario. Doing so, we can visualize the difference between the irrigation levels for two genotypes: the leaf area in WW is larger than in WD and the slope of the leaf area progression also seems to be larger:
 
 ```{r rawArch, include=TRUE, fig.height=3, fig.width=7, fig.align = 'center'}
 plot(phenoTParch, 
@@ -312,7 +308,7 @@ plot(phenoTParch,
      geno.decomp = "Scenario")
 ```
 
-### Example 3
+## Example 3
 
 A third `TP` object is created containing all the time points:
 
@@ -327,16 +323,16 @@ rootTP <- createTimePoints(dat = RootDat1,
 summary(rootTP)
 ```
 
-As explained in section [3.3](#ex3), there is no common time point for all the plants, i.e. no date at which all plants were pictured. Instead, plants are constantly moving and pictures are taken every 20 minutes. Hence, each row of the data frame contains a unique time point. As a consequence, the "rootTP" object just created is a `list` with 16,275 items, one for each time points in the original `data.frame` (called "RootDat1").
+As explained in section [3.3](#ex3), there is no common time point for all the plants, i.e. no date at which all plants were pictured. Instead, plants are constantly moving and pictures are taken every 20 minutes. Hence, each row of the `data.frame` contains a unique time point. As a consequence, the "rootTP" object just created is a `list` with 16,275 items, one for each time point in the original `data.frame` (called "RootDat1").
 
-```{r rawRoot, include=TRUE, fig.height=3, fig.width=7, fig.align = 'center', eval=FALSE}
+```{r rawRoot, include=TRUE, eval=FALSE}
 plot(rootTP, 
      traits = "tipPos_y",
      plotType = "raw",
      genotypes = c("2", "8", "252"))
 ```
 
-```{r rootRawFig, fig.cap = 'rootRaw', out.width='90%', fig.pos='p', echo=FALSE}
+```{r rootRawFig, out.width='90%', fig.pos='p', echo=FALSE}
 knitr::include_graphics("figures/tipPosRaw.png", auto_pdf = TRUE)
 ```
 

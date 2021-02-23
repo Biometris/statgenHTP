@@ -39,19 +39,19 @@ where briefly,
 * $X_h \beta_{ht}$, corresponds to the factors/covariates whose effects we are interested in modeling,  
 * $X_q \beta_{qt}$, corresponds to the factors/covariates whose effects we are interested in removing,  
 * $Z_g c_{gt}$, corresponds the genotypic effects,
-* $f_t(u,v) + Z_r c_{rt} + Z_c c_{ct}$, represent the spatial effects, with $f_t(u,v)$ corresponding to the spatial function, e.g. the PSANOVA function from the SpATS package, $Z_r c_{rt}$ and $Z_c c_{ct}$ represent the design matrices and effects for the random row and column effects respectively, 
+* $f_t(u,v) + Z_r c_{rt} + Z_c c_{ct}$, represents the spatial effects, with $f_t(u,v)$ corresponding to the spatial function, e.g. the `PSANOVA` function from the SpATS package, $Z_r c_{rt}$ and $Z_c c_{ct}$ represent the design matrices and effects for the random row and column effects respectively, 
 * $\epsilon_t$, is the residual.
 
 > For more details see Pérez D.M. *et al.* (*in prep.*).
 
 
-This tutorial describes in detail how to perform analyses to correct for spatial trends using different modeling engines and extract the results from the models.
+This tutorial describes in detail how to perform analyses to correct for spatial trends using different modeling engines and how to extract the results from the models.
 
 ----
 
 # Modeling with spatial terms using Example 1
 
-We will use the `TP` object `phenoTPOut` in which annotated time points were replaced by NA because they were considered to be outliers. (see [**statgenHTP tutorial: 2. Outlier detection for single observations**](OutlierSingleObs_HTP.html)).
+We will use the `TP` object `phenoTPOut` in which annotated time points were replaced by `NA` because they were considered to be outliers. (see [**statgenHTP tutorial: 2. Outlier detection for single observations**](OutlierSingleObs_HTP.html)).
 
 ```{r createTP, warning=FALSE, echo=FALSE}
 PhenovatorDat1 <- PhenovatorDat1[!PhenovatorDat1$pos %in% c("c24r41", "c7r18", "c7r49"),]
@@ -159,7 +159,7 @@ modPhenoSpCheck <- fitModels(TP = phenoTPOut,
 ```
 
 Finally, a model following a resolvable row-column design can be fitted: including the effects of row and column nested within replicate.  
-EffpsII = $\mu$ + repId + **genoCheck** + **repId:rowId** + **repId:colId** + **$\epsilon$**
+EffpsII = $\mu$ + repId + **genotype** + **repId:rowId** + **repId:colId** + **$\epsilon$**
 
 ```{r fitSpRCD, message=FALSE, eval=FALSE, eval=FALSE}
 ## Fit a model for a single time point.
@@ -171,7 +171,7 @@ modPhenoSpRCD <- fitModels(TP = phenoTPOut,
 
 ### Model plots
 
-The first type of plot that can be made for fitted models, is a spatial plot per time point using `plotType = "spatial"`. It consists of five plots, spatial plots of the raw data, fitted values, residuals and either BLUEs or BLUPs, and a histogram of the BLUEs or BLUPs. When SpATS is used for modeling an extra plot with the fitted spatial trend is included (see [@RodAlv2018] and [@Velazco2017] for interpretation). 
+The first type of plot that can be made for fitted models, is a spatial plot per time point using `plotType = "spatial"`. It consists of plots, spatial plots of the raw data, fitted values, residuals and either BLUEs or BLUPs, and a histogram of the BLUEs or BLUPs. When SpATS is used for modeling an extra plot with the fitted spatial trend is included (see [@RodAlv2018] and [@Velazco2017] for interpretation). 
 
 Note that spatial plots can only be made if spatial information, i.e. `rowNum` and `colNum`, is available in the `TP` object.
 
@@ -181,6 +181,7 @@ plot(modPhenoSp,
      plotType = "spatial",
      spaTrend = "raw")
 ```
+
 For assessing the importance of the fitted spatial trends at one glance, and for comparison between time points, the plot of the fitted spatial trend can be displayed as a ratio of the raw phenotypic mean: SpatTrend(proportion) = Estimated SpatTrend / mean(raw EffpsII). In this case, the scale will be in percentage and the min/max will be adjusted based on all the time points used but will be at least 10%. This empirical threshold allows visualizing fitted trends that have a relatively small to large importance.
 
 ```{r plotSpatPerc,  fig.height=4, fig.width=7, message=FALSE, eval=TRUE}
@@ -252,8 +253,8 @@ knitr::kable(head(spatCorrSp), align = c('c','c','c','c','c','c','c'), padding =
 
 ### Plotting model results
 
-Different plots can be displayed for the `fitMod` object. The first one is **rawPred**, it plots the raw data (colored dots, one color per plotId) overlaid with the predicted values (black points) from the fitted model. One plot is made per genotype with all its plotId. These plots are put together in a 5×5 grid per page.   
-By using the option `genotypes`, a subset of genotypes will be plotted. By default, data are plotted as dot but this can be changed by setting `plotLine = TRUE`.
+Different plots can be displayed for the `fitMod` object. The first one is **rawPred**, it plots the raw data (colored dots, one color per plotId) overlaid with the predicted values (black dots) from the fitted model. One plot is made per genotype with all its plotId. These plots are put together in a 5×5 grid per page.   
+Using the parameter `genotypes`, a subset of genotypes will be plotted. By default, data are plotted as dots but this can be changed by setting `plotLine = TRUE`.
 
 ```{r plotSpPred, message=FALSE, fig.height=2, fig.width=6, fig.align = 'center'}
 plot(modPhenoSp, 
@@ -261,8 +262,8 @@ plot(modPhenoSp,
      genotypes = c("check1", "check2", "G007", "G058")) 
 ```
 
-The second one is **corrPred**, it plots the spatially corrected data (colored dots, one color per plotId) overlaid with the predicted values from the fitted model (black dots). One plot is made per genotype with all its plotId. These plots are put together in a 5×5 grid per page. 
-By using the option `genotypes`, a subset of genotypes will be plotted. By default, data are plotted as dot but this can be changed by setting `plotLine = TRUE`.
+The second one is **corrPred**, it plots the spatially corrected data (colored dots, one color per plotId) overlaid with the predicted values from the fitted model (black dots). One plot is made per genotype with all its plotId. These plots are put together in a 5×5 grid per page.    
+Using the parameter `genotypes`, a subset of genotypes will be plotted. By default, data are plotted as dots but this can be changed by setting `plotLine = TRUE`.
 
 ```{r plotSpCorr, message=FALSE, fig.height=2, fig.width=6, fig.align = 'center', eval=TRUE}
 plot(modPhenoSp, 
@@ -270,7 +271,7 @@ plot(modPhenoSp,
      genotypes = c("check1", "check2", "G007", "G058") )
 ```
 
-Note that when check genotypes are used for modeling, for the two previous plot types (`rawPred` and `corrPred`), the option `plotChecks` is required to display check genotypes.
+Note that when check genotypes are used for modeling, for the two previous plot types (`rawPred` and `corrPred`), the parameter `plotChecks` should be set to `TRUE` to display check genotypes.
 
 ```{r plotSpPredcheck, eval=FALSE, message=FALSE, fig.height=2, fig.width=6, fig.align = 'center'}
 plot(modPhenoSpCheck, 
@@ -279,7 +280,7 @@ plot(modPhenoSpCheck,
      genotypes = c("check1", "check2", "G007", "G058")) 
 ```
 
-The three last types of plot display different model parameters over time. Plot type **herit** plots the heritability over time. If `geno.decomp` is used when fitting the model, heritabilities are plotted for each level of the genotype groups in a single plot (see section [**4**](#genodecomp)). The scale of the plot can be adjusted using `yLim`.
+The last three types of plot display different model parameters over time. Plot type **herit** plots the heritability over time. If `geno.decomp` is used when fitting the model, heritabilities are plotted for each level of the genotype groups in a single plot (see section [**4**](#genodecomp)). The scale of the plot can be adjusted using `yLim`.
 
 ```{r plotSpHerit, message=FALSE, fig.height=2.5, fig.width=3.5, fig.align = 'center'}
 plot(modPhenoSp, 
@@ -302,10 +303,9 @@ plot(modPhenoSp,
      EDType = "ratio")
 ```
 
-The effective dimensions are also known as the effective degrees of freedom. They can be interpreted as a measure of the complexity of the corresponding component: if the effective dimension of one component is large, it indicates that there are strong spatial trends in this direction. Here, for better comparison between components, the ratio of effective dimensions vs. total dimensions can be used. It has a value between 0, no spatial trend, and 1, strong spatial trend (almost all the degrees of freedom are used to model it).
+The effective dimensions are also known as the effective degrees of freedom. They can be interpreted as a measure of the complexity of the corresponding component: if the effective dimension of one component is large, it indicates that there are strong spatial trends in this direction. For better comparison between components, the ratio of effective dimensions vs. total dimensions can be used. It has a value between 0, no spatial trend, and 1, strong spatial trend (almost all the degrees of freedom are used to model it).
 
-The table below gives an overview of the effective dimensions and an
-explanation of their meaning.
+The table below gives an overview of the effective dimensions and an explanation of their meaning.
 
 | EFFECTIVE DIMENSION | EXPLANATION |
 | :---------------------------- |:----------------------------------|
@@ -405,7 +405,7 @@ modPhenoAs <- fitModels(TP = phenoTPOut,
 
 # Modeling with decomposition of genotypes using Example 2 {#genodecomp}
 
-When an experimental treatment is applied, for example, a water scenario, it is required to decompose the genotypic variance into the levels of the treatment. In the following example, two water scenarios, well-watered (WW) and water deficit (WD), were applied. Thus, instead of modeling one genotypic variance, there will be one genotypic variance per treatment. In this part, we will describe briefly what is specific of such modeling with the statgenHTP package using a another example dataset.
+When an experimental treatment is applied, for example, a water scenario, it is required to decompose the genotypic variance into the levels of the treatment. In the following example, two water scenarios, well-watered (WW) and water deficit (WD), were applied. Thus, instead of modeling one genotypic variance, there will be one genotypic variance per treatment. In this part, we will describe briefly what is specific of such modeling with the statgenHTP package using the second example data set.
 
 We will use the `TP` object **phenoTParchOut** in which annotated time points have been replaced by NA (see [**statgenHTP tutorial: 2. Outlier detection for single observations**](OutlierSingleObs_HTP.html)).
 
