@@ -27,8 +27,8 @@
 #' The following combinations of random and spatial terms are fitted
 #' \itemize{
 #' \item{random = repId:rowId + repId:colId, spatial = NULL}
-#' \item{random = repId:rowId, spatial = ar1(rowId):colId}
-#' \item{random = repId:colId, spatial = rowId:ar1(colId)}
+#' \item{random = repId:rowId + repId:colId, spatial = ar1(rowId):colId}
+#' \item{random = repId:colId + repId:colId, spatial = rowId:ar1(colId)}
 #' \item{random = repId:rowId + repId:colId, spatial = ar1(rowId):ar1(colId)}
 #' }
 #' If there are no replicates in the model, repId is left out from the random
@@ -508,10 +508,11 @@ bestSpatMod <- function(modDat,
   spatCh <- spatCh[spatSel]
   spatTerm <- c(NA, paste("~", c("ar1(rowId):colId", "rowId:ar1(colId)",
                                  "ar1(rowId):ar1(colId)")))[spatSel]
-  randTermNoRep <- c("~ . + rowId + colId" , "~ . + rowId", "~ . + colId",
-                     "~ . + rowId + colId")[spatSel]
-  randTermRep <- c("~ . + repId:rowId + repId:colId" , "~ . + repId:rowId",
-                   "~ . + repId:colId",
+  randTermNoRep <- c("~ . + rowId + colId" , "~ . + rowId + colId",
+                     "~ . + rowId + colId",  "~ . + rowId + colId")[spatSel]
+  randTermRep <- c("~ . + repId:rowId + repId:colId",
+                   "~ . + repId:rowId + repId:colId",
+                   "~ . + repId:rowId + repId:colId",
                    "~ . + repId:rowId + repId:colId")[spatSel]
   ## Create empty base lists.
   fitMods <- spatial <- sumTab <- setNames(vector(mode = "list",

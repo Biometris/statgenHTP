@@ -87,8 +87,8 @@ run on all time points.
 The following combinations of random and spatial terms are fitted
 \itemize{
 \item{random = repId:rowId + repId:colId, spatial = NULL}
-\item{random = repId:rowId, spatial = ar1(rowId):colId}
-\item{random = repId:colId, spatial = rowId:ar1(colId)}
+\item{random = repId:rowId + repId:colId, spatial = ar1(rowId):colId}
+\item{random = repId:colId + repId:colId, spatial = rowId:ar1(colId)}
 \item{random = repId:rowId + repId:colId, spatial = ar1(rowId):ar1(colId)}
 }
 If there are no replicates in the model, repId is left out from the random
