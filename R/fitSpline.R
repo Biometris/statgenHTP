@@ -453,7 +453,7 @@ estimateSplineParameters <- function(HTPSpline,
       stop("A percentile should be give as pN, with N between 0 and 100.\n")
     }
   } else {
-    what <- match.arg(what)
+    estFun <- match.arg(what)
   }
   estVar <- if (estimate == "predictions") "pred.value" else if
   (estimate == "derivatives") "deriv" else "deriv2"
@@ -505,20 +505,26 @@ estimateSplineParameters <- function(HTPSpline,
   predDat <- predDat[predDat[[timeVar]] >= timeMin &
                        predDat[[timeVar]] <= timeMax, ]
   ## Area under the curve corresponds to sum.
-  if (what == "AUC") what <- "sum"
+  if (what == "AUC") estFun <- "sum"
   ## Percentiles are calculated using quantile
-  if (substr(what, 1, 1) == "p") what <- "quantile"
+  if (substr(what, 1, 1) == "p") estFun <- "quantile"
   ## Get estimates.
   res <- aggregate(x = predDat[[estVar]],
                    by = predDat[c("genotype", if (useGenoDecomp) "geno.decomp",
                                   if (fitLevel == "plotId") "plotId")],
-                   FUN = what, probs = if (what == "quantile") percentile)
+                   FUN = estFun, probs = if (estFun == "quantile") percentile)
+  colnames(res)[colnames(res) == "x"] <- paste0(what, "_", estimate)
+  ## For min and max get corresponding time point.
+  if (what %in% c("min", "max")) {
+    res <- merge(res, predDat, by.x = colnames(res),
+                 by.y = c(colnames(res)[-ncol(res)], estVar))
+    res <- res[, 1:5]
+    colnames(res)[4:5] <- paste0(what, "_", colnames(res)[4:5])
+  }
   return(res)
 }
 
-
 #### Helper function for fitting splines.
-
 
 #' Spectral decompositoin of D'D
 #'
