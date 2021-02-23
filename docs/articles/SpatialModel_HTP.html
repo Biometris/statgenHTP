@@ -135,20 +135,20 @@
 <li>
 <span class="math inline">\(Z_g c_{gt}\)</span>, corresponds the genotypic effects,</li>
 <li>
-<span class="math inline">\(f_t(u,v) + Z_r c_{rt} + Z_c c_{ct}\)</span>, represent the spatial effects, with <span class="math inline">\(f_t(u,v)\)</span> corresponding to the spatial function, e.g. the PSANOVA function from the SpATS package, <span class="math inline">\(Z_r c_{rt}\)</span> and <span class="math inline">\(Z_c c_{ct}\)</span> represent the design matrices and effects for the random row and column effects respectively,</li>
+<span class="math inline">\(f_t(u,v) + Z_r c_{rt} + Z_c c_{ct}\)</span>, represents the spatial effects, with <span class="math inline">\(f_t(u,v)\)</span> corresponding to the spatial function, e.g. the <code>PSANOVA</code> function from the SpATS package, <span class="math inline">\(Z_r c_{rt}\)</span> and <span class="math inline">\(Z_c c_{ct}\)</span> represent the design matrices and effects for the random row and column effects respectively,</li>
 <li>
 <span class="math inline">\(\epsilon_t\)</span>, is the residual.</li>
 </ul>
 <blockquote>
 <p>For more details see Pérez D.M. <em>et al.</em> (<em>in prep.</em>).</p>
 </blockquote>
-<p>This tutorial describes in detail how to perform analyses to correct for spatial trends using different modeling engines and extract the results from the models.</p>
+<p>This tutorial describes in detail how to perform analyses to correct for spatial trends using different modeling engines and how to extract the results from the models.</p>
 <hr>
 </div>
 <div id="modeling-with-spatial-terms-using-example-1" class="section level1">
 <h1 class="hasAnchor">
 <a href="#modeling-with-spatial-terms-using-example-1" class="anchor"></a>Modeling with spatial terms using Example 1</h1>
-<p>We will use the <code>TP</code> object <code>phenoTPOut</code> in which annotated time points were replaced by NA because they were considered to be outliers. (see <a href="OutlierSingleObs_HTP.html"><strong>statgenHTP tutorial: 2. Outlier detection for single observations</strong></a>).</p>
+<p>We will use the <code>TP</code> object <code>phenoTPOut</code> in which annotated time points were replaced by <code>NA</code> because they were considered to be outliers. (see <a href="OutlierSingleObs_HTP.html"><strong>statgenHTP tutorial: 2. Outlier detection for single observations</strong></a>).</p>
 <p>After creating a <code>TP</code> object, a model can be fitted on the data. This is done using the function <code>fitModels</code>, which uses two different engines for fitting the models, namely <em>SpATS</em> <span class="citation">(Rodríguez-Álvarez et al. 2018)</span> and <em>ASReml</em> <span class="citation">(Butler et al. 2017)</span>. For models with row and column coordinates, SpATS is the default engine (see section <a href="#SpATS"><strong>2.1</strong></a>). This can be overruled by specifying the function parameter <code>engine</code> and using ASReml for spatial models (see section <a href="#ASReml"><strong>2.2</strong></a>). When the row and column coordinates are not available, ASReml is used for modeling without spatial components (see section <a href="#ASRemlnoSP"><strong>3</strong></a>). Finally, it is possible to decompose the genotypic variance using, for example, a treatment effect (see section <a href="#genodecomp"><strong>4</strong></a>).</p>
 <p>The output of <code>fitModels</code> is an object of class <code>fitMod</code>, a list of fitted models with one item for each time point the model was fitted for.</p>
 <div id="SpATS" class="section level2">
@@ -320,7 +320,7 @@ EffpsII = <span class="math inline">\(\mu\)</span> + repId + Image_pos + check +
                              useCheck <span class="op">=</span> <span class="cn">TRUE</span>,
                              timePoints <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></code></pre></div>
 <p>Finally, a model following a resolvable row-column design can be fitted: including the effects of row and column nested within replicate.<br>
-EffpsII = <span class="math inline">\(\mu\)</span> + repId + <strong>genoCheck</strong> + <strong>repId:rowId</strong> + <strong>repId:colId</strong> + <strong><span class="math inline">\(\epsilon\)</span></strong></p>
+EffpsII = <span class="math inline">\(\mu\)</span> + repId + <strong>genotype</strong> + <strong>repId:rowId</strong> + <strong>repId:colId</strong> + <strong><span class="math inline">\(\epsilon\)</span></strong></p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Fit a model for a single time point.</span>
 <span class="va">modPhenoSpRCD</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitModels.html">fitModels</a></span><span class="op">(</span>TP <span class="op">=</span> <span class="va">phenoTPOut</span>,
@@ -331,14 +331,15 @@ EffpsII = <span class="math inline">\(\mu\)</span> + repId + <strong>genoCheck</
 <div id="model-plots" class="section level3">
 <h3 class="hasAnchor">
 <a href="#model-plots" class="anchor"></a>Model plots</h3>
-<p>The first type of plot that can be made for fitted models, is a spatial plot per time point using <code>plotType = "spatial"</code>. It consists of five plots, spatial plots of the raw data, fitted values, residuals and either BLUEs or BLUPs, and a histogram of the BLUEs or BLUPs. When SpATS is used for modeling an extra plot with the fitted spatial trend is included (see <span class="citation">(Rodríguez-Álvarez et al. 2018)</span> and <span class="citation">(Velazco et al. 2017)</span> for interpretation).</p>
+<p>The first type of plot that can be made for fitted models, is a spatial plot per time point using <code>plotType = "spatial"</code>. It consists of plots, spatial plots of the raw data, fitted values, residuals and either BLUEs or BLUPs, and a histogram of the BLUEs or BLUPs. When SpATS is used for modeling an extra plot with the fitted spatial trend is included (see <span class="citation">(Rodríguez-Álvarez et al. 2018)</span> and <span class="citation">(Velazco et al. 2017)</span> for interpretation).</p>
 <p>Note that spatial plots can only be made if spatial information, i.e. <code>rowNum</code> and <code>colNum</code>, is available in the <code>TP</code> object.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">modPhenoSp</span>,
      timePoints <span class="op">=</span> <span class="fl">36</span>,
      plotType <span class="op">=</span> <span class="st">"spatial"</span>,
      spaTrend <span class="op">=</span> <span class="st">"raw"</span><span class="op">)</span></code></pre></div>
-<p><img src="SpatialModel_HTP_files/figure-html/plotSpatRaw-1.png" width="700.8"> For assessing the importance of the fitted spatial trends at one glance, and for comparison between time points, the plot of the fitted spatial trend can be displayed as a ratio of the raw phenotypic mean: SpatTrend(proportion) = Estimated SpatTrend / mean(raw EffpsII). In this case, the scale will be in percentage and the min/max will be adjusted based on all the time points used but will be at least 10%. This empirical threshold allows visualizing fitted trends that have a relatively small to large importance.</p>
+<p><img src="SpatialModel_HTP_files/figure-html/plotSpatRaw-1.png" width="700.8"></p>
+<p>For assessing the importance of the fitted spatial trends at one glance, and for comparison between time points, the plot of the fitted spatial trend can be displayed as a ratio of the raw phenotypic mean: SpatTrend(proportion) = Estimated SpatTrend / mean(raw EffpsII). In this case, the scale will be in percentage and the min/max will be adjusted based on all the time points used but will be at least 10%. This empirical threshold allows visualizing fitted trends that have a relatively small to large importance.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">modPhenoSp</span>,
      timePoints <span class="op">=</span> <span class="fl">36</span>,
@@ -545,26 +546,27 @@ where <span class="math inline">\(\widehat{fixed}_t\)</span> are the fixed covar
 <div id="plotting-model-results" class="section level3">
 <h3 class="hasAnchor">
 <a href="#plotting-model-results" class="anchor"></a>Plotting model results</h3>
-<p>Different plots can be displayed for the <code>fitMod</code> object. The first one is <strong>rawPred</strong>, it plots the raw data (colored dots, one color per plotId) overlaid with the predicted values (black points) from the fitted model. One plot is made per genotype with all its plotId. These plots are put together in a 5×5 grid per page.<br>
-By using the option <code>genotypes</code>, a subset of genotypes will be plotted. By default, data are plotted as dot but this can be changed by setting <code>plotLine = TRUE</code>.</p>
+<p>Different plots can be displayed for the <code>fitMod</code> object. The first one is <strong>rawPred</strong>, it plots the raw data (colored dots, one color per plotId) overlaid with the predicted values (black dots) from the fitted model. One plot is made per genotype with all its plotId. These plots are put together in a 5×5 grid per page.<br>
+Using the parameter <code>genotypes</code>, a subset of genotypes will be plotted. By default, data are plotted as dots but this can be changed by setting <code>plotLine = TRUE</code>.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">modPhenoSp</span>, 
      plotType <span class="op">=</span> <span class="st">"rawPred"</span>,
      genotypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"check1"</span>, <span class="st">"check2"</span>, <span class="st">"G007"</span>, <span class="st">"G058"</span><span class="op">)</span><span class="op">)</span> </code></pre></div>
 <p><img src="SpatialModel_HTP_files/figure-html/plotSpPred-1.png" width="576" style="display: block; margin: auto;"></p>
-<p>The second one is <strong>corrPred</strong>, it plots the spatially corrected data (colored dots, one color per plotId) overlaid with the predicted values from the fitted model (black dots). One plot is made per genotype with all its plotId. These plots are put together in a 5×5 grid per page. By using the option <code>genotypes</code>, a subset of genotypes will be plotted. By default, data are plotted as dot but this can be changed by setting <code>plotLine = TRUE</code>.</p>
+<p>The second one is <strong>corrPred</strong>, it plots the spatially corrected data (colored dots, one color per plotId) overlaid with the predicted values from the fitted model (black dots). One plot is made per genotype with all its plotId. These plots are put together in a 5×5 grid per page.<br>
+Using the parameter <code>genotypes</code>, a subset of genotypes will be plotted. By default, data are plotted as dots but this can be changed by setting <code>plotLine = TRUE</code>.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">modPhenoSp</span>, 
      plotType <span class="op">=</span> <span class="st">"corrPred"</span>,
      genotypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"check1"</span>, <span class="st">"check2"</span>, <span class="st">"G007"</span>, <span class="st">"G058"</span><span class="op">)</span> <span class="op">)</span></code></pre></div>
 <p><img src="SpatialModel_HTP_files/figure-html/plotSpCorr-1.png" width="576" style="display: block; margin: auto;"></p>
-<p>Note that when check genotypes are used for modeling, for the two previous plot types (<code>rawPred</code> and <code>corrPred</code>), the option <code>plotChecks</code> is required to display check genotypes.</p>
+<p>Note that when check genotypes are used for modeling, for the two previous plot types (<code>rawPred</code> and <code>corrPred</code>), the parameter <code>plotChecks</code> should be set to <code>TRUE</code> to display check genotypes.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">modPhenoSpCheck</span>, 
      plotType <span class="op">=</span> <span class="st">"rawPred"</span>,
      plotChecks <span class="op">=</span> <span class="cn">TRUE</span>,
      genotypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"check1"</span>, <span class="st">"check2"</span>, <span class="st">"G007"</span>, <span class="st">"G058"</span><span class="op">)</span><span class="op">)</span> </code></pre></div>
-<p>The three last types of plot display different model parameters over time. Plot type <strong>herit</strong> plots the heritability over time. If <code>geno.decomp</code> is used when fitting the model, heritabilities are plotted for each level of the genotype groups in a single plot (see section <a href="#genodecomp"><strong>4</strong></a>). The scale of the plot can be adjusted using <code>yLim</code>.</p>
+<p>The last three types of plot display different model parameters over time. Plot type <strong>herit</strong> plots the heritability over time. If <code>geno.decomp</code> is used when fitting the model, heritabilities are plotted for each level of the genotype groups in a single plot (see section <a href="#genodecomp"><strong>4</strong></a>). The scale of the plot can be adjusted using <code>yLim</code>.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">modPhenoSp</span>, 
      plotType <span class="op">=</span> <span class="st">"herit"</span>,
@@ -582,7 +584,7 @@ By using the option <code>genotypes</code>, a subset of genotypes will be plotte
      whichED <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"colId"</span>, <span class="st">"rowId"</span>, <span class="st">"fColRow"</span>,<span class="st">"colfRow"</span>, <span class="st">"surface"</span><span class="op">)</span>,
      EDType <span class="op">=</span> <span class="st">"ratio"</span><span class="op">)</span></code></pre></div>
 <p><img src="SpatialModel_HTP_files/figure-html/plotSpED-1.png" width="480" style="display: block; margin: auto;"></p>
-<p>The effective dimensions are also known as the effective degrees of freedom. They can be interpreted as a measure of the complexity of the corresponding component: if the effective dimension of one component is large, it indicates that there are strong spatial trends in this direction. Here, for better comparison between components, the ratio of effective dimensions vs. total dimensions can be used. It has a value between 0, no spatial trend, and 1, strong spatial trend (almost all the degrees of freedom are used to model it).</p>
+<p>The effective dimensions are also known as the effective degrees of freedom. They can be interpreted as a measure of the complexity of the corresponding component: if the effective dimension of one component is large, it indicates that there are strong spatial trends in this direction. For better comparison between components, the ratio of effective dimensions vs. total dimensions can be used. It has a value between 0, no spatial trend, and 1, strong spatial trend (almost all the degrees of freedom are used to model it).</p>
 <p>The table below gives an overview of the effective dimensions and an explanation of their meaning.</p>
 <table class="table">
 <thead><tr class="header">
@@ -725,7 +727,7 @@ By using the option <code>genotypes</code>, a subset of genotypes will be plotte
                             spatial <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> 
   <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">modPhenoSpAs</span><span class="op">)</span>
 <span class="op">}</span>
-<span class="co">#&gt; Online License checked out Tue Feb 23 14:14:25 2021</span>
+<span class="co">#&gt; Online License checked out Tue Feb 23 17:39:57 2021</span>
 <span class="co">#&gt; Models in modPhenoSpAs where fitted for experiment Phenovator.</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; It contains 15 time points.</span>
@@ -874,7 +876,7 @@ By using the option <code>genotypes</code>, a subset of genotypes will be plotte
 <div id="genodecomp" class="section level1">
 <h1 class="hasAnchor">
 <a href="#genodecomp" class="anchor"></a>Modeling with decomposition of genotypes using Example 2</h1>
-<p>When an experimental treatment is applied, for example, a water scenario, it is required to decompose the genotypic variance into the levels of the treatment. In the following example, two water scenarios, well-watered (WW) and water deficit (WD), were applied. Thus, instead of modeling one genotypic variance, there will be one genotypic variance per treatment. In this part, we will describe briefly what is specific of such modeling with the statgenHTP package using a another example dataset.</p>
+<p>When an experimental treatment is applied, for example, a water scenario, it is required to decompose the genotypic variance into the levels of the treatment. In the following example, two water scenarios, well-watered (WW) and water deficit (WD), were applied. Thus, instead of modeling one genotypic variance, there will be one genotypic variance per treatment. In this part, we will describe briefly what is specific of such modeling with the statgenHTP package using the second example data set.</p>
 <p>We will use the <code>TP</code> object <strong>phenoTParchOut</strong> in which annotated time points have been replaced by NA (see <a href="OutlierSingleObs_HTP.html"><strong>statgenHTP tutorial: 2. Outlier detection for single observations</strong></a>).</p>
 <p>We can first check the number of time points containing data for a given trait:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">

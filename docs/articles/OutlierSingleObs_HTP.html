@@ -119,8 +119,8 @@
 <a href="#introduction" class="anchor"></a>Introduction</h1>
 <p>An outlier is usually defined as an observation that appears to be inconsistent with the remainder of the data set <span class="citation">(Barnett and Lewis 1994)</span>. Observations may be single time points <span class="citation">(Grubbs 1950)</span> or whole time courses of one or more variables <span class="citation">(Hubert, Rousseeuw, and Segaert 2015)</span>. An illustration is given below, where we see the difficulty of deciding whether a biomass time course (red curve at the bottom left) is atypical in a set of time courses from plants of the same genotype, or whether this slow growth is due to the plant’s position in the platform.</p>
 <div class="figure">
-<img src="figures/heatmap.png" alt="Heatmap of the biomass estimated at a specific time point (with a color gradient) of each plant according to its location in the platform (line, position). Well-watered (WW) treatment on the left, water deficit (WD) on the right. The plots show the biomass time courses for a given genotype (3 repetitions in each treatment). The question is whether the red growth curve on the left corresponds to an outlier plant (seed problem for example) or whether this slow growth is due to the plant's location in the platform (PhenoArch Platform, INRAE). *Courtesy: Llorenç Cabrera-Bosquet and Santiago Alvarez Prado.*" width="80%"><p class="caption">
-Heatmap of the biomass estimated at a specific time point (with a color gradient) of each plant according to its location in the platform (line, position). Well-watered (WW) treatment on the left, water deficit (WD) on the right. The plots show the biomass time courses for a given genotype (3 repetitions in each treatment). The question is whether the red growth curve on the left corresponds to an outlier plant (seed problem for example) or whether this slow growth is due to the plant’s location in the platform (PhenoArch Platform, INRAE). <em>Courtesy: Llorenç Cabrera-Bosquet and Santiago Alvarez Prado.</em>
+<img src="figures/heatmap.png" alt="Heatmap of the biomass estimated at a specific time point (with a color gradient) of each plant according to its location in the platform (line, position). Well-watered (WW) treatment on the left, water deficit (WD) on the right. The plots show the biomass time courses for a given genotype (3 repetitions in each treatment). The question is whether the red growth curve on the left corresponds to an outlier plant (e.g. a seed problem) or whether this slow growth is due to the plant's location in the platform (PhenoArch Platform, INRAE). *Courtesy: Llorenç Cabrera-Bosquet and Santiago Alvarez Prado.*" width="80%"><p class="caption">
+Heatmap of the biomass estimated at a specific time point (with a color gradient) of each plant according to its location in the platform (line, position). Well-watered (WW) treatment on the left, water deficit (WD) on the right. The plots show the biomass time courses for a given genotype (3 repetitions in each treatment). The question is whether the red growth curve on the left corresponds to an outlier plant (e.g. a seed problem) or whether this slow growth is due to the plant’s location in the platform (PhenoArch Platform, INRAE). <em>Courtesy: Llorenç Cabrera-Bosquet and Santiago Alvarez Prado.</em>
 </p>
 </div>
 <p>The concept of outlier can be extended to “outlier plants,” defined here as biological replicates deviating from the overall distribution of plants on a multi-criteria basis, regardless of the quality of measurements <span class="citation">(Alvarez Prado et al. 2019)</span>.</p>
@@ -130,8 +130,8 @@ Heatmap of the biomass estimated at a specific time point (with a color gradient
 <div id="definition-of-outlying-single-observation" class="section level1">
 <h1 class="hasAnchor">
 <a href="#definition-of-outlying-single-observation" class="anchor"></a>Definition of outlying single observation</h1>
-<p>Time courses of phenotypic data are viewed as continuous time-related functions. The first cleaning step consists in roughly checking the consistency of each point with its neighbors within a time course. Outlying single observations are measurements at a given time that do not follow the expected behavior. The detection of outlying observations is done “one time course after the other.” Identifying and removing these points will facilitate the outlier detection of series of observations or plants, as proposed in <a href="OutlierSerieObs_HTP.html"><strong>statgenHTP tutorial: 4. Outlier detection for series of observations</strong></a>.</p>
-<p>The detection requires fitting a model from the data, as a function of time. Two types of models can be used, one based on nonlinear parametric regression (Gompertz Model or sigmoidal function for example) and the other on non-parametric regression. Data annotation is based on the comparison of the experimental data with its estimated value from the model. If they significantly differ, the data will be annotated as suspect.</p>
+<p>Time courses of phenotypic data are viewed as continuous time-related functions. The first cleaning step consists of roughly checking the consistency of each point with its neighbors within a time course. Outlying single observations are measurements that do not follow the expected behavior at a given time. The detection of outlying observations is done “one time course after the other.” Identifying and removing these points will facilitate the outlier detection of series of observations or plants, as proposed in <a href="OutlierSerieObs_HTP.html"><strong>statgenHTP tutorial: 4. Outlier detection for series of observations</strong></a>.</p>
+<p>The detection requires fitting a model from the data, as a function of time. Two types of models can be used, one based on nonlinear parametric regression (Gompertz Model or sigmoidal function for example) and the other on non-parametric regression. Data annotation is based on the comparison of the experimental data with its estimated value from the model. If they differ significantly, the data will be annotated as suspect.</p>
 <blockquote>
 <p><em>NOTE: We only consider non-parametric regression in this package because of its flexibility to fit any type of curve.</em></p>
 </blockquote>
@@ -163,7 +163,7 @@ Heatmap of the biomass estimated at a specific time point (with a color gradient
                             rowNum <span class="op">=</span> <span class="st">"y"</span>, colNum <span class="op">=</span> <span class="st">"x"</span>,
                             addCheck <span class="op">=</span> <span class="cn">TRUE</span>,
                             checkGenotypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"check1"</span>, <span class="st">"check2"</span>, <span class="st">"check3"</span>, <span class="st">"check4"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p>We are then running the function on a subset of plants to set the parameters, using the <code>plotIds</code> option. The smoothing parameter <code>nnLocfit</code> is set at 0.1. The curves are atypical and to detect only the very strange points, fitted curves cannot be too smooth. The confidence interval size <code>confIntSize</code> is set at 3 which is a relatively narrow interval.</p>
+<p>We then run the function on a subset of plants to set the parameters, using the <code>plotIds</code> option. The smoothing parameter <code>nnLocfit</code> is set at 0.1. The curves are atypical and to detect only the very strange points, fitted curves cannot be too smooth. The confidence interval size <code>confIntSize</code> is set at 3 which is a relatively narrow interval.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># First select a subset of plants, for example here 8 plants.</span>
 <span class="va">plantSel</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"c1r17"</span>,<span class="st">"c13r17"</span>,<span class="st">"c6r51"</span>,<span class="st">"c21r24"</span>,<span class="st">"c5r54"</span>,<span class="st">"c21r32"</span>,<span class="st">"c14r48"</span>,<span class="st">"c5r26"</span><span class="op">)</span> 
@@ -175,7 +175,6 @@ Heatmap of the biomass estimated at a specific time point (with a color gradient
                                 nnLocfit <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
-<th align="left"></th>
 <th align="center">plotId</th>
 <th align="center">timePoint</th>
 <th align="center">EffpsII</th>
@@ -187,74 +186,68 @@ Heatmap of the biomass estimated at a specific time point (with a color gradient
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">14</td>
 <td align="center">c13r17</td>
-<td align="center">2018-06-06 14:37:00</td>
-<td align="center">0.685</td>
-<td align="center">0.6652226</td>
-<td align="center">0.0296058</td>
-<td align="center">0.5764051</td>
-<td align="center">0.7540400</td>
+<td align="center">2018-06-03 09:07:00</td>
+<td align="center">0.751</td>
+<td align="center">0.6852574</td>
+<td align="center">0.0389194</td>
+<td align="center">0.5684992</td>
+<td align="center">0.8020156</td>
 <td align="center">0</td>
 </tr>
 <tr class="even">
-<td align="left">15</td>
 <td align="center">c13r17</td>
-<td align="center">2018-06-06 16:37:00</td>
-<td align="center">0.638</td>
-<td align="center">0.6457325</td>
-<td align="center">0.0421541</td>
-<td align="center">0.5192701</td>
-<td align="center">0.7721948</td>
+<td align="center">2018-06-03 11:37:00</td>
+<td align="center">0.538</td>
+<td align="center">0.6833963</td>
+<td align="center">0.0255016</td>
+<td align="center">0.6068916</td>
+<td align="center">0.7599011</td>
+<td align="center">1</td>
+</tr>
+<tr class="odd">
+<td align="center">c13r17</td>
+<td align="center">2018-06-03 14:37:00</td>
+<td align="center">0.737</td>
+<td align="center">0.7045487</td>
+<td align="center">0.0342136</td>
+<td align="center">0.6019078</td>
+<td align="center">0.8071896</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center">c13r17</td>
+<td align="center">2018-06-04 09:07:00</td>
+<td align="center">0.619</td>
+<td align="center">0.6330957</td>
+<td align="center">0.0436610</td>
+<td align="center">0.5021126</td>
+<td align="center">0.7640788</td>
 <td align="center">0</td>
 </tr>
 <tr class="odd">
-<td align="left">16</td>
 <td align="center">c13r17</td>
-<td align="center">2018-06-07 09:07:00</td>
-<td align="center">0.690</td>
-<td align="center">0.6931412</td>
-<td align="center">0.0488887</td>
-<td align="center">0.5464752</td>
-<td align="center">0.8398073</td>
+<td align="center">2018-06-04 11:37:00</td>
+<td align="center">0.711</td>
+<td align="center">0.6655915</td>
+<td align="center">0.0322765</td>
+<td align="center">0.5687620</td>
+<td align="center">0.7624211</td>
 <td align="center">0</td>
 </tr>
 <tr class="even">
-<td align="left">17</td>
 <td align="center">c13r17</td>
-<td align="center">2018-06-07 11:37:00</td>
-<td align="center">0.649</td>
-<td align="center">0.6598289</td>
-<td align="center">0.0302392</td>
-<td align="center">0.5691112</td>
-<td align="center">0.7505465</td>
-<td align="center">0</td>
-</tr>
-<tr class="odd">
-<td align="left">18</td>
-<td align="center">c13r17</td>
-<td align="center">2018-06-07 14:37:00</td>
-<td align="center">0.668</td>
-<td align="center">0.6556880</td>
-<td align="center">0.0223011</td>
-<td align="center">0.5887847</td>
-<td align="center">0.7225913</td>
-<td align="center">0</td>
-</tr>
-<tr class="even">
-<td align="left">19</td>
-<td align="center">c13r17</td>
-<td align="center">2018-06-07 16:37:00</td>
-<td align="center">0.663</td>
-<td align="center">0.6681819</td>
-<td align="center">0.0401541</td>
-<td align="center">0.5477196</td>
-<td align="center">0.7886443</td>
+<td align="center">2018-06-04 14:37:00</td>
+<td align="center">0.633</td>
+<td align="center">0.6861254</td>
+<td align="center">0.0330415</td>
+<td align="center">0.5870010</td>
+<td align="center">0.7852499</td>
 <td align="center">0</td>
 </tr>
 </tbody>
 </table>
-<p>The function output is a <code>data.frame</code> containing for each plant at each time point: the predicted value, <code>yPred</code>, the standard deviation of the prediction, <code>sd_yPred</code>, the limits of the confidence interval, <code>lwr</code> and <code>upr</code>, and the <code>outlier</code> status. When a point is annotated as outlying, the last column value is 1, it is 0 otherwise.</p>
+<p>The function output is a <code>data.frame</code> containing for each plant at each time point: the predicted value, <code>yPred</code>, the standard deviation of the prediction, <code>sd_yPred</code>, the limits of the confidence interval, <code>lwr</code> and <code>upr</code>, and the <code>outlier</code> status. When a point is annotated as outlying, the value of the outlier column is 1, it is 0 otherwise.</p>
 <p>The predicted values can be visualized to adjust the smoothing parameter and the confidence interval using the <code>plot</code> function. The option <code>outOnly</code>, default value <code>TRUE</code>, enables visualizing only plants with annotated outliers. Here, we are visualizing one plant and then all the selected plants to check the prediction.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">resuVatorHTP</span>,
@@ -266,7 +259,7 @@ Heatmap of the biomass estimated at a specific time point (with a color gradient
      plotIds <span class="op">=</span> <span class="va">plantSel</span>,
      outOnly <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
 <p><img src="OutlierSingleObs_HTP_files/figure-html/plotOutVatorFA2-1.png" width="672" style="display: block; margin: auto;"></p>
-<p>In the plots, the black points are the raw data, the red line is the predicted curve, the green lines are the lower and upper limits of the confidence interval. Outlying points are highlighted in blue.</p>
+<p>In the plots, the black dots are the raw data, the red line is the predicted curve, the green lines are the lower and upper limits of the confidence interval. Outlying points are highlighted in blue.</p>
 <p>The annotated points can be replaced by NA for the studied trait using the function <code>removeSingleOut</code>. It creates a new <code>TP</code> object.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">phenoTPOut</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/removeSingleOut.html">removeSingleOut</a></span><span class="op">(</span><span class="va">phenoTP</span>,
@@ -292,7 +285,7 @@ Heatmap of the biomass estimated at a specific time point (with a color gradient
                                 plotId <span class="op">=</span> <span class="st">"pos"</span>,
                                 rowNum <span class="op">=</span> <span class="st">"Row"</span>,
                                 colNum <span class="op">=</span> <span class="st">"Col"</span><span class="op">)</span></code></pre></div>
-<p>We are then running the function on a subset of plants to set the parameters, using the <code>plotIds</code> option. The smoothing parameter <code>nnLocfit</code> is set at 0.5. The curves are linear and medium smooth is enough. The confidence interval size <code>confIntSize</code> is set at 5 which is a medium interval.</p>
+<p>We then run the function on a subset of plants to set the parameters, using the <code>plotIds</code> option. The smoothing parameter <code>nnLocfit</code> is set at 0.5. The curves are linear and medium smooth is enough. The confidence interval size <code>confIntSize</code> is set at 5 which is a medium interval.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># First select a subset of plants, for example here 7 plants </span>
 <span class="va">plantSelArch</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"c22r7"</span>, <span class="st">"c8r22"</span>, <span class="st">"c1r10"</span>, <span class="st">"c21r43"</span>, <span class="st">"c14r15"</span>, <span class="st">"c25r12"</span>, <span class="st">"c6r54"</span><span class="op">)</span>
@@ -383,7 +376,7 @@ Heatmap of the biomass estimated at a specific time point (with a color gradient
      plotIds <span class="op">=</span> <span class="va">plantSelArch</span>,
      outOnly <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
 <p><img src="OutlierSingleObs_HTP_files/figure-html/plotOutArchFA2-1.png" width="672" style="display: block; margin: auto;"></p>
-<p>In the plots, the black points are the raw data, the red line is the predicted curve, the green lines are the lower and upper limits of the confidence interval. Outlying points are highlighted in blue.</p>
+<p>In the plots, the black dots are the raw data, the red line is the predicted curve, the green lines are the lower and upper limits of the confidence interval. Outlying points are highlighted in blue.</p>
 <p>It is possible to run the outlier detection without first checking if the first and last time point are outlying. Doing this could be useful is some cases, but might give undesired results as well as the example below shows.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Detect outliers without first checking edges.</span>
@@ -421,7 +414,7 @@ Heatmap of the biomass estimated at a specific time point (with a color gradient
                            plotId <span class="op">=</span> <span class="st">"plantId"</span>,
                            rowNum <span class="op">=</span> <span class="st">"Strip"</span>,
                            colNum <span class="op">=</span> <span class="st">"Pos"</span><span class="op">)</span></code></pre></div>
-<p>We are then running the function on a subset of plants to set the parameters, using the <code>plotIds</code> option. The smoothing parameter <code>nnLocfit</code> is set at 1. The curves are almost linear and a strong smooth is enough to get an accurate curve shape (line). The confidence interval size <code>confIntSize</code> is set at 5 which is a medium interval.</p>
+<p>We then run the function on a subset of plants to set the parameters, using the <code>plotIds</code> option. The smoothing parameter <code>nnLocfit</code> is set at 1. The curves are almost linear and a strong smooth is enough to get an accurate curve shape (line). The confidence interval size <code>confIntSize</code> is set at 5 which is a medium interval.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># First select a subset of plants, for example here 7 plants </span>
 <span class="va">plantSelRoot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">RootDat1</span><span class="op">$</span><span class="va">plantId</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">7</span><span class="op">]</span>
@@ -523,7 +516,7 @@ Heatmap of the biomass estimated at a specific time point (with a color gradient
      plotIds <span class="op">=</span> <span class="va">plantSelRoot</span>,
      outOnly <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
 <p><img src="OutlierSingleObs_HTP_files/figure-html/plotOutRootFA2-1.png" width="672" style="display: block; margin: auto;"></p>
-<p>In the plots, the black points are the raw data, the red line is the predicted curve, the green lines are the lower and upper limits of the confidence interval. Outlying points are highlighted in blue.</p>
+<p>In the plots, the black dots are the raw data, the red line is the predicted curve, the green lines are the lower and upper limits of the confidence interval. Outlying points are highlighted in blue.</p>
 <p>The annotated points can be replaced by NA for the studied trait using the function <code>removeSingleOut</code>. It creates an new <code>TP</code> object.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">rootTPOut</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/removeSingleOut.html">removeSingleOut</a></span><span class="op">(</span><span class="va">rootTP</span>,

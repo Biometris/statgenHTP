@@ -121,7 +121,7 @@
 <div id="a-nonparametric-smoothing-associated-with-a-pca" class="section level2">
 <h2 class="hasAnchor">
 <a href="#a-nonparametric-smoothing-associated-with-a-pca" class="anchor"></a>A nonparametric smoothing associated with a PCA</h2>
-<p>Each time course is modeled by a nonparametric smoothing spline with a fixed number of knots. This is a piecewise cubic polynomial (<span class="citation">(Eubank 1999)</span>, <span class="citation">(Eilers, Marx, and Durbán 2015)</span>) fitted as a mixed model (<span class="citation">(Currie and Durban 2002)</span>).</p>
+<p>Each time course is modeled by a non-parametric smoothing spline with a fixed number of knots. This is a piecewise cubic polynomial (<span class="citation">(Eubank 1999)</span>, <span class="citation">(Eilers, Marx, and Durbán 2015)</span>) fitted as a mixed model (<span class="citation">(Currie and Durban 2002)</span>).</p>
 <div class="figure">
 <img src="figures/pspline.png" alt="P-spline smoothing with 20 knots and a low penalty, from [@Hugelier2016]. The individual B-splines (with the correct coefficients) are shown (colored lines), as well as their sum representing the fit (thick black line)." width="40%"><p class="caption">
 P-spline smoothing with 20 knots and a low penalty, from <span class="citation">(Hugelier, Devos, and Ruckebusch 2016)</span>. The individual B-splines (with the correct coefficients) are shown (colored lines), as well as their sum representing the fit (thick black line).
@@ -135,17 +135,17 @@ P-spline smoothing with 20 knots and a low penalty, from <span class="citation">
 <div id="principal-component-analysis-on-smoothed-time-series-to-identify-outlying-series-" class="section level1">
 <h1 class="hasAnchor">
 <a href="#principal-component-analysis-on-smoothed-time-series-to-identify-outlying-series-" class="anchor"></a>Principal component analysis on smoothed time series to identify outlying series.</h1>
-<p>The function <code><a href="../reference/fitSpline.html">fitSpline()</a></code> fits a P-spline per plant for the selected <code>trait</code>. The penalty(i.e. the amount of smoothing) will be chosen by REML and the number of knots can be determined by the user using <code>knots</code>. In P-spline, the knots are equally spaced and their number can be large. The user should also chose an appropriate minimum number of time points that should be in the data set per plant <code>minNoTP</code>. When a plant has less time points than the minimum, it will be skipped from the analysis.</p>
+<p>The function <code><a href="../reference/fitSpline.html">fitSpline()</a></code> fits a P-spline per plant for the selected <code>trait</code>. The penalty (i.e. the amount of smoothing) will be chosen by REML and the number of knots can be determined by the user using <code>knots</code>. In P-spline, the knots are equally spaced and their number can be large. The user should also chose an appropriate minimum number of time points that should be in the data set per plant <code>minNoTP</code>. When a plant has less time points than the minimum, it will be skipped from the analysis.</p>
 <p>The functions are illustrated with the three example data sets. For more information about the data, see <a href="Intro_HTP.html"><strong>statgenHTP tutorial: 1. Introduction</strong></a>.</p>
 <div id="example-1" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example-1" class="anchor"></a>Example 1</h2>
-<p>The data from the Phenovator platform have been corrected for spatial trends and time points outliers have been removed (see <a href="OutlierSingleObs.html"><em>statgenHTP tutorial: 2. Outlier detection for single observations</em></a> and <a href="SpatialModel_HTP.html"><strong>statgenHTP tutorial: 3. Correction for spatial trends</strong></a>). At this stage, the cleaned and corrected data are used:</p>
+<p>The data from the Phenovator platform have been corrected for spatial trends and time points outliers have been removed (see <a href="OutlierSingleObs_HTP.html"><em>statgenHTP tutorial: 2. Outlier detection for single observations</em></a> and <a href="SpatialModel_HTP.html"><strong>statgenHTP tutorial: 3. Correction for spatial trends</strong></a>). At this stage, the cleaned and corrected data are used:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">spatCorrectedVator</span><span class="op">)</span>  
 <span class="co"># Run the function to fit P-splines using the mgcv package on a subset of genotypes</span>
 <span class="va">subGenoVator</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"G070"</span>, <span class="st">"G160"</span>, <span class="st">"G151"</span>, <span class="st">"G179"</span>, <span class="st">"G175"</span>, <span class="st">"G004"</span>, <span class="st">"G055"</span><span class="op">)</span>
-<span class="co">#</span>
+
 <span class="va">fit.spline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitSpline.html">fitSpline</a></span><span class="op">(</span>inDat <span class="op">=</span> <span class="va">spatCorrectedVator</span>,
                         trait <span class="op">=</span> <span class="st">"EffpsII_corr"</span>,
                         genotypes <span class="op">=</span> <span class="va">subGenoVator</span>,
@@ -153,7 +153,7 @@ P-spline smoothing with 20 knots and a low penalty, from <span class="citation">
 <span class="co"># Extracting the tables of predicted values and P-spline coefficients</span>
 <span class="va">pred.Dat</span> <span class="op">&lt;-</span> <span class="va">fit.spline</span><span class="op">$</span><span class="va">predDat</span>
 <span class="va">coef.Dat</span> <span class="op">&lt;-</span> <span class="va">fit.spline</span><span class="op">$</span><span class="va">coefDat</span></code></pre></div>
-<p>The object <code>fit.spline</code> contains the P-spline model coefficients (<code>$coefDat</code>) and the predicted value (<code>pred.value</code> in the table below), i.e the values predicted using the P-spline model coefficients. Predictions are made on a denser grid of time points: the time points for prediction are calculated as the smallest gap between two time points divided by 9, so dividing the smallest gap in 10 segments. The object <code>fit.spline</code> also contains the first derivatives (<code>deriv</code> in the table below, see also <a href="ParameterEstimation_HTP.html"><strong>statgenHTP tutorial: 5. Estimation of parameters from time courses</strong></a>).</p>
+<p>The object <code>fit.spline</code> contains the P-spline model coefficients (<code>coefDat</code>) and the predicted value (<code>pred.value</code> in the table below), i.e the values predicted using the P-spline model coefficients. Predictions are made on a denser grid of time points: the time points for prediction are calculated as the smallest gap between two time points divided by 9, so dividing the smallest gap in 10 segments. The object <code>fit.spline</code> also contains the first and second derivatives (<code>deriv</code> and <code>deriv2</code> in the table below, see also <a href="ParameterEstimation_HTP.html"><strong>statgenHTP tutorial: 5. Estimation of parameters from time courses</strong></a>).</p>
 <table class="table">
 <thead><tr class="header">
 <th align="center">timeNumber</th>
@@ -221,7 +221,7 @@ P-spline smoothing with 20 knots and a low penalty, from <span class="citation">
 </tr>
 </tbody>
 </table>
-<p>Conversion to numerical time is required to fit P-spline. To keep the same time scale as in the original <code>timePoint</code> column, a numerical transformation of the time points is made using the first time point as origin (column <code>timeNumber</code> in the table above).<br>
+<p>Conversion to numerical time is required to fit P-splines. To keep the same time scale as in the original <code>timePoint</code> column, a numerical transformation of the time points is made using the first time point as origin (column <code>timeNumber</code> in the table above).<br>
 The numerical time can also be provided by the user using the option <code>useTimeNumber = TRUE</code>. It allows using thermal time or any other manual conversion. In this example, we provide a new column specified in <code>timeNumber</code> with time in hours since first measurement.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">fit.splineNum</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitSpline.html">fitSpline</a></span><span class="op">(</span>inDat <span class="op">=</span> <span class="va">spatCorrectedVator</span>,
@@ -292,7 +292,7 @@ The numerical time can also be provided by the user using the option <code>useTi
 </tr>
 </tbody>
 </table>
-<p>The coefficients are then used to tag suspect time courses with the function <code>detectOutliers()</code>. This function performs a PCA on the coefficients (from data.frame <code>coef.Dat</code>) per <code>genotype</code> and calculates the pairwise angle between the plants in the PCA plot. Plants are tagged when the mean angle is above threshold (<code>thrPca)</code>, see the lines <code>reason = angle</code> in the table below. The function also calculates the pairwise-correlation of the coefficients per genotype. Plants are tagged when the correlation is below a given threshold (<code>thrCor</code>), see the lines <code>reason = mean corr</code> in the table below.</p>
+<p>The coefficients are then used to tag suspect time courses with the function <code><a href="../reference/detectSerieOut.html">detectSerieOut()</a></code>. This function performs a PCA on the coefficients (from data.frame <code>coef.Dat</code>) per <code>genotype</code> and calculates the pairwise angle between the plants in the PCA plot. Plants are tagged when the mean angle is above threshold (<code>thrPca)</code>, see the lines <code>reason = angle</code> in the table below. The function also calculates the pairwise-correlation of the coefficients per genotype. Plants are tagged when the correlation is below a given threshold (<code>thrCor</code>), see the lines <code>reason = mean corr</code> in the table below.</p>
 <p>For obvious reasons, the detection will only work when there are at least three replicates per genotype. Genotypes with less than three replicates will be skipped.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">outVator</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectSerieOut.html">detectSerieOut</a></span><span class="op">(</span>corrDat <span class="op">=</span> <span class="va">spatCorrectedVator</span>,
@@ -344,10 +344,10 @@ The numerical time can also be provided by the user using the option <code>useTi
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">outVator</span>, genotypes <span class="op">=</span> <span class="st">"G151"</span><span class="op">)</span></code></pre></div>
 <p><img src="OutlierSerieObs_HTP_files/figure-html/plotOutVator-1.png" width="576"></p>
-<pre><code>#&gt; Failed to get face: , 0</code></pre>
+<pre><code>#&gt; Failed to get face: , 1845533439</code></pre>
 <p>The figure above contains:</p>
 <ul>
-<li>(top) A scatter plot of the trait value on the y-axis and time on the x-axis. Points are the raw or corrected data and lines are the P-spline predictions, with one color per plant (in legend). Filled dots represent outlying plants, open points non-outlying plants.<br>
+<li>(top) A scatter plot of the trait value on the y-axis and time on the x-axis. Points are the raw or corrected data and lines are the P-spline predictions, with one color per plant (in legend). Filled dots represent outlying plants, open dots non-outlying plants.<br>
 </li>
 <li>(bottom left) A correlation matrix of the plant scores as a heatmap. The scale is centered on 0.9 to see at a glance the outlying plants with low correlations (usually correlation is high between plants).<br>
 </li>
@@ -440,7 +440,7 @@ The numerical time can also be provided by the user using the option <code>useTi
      plotIds <span class="op">=</span> <span class="st">"c11r9"</span>,
      plotType <span class="op">=</span>  <span class="st">"derivatives"</span><span class="op">)</span></code></pre></div>
 <p><img src="OutlierSerieObs_HTP_files/figure-html/plotArch-2.png" width="384"></p>
-<p>Here, the <code>geno.decomp</code> option is also to split the plants of each genotype those under well watered and drought conditions. The outlier detection is run per treatment with a narrow angle threshold</p>
+<p>Here, the <code>geno.decomp</code> option is also to split the plants of each genotype those under well watered and water deficit conditions. The outlier detection is run per treatment with a narrow angle threshold</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">outArch</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectSerieOut.html">detectSerieOut</a></span><span class="op">(</span>corrDat <span class="op">=</span> <span class="va">spatCorrectedArch</span>,
                           predDat <span class="op">=</span> <span class="va">pred.DatArch</span>,
@@ -531,16 +531,14 @@ The numerical time can also be provided by the user using the option <code>useTi
                           trait <span class="op">=</span> <span class="st">"tipPos_y"</span>,
                           genotypes <span class="op">=</span> <span class="va">subGenoRoot</span>,
                           thrCor <span class="op">=</span> <span class="fl">0.9</span>,
-                          thrPca <span class="op">=</span> <span class="fl">25</span><span class="op">)</span></code></pre></div>
+                          thrPca <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">outRoot</span>,
      genotypes <span class="op">=</span> <span class="st">"10"</span><span class="op">)</span></code></pre></div>
 <p><img src="OutlierSerieObs_HTP_files/figure-html/plotRootOut-1.png" width="672"></p>
-<p>After manual check, we will remove only two of the detected time courses:</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">outRootFinal</span> <span class="op">&lt;-</span> <span class="va">outRoot</span><span class="op">[</span><span class="va">outRoot</span><span class="op">$</span><span class="va">plotId</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"A_03_5"</span>, <span class="st">"A_29_2"</span><span class="op">)</span>,<span class="op">]</span>
-<span class="va">noCorrectedRootOut</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/removeSerieOut.html">removeSerieOut</a></span><span class="op">(</span>dat <span class="op">=</span> <span class="va">noCorrectedRoot</span>,
-                                     serieOut <span class="op">=</span> <span class="va">outRootFinal</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">noCorrectedRootOut</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/removeSerieOut.html">removeSerieOut</a></span><span class="op">(</span>dat <span class="op">=</span> <span class="va">noCorrectedRoot</span>,
+                                     serieOut <span class="op">=</span> <span class="va">outRoot</span><span class="op">)</span>
 <span class="co"># Check one value annotated as outlier in the original corrected data.frame</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">noCorrectedRoot</span><span class="op">[</span><span class="va">noCorrectedRoot</span><span class="op">$</span><span class="va">plotId</span> <span class="op">==</span> <span class="st">"A_29_2"</span>, <span class="st">"tipPos_y"</span><span class="op">]</span><span class="op">)</span>
 <span class="co">#&gt; [1] 5.157143 5.157143 5.157143 5.171429 6.785714 6.585714</span>

@@ -117,18 +117,10 @@
 <div id="introduction" class="section level1">
 <h1 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h1>
-<p>This document presents the final step of the HTP data analysis: extracting interesting parameters from the modeled time course <span class="citation">(Brien et al. 2020)</span>. For example, in the second data set from the PhenoArch platform, the maximum leaf area (from the P-splines) or the maximum leaf growth rate (from the first derivatives) are relevant parameters (see figure below). We could assess their variability in the genotypes and the difference between treatments, <em>e.g.</em> has the water scenario decreased the maximum leaf area?</p>
-<div class="figure">
-<img src="figures/psplinederiv_Arch.png" alt="P-spline" width="80%"><p class="caption">
-P-spline
-</p>
-</div>
+<p>This document presents the final step of the HTP data analysis: extracting interesting parameters from the modeled time courses <span class="citation">(Brien et al. 2020)</span>. For example, in the second data set from the PhenoArch platform, the maximum leaf area (from the P-splines) or the maximum leaf growth rate (from the first derivatives) are relevant parameters (see figure below). We could assess their variability in the genotypes and the difference between treatments, <em>e.g.</em> has the water scenario decreased the maximum leaf area?</p>
+<p><img src="figures/psplinederiv_Arch.png" width="80%"></p>
 <p>It is also possible to specify a period for the parameter estimation. For example, in the first data set from the Phenovator platform, we can select the period with the high light intensity (see figure below) and estimate the maximum slope during that period (from the first derivatives). This could be interpreted as a recovery rate of the photosystem II efficiency.</p>
-<div class="figure">
-<img src="figures/psplinederiv_Vator.png" alt="P-spline" width="80%"><p class="caption">
-P-spline
-</p>
-</div>
+<p><img src="figures/psplinederiv_Vator.png" width="80%"></p>
 <p>These parameters could then be further analyzed, for example in a GxE analysis (see <a href="https://biometris.github.io/statgenGxE/index.html"><em>statgenGxE</em></a>), or a genetic analysis (see <a href="https://biometris.github.io/statgenGWAS/index.html"><em>statgenGWAS</em></a>).</p>
 <p>The functions described in this tutorial can be applied to corrected data, genotypic means (BLUEs or BLUPS) (see <a href="SpatialModel_HTP.html"><strong>statgenHTP tutorial: 3. Correction for spatial trends</strong></a>) or on raw data. It allows estimating maximum, minimum, mean, area under the curve (auc) or percentile using predicted values, first or second derivative, during a given period or for the whole time course.</p>
 <hr>
@@ -258,7 +250,7 @@ P-spline
 <div id="example-3" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example-3" class="anchor"></a>Example 3</h2>
-<p>For this example, we will use the raw data from the RootPhAir, corrected for individually outlying observations (see <a href="OutlierSingleObs_HTP.html"><strong>statgenHTP tutorial: 2. Outlier detection for single observations</strong></a>) and time course outliers (see <a href="OutliersTimeCourse_HTP.html"><strong>statgenHTP tutorial: 4. Outlier detection Time course</strong></a>). We will fit P-splines at the plant level on a subset of genotypes.</p>
+<p>For this example, we will use the raw data from the RootPhAir, corrected for individually outlying observations (see <a href="OutlierSingleObs_HTP.html"><strong>statgenHTP tutorial: 2. Outlier detection for single observations</strong></a>) and time course outliers (see <a href="OutlierSerieObs_HTP.html"><strong>statgenHTP tutorial: 4. Outlier detection Time course</strong></a>). We will fit P-splines at the plant level on a subset of genotypes.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">subGenoRoot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span> <span class="st">"2"</span>,<span class="st">"6"</span>,<span class="st">"8"</span>,<span class="st">"9"</span>,<span class="st">"10"</span>,<span class="st">"520"</span>,<span class="st">"522"</span><span class="op">)</span>
 <span class="va">fit.splineRootOut</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitSpline.html">fitSpline</a></span><span class="op">(</span>inDat <span class="op">=</span> <span class="va">noCorrectedRootOut</span>,
