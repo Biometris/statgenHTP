@@ -1,6 +1,6 @@
 ---
 title: "statgenHTP tutorial: 4. Outlier detection for series of observations"
-author: "Emilie Millet, Bart-Jan van Rossum, Isabelle Sanchez, Nadine Hilgert"
+author: "Emilie Millet, Bart-Jan van Rossum, Isabelle Sanchez, Nadine Hilgert, Fred van Eeuwijk"
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:

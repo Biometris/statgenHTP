@@ -1,6 +1,6 @@
 ---
 title: "statgenHTP tutorial: 3. Correction for spatial trends"
-author: "Emilie Millet, Bart-Jan van Rossum"
+author: "Emilie Millet, Bart-Jan van Rossum, Diana Marcela Perez Valencia, Maria Xose Rodriguez Alvarez, Fred van Eeuwijk"
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:
@@ -327,17 +327,17 @@ When ASReml is used for modeling and `spatial = TRUE`, four models are fitted wi
 | OPTION | MODEL FITTED | SPATIAL TERM |
 |----------------------|------------------------------------------|-----------------|
 | spatial = TRUE | $y$ = $\mu$ + **genotype** + **row** + **col** + **$\epsilon$** | AR1(rowId):AR1(colId) |
-|                | $y$ = $\mu$ + **genotype** + **row** + **$\epsilon$** | AR1(rowId):colId |
-|                | $y$ = $\mu$ +**genotype** + **col** + **$\epsilon$** | rowId:AR1(colId) |
-|                | $y$ = $\mu$ +**genotype** + **row** + **col** + **$\epsilon$**|    - |
+|                |   | AR1(rowId):colId |
+|                |   | rowId:AR1(colId) |
+|                |   |    - |
 | spatial = TRUE, extraFixedFactors = c("A", "B") | $y$ = $\mu$ + *A* + *B* + **genotype** + **row** + **col** + **$\epsilon$** | AR1(rowId):AR1(colId) |
-|                                         | $y$ = $\mu$ + *A* + *B* + **genotype** + **row** + **$\epsilon$** | AR1(rowId):colId |
-|                                         | $y$ = $\mu$ + *A* + *B* + **genotype** + **col** + **$\epsilon$** | rowId:AR1(colId) |
-|                                         | $y$ = $\mu$ + *A* + *B* + **genotype** + **row** + **col** + **$\epsilon$** |  - |
+|                                         |   | AR1(rowId):colId |
+|                                         |   | rowId:AR1(colId) |
+|                                         |   |  - |
 | spatial = TRUE, repID = TRUE | $y$ = $\mu$ + *repId* + **genotype** + **repId:row** + **repId:col** + **$\epsilon$** | AR1(rowId):AR1(colId) |
-|                              | $y$ = $\mu$ + *repId* + **genotype** + **repId:row** + **$\epsilon$** | AR1(rowId):colId |
-|                              | $y$ = $\mu$ + *repId* + **genotype** + **repId:col** + **$\epsilon$** | rowId:AR1(colId) |
-|                              | $y$ = $\mu$ + *repId* + **genotype** + **repId:row** + **repId:col** + **$\epsilon$** | - |
+|                              |   | AR1(rowId):colId |
+|                              |   | rowId:AR1(colId) |
+|                              |   | - |
 
 In the models above, fixed effects are indicated in *italics* whereas random 
 effects are indicated in **bold**. "genotype" can be fitted as **random** or *fixed* effect using the option `what`. The option `useCheck` is not displayed in the table but works the same as for SpATS: treating some genotypes as check (see section [**2.1**](#SpATS) for details).
