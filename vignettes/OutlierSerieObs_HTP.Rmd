@@ -265,7 +265,7 @@ The data from the RootPhAir platform have not been corrected for spatial trends 
 
 ```{r fitSplineRoot, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 subGenoRoot <- c( "2", "6", "8", "9", "10", "520", "522")
-fit.splineRoot <- fitSpline(inDat = noCorrRoot,
+fit.splineRoot <- fitSpline(inDat = noCorrectedRoot,
                             trait = "tipPos_y",
                             knots = 10,
                             genotypes = subGenoRoot,
@@ -285,7 +285,7 @@ plot(fit.splineRoot,
 ```
 
 ```{r OutRoot, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
-outRoot <- detectSerieOut(corrDat = noCorrRoot,
+outRoot <- detectSerieOut(corrDat = noCorrectedRoot,
                           predDat = pred.DatRoot,
                           coefDat = coef.DatRoot,
                           trait = "tipPos_y",
@@ -303,12 +303,12 @@ After manual check, we will remove only two of the detected time courses:
 
 ```{r rmOutRoot}
 outRootFinal <- outRoot[outRoot$plotId %in% c("A_03_5", "A_29_2"),]
-noCorrRootOut <- removeSerieOut(dat = noCorrRoot,
-                                serieOut = outRootFinal)
+noCorrectedRootOut <- removeSerieOut(dat = noCorrectedRoot,
+                                     serieOut = outRootFinal)
 # Check one value annotated as outlier in the original corrected data.frame
-head(noCorrRoot[noCorrRoot$plotId == "A_29_2", "tipPos_y"])
+head(noCorrectedRoot[noCorrectedRoot$plotId == "A_29_2", "tipPos_y"])
 # Check the same value in the new corrected data.frame
-head(noCorrRootOut[noCorrRootOut$plotId == "A_29_2", "tipPos_y"])
+head(noCorrectedRootOut[noCorrectedRootOut$plotId == "A_29_2", "tipPos_y"])
 ```
 
 ------------------------------------------------------------------------

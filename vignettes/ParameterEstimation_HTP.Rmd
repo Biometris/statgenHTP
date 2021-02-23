@@ -156,7 +156,7 @@ fit.splineRoot <- fitSpline(inDat = noCorrectedRoot,
 pred.DatRoot <- fit.splineRoot$predDat
 coef.DatRoot <- fit.splineRoot$coefDat
 
-outRoot <- detectSerieOut(corrDat = noCorrRoot,
+outRoot <- detectSerieOut(corrDat = noCorrectedRoot,
                           predDat = pred.DatRoot,
                           coefDat = coef.DatRoot,
                           trait = "tipPos_y",
@@ -165,15 +165,15 @@ outRoot <- detectSerieOut(corrDat = noCorrRoot,
                           thrPca = 25)
 
 outRootFinal <- outRoot[outRoot$plotId %in% c("A_03_5","A_29_2"),]
-noCorrRootOut <- removeSerieOut(dat = noCorrRoot,
-                                serieOut = outRootFinal)
-noCorrRootOut <- noCorrRootOut[!is.na(noCorrRootOut$tipPos_y),]
-noCorrRootOut <- droplevels(noCorrRootOut)
+noCorrectedRootOut <- removeSerieOut(dat = noCorrectedRoot,
+                                     serieOut = outRootFinal)
+noCorrectedRootOut <- noCorrectedRootOut[!is.na(noCorrectedRootOut$tipPos_y),]
+noCorrectedRootOut <- droplevels(noCorrectedRootOut)
 ```
 
 ```{r fitSplineRoot, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 subGenoRoot <- c( "2","6","8","9","10","520","522")
-fit.splineRootOut <- fitSpline(inDat = noCorrRootOut,
+fit.splineRootOut <- fitSpline(inDat = noCorrectedRootOut,
                                trait = "tipPos_y",
                                knots = 10,
                                genotypes = subGenoRoot,
