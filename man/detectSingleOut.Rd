@@ -4,7 +4,14 @@
 \alias{detectSingleOut}
 \title{Detect outliers in a time series}
 \usage{
-detectSingleOut(TP, trait, plotIds = NULL, confIntSize = 5, mylocfit = 0.5)
+detectSingleOut(
+  TP,
+  trait,
+  plotIds = NULL,
+  checkEdges = TRUE,
+  confIntSize = 5,
+  mylocfit = 0.5
+)
 }
 \arguments{
 \item{TP}{An object of class TP.}
@@ -13,6 +20,9 @@ detectSingleOut(TP, trait, plotIds = NULL, confIntSize = 5, mylocfit = 0.5)
 
 \item{plotIds}{A character vector of plotIds for which the outliers should be
 detected. If \code{NULL}, all plotId in TP are used.}
+
+\item{checkEdges}{Before fitting the local regression should a check be done
+if the first and last time point for a plot are outlying observations?}
 
 \item{confIntSize}{A numeric value defining the confidence interval.}
 

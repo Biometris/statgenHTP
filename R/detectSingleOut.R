@@ -15,6 +15,8 @@
 #' @param trait A character vector indicating the trait to model in TP.
 #' @param plotIds A character vector of plotIds for which the outliers should be
 #' detected. If \code{NULL}, all plotId in TP are used.
+#' @param checkEdges Before fitting the local regression should a check be done
+#' if the first and last time point for a plot are outlying observations?
 #' @param confIntSize A numeric value defining the confidence interval.
 #' @param mylocfit A numeric value defining the constant component of the
 #' smoothing parameter nn. (see the locfit())
@@ -64,6 +66,7 @@
 detectSingleOut <- function(TP,
                             trait,
                             plotIds = NULL,
+                            checkEdges = TRUE,
                             confIntSize = 5,
                             mylocfit = 0.5) {
   ## Checks.
@@ -99,32 +102,39 @@ detectSingleOut <- function(TP,
     ## Fit a model using locfit.
     y <- plotDat[[trait]]
     x <- plotDat[["timePoint"]]
-    ## First check if first timepoint is an outlier.
-    ## Fit models including and excluding first timepoint.
-    fitMod0 <- locfit::locfit(y[-1] ~ locfit::lp(x[-1], nn = mylocfit, deg = 2))
+    ## Fit model with all time points included.
     fitMod <- locfit::locfit(y ~ locfit::lp(x, nn = mylocfit, deg = 2))
-    ## Get predictions for both models.
-    yPred0 <- predict(fitMod0, newdata = x, se.fit = TRUE)
     yPred <- predict(fitMod, newdata = x, se.fit = TRUE)
-    m0 <- mean(y[1:5])
-    s0 <- sqrt(sum((y[1:5] - m0) ^ 2) / 5)
-    if (y[1] < m0 -  1.5 * s0 || y[1] > m0 + 1.2 * s0) {
-      y <- y[-1]
-      x <- x[-1]
-      yPred <- yPred0
-    }
-    ## Check if last timepoint is an outlier.
-    ## Get position of last timepoint.
-    posL <- length(x)
-    ## Fit model excluding last timepoint.
-    fitMod1 <- locfit::locfit(y[-posL] ~ locfit::lp(x[-posL],
-                                                    nn = mylocfit, deg = 2))
-    ## Get predictions for the model.
-    yPred1 <- predict(fitMod1, newdata = plotDat[["timePoint"]], se.fit = TRUE)
-    m1 <- mean(y[(posL - 4):posL])
-    s1 <- sqrt(sum((y[(posL - 4):posL] - m1) ^ 2) / 5)
-    if (y[posL] < m1 - 1.5 * s1 || y[posL] > m1 + 1.5 * s1) {
-      yPred <- yPred1
+    if (checkEdges) {
+      ## Check if first timepoint is an outlier.
+      ## Fit model excluding first timepoint.
+      fitMod0 <- locfit::locfit(y[-1] ~ locfit::lp(x[-1], nn = mylocfit, deg = 2))
+      ## Get predictions for new models.
+      yPred0 <- predict(fitMod0, newdata = x, se.fit = TRUE)
+      ## Compute mean and standard deviation for first 5 time points.
+      m0 <- mean(y[1:5])
+      s0 <- sqrt(sum((y[1:5] - m0) ^ 2) / 5)
+      ## Remove first time point if it is outside mean +/- 1.5 sd.
+      if (y[1] < m0 -  1.5 * s0 || y[1] > m0 + 1.5 * s0) {
+        y <- y[-1]
+        x <- x[-1]
+        yPred <- yPred0
+      }
+      ## Check if last timepoint is an outlier.
+      ## Get position of last timepoint.
+      posL <- length(x)
+      ## Fit model excluding last timepoint.
+      fitMod1 <- locfit::locfit(y[-posL] ~ locfit::lp(x[-posL],
+                                                      nn = mylocfit, deg = 2))
+      ## Get predictions for the model.
+      yPred1 <- predict(fitMod1, newdata = plotDat[["timePoint"]], se.fit = TRUE)
+      ## Compute mean and standard deviation for last 5 time points.
+      m1 <- mean(y[(posL - 4):posL])
+      s1 <- sqrt(sum((y[(posL - 4):posL] - m1) ^ 2) / 5)
+      ## Remove last time point if it is outside mean +/- 1.5 sd.
+      if (y[posL] < m1 - 1.5 * s1 || y[posL] > m1 + 1.5 * s1) {
+        yPred <- yPred1
+      }
     }
     ## Compute upper and lower boundaries.
     lwr <- yPred$fit - confIntSize * yPred$se.fit
