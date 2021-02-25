@@ -2,7 +2,7 @@
 % Please edit documentation in R/createTimePoints.R
 \name{removeTimePoints}
 \alias{removeTimePoints}
-\title{Remove selected time points from an object of class TP}
+\title{Remove time points from an object of class TP}
 \usage{
 removeTimePoints(TP, timePoints)
 }
@@ -16,13 +16,35 @@ a number it will be matched by its number ("timeNumber") in the timePoints
 attribute of the TP object.}
 }
 \description{
-Remove selected time points from an object of class TP
+Function for removing selected time points from an object of class TP.
+}
+\examples{
+## Create a TP object containing the data from the Phenovator.
+phenoTP <- createTimePoints(dat = PhenovatorDat1,
+                            experimentName = "Phenovator",
+                            genotype = "Genotype",
+                            timePoint = "timepoints",
+                            repId = "Replicate",
+                            plotId = "pos",
+                            rowNum = "y", colNum = "x",
+                            addCheck = TRUE,
+                            checkGenotypes = c("check1", "check2",
+                                               "check3","check4"))
+## Remove the first and last time point from the TP object.
+phenoTPNew <- removeTimePoints(phenoTP,
+                               timePoints = c(1, 73))
+
+## Compare by looking at summaries.
+summary(phenoTP)
+summary(phenoTPNew)
+
 }
 \seealso{
-Other Data preparation: 
+Other functions for data preparation: 
 \code{\link{as.data.frame.TP}()},
 \code{\link{createTimePoints}()},
+\code{\link{getTimePoints}()},
 \code{\link{plot.TP}()},
 \code{\link{summary.TP}()}
 }
-\concept{Data preparation}
+\concept{functions for data preparation}

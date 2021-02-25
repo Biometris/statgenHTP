@@ -12,13 +12,13 @@ getEffDims(
 )
 }
 \arguments{
-\item{fitMod}{An object of class fitMod.}
+\item{fitMod}{An object of class \code{fitMod}.}
 
 \item{timePoints}{A character or numeric vector indicating the time point(s)
-to be modeled. When using a character string to reference a time point, the
-value has to be an exact match to one of the existing time points. When using
-a number it will be matched by its number ("timeNumber") in the timePoints
-attribute of the TP object.}
+for which the effective dimension should be extracted. When using a character
+string to reference a time point, the value has to be an exact match to one
+of the existing time points. When using a number it will be matched by its
+number ("timeNumber") in the timePoints attribute of the TP object.}
 
 \item{EDType}{A character string specifying if the effective dimension
 ("dimension") or the ratio of effective dimensions ("ratio") should be
@@ -72,7 +72,7 @@ effDimSp <- getEffDims(modPhenoSp)
 
 }
 \seealso{
-Other Spatial modeling: 
+Other functions for spatial modeling: 
 \code{\link{fitModels}()},
 \code{\link{getCorrected}()},
 \code{\link{getGenoPred}()},
@@ -81,4 +81,4 @@ Other Spatial modeling:
 \code{\link{plot.fitMod}()},
 \code{\link{summary.fitMod}()}
 }
-\concept{Spatial modeling}
+\concept{functions for spatial modeling}

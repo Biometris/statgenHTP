@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Remove point outliers — removeSingleOut • statgenHTP</title>
+<title>Replace outliers for single observations by NA — removeSingleOut • statgenHTP</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Remove point outliers — removeSingleOut" />
-<meta property="og:description" content="Function for setting point outliers to NA." />
+<meta property="og:title" content="Replace outliers for single observations by NA — removeSingleOut" />
+<meta property="og:description" content="Function for replacing outliers for single observations by NA." />
 
 
 
@@ -125,7 +125,7 @@
 </li>
 <li>
   <a href="https://github.com/Biometris/statgenHTP">
-    <span class="fas fa-github fa-lg"></span>
+    <span class="fas fa-github fa-lg fab"></span>
      
     github
   </a>
@@ -143,13 +143,13 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Remove point outliers</h1>
+    <h1>Replace outliers for single observations by NA</h1>
     
     <div class="hidden name"><code>removeSingleOut.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Function for setting point outliers to NA.</p>
+    <p>Function for replacing outliers for single observations by NA.</p>
     </div>
 
     <pre class="usage"><span class='fu'>removeSingleOut</span><span class='op'>(</span><span class='va'>TP</span>, <span class='va'>singleOut</span>, trait <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>singleOut</span>, which <span class='op'>=</span> <span class='st'>"trait"</span><span class='op'>)</span><span class='op'>)</span></pre>
@@ -165,9 +165,9 @@
       <th>singleOut</th>
       <td><p>A data.frame with at least the columns plotId and
 timePoint with values corresponding to those in TP. If a column outlier is
-present, as in the output of <code>detectSingleOut</code>, only plot x time
-combinations for which outlier = 1 will be set to NA. If no column outlier is
-present, all observations in singleOut will be set to NA.</p></td>
+present, as in the output of <code>detectSingleOut</code>, only plotId x
+timePoint combinations for which outlier = 1 will be set to NA. If no
+column outlier is present, all observations in singleOut will be set to NA.</p></td>
     </tr>
     <tr>
       <th>trait</th>
@@ -178,8 +178,10 @@ the output of <code>detectSingleOut</code> as input.</p></td>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>Other Detect point outliers: 
-<code><a href='detectSingleOutMaize.html'>detectSingleOutMaize</a>()</code></p></div>
+    <div class='dont-index'><p>Other functions for detecting outliers for single observations: 
+<code><a href='detectSingleOutMaize.html'>detectSingleOutMaize</a>()</code>,
+<code><a href='detectSingleOut.html'>detectSingleOut</a>()</code>,
+<code><a href='plot.singleOut.html'>plot.singleOut</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'>## Create a TP object containing the data from the Phenovator.</span>
@@ -205,7 +207,7 @@ the output of <code>detectSingleOut</code> as input.</p></td>
                                 confIntSize <span class='op'>=</span> <span class='fl'>3</span>,
                                 nnLocfit <span class='op'>=</span> <span class='fl'>0.1</span><span class='op'>)</span>
 
-<span class='co'>## The annotated points can be replaced by NA for the studied trait</span>
+<span class='co'>## Replace the studied trait by NA for the plants marked as outliers.</span>
 <span class='va'>phenoTPOut</span> <span class='op'>&lt;-</span> <span class='fu'>removeSingleOut</span><span class='op'>(</span><span class='va'>phenoTP</span>, <span class='va'>resuVatorHTP</span><span class='op'>)</span>
 
 </div></pre>

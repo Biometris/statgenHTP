@@ -5,22 +5,22 @@
 #' effects at each time point. SpATS is used as a default method. See details
 #' for the exact models fitted.
 #'
-#' The actual model fitted depends on the function parameters secified. The
+#' The actual model fitted depends on the function parameters specified. The
 #' basic model is the following:\cr
 #' trait = \strong{genotype} + e\cr
-#' In case \code{useCheck = TRUE}, instead of genotype genoCheck is used as
+#' In case \code{useCheck = TRUE}, instead of genotype, genoCheck is used as
 #' genotype and check is used as an extra fixed effect. So then the model
 #' becomes:\cr
 #' trait = \emph{check} + \strong{genoCheck} + e\cr
 #' Variables in \code{extraFixedFactors} are fitted as extra fixed
 #' effects.\cr\cr
-#' When \code{SpATS} is used for modeling, an extra spatial term is included
-#' in the model. This term is constructed using the function
+#' When \code{SpATS} is used for modeling, an extra spatial term is always
+#' included in the model. This term is constructed using the function
 #' \code{\link[SpATS]{PSANOVA}} from the SpATS package as\cr
 #' \code{PSANOVA(colNum, rowNum, nseg = nSeg, nest.div = 2)}
-#' where\cr \code{nSeg = (number of columns, number of rows)}.\cr\cr
+#' where\cr \code{nSeg = c(number of columns, number of rows)}.\cr\cr
 #' When \code{asreml} is used for modeling and \code{spatial = TRUE},
-#' four models are fitted with different random terms and covariance structures.
+#' four models are fitted with different covariance structures.
 #' The best model is determined based on a goodness-of-fit criterion, AIC,
 #' on 20% of the time points or at least 10 time points. The best model is then
 #' run on all time points.
@@ -38,14 +38,14 @@
 #' \code{geno.decomp}, the initial model becomes:\cr
 #' trait = \emph{treatment} + \strong{treatment:genotype} + e\cr
 #'
-#' @param TP An object of class TP.
+#' @param TP An object of class \code{TP}.
 #' @param trait A character string indicating the trait used as response
 #' variable in the model.
 #' @param timePoints A character or numeric vector indicating the time points
 #' to be modeled. When using a character string to reference a time point, the
 #' value has to be an exact match to one of the existing time points. When using
 #' a number it will be matched by its number ("timeNumber") in the timePoints
-#' attribute of the TP object.
+#' attribute of the \code{TP} object.
 #' @param extraFixedFactors A character vector indicating the variables to use
 #' as extra fixed effects in the model.
 #' @param geno.decomp A character vector indicating the variables to use to
@@ -57,20 +57,20 @@
 #' @param useCheck Should check genotypes be used as an extra factor in the
 #' model?
 #' @param useRepId Should repId be used as a fixed effect in the model? When
-#' fitting a spatial model repId is also added as an interaction term with
-#' rowId and colId in the random part of the model.
+#' fitting a spatial model rowId and colId are also nested within repId in the
+#' random part of the model.
 #' @param engine A character string indicating the engine used to fit the
 #' models.
 #' @param spatial Should a spatial model be fitted for asreml?
 #' @param quiet Should printed progress messages be suppressed?
 #'
-#' @return An object of class fitMod, a list of fitted models.
+#' @return An object of class \code{fitMod}, a list of fitted models.
 #'
 #' @examples
 #' ## Using the first example dataset (PhenovatorDat1):
-#' ## Fit a SpATS model on few time points:
+#' ## Fit a model using SpATS on few time points:
 #' \donttest{
-#' data("PhenovatorDat1")
+#' ## Create an object of class TP.
 #' phenoTP <- createTimePoints(dat = PhenovatorDat1,
 #'                             experimentName = "Phenovator",
 #'                             genotype = "Genotype",
@@ -81,7 +81,7 @@
 #'                             addCheck = TRUE,
 #'                             checkGenotypes = c("check1", "check2",
 #'                                                "check3", "check4"))
-#'
+#' ## Fit a model with SpATS for three time points.
 #' modPhenoSp <- fitModels(TP = phenoTP,
 #'                         trait = "EffpsII",
 #'                         timePoints = c(3, 6, 20))
@@ -128,12 +128,11 @@
 #' Maria Xose Rodriguez-Alvarez, Martin P. Boer, Fred A. van Eeuwijk, Paul H.C.
 #' Eilers (2017). Correcting for spatial heterogeneity in plant breeding
 #' experiments with P-splines. Spatial Statistics
-#' \url{https://doi.org/10.1016/j.spasta.2017.10.003}
-#' @references
-#' Butler, D. G., et al. (2018).ASReml-R Reference Manual Version 4. VSN
+#' \doi{10.1016/j.spasta.2017.10.003}
+#' Butler, D. G., et al. (2018). ASReml-R Reference Manual Version 4. VSN
 #' International Ltd, http://asreml.org
 #'
-#' @family Spatial modeling
+#' @family functions for spatial modeling
 #'
 #' @export
 fitModels <- function(TP,
@@ -254,14 +253,6 @@ fitModels <- function(TP,
     TP <- lapply(X = TP, FUN = function(timePoint) {
       timePoint[[genoCol]] <- interaction(timePoint[[geno.decomp]],
                                           timePoint[[genoCol]], sep = "_")
-      # for (extraFF in extraFixedFactors) {
-      #   timePoint[[extraFF]] <- interaction(timePoint[[geno.decomp]],
-      #                                       timePoint[[extraFF]], sep = "_")
-      # }
-      # if (useCheck) {
-      #   timePoint[["check"]] <- interaction(timePoint[[geno.decomp]],
-      #                                       timePoint[["check"]], sep = "_")
-      # }
       return(timePoint)
     })
   }
@@ -351,22 +342,6 @@ fitModels <- function(TP,
       ## Construct formula for random part of the model.
       randForm <- formula(paste("~ ", if (is.null(geno.decomp)) genoCol else
         paste0("at(", geno.decomp, "):", genoCol)))
-      ## For SpATS geno.decomp is included by adding interaction within
-      ## extraFixedFactors and check.
-      ## For asreml this is done by explicitly adding interactions within
-      ## model formulas.
-      # if (!is.null(geno.decomp)) {
-      #   fixedForm <- update(fixedForm, "~ . + geno.decomp")
-      #   if (useCheck) {
-      #     fixedForm <- update(fixedForm, "~ . - check + geno.decomp:check")
-      #   }
-      # }
-      # if (!is.null(extraFixedFactors)) {
-      #   fixedForm <- update(fixedForm,
-      #                       paste0("~ . + ",
-      #                              paste0("geno.decomp:", extraFixedFactors),
-      #                              collapse = "+"))
-      # }
     } else {
       ## For genotype fixed the base random formula is empty.
       ## Genotype is added to the fixedForm.

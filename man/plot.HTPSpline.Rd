@@ -17,26 +17,25 @@
 )
 }
 \arguments{
-\item{x}{An object of class HTPSpline.}
+\item{x}{An object of class \code{HTPSpline}.}
 
-\item{...}{Extra plot options. Described per plotType in their respective
-section.}
+\item{...}{Ignored.}
 
-\item{plotType}{A character string indicating for which spline component
+\item{plotType}{A character string indicating which spline component
 should be plotted, either predictions, derivatives or second derivatives
 ("derivatives2").}
 
 \item{genotypes}{A character vector indicating the genotypes for which
-splines should be plotted.}
+spline components should be plotted.}
 
-\item{plotIds}{A character vector indicating the plotIds for which splines
-should be plotted.}
+\item{plotIds}{A character vector indicating the plotIds for which spline
+components should be plotted.}
 
 \item{title}{A character string used as title for the plot. If \code{NULL} a
 default title is added to the plot depending on \code{plotType}.}
 
 \item{output}{Should the plot be output to the current device? If
-\code{FALSE} only a list of ggplot objects is invisibly returned. Ignored if
+\code{FALSE} only a (list of) ggplot object(s) is invisibly returned. Ignored if
 \code{outFile} is specified.}
 
 \item{outFile}{A character string indicating the .pdf file to which the
@@ -48,9 +47,28 @@ width and height. See \code{\link[grDevices]{pdf}} for all possible options.}
 \description{
 Plot the results of a fitted spline.
 }
+\examples{
+## The data from the Phenovator platform have been corrected for spatial
+## trends and outliers for single observations have been removed.
+
+## Fit P-Splines on a subset of genotypes
+subGeno <- c("G070", "G160")
+fit.spline <- fitSpline(inDat = spatCorrectedVator,
+                        trait = "EffpsII_corr",
+                        genotypes = subGeno,
+                        knots = 50)
+
+## Visualize the P-Spline predictions for one genotype.
+plot(fit.spline, genotypes = "G160")
+
+## Visualize the first and second derivatives of the predictions for one plant.
+plot(fit.spline, plotIds = "c10r29", plotType =  "derivatives")
+plot(fit.spline, plotIds = "c10r29", plotType =  "derivatives2")
+
+}
 \seealso{
-Other Fit splines: 
+Other functions for fitting splines: 
 \code{\link{estimateSplineParameters}()},
 \code{\link{fitSpline}()}
 }
-\concept{Fit splines}
+\concept{functions for fitting splines}

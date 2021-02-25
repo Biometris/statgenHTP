@@ -40,7 +40,7 @@
 #'                                        thr = 0.95)
 #' }
 #'
-#' @family Detect point outliers
+#' @family functions for detecting outliers for single observations
 #'
 #' @export
 detectSingleOutMaize <- function(TP,

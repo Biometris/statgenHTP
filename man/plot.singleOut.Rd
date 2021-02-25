@@ -2,27 +2,27 @@
 % Please edit documentation in R/detectSingleOut.R
 \name{plot.singleOut}
 \alias{plot.singleOut}
-\title{Plot outliers in a time series}
+\title{Plot outliers for single observations}
 \usage{
 \method{plot}{singleOut}(x, ..., plotIds = NULL, outOnly = TRUE, output = TRUE)
 }
 \arguments{
-\item{x}{An object of class singleOut}
+\item{x}{An object of class singleOut.}
 
-\item{...}{Extra plot options. Described per plotType in their respective
-section.}
+\item{...}{Ignored.}
 
 \item{plotIds}{A character vector of plotIds for which the outliers should be
-detected. If \code{NULL}, all plotId in TP are used.}
+detected. If \code{NULL}, all plotIds in \code{TP} are used.}
 
 \item{outOnly}{Should only plots containing outliers be plotted?}
 
 \item{output}{Should the plot be output to the current device? If
-\code{FALSE} only a list of ggplot objects is invisibly returned. Ignored if
+\code{FALSE} only a (list of) ggplot object(s) is invisibly returned. Ignored if
 \code{outFile} is specified.}
 }
 \description{
-Plot the modeled smoothing and detected outliers for each plotId.
+Plot the fitted local regression, confidence intervals and detected outliers
+for each plotId.
 }
 \examples{
 ## Create a TP object containing the data from the Phenovator.
@@ -39,23 +39,25 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             checkGenotypes = c("check1", "check2",
                                                "check3", "check4"))
 
-## First select a subset of plants, for example here 9 plants.
+## Select a subset of plants, for example here 9 plants.
 plantSel <- phenoTP[[1]]$plotId[1:9]
-# Then run on the subset
+# Then run on the subset.
 resuVatorHTP <- detectSingleOut(TP = phenoTP,
                                trait = "EffpsII",
                                plotIds = plantSel,
                                confIntSize = 3,
                                nnLocfit = 0.1)
 
-## We can then visualize the prediction by choosing a single plant...
+## Visualize the prediction by choosing a single plant...
 plot(resuVatorHTP, plotIds = "c21r24", outOnly = FALSE)
 ## ...or a subset of plants.
 plot(resuVatorHTP, plotIds = plantSel, outOnly = FALSE)
 
 }
 \seealso{
-Other Detect outliers in a time series: 
-\code{\link{detectSingleOut}()}
+Other functions for detecting outliers for single observations: 
+\code{\link{detectSingleOutMaize}()},
+\code{\link{detectSingleOut}()},
+\code{\link{removeSingleOut}()}
 }
-\concept{Detect outliers in a time series}
+\concept{functions for detecting outliers for single observations}

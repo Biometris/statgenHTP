@@ -62,7 +62,9 @@ singleOutMaize <- detectSingleOutMaize(phenoTParch,
 
 }
 \seealso{
-Other Detect point outliers: 
+Other functions for detecting outliers for single observations: 
+\code{\link{detectSingleOut}()},
+\code{\link{plot.singleOut}()},
 \code{\link{removeSingleOut}()}
 }
-\concept{Detect point outliers}
+\concept{functions for detecting outliers for single observations}

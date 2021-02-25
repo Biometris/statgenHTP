@@ -2,7 +2,7 @@
 % Please edit documentation in R/detectSerieOut.R
 \name{plot.serieOut}
 \alias{plot.serieOut}
-\title{plot.serieOut}
+\title{Plot outliers for series of observations}
 \usage{
 \method{plot}{serieOut}(
   x,
@@ -15,17 +15,15 @@
 )
 }
 \arguments{
-\item{x}{An object of class serieOut.}
+\item{x}{An object of class \code{serieOut}.}
 
-\item{...}{Extra plot options. Described per plotType in their respective
-section.}
+\item{...}{Ignored.}
 
-\item{genotypes}{A character vector indicating the genotypes for which to
-detect outliers. If \code{NULL}, outlier detection will be done for all
-genotypes.}
+\item{genotypes}{A character vector indicating which genotypes should be
+plotted.}
 
 \item{useTimeNumber}{Should the timeNumber be used instead of the timePoint
-in the x-axis labels?}
+in the labels on the x-axis?}
 
 \item{timeNumber}{If \code{useTimeNumber = TRUE}, a character vector
 indicating the column containing the numerical time to use.}
@@ -34,44 +32,47 @@ indicating the column containing the numerical time to use.}
 default title is added to the plot depending on \code{plotType}.}
 
 \item{output}{Should the plot be output to the current device? If
-\code{FALSE} only a list of ggplot objects is invisibly returned. Ignored if
+\code{FALSE} only a (list of) ggplot object(s) is invisibly returned. Ignored if
 \code{outFile} is specified.}
 }
 \description{
-plot.serieOut
+Plot the fitted spline, correlation matrix and PCA biplot for each of the
+genotypes. Outlying series of observations are shown as filled dots in the
+fitted spline plot, other observations are shown as open dots.
 }
 \examples{
+\donttest{
 ## The data from the Phenovator platform have been corrected for spatial
-## trends and time points outliers have been removed.
+## trends and outliers for single observations have been removed.
 
-## Run the function to fit P-splines on a subset of
-## genotypes.
-subGenoVator <- c("G070", "G160", "G151", "G179", "G175", "G004", "G055")
+## Fit P-splines on a subset of genotypes
+subGenoVator <- c("G160", "G151")
 fit.spline <- fitSpline(inDat = spatCorrectedVator,
                         trait = "EffpsII_corr",
                         genotypes = subGenoVator,
                         knots = 50)
 
-## Extract the tables of predicted values and P-spline coefficients.
-pred.Dat <- fit.spline$predDat
-coef.Dat <- fit.spline$coefDat
+## Extract the data.frames with predicted values and P-Spline coefficients.
+predDat <- fit.spline$predDat
+coefDat <- fit.spline$coefDat
 
-## The coefficients are then used to tag suspect time courses
+## The coefficients are then used to tag suspect time courses.
 outVator <- detectSerieOut(corrDat = spatCorrectedVator,
-                            predDat = pred.Dat,
-                            coefDat = coef.Dat,
-                            trait = "EffpsII_corr",
-                            genotypes = subGenoVator,
-                            thrCor = 0.9,
-                            thrPca = 30)
+                           predDat = predDat,
+                           coefDat = coefDat,
+                           trait = "EffpsII_corr",
+                           genotypes = subGenoVator,
+                           thrCor = 0.9,
+                           thrPca = 30)
 
 ## The `outVator` can be visualized for selected genotypes.
 plot(outVator, genotypes = "G151")
+}
 
 }
 \seealso{
-Other Detect time course outliers: 
+Other functions for detecting outliers for series of observations: 
 \code{\link{detectSerieOut}()},
 \code{\link{removeSerieOut}()}
 }
-\concept{Detect time course outliers}
+\concept{functions for detecting outliers for series of observations}

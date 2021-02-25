@@ -2,7 +2,7 @@
 % Please edit documentation in R/detectSerieOut.R
 \name{detectSerieOut}
 \alias{detectSerieOut}
-\title{Outlier detection}
+\title{Detect outliers for series of observations}
 \usage{
 detectSerieOut(
   corrDat,
@@ -38,41 +38,44 @@ based on correlation between plots.}
 \item{thrPca}{A numerical value used as threshold for determining outliers
 based on angles (in degrees) between PCA scores.}
 }
+\value{
+An object of class \code{serieOut}, a \code{data.frame} with outlying
+series of observations.
+}
 \description{
 Function for detecting strange time courses. The function uses the estimates
 for the spline coefficients per time course (typically per plant).
 Correlations between those coefficient vectors are calculated to identify
 outlying time courses, i.e., plants. An outlying time course will have low
 correlation to the majority of time courses. To support the analysis by
-correlations, a principal component analysis can be done on the plant
+correlations, a principal component analysis is done on the plant
 (time course) by spline coefficient matrix. A PCA plot of the plant scores
 will show the outlying plants.
 }
 \examples{
 \donttest{
-## The data from the Phenovator platform have been corrected for
-## spatial trends and time points outliers have been removed.
+## The data from the Phenovator platform have been corrected for spatial
+## trends and outliers for single observations have been removed.
 
-# Run the function to fit P-splines on a subset of
-## genotypes
+## Fit P-splines on a subset of genotypes
 subGenoVator <- c("G160", "G151")
 fit.spline <- fitSpline(inDat = spatCorrectedVator,
                         trait = "EffpsII_corr",
                         genotypes = subGenoVator,
                         knots = 50)
 
-## Extract the tables of predicted values and P-spline coefficients
-pred.Dat <- fit.spline$predDat
-coef.Dat <- fit.spline$coefDat
+## Extract the data.frames with predicted values and P-Spline coefficients.
+predDat <- fit.spline$predDat
+coefDat <- fit.spline$coefDat
 
 ## The coefficients are then used to tag suspect time courses.
 outVator <- detectSerieOut(corrDat = spatCorrectedVator,
-                            predDat = pred.Dat,
-                            coefDat = coef.Dat,
-                            trait = "EffpsII_corr",
-                            genotypes = subGenoVator,
-                            thrCor = 0.9,
-                            thrPca = 30)
+                           predDat = predDat,
+                           coefDat = coefDat,
+                           trait = "EffpsII_corr",
+                           genotypes = subGenoVator,
+                           thrCor = 0.9,
+                           thrPca = 30)
 
 ## The `outVator` can be visualized for selected genotypes.
 plot(outVator, genotypes = "G151")
@@ -80,8 +83,8 @@ plot(outVator, genotypes = "G151")
 
 }
 \seealso{
-Other Detect time course outliers: 
+Other functions for detecting outliers for series of observations: 
 \code{\link{plot.serieOut}()},
 \code{\link{removeSerieOut}()}
 }
-\concept{Detect time course outliers}
+\concept{functions for detecting outliers for series of observations}

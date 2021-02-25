@@ -2,7 +2,7 @@
 % Please edit documentation in R/createTimePoints.R
 \name{as.data.frame.TP}
 \alias{as.data.frame.TP}
-\title{Function for converting an object of class TP to a data.frame.}
+\title{Coerce TP object to data.frame}
 \usage{
 \method{as.data.frame}{TP}(x, ...)
 }
@@ -14,11 +14,28 @@
 \description{
 Function for converting an object of class TP to a data.frame.
 }
+\examples{
+## Create a TP object containing the data from the Phenovator.
+phenoTP <- createTimePoints(dat = PhenovatorDat1,
+                            experimentName = "Phenovator",
+                            genotype = "Genotype",
+                            timePoint = "timepoints",
+                            repId = "Replicate",
+                            plotId = "pos",
+                            rowNum = "y", colNum = "x",
+                            addCheck = TRUE,
+                            checkGenotypes = c("check1", "check2",
+                                               "check3", "check4"))
+## Convert phenoTP to data.frame.
+phenoDat <- as.data.frame(phenoTP)
+
+}
 \seealso{
-Other Data preparation: 
+Other functions for data preparation: 
 \code{\link{createTimePoints}()},
+\code{\link{getTimePoints}()},
 \code{\link{plot.TP}()},
 \code{\link{removeTimePoints}()},
 \code{\link{summary.TP}()}
 }
-\concept{Data preparation}
+\concept{functions for data preparation}

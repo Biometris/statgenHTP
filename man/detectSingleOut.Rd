@@ -2,7 +2,7 @@
 % Please edit documentation in R/detectSingleOut.R
 \name{detectSingleOut}
 \alias{detectSingleOut}
-\title{Detect outliers in a time series}
+\title{Detect outliers for single observations}
 \usage{
 detectSingleOut(
   TP,
@@ -14,33 +14,35 @@ detectSingleOut(
 )
 }
 \arguments{
-\item{TP}{An object of class TP.}
+\item{TP}{An object of class \code{TP}.}
 
-\item{trait}{A character vector indicating the trait to model in TP.}
+\item{trait}{A character vector indicating the trait to model in \code{TP}.}
 
 \item{plotIds}{A character vector of plotIds for which the outliers should be
-detected. If \code{NULL}, all plotId in TP are used.}
+detected. If \code{NULL}, all plotIds in \code{TP} are used.}
 
 \item{checkEdges}{Before fitting the local regression should a check be done
 if the first and last time point for a plot are outlying observations?}
 
-\item{confIntSize}{A numeric value defining the confidence interval.}
+\item{confIntSize}{A numeric value defining the confidence interval (see
+Details).}
 
 \item{nnLocfit}{A numeric value defining the constant component of the
-smoothing parameter nn. (see the locfit())}
+smoothing parameter nn (see Details).}
 }
 \value{
-An object of class singleOut, a data.frame with the following
+An object of class singleOut, a \code{data.frame} with the following
 columns.
 \describe{
-\item{plotId}{the id variable}
-\item{timePoint}{time variable in datain}
-\item{trait}{name of the modeled variable in datain}
-\item{yPred}{the locfit prediction}
+\item{plotId}{plotId}
+\item{timePoint}{time point}
+\item{trait}{modeled trait}
+\item{yPred}{prediction from the local regression}
 \item{sd_yPred}{standard deviation of the prediction}
 \item{lwr}{lower bound of the confidence interval}
 \item{upr}{upper bound of the confidence interval}
-\item{outlier}{flag of detected outlier (0 is outlier, 1 is not)}
+\item{outlier}{flag for detected outlier (a value of 1 indicates the
+observation is an outlier)}
 }
 }
 \description{
@@ -82,9 +84,9 @@ resuVatorHTP <- detectSingleOut (TP = phenoTP,
 
 }
 \seealso{
-plot.singleOut
-
-Other Detect outliers in a time series: 
-\code{\link{plot.singleOut}()}
+Other functions for detecting outliers for single observations: 
+\code{\link{detectSingleOutMaize}()},
+\code{\link{plot.singleOut}()},
+\code{\link{removeSingleOut}()}
 }
-\concept{Detect outliers in a time series}
+\concept{functions for detecting outliers for single observations}

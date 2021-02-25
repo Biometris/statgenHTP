@@ -1,29 +1,29 @@
-#' Extract genotypic predicted values
+#' Extract predicted genotypic values
 #'
-#' Extract predictions of the genotypic value from an object of class fitMod.
+#' Extract predictions of the genotypic value from an object of class
+#' \code{fitMod}.
 #'
-#' @param fitMod An object of class fitMod.
+#' @param fitMod An object of class \code{fitMod}.
 #' @param timePoints A character or numeric vector indicating the time point(s)
-#' to be modeled. When using a character string to reference a time point, the
-#' value has to be an exact match to one of the existing time points. When using
-#' a number it will be matched by its number ("timeNumber") in the timePoints
-#' attribute of the TP object.
+#' for which the predictions should be extracted. When using a character string
+#' to reference a time point, the value has to be an exact match to one of the
+#' existing time points. When using a number it will be matched by its number
+#' ("timeNumber") in the timePoints attribute of the TP object.
 #' @param predictChecks Should predictions of the check genotypes be included
-#' in the ouptut. If \code{TRUE} a list of two data.frames is returned from the
-#' function, one with the predictions for the regular genotypes and one with
-#' the predictions for the checks.
+#' in the ouptut. If \code{TRUE} a list of two \code{data.frames} is returned
+#' from the function, one with the predictions for the regular genotypes and
+#' one with the predictions for the checks.
 #' @param outFile A character string indicating the .csv file to which the
 #' results should be written. If \code{NULL} no file is written.
 #'
-#' @return A list of two data.frames with genotypic predicted values per time
+#' @return A list of two data.frames with predicted genotypic values per time
 #' point. \code{genoPred} with the predicted values for the genotypes and
-#' \code{checkPred} with the predicted values for the check. If
+#' \code{checkPred} with the predicted values for the checks. If
 #' \code{predictChecks = FALSE} the latter will be \code{NULL}.
 #'
 #' @examples
-#' ## Using the first example dataset (PhenovatorDat1):
+#' ## Using the first example dataset (PhenovatorDat1).
 #' \donttest{
-#' data("PhenovatorDat1")
 #' phenoTP <- createTimePoints(dat = PhenovatorDat1,
 #'                             experimentName = "Phenovator",
 #'                             genotype = "Genotype",
@@ -35,7 +35,7 @@
 #'                             checkGenotypes = c("check1", "check2",
 #'                                                "check3", "check4"))
 #'
-#' ## Fit a SpATS model on few time points:
+#' ## Fit a SpATS model on few time points.
 #' modPhenoSp <- fitModels(TP = phenoTP,
 #'                         trait = "EffpsII",
 #'                         timePoints = c(1, 6, 20))
@@ -43,9 +43,10 @@
 #' ## Extract the genotypic predictions for one time point:
 #' genoPredSp <- getGenoPred(modPhenoSp,
 #'                           timePoints = 6)
+#' head(genoPredSp)
 #' }
 #'
-#' @family Spatial modeling
+#' @family functions for spatial modeling
 #'
 #' @export
 getGenoPred <- function(fitMod,
@@ -115,20 +116,25 @@ getGenoPred <- function(fitMod,
 
 #' Extract corrected phenotypic values
 #'
-#' Extract corrected phenotype from an object of class fitMod. After fitting a
-#' spatial model at each time point, the raw phenotypic data is corrected by
-#' subtracting the (estimated) sources of (environmental, design effect) which
-#' are of no interest (nuisances). This allows keeping the data resolution at
-#' the plot/plant level.
+#' Extract corrected phenotypic values from an object of class fitMod. After
+#' fitting a spatial model at each time point, the raw phenotypic data is
+#' corrected by subtracting the (estimated) sources of variation (environmental,
+#' design  effect) that are of no interest (nuisances). This allows keeping
+#' the data resolution at the plot/plant level.
 #'
 #' @inheritParams getGenoPred
+#'
+#' @param timePoints A character or numeric vector indicating the time point(s)
+#' for which the corrected values should be extracted. When using a character
+#' string to reference a time point, the value has to be an exact match to one
+#' of the existing time points. When using a number it will be matched by its
+#' number ("timeNumber") in the timePoints attribute of the TP object.
 #'
 #' @return A data.frame with spatially corrected values per time point.
 #'
 #' @examples
 #' \donttest{
-#' ## Using the first example dataset (PhenovatorDat1):
-#' data("PhenovatorDat1")
+#' ## Using the first example dataset (PhenovatorDat1).
 #' phenoTP <- createTimePoints(dat = PhenovatorDat1,
 #'                             experimentName = "Phenovator",
 #'                             genotype = "Genotype",
@@ -140,7 +146,7 @@ getGenoPred <- function(fitMod,
 #'                             checkGenotypes = c("check1", "check2",
 #'                                                "check3", "check4"))
 #'
-#' ## Fit a SpATS model on few time points:
+#' ## Fit a SpATS model on few time points.
 #' modPhenoSp <- fitModels(TP = phenoTP,
 #'                         trait = "EffpsII",
 #'                         timePoints = c(1, 6, 20))
@@ -148,9 +154,10 @@ getGenoPred <- function(fitMod,
 #' ## Extract the corrected values for one time point:
 #' spatCorrSp <- getCorrected(modPhenoSp,
 #'                            timePoints = 6)
+#' head(spatCorrSp)
 #' }
 #'
-#' @family Spatial modeling
+#' @family functions for spatial modeling
 #'
 #' @export
 getCorrected <- function(fitMod,
@@ -189,12 +196,17 @@ getCorrected <- function(fitMod,
 #'
 #' @inheritParams getGenoPred
 #'
+#' @param timePoints A character or numeric vector indicating the time point(s)
+#' for which the variances should be extracted. When using a character
+#' string to reference a time point, the value has to be an exact match to one
+#' of the existing time points. When using a number it will be matched by its
+#' number ("timeNumber") in the timePoints attribute of the TP object.
+#'
 #' @return A data.frame with variances per time point.
 #'
 #' @examples
 #' \donttest{
 #' ## Using the first example dataset (PhenovatorDat1):
-#' data("PhenovatorDat1")
 #' phenoTP <- createTimePoints(dat = PhenovatorDat1,
 #'                             experimentName = "Phenovator",
 #'                             genotype = "Genotype",
@@ -206,16 +218,16 @@ getCorrected <- function(fitMod,
 #'                             checkGenotypes = c("check1", "check2",
 #'                                                "check3", "check4"))
 #'
-#' ## Fit a SpATS model on few time points:
+#' ## Fit a SpATS model on few time points.
 #' modPhenoSp <- fitModels(TP = phenoTP,
 #'                         trait = "EffpsII",
 #'                         timePoints = c(1, 6, 20))
 #'
-#' ## Extract the variances for all available time points in the model object:
-#' varianceSp <- getVar(modPhenoSp)
+#' ## Extract the variances for all available time points.
+#' getVar(modPhenoSp)
 #' }
 #'
-#' @family Spatial modeling
+#' @family functions for spatial modeling
 #'
 #' @export
 getVar <- function(fitMod,
@@ -302,12 +314,17 @@ getVar <- function(fitMod,
 #'
 #' @inheritParams getGenoPred
 #'
+#' @param timePoints A character or numeric vector indicating the time point(s)
+#' for which the heritabilities should be extracted. When using a character
+#' string to reference a time point, the value has to be an exact match to one
+#' of the existing time points. When using a number it will be matched by its
+#' number ("timeNumber") in the timePoints attribute of the TP object.
+#'
 #' @return A data.frame with heritabilities per time point.
 #'
 #' @examples
 #' \donttest{
 #' ## Using the first example dataset (PhenovatorDat1):
-#' data("PhenovatorDat1")
 #' phenoTP <- createTimePoints(dat = PhenovatorDat1,
 #'                             experimentName = "Phenovator",
 #'                             genotype = "Genotype",
@@ -319,17 +336,16 @@ getVar <- function(fitMod,
 #'                             checkGenotypes = c("check1", "check2",
 #'                                                "check3", "check4"))
 #'
-#' ## Fit a SpATS model on few time points:
+#' ## Fit a SpATS model on few time points.
 #' modPhenoSp <- fitModels(TP = phenoTP,
 #'                         trait = "EffpsII",
 #'                         timePoints = c(1, 6, 20))
 #'
-#' ## Extract the heritabilities for all available time points in the model
-#' ## object:
-#' heritSp <- getHerit(modPhenoSp)
+#' ## Extract the heritabilities for all available time points.#'
+#' getHerit(modPhenoSp)
 #' }
 #'
-#' @family Spatial modeling
+#' @family functions for spatial modeling
 #'
 #' @export
 getHerit <- function(fitMod,
@@ -374,6 +390,13 @@ getHerit <- function(fitMod,
 #'
 #' @inheritParams getGenoPred
 #'
+#' @param timePoints A character or numeric vector indicating the time point(s)
+#' for which the effective dimension should be extracted. When using a character
+#' string to reference a time point, the value has to be an exact match to one
+#' of the existing time points. When using a number it will be matched by its
+#' number ("timeNumber") in the timePoints attribute of the TP object.
+#'
+#'
 #' @param EDType A character string specifying if the effective dimension
 #' ("dimension") or the ratio of effective dimensions ("ratio") should be
 #' returned.
@@ -405,7 +428,7 @@ getHerit <- function(fitMod,
 #' effDimSp <- getEffDims(modPhenoSp)
 #' }
 #'
-#' @family Spatial modeling
+#' @family functions for spatial modeling
 #'
 #' @export
 getEffDims <- function(fitMod,

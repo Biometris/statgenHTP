@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Extract genotypic predicted values — getGenoPred • statgenHTP</title>
+<title>Extract predicted genotypic values — getGenoPred • statgenHTP</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,9 @@
 
 
 
-<meta property="og:title" content="Extract genotypic predicted values — getGenoPred" />
-<meta property="og:description" content="Extract predictions of the genotypic value from an object of class fitMod." />
+<meta property="og:title" content="Extract predicted genotypic values — getGenoPred" />
+<meta property="og:description" content="Extract predictions of the genotypic value from an object of class
+fitMod." />
 
 
 
@@ -125,7 +126,7 @@
 </li>
 <li>
   <a href="https://github.com/Biometris/statgenHTP">
-    <span class="fas fa-github fa-lg"></span>
+    <span class="fas fa-github fa-lg fab"></span>
      
     github
   </a>
@@ -143,13 +144,14 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Extract genotypic predicted values</h1>
+    <h1>Extract predicted genotypic values</h1>
     
     <div class="hidden name"><code>getGenoPred.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Extract predictions of the genotypic value from an object of class fitMod.</p>
+    <p>Extract predictions of the genotypic value from an object of class
+<code>fitMod</code>.</p>
     </div>
 
     <pre class="usage"><span class='fu'>getGenoPred</span><span class='op'>(</span>
@@ -164,22 +166,22 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>fitMod</th>
-      <td><p>An object of class fitMod.</p></td>
+      <td><p>An object of class <code>fitMod</code>.</p></td>
     </tr>
     <tr>
       <th>timePoints</th>
       <td><p>A character or numeric vector indicating the time point(s)
-to be modeled. When using a character string to reference a time point, the
-value has to be an exact match to one of the existing time points. When using
-a number it will be matched by its number ("timeNumber") in the timePoints
-attribute of the TP object.</p></td>
+for which the predictions should be extracted. When using a character string
+to reference a time point, the value has to be an exact match to one of the
+existing time points. When using a number it will be matched by its number
+("timeNumber") in the timePoints attribute of the TP object.</p></td>
     </tr>
     <tr>
       <th>predictChecks</th>
       <td><p>Should predictions of the check genotypes be included
-in the ouptut. If <code>TRUE</code> a list of two data.frames is returned from the
-function, one with the predictions for the regular genotypes and one with
-the predictions for the checks.</p></td>
+in the ouptut. If <code>TRUE</code> a list of two <code>data.frames</code> is returned
+from the function, one with the predictions for the regular genotypes and
+one with the predictions for the checks.</p></td>
     </tr>
     <tr>
       <th>outFile</th>
@@ -190,13 +192,13 @@ results should be written. If <code>NULL</code> no file is written.</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list of two data.frames with genotypic predicted values per time
+    <p>A list of two data.frames with predicted genotypic values per time
 point. <code>genoPred</code> with the predicted values for the genotypes and
-<code>checkPred</code> with the predicted values for the check. If
+<code>checkPred</code> with the predicted values for the checks. If
 <code>predictChecks = FALSE</code> the latter will be <code>NULL</code>.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>Other Spatial modeling: 
+    <div class='dont-index'><p>Other functions for spatial modeling: 
 <code><a href='fitModels.html'>fitModels</a>()</code>,
 <code><a href='getCorrected.html'>getCorrected</a>()</code>,
 <code><a href='getEffDims.html'>getEffDims</a>()</code>,
@@ -206,9 +208,8 @@ point. <code>genoPred</code> with the predicted values for the genotypes and
 <code><a href='summary.fitMod.html'>summary.fitMod</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'>## Using the first example dataset (PhenovatorDat1):</span>
+    <pre class="examples"><div class='input'><span class='co'>## Using the first example dataset (PhenovatorDat1).</span>
 <span class='co'># \donttest{</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"PhenovatorDat1"</span><span class='op'>)</span>
 <span class='va'>phenoTP</span> <span class='op'>&lt;-</span> <span class='fu'><a href='createTimePoints.html'>createTimePoints</a></span><span class='op'>(</span>dat <span class='op'>=</span> <span class='va'>PhenovatorDat1</span>,
                             experimentName <span class='op'>=</span> <span class='st'>"Phenovator"</span>,
                             genotype <span class='op'>=</span> <span class='st'>"Genotype"</span>,
@@ -221,7 +222,7 @@ point. <code>genoPred</code> with the predicted values for the genotypes and
                                                <span class='st'>"check3"</span>, <span class='st'>"check4"</span><span class='op'>)</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='warning'>Warning: The following plotIds have observations for less than 50% of the time points:</span>
 #&gt; <span class='warning'>c24r41, c7r18, c7r49</span></div><div class='input'>
-<span class='co'>## Fit a SpATS model on few time points:</span>
+<span class='co'>## Fit a SpATS model on few time points.</span>
 <span class='va'>modPhenoSp</span> <span class='op'>&lt;-</span> <span class='fu'><a href='fitModels.html'>fitModels</a></span><span class='op'>(</span>TP <span class='op'>=</span> <span class='va'>phenoTP</span>,
                         trait <span class='op'>=</span> <span class='st'>"EffpsII"</span>,
                         timePoints <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>6</span>, <span class='fl'>20</span><span class='op'>)</span><span class='op'>)</span>
@@ -229,7 +230,209 @@ point. <code>genoPred</code> with the predicted values for the genotypes and
 <span class='co'>## Extract the genotypic predictions for one time point:</span>
 <span class='va'>genoPredSp</span> <span class='op'>&lt;-</span> <span class='fu'>getGenoPred</span><span class='op'>(</span><span class='va'>modPhenoSp</span>,
                           timePoints <span class='op'>=</span> <span class='fl'>6</span><span class='op'>)</span>
-<span class='co'># }</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>genoPredSp</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; $genoPred
+#&gt;     timeNumber           timePoint genotype predicted.values standard.errors
+#&gt; 1            6 2018-06-02 09:07:00   check1        0.6659262     0.004303649
+#&gt; 2            6 2018-06-02 09:07:00   check2        0.5895427     0.005916522
+#&gt; 3            6 2018-06-02 09:07:00   check3        0.6675387     0.005784700
+#&gt; 4            6 2018-06-02 09:07:00   check4        0.6745256     0.004242551
+#&gt; 5            6 2018-06-02 09:07:00     G001        0.6664140     0.007699951
+#&gt; 6            6 2018-06-02 09:07:00     G002        0.6649566     0.007700732
+#&gt; 7            6 2018-06-02 09:07:00     G003        0.6569592     0.007705197
+#&gt; 8            6 2018-06-02 09:07:00     G004        0.6121843     0.007729421
+#&gt; 9            6 2018-06-02 09:07:00     G005        0.6576482     0.007697892
+#&gt; 10           6 2018-06-02 09:07:00     G006        0.6442167     0.007713467
+#&gt; 11           6 2018-06-02 09:07:00     G007        0.6620397     0.007710288
+#&gt; 12           6 2018-06-02 09:07:00     G008        0.6591881     0.007710893
+#&gt; 13           6 2018-06-02 09:07:00     G009        0.6385774     0.007697137
+#&gt; 14           6 2018-06-02 09:07:00     G010        0.6516232     0.007706002
+#&gt; 15           6 2018-06-02 09:07:00     G011        0.6750103     0.007708614
+#&gt; 16           6 2018-06-02 09:07:00     G012        0.6497984     0.007706736
+#&gt; 17           6 2018-06-02 09:07:00     G013        0.6605672     0.007700037
+#&gt; 18           6 2018-06-02 09:07:00     G014        0.6554384     0.007703609
+#&gt; 19           6 2018-06-02 09:07:00     G015        0.6596870     0.007705154
+#&gt; 20           6 2018-06-02 09:07:00     G016        0.6567716     0.007703719
+#&gt; 21           6 2018-06-02 09:07:00     G017        0.6591690     0.007695693
+#&gt; 22           6 2018-06-02 09:07:00     G018        0.6762187     0.007701955
+#&gt; 23           6 2018-06-02 09:07:00     G019        0.6658904     0.007706846
+#&gt; 24           6 2018-06-02 09:07:00     G020        0.6645063     0.007709692
+#&gt; 25           6 2018-06-02 09:07:00     G021        0.6846447     0.007701443
+#&gt; 26           6 2018-06-02 09:07:00     G022        0.6509434     0.008657683
+#&gt; 27           6 2018-06-02 09:07:00     G023        0.6829871     0.007702661
+#&gt; 28           6 2018-06-02 09:07:00     G024        0.6599970     0.007699679
+#&gt; 29           6 2018-06-02 09:07:00     G025        0.6445097     0.007702165
+#&gt; 30           6 2018-06-02 09:07:00     G026        0.6767850     0.007711000
+#&gt; 31           6 2018-06-02 09:07:00     G027        0.6544340     0.007699613
+#&gt; 32           6 2018-06-02 09:07:00     G028        0.6445257     0.007705142
+#&gt; 33           6 2018-06-02 09:07:00     G029        0.6693300     0.007699813
+#&gt; 34           6 2018-06-02 09:07:00     G030        0.6629927     0.007697372
+#&gt; 35           6 2018-06-02 09:07:00     G031        0.6601291     0.007701998
+#&gt; 36           6 2018-06-02 09:07:00     G032        0.6632956     0.007728121
+#&gt; 37           6 2018-06-02 09:07:00     G033        0.6645056     0.007704253
+#&gt; 38           6 2018-06-02 09:07:00     G034        0.6708474     0.007731326
+#&gt; 39           6 2018-06-02 09:07:00     G035        0.6536514     0.007728354
+#&gt; 40           6 2018-06-02 09:07:00     G036        0.6802391     0.007705299
+#&gt; 41           6 2018-06-02 09:07:00     G037        0.6611779     0.007699062
+#&gt; 42           6 2018-06-02 09:07:00     G038        0.6601901     0.007700164
+#&gt; 43           6 2018-06-02 09:07:00     G039        0.6735034     0.007699768
+#&gt; 44           6 2018-06-02 09:07:00     G040        0.6530586     0.007694437
+#&gt; 45           6 2018-06-02 09:07:00     G041        0.6621634     0.007708062
+#&gt; 46           6 2018-06-02 09:07:00     G042        0.6722269     0.008123826
+#&gt; 47           6 2018-06-02 09:07:00     G043        0.6612217     0.007701496
+#&gt; 48           6 2018-06-02 09:07:00     G044        0.6609136     0.007703075
+#&gt; 49           6 2018-06-02 09:07:00     G045        0.6786779     0.007703048
+#&gt; 50           6 2018-06-02 09:07:00     G046        0.6677386     0.007704771
+#&gt; 51           6 2018-06-02 09:07:00     G047        0.6654540     0.007698621
+#&gt; 52           6 2018-06-02 09:07:00     G048        0.6548800     0.007704357
+#&gt; 53           6 2018-06-02 09:07:00     G049        0.6449213     0.007710439
+#&gt; 54           6 2018-06-02 09:07:00     G050        0.6663101     0.007706011
+#&gt; 55           6 2018-06-02 09:07:00     G051        0.6611333     0.007727898
+#&gt; 56           6 2018-06-02 09:07:00     G052        0.6549912     0.007707256
+#&gt; 57           6 2018-06-02 09:07:00     G053        0.6585541     0.007705866
+#&gt; 58           6 2018-06-02 09:07:00     G054        0.6680002     0.007752413
+#&gt; 59           6 2018-06-02 09:07:00     G055        0.6703731     0.007729491
+#&gt; 60           6 2018-06-02 09:07:00     G056        0.6118151     0.007701434
+#&gt; 61           6 2018-06-02 09:07:00     G057        0.6645290     0.007724037
+#&gt; 62           6 2018-06-02 09:07:00     G058        0.6595346     0.007700686
+#&gt; 63           6 2018-06-02 09:07:00     G059        0.6651924     0.007706548
+#&gt; 64           6 2018-06-02 09:07:00     G060        0.6667375     0.007753834
+#&gt; 65           6 2018-06-02 09:07:00     G061        0.6642414     0.007699061
+#&gt; 66           6 2018-06-02 09:07:00     G062        0.6645261     0.007707098
+#&gt; 67           6 2018-06-02 09:07:00     G063        0.6699411     0.008117854
+#&gt; 68           6 2018-06-02 09:07:00     G064        0.6619275     0.007704129
+#&gt; 69           6 2018-06-02 09:07:00     G065        0.6650805     0.007734659
+#&gt; 70           6 2018-06-02 09:07:00     G066        0.6724649     0.007700312
+#&gt; 71           6 2018-06-02 09:07:00     G067        0.6611216     0.007701413
+#&gt; 72           6 2018-06-02 09:07:00     G068        0.6506811     0.008128923
+#&gt; 73           6 2018-06-02 09:07:00     G069        0.6612768     0.007738747
+#&gt; 74           6 2018-06-02 09:07:00     G070        0.6574075     0.008617051
+#&gt; 75           6 2018-06-02 09:07:00     G071        0.6694664     0.007704424
+#&gt; 76           6 2018-06-02 09:07:00     G072        0.6690718     0.007698159
+#&gt; 77           6 2018-06-02 09:07:00     G073        0.6631872     0.007702366
+#&gt; 78           6 2018-06-02 09:07:00     G074        0.6481703     0.007707450
+#&gt; 79           6 2018-06-02 09:07:00     G075        0.6686711     0.007707918
+#&gt; 80           6 2018-06-02 09:07:00     G076        0.6710831     0.007701183
+#&gt; 81           6 2018-06-02 09:07:00     G077        0.6612422     0.007697389
+#&gt; 82           6 2018-06-02 09:07:00     G078        0.6532746     0.007724417
+#&gt; 83           6 2018-06-02 09:07:00     G079        0.6640692     0.007695103
+#&gt; 84           6 2018-06-02 09:07:00     G080        0.6702488     0.007726688
+#&gt; 85           6 2018-06-02 09:07:00     G081        0.6760733     0.007696855
+#&gt; 86           6 2018-06-02 09:07:00     G082        0.6710105     0.007729286
+#&gt; 87           6 2018-06-02 09:07:00     G083        0.6487929     0.007711075
+#&gt; 88           6 2018-06-02 09:07:00     G084        0.6713557     0.007725941
+#&gt; 89           6 2018-06-02 09:07:00     G085        0.6744388     0.007699935
+#&gt; 90           6 2018-06-02 09:07:00     G086        0.6757042     0.007732466
+#&gt; 91           6 2018-06-02 09:07:00     G087        0.6509550     0.007732856
+#&gt; 92           6 2018-06-02 09:07:00     G088        0.6576135     0.007698780
+#&gt; 93           6 2018-06-02 09:07:00     G089        0.6604946     0.007700450
+#&gt; 94           6 2018-06-02 09:07:00     G090        0.6553227     0.007700178
+#&gt; 95           6 2018-06-02 09:07:00     G091        0.6703457     0.007704599
+#&gt; 96           6 2018-06-02 09:07:00     G092        0.6539179     0.007699680
+#&gt; 97           6 2018-06-02 09:07:00     G093        0.6603908     0.007715116
+#&gt; 98           6 2018-06-02 09:07:00     G094        0.6592405     0.008121379
+#&gt; 99           6 2018-06-02 09:07:00     G095        0.6710972     0.007699054
+#&gt; 100          6 2018-06-02 09:07:00     G096        0.6567568     0.007755071
+#&gt; 101          6 2018-06-02 09:07:00     G097        0.6612203     0.008126521
+#&gt; 102          6 2018-06-02 09:07:00     G098        0.6550657     0.007706977
+#&gt; 103          6 2018-06-02 09:07:00     G099        0.6607578     0.008192725
+#&gt; 104          6 2018-06-02 09:07:00     G100        0.6770051     0.010959445
+#&gt; 105          6 2018-06-02 09:07:00     G101        0.6775527     0.007700035
+#&gt; 106          6 2018-06-02 09:07:00     G102        0.6706116     0.007702918
+#&gt; 107          6 2018-06-02 09:07:00     G103        0.6615586     0.007698074
+#&gt; 108          6 2018-06-02 09:07:00     G104        0.6686942     0.007705062
+#&gt; 109          6 2018-06-02 09:07:00     G105        0.6642819     0.007729529
+#&gt; 110          6 2018-06-02 09:07:00     G106        0.6601543     0.007704690
+#&gt; 111          6 2018-06-02 09:07:00     G107        0.6385559     0.007702528
+#&gt; 112          6 2018-06-02 09:07:00     G108        0.6645132     0.007752865
+#&gt; 113          6 2018-06-02 09:07:00     G109        0.6565865     0.007700564
+#&gt; 114          6 2018-06-02 09:07:00     G110        0.6747383     0.007702365
+#&gt; 115          6 2018-06-02 09:07:00     G111        0.6409483     0.007704305
+#&gt; 116          6 2018-06-02 09:07:00     G112        0.6695724     0.007699579
+#&gt; 117          6 2018-06-02 09:07:00     G113        0.6679194     0.007700582
+#&gt; 118          6 2018-06-02 09:07:00     G114        0.6706955     0.007702143
+#&gt; 119          6 2018-06-02 09:07:00     G115        0.6768415     0.007699532
+#&gt; 120          6 2018-06-02 09:07:00     G116        0.6605166     0.007699692
+#&gt; 121          6 2018-06-02 09:07:00     G117        0.6751238     0.007701153
+#&gt; 122          6 2018-06-02 09:07:00     G118        0.6622092     0.007698436
+#&gt; 123          6 2018-06-02 09:07:00     G119        0.6529124     0.007708929
+#&gt; 124          6 2018-06-02 09:07:00     G120        0.6599655     0.007702706
+#&gt; 125          6 2018-06-02 09:07:00     G121        0.6704793     0.007702692
+#&gt; 126          6 2018-06-02 09:07:00     G122        0.6682312     0.007706687
+#&gt; 127          6 2018-06-02 09:07:00     G123        0.6474892     0.007707430
+#&gt; 128          6 2018-06-02 09:07:00     G124        0.6411141     0.007700175
+#&gt; 129          6 2018-06-02 09:07:00     G125        0.6691745     0.007703641
+#&gt; 130          6 2018-06-02 09:07:00     G126        0.6667025     0.007704703
+#&gt; 131          6 2018-06-02 09:07:00     G127        0.6678710     0.007697370
+#&gt; 132          6 2018-06-02 09:07:00     G128        0.6548512     0.007700070
+#&gt; 133          6 2018-06-02 09:07:00     G129        0.6650141     0.007727395
+#&gt; 134          6 2018-06-02 09:07:00     G130        0.6624038     0.007709783
+#&gt; 135          6 2018-06-02 09:07:00     G131        0.6713560     0.007706788
+#&gt; 136          6 2018-06-02 09:07:00     G132        0.6529771     0.007699578
+#&gt; 137          6 2018-06-02 09:07:00     G133        0.6638480     0.007700894
+#&gt; 138          6 2018-06-02 09:07:00     G134        0.6687847     0.007700163
+#&gt; 139          6 2018-06-02 09:07:00     G135        0.6665726     0.008118755
+#&gt; 140          6 2018-06-02 09:07:00     G136        0.6611780     0.007726706
+#&gt; 141          6 2018-06-02 09:07:00     G137        0.6625509     0.007698715
+#&gt; 142          6 2018-06-02 09:07:00     G138        0.6612439     0.007700850
+#&gt; 143          6 2018-06-02 09:07:00     G139        0.6767868     0.007703539
+#&gt; 144          6 2018-06-02 09:07:00     G140        0.6662177     0.007696857
+#&gt; 145          6 2018-06-02 09:07:00     G141        0.6781297     0.007699985
+#&gt; 146          6 2018-06-02 09:07:00     G142        0.6585943     0.008619558
+#&gt; 147          6 2018-06-02 09:07:00     G143        0.6676940     0.007715739
+#&gt; 148          6 2018-06-02 09:07:00     G144        0.6655429     0.007698368
+#&gt; 149          6 2018-06-02 09:07:00     G145        0.6625850     0.007709438
+#&gt; 150          6 2018-06-02 09:07:00     G146        0.6630060     0.007705715
+#&gt; 151          6 2018-06-02 09:07:00     G147        0.6620857     0.007701630
+#&gt; 152          6 2018-06-02 09:07:00     G148        0.6637097     0.007713944
+#&gt; 153          6 2018-06-02 09:07:00     G149        0.6622793     0.007725909
+#&gt; 154          6 2018-06-02 09:07:00     G150        0.6611156     0.007701119
+#&gt; 155          6 2018-06-02 09:07:00     G151        0.6703344     0.008136423
+#&gt; 156          6 2018-06-02 09:07:00     G152        0.6602304     0.007701865
+#&gt; 157          6 2018-06-02 09:07:00     G153        0.6561396     0.007710380
+#&gt; 158          6 2018-06-02 09:07:00     G154        0.6628948     0.007703443
+#&gt; 159          6 2018-06-02 09:07:00     G155        0.6705656     0.007703660
+#&gt; 160          6 2018-06-02 09:07:00     G156        0.6843764     0.007706470
+#&gt; 161          6 2018-06-02 09:07:00     G157        0.6610267     0.007716522
+#&gt; 162          6 2018-06-02 09:07:00     G158        0.6683040     0.007729337
+#&gt; 163          6 2018-06-02 09:07:00     G159        0.6661218     0.007698991
+#&gt; 164          6 2018-06-02 09:07:00     G160        0.6728576     0.008151879
+#&gt; 165          6 2018-06-02 09:07:00     G161        0.6682585     0.007727964
+#&gt; 166          6 2018-06-02 09:07:00     G162        0.6661079     0.007703066
+#&gt; 167          6 2018-06-02 09:07:00     G163        0.6678025     0.007726773
+#&gt; 168          6 2018-06-02 09:07:00     G164        0.6735155     0.007702900
+#&gt; 169          6 2018-06-02 09:07:00     G165        0.6563544     0.007704011
+#&gt; 170          6 2018-06-02 09:07:00     G166        0.6707298     0.007701760
+#&gt; 171          6 2018-06-02 09:07:00     G167        0.6439878     0.007706114
+#&gt; 172          6 2018-06-02 09:07:00     G168        0.6528907     0.007734866
+#&gt; 173          6 2018-06-02 09:07:00     G169        0.6684484     0.007704223
+#&gt; 174          6 2018-06-02 09:07:00     G170        0.6651391     0.007714156
+#&gt; 175          6 2018-06-02 09:07:00     G171        0.6647868     0.007700135
+#&gt; 176          6 2018-06-02 09:07:00     G172        0.6599692     0.007707374
+#&gt; 177          6 2018-06-02 09:07:00     G173        0.6546012     0.007730982
+#&gt; 178          6 2018-06-02 09:07:00     G174        0.6774350     0.007708164
+#&gt; 179          6 2018-06-02 09:07:00     G175        0.6486252     0.007704105
+#&gt; 180          6 2018-06-02 09:07:00     G176        0.6591984     0.007698629
+#&gt; 181          6 2018-06-02 09:07:00     G177        0.6538029     0.007711794
+#&gt; 182          6 2018-06-02 09:07:00     G178        0.6531181     0.008120026
+#&gt; 183          6 2018-06-02 09:07:00     G179        0.6588710     0.007713076
+#&gt; 184          6 2018-06-02 09:07:00     G180        0.6669916     0.007703516
+#&gt; 185          6 2018-06-02 09:07:00     G181        0.6094685     0.008125684
+#&gt; 186          6 2018-06-02 09:07:00     G182        0.6753431     0.007701207
+#&gt; 187          6 2018-06-02 09:07:00     G183        0.6561232     0.007698993
+#&gt; 188          6 2018-06-02 09:07:00     G184        0.6637978     0.007700494
+#&gt; 189          6 2018-06-02 09:07:00     G185        0.6596665     0.007738067
+#&gt; 190          6 2018-06-02 09:07:00     G186        0.6536958     0.007730009
+#&gt; 191          6 2018-06-02 09:07:00     G187        0.6612371     0.008122945
+#&gt; 192          6 2018-06-02 09:07:00     G188        0.6583710     0.007699311
+#&gt; 193          6 2018-06-02 09:07:00     G189        0.6565018     0.007735630
+#&gt; 194          6 2018-06-02 09:07:00     G190        0.6706921     0.007737438
+#&gt; 195          6 2018-06-02 09:07:00     G191        0.6566524     0.007702793
+#&gt; 196          6 2018-06-02 09:07:00     G192        0.6732483     0.007707913
+#&gt; 
+#&gt; $checkPred
+#&gt; NULL
+#&gt; </div><div class='input'><span class='co'># }</span>
 
 </div></pre>
   </div>

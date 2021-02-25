@@ -43,15 +43,20 @@
 <meta property="og:description" content="Convert a data.frame to an object of class TP (Time Points).
 The function converts a data.frame to an object of class TP in the following
 steps:
-Check input data
-Rename columns to default column names - default column names:
-genotype, timePoint, plotId, repId, rowNum, colNum.
-Add columns rowId and colId to data. These are copies of rowId and
-colId converted to factors.
-Convert column types to default column types - rowNum and colNum
-are converted to numeric columns, all other renamed columns to factor
-columns. Columns other than the default columns, e.g. traits or other
-covariates will be included in the output unchanged.
+Quality control on the input data. For example, warnings will be given
+when more than 50% of observations are missing for a plant.
+Rename columns to default column names used by the functions in the
+statgenHTP package. For example, the column in the data containing
+variety/accession/genotype is renamed to “genotype.” Original column names
+are stored as an attribute of the individual data.frames in the TP object.
+Convert column types to the default column types. For example, the
+column “genotype” is converted to a factor and “rowNum” to a numeric column.
+Convert the column containing time into time format. If needed, the
+time format can be provided in timeFormat. For example, with a
+date/time input of the form “day/month/year hour:minute”, use
+&quot;%d/%m/%Y %H:%M&quot;. For a full list of abbreviations see the R package
+strptime. When the input time is a numeric value, the function will
+convert it to time from 01-01-1970.
 If addCheck = TRUE, the genotypes listed in
 checkGenotypes are reference genotypes (or check). It will add a
 column check with a value &quot;noCheck&quot; for the genotypes that are not in
@@ -61,10 +66,13 @@ the genotypes that are not in checkGenotypes and NA for the
 checkGenotypes. These columns are necessary for fitting models on
 data that includes check genotypes, e.g. reference genotypes that are
 highly replicated or in case of augmented design.
-Split input data by time point - each time point in the input data will
-become a list item in the output.
-Add a list of time points as attribute timePoints to the
-output.
+Split the data into separate data.frames by time point. A TP object is
+a list of data.frames where each data.frame contains the data for a single
+time point. If there is only one time point the output will be a list with
+only one item.
+Add a data.frame with columns timeNumber and timePoint as attribute
+“timePoints” to the TP object. This data.frame can be used for referencing
+time points by a unique number.
 Note that plotId needs to be a unique identifier for a plot or a
 plant. It cannot occur more than once per time point." />
 
@@ -151,7 +159,7 @@ plant. It cannot occur more than once per time point." />
 </li>
 <li>
   <a href="https://github.com/Biometris/statgenHTP">
-    <span class="fas fa-github fa-lg"></span>
+    <span class="fas fa-github fa-lg fab"></span>
      
     github
   </a>
@@ -178,15 +186,20 @@ plant. It cannot occur more than once per time point." />
     <p>Convert a data.frame to an object of class TP (Time Points).
 The function converts a data.frame to an object of class TP in the following
 steps:</p><ul>
-<li><p>Check input data</p></li>
-<li><p>Rename columns to default column names - default column names:
-genotype, timePoint, plotId, repId, rowNum, colNum.</p></li>
-<li><p>Add columns rowId and colId to data. These are copies of rowId and
-colId converted to factors.</p></li>
-<li><p>Convert column types to default column types - rowNum and colNum
-are converted to numeric columns, all other renamed columns to factor
-columns. Columns other than the default columns, e.g. traits or other
-covariates will be included in the output unchanged.</p></li>
+<li><p>Quality control on the input data. For example, warnings will be given
+when more than 50% of observations are missing for a plant.</p></li>
+<li><p>Rename columns to default column names used by the functions in the
+statgenHTP package. For example, the column in the data containing
+variety/accession/genotype is renamed to “genotype.” Original column names
+are stored as an attribute of the individual data.frames in the TP object.</p></li>
+<li><p>Convert column types to the default column types. For example, the
+column “genotype” is converted to a factor and “rowNum” to a numeric column.</p></li>
+<li><p>Convert the column containing time into time format. If needed, the
+time format can be provided in <code>timeFormat</code>. For example, with a
+date/time input of the form “day/month/year hour:minute”, use
+"%d/%m/%Y %H:%M". For a full list of abbreviations see the R package
+strptime. When the input time is a numeric value, the function will
+convert it to time from 01-01-1970.</p></li>
 <li><p>If <code>addCheck = TRUE</code>, the genotypes listed in
 <code>checkGenotypes</code> are reference genotypes (or check). It will add a
 column check with a value "noCheck" for the genotypes that are not in
@@ -196,10 +209,13 @@ the genotypes that are not in <code>checkGenotypes</code> and <code>NA</code> fo
 <code>checkGenotypes</code>. These columns are necessary for fitting models on
 data that includes check genotypes, e.g. reference genotypes that are
 highly replicated or in case of augmented design.</p></li>
-<li><p>Split input data by time point - each time point in the input data will
-become a list item in the output.</p></li>
-<li><p>Add a list of time points as attribute <code>timePoints</code> to the
-output.</p></li>
+<li><p>Split the data into separate data.frames by time point. A TP object is
+a list of data.frames where each data.frame contains the data for a single
+time point. If there is only one time point the output will be a list with
+only one item.</p></li>
+<li><p>Add a data.frame with columns timeNumber and timePoint as attribute
+“timePoints” to the TP object. This data.frame can be used for referencing
+time points by a unique number.</p></li>
 </ul><p>Note that <code>plotId</code> needs to be a unique identifier for a plot or a
 plant. It cannot occur more than once per time point.</p>
     </div>
@@ -244,7 +260,7 @@ the time points.</p></td>
       <th>timeFormat</th>
       <td><p>A character string indicating the input format of the time
 points. E.g. for a date/time input of the form day/month/year hour:minute,
-use \<!-- %d/\\%m/\\%Y \\%H:\\%M. For a full list of abbreviations see -->
+use "%d/%m/%Y %H:%M". For a full list of abbreviations see
 <code><a href='https://rdrr.io/r/base/strptime.html'>strptime</a></code>. If <code>NULL</code>, a best guess is done based on
 the input.</p></td>
     </tr>
@@ -282,15 +298,16 @@ checks in the experiment.</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>An object of class TP. A list with, per time point in the input, a
-data.frame containing the data for that time point. A data.frame with
-columns timeNumber and timePoint is added as attribute timePoints to the
-data. This data.frame can be used for referencing timePoints by their
+    <p>An object of class <code>TP</code>. A list with, per time point in the
+input, a data.frame containing the data for that time point. A data.frame
+with columns timeNumber and timePoint is added as attribute timePoints to
+the data. This data.frame can be used for referencing timePoints by their
 number.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>Other Data preparation: 
+    <div class='dont-index'><p>Other functions for data preparation: 
 <code><a href='as.data.frame.TP.html'>as.data.frame.TP</a>()</code>,
+<code><a href='getTimePoints.html'>getTimePoints</a>()</code>,
 <code><a href='plot.TP.html'>plot.TP</a>()</code>,
 <code><a href='removeTimePoints.html'>removeTimePoints</a>()</code>,
 <code><a href='summary.TP.html'>summary.TP</a>()</code></p></div>

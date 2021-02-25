@@ -4,15 +4,20 @@
 #' The function converts a data.frame to an object of class TP in the following
 #' steps:
 #' \itemize{
-#' \item{Check input data}
-#' \item{Rename columns to default column names - default column names:
-#' genotype, timePoint, plotId, repId, rowNum, colNum}.
-#' \item{Add columns rowId and colId to data. These are copies of rowId and
-#' colId converted to factors.}
-#' \item{Convert column types to default column types - rowNum and colNum
-#' are converted to numeric columns, all other renamed columns to factor
-#' columns. Columns other than the default columns, e.g. traits or other
-#' covariates will be included in the output unchanged.}
+#' \item{Quality control on the input data. For example, warnings will be given
+#' when more than 50% of observations are missing for a plant.}
+#' \item{Rename columns to default column names used by the functions in the
+#' statgenHTP package. For example, the column in the data containing
+#' variety/accession/genotype is renamed to “genotype.” Original column names
+#' are stored as an attribute of the individual data.frames in the TP object.}
+#' \item{Convert column types to the default column types. For example, the
+#' column “genotype” is converted to a factor and “rowNum” to a numeric column.}
+#' \item{Convert the column containing time into time format. If needed, the
+#' time format can be provided in \code{timeFormat}. For example, with a
+#' date/time input of the form “day/month/year hour:minute”, use
+#' "%d/%m/%Y %H:%M". For a full list of abbreviations see the R package
+#' strptime. When the input time is a numeric value, the function will
+#' convert it to time from 01-01-1970.}
 #' \item{If \code{addCheck = TRUE}, the genotypes listed in
 #' \code{checkGenotypes} are reference genotypes (or check). It will add a
 #' column check with a value "noCheck" for the genotypes that are not in
@@ -22,10 +27,13 @@
 #' \code{checkGenotypes}. These columns are necessary for fitting models on
 #' data that includes check genotypes, e.g. reference genotypes that are
 #' highly replicated or in case of augmented design.}
-#' \item{Split input data by time point - each time point in the input data will
-#' become a list item in the output.}
-#' \item{Add a list of time points as attribute \code{timePoints} to the
-#' output.}
+#' \item{Split the data into separate data.frames by time point. A TP object is
+#' a list of data.frames where each data.frame contains the data for a single
+#' time point. If there is only one time point the output will be a list with
+#' only one item.}
+#' \item{Add a data.frame with columns timeNumber and timePoint as attribute
+#' “timePoints” to the TP object. This data.frame can be used for referencing
+#' time points by a unique number.}
 #' }
 #' Note that \code{plotId} needs to be a unique identifier for a plot or a
 #' plant. It cannot occur more than once per time point.
@@ -39,7 +47,7 @@
 #' the time points.
 #' @param timeFormat A character string indicating the input format of the time
 #' points. E.g. for a date/time input of the form day/month/year hour:minute,
-#' use \%d/\%m/\%Y \%H:\%M. For a full list of abbreviations see
+#' use "%d/%m/%Y %H:%M". For a full list of abbreviations see
 #' \code{\link[base]{strptime}}. If \code{NULL}, a best guess is done based on
 #' the input.
 #' @param plotId A character string indicating the column in dat containing
@@ -55,10 +63,10 @@
 #' @param checkGenotypes A character vector containing the genotypes used as
 #' checks in the experiment.
 #'
-#' @return An object of class TP. A list with, per time point in the input, a
-#' data.frame containing the data for that time point. A data.frame with
-#' columns timeNumber and timePoint is added as attribute timePoints to the
-#' data. This data.frame can be used for referencing timePoints by their
+#' @return An object of class \code{TP}. A list with, per time point in the
+#' input, a data.frame containing the data for that time point. A data.frame
+#' with columns timeNumber and timePoint is added as attribute timePoints to
+#' the data. This data.frame can be used for referencing timePoints by their
 #' number.
 #'
 #' @examples ## Create a TP object containing the data from the Phenovator.
@@ -74,7 +82,7 @@
 #'                                                "check3","check4"))
 #' summary(phenoTP)
 #'
-#' @family Data preparation
+#' @family functions for data preparation
 #'
 #' @export
 createTimePoints <- function(dat,
@@ -243,9 +251,9 @@ createTimePoints <- function(dat,
   return(TP)
 }
 
-#' Remove selected time points from an object of class TP
+#' Remove time points from an object of class TP
 #'
-#' Remove selected time points from an object of class TP
+#' Function for removing selected time points from an object of class TP.
 #'
 #' @param TP An object of class TP.
 #' @param timePoints A character or numeric vector indicating the time points
@@ -254,7 +262,27 @@ createTimePoints <- function(dat,
 #' a number it will be matched by its number ("timeNumber") in the timePoints
 #' attribute of the TP object.
 #'
-#' @family Data preparation
+#' @examples
+#' ## Create a TP object containing the data from the Phenovator.
+#' phenoTP <- createTimePoints(dat = PhenovatorDat1,
+#'                             experimentName = "Phenovator",
+#'                             genotype = "Genotype",
+#'                             timePoint = "timepoints",
+#'                             repId = "Replicate",
+#'                             plotId = "pos",
+#'                             rowNum = "y", colNum = "x",
+#'                             addCheck = TRUE,
+#'                             checkGenotypes = c("check1", "check2",
+#'                                                "check3","check4"))
+#' ## Remove the first and last time point from the TP object.
+#' phenoTPNew <- removeTimePoints(phenoTP,
+#'                                timePoints = c(1, 73))
+#'
+#' ## Compare by looking at summaries.
+#' summary(phenoTP)
+#' summary(phenoTPNew)
+#'
+#' @family functions for data preparation
 #'
 #' @export
 removeTimePoints <- function(TP,
@@ -267,14 +295,31 @@ removeTimePoints <- function(TP,
   return(TPOut)
 }
 
-#' Summary function for class TP
+#' Summary function for TP objects
 #'
-#' Summary function for class TP
+#' Function for creating a short summary of the contents of a \code{TP} object.
+#' The summary consists of the name of the experiment, the number of time
+#' points, the first and last time point and the genotypes defined as checks.
 #'
 #' @param object An object of class TP.
 #' @param ... Ignored.
 #'
-#' @family Data preparation
+#' @examples
+#' ## Create a TP object containing the data from the Phenovator.
+#' phenoTP <- createTimePoints(dat = PhenovatorDat1,
+#'                             experimentName = "Phenovator",
+#'                             genotype = "Genotype",
+#'                             timePoint = "timepoints",
+#'                             repId = "Replicate",
+#'                             plotId = "pos",
+#'                             rowNum = "y", colNum = "x",
+#'                             addCheck = TRUE,
+#'                             checkGenotypes = c("check1", "check2",
+#'                                                "check3","check4"))
+#' ## Create a summary.
+#' summary(phenoTP)
+#'
+#' @family functions for data preparation
 #'
 #' @export
 summary.TP <- function(object,
@@ -304,8 +349,8 @@ summary.TP <- function(object,
 #' for different time points within the TP object. Also a boxplot can be made
 #' for selected traits and time points and a plot of correlations
 #' between time points. Finally the raw data can be displayed per
-#' genotype. A detailed description and optional extra parameters of the
-#' different plots is given in the sections below.
+#' genotype. A detailed description and optional extra parameters for the
+#' different plots are given in the sections below.
 #'
 #' @section Layout Plot:
 #' Plots the layout of the platform for selected time points (all available time
@@ -317,7 +362,7 @@ summary.TP <- function(object,
 #' single plots in a time point or complete missing columns or rows.\cr
 #' Extra parameter options:
 #' \describe{
-#' \item{showGeno}{Should individual genotypes be indicated in the plot?
+#' \item{showGeno}{Should individual genotypes be labeled in the plot?
 #' Defaults to \code{FALSE}}
 #' \item{highlight}{A character vector of genotypes to be highlighted in the
 #' plot.}
@@ -337,7 +382,7 @@ summary.TP <- function(object,
 #' \item{orderBy}{A character string indicating the way the boxes should be
 #' ordered. Either "alphabetic" for alphabetical ordering of the groups,
 #' "ascending" for ordering by ascending mean, or "descending" for ordering by
-#' descending mean. Default boxes are ordered alphabetically.}
+#' descending mean. By default boxes are ordered alphabetically.}
 #' }
 #'
 #' @section Correlation Plot:
@@ -346,11 +391,11 @@ summary.TP <- function(object,
 #'
 #' @section Raw data plot:
 #' Create a plot of the raw data of the selected trait over time for selected
-#' time points (all available time points by default). Plots are grouped per
-#' genotypes, or by genotype x treatment when the \code{geno.decomp} option is
-#' specified. By default, all the genotypes will be plotted wich might take
-#' time and memory when the output is not saved in a file (see \code{outFile}).
-#' Warning about the labels with few time points? Extra parameter options:
+#' time points (all available time points by default). Plots are grouped by
+#' genotype, or by genotype x treatment when the \code{geno.decomp} option is
+#' specified. By default, all the genotypes will be plotted which might take
+#' time and memory when the output is not saved in a file (see parameter
+#' \code{outFile}). Extra parameter options:
 #'\describe{
 #' \item{genotypes}{A character vector indicating the genotypes to be plotted.}
 #' \item{geno.decomp}{A character vector indicating the grouping of the
@@ -374,7 +419,7 @@ summary.TP <- function(object,
 #' @param title A character string used as title for the plot. If \code{NULL} a
 #' default title is added to the plot depending on \code{plotType}.
 #' @param output Should the plot be output to the current device? If
-#' \code{FALSE} only a list of ggplot objects is invisibly returned. Ignored if
+#' \code{FALSE} only a (list of) ggplot object(s) is invisibly returned. Ignored if
 #' \code{outFile} is specified.
 #' @param outFile A character string indicating the .pdf file to which the
 #' plots should be written. If \code{NULL}, no file is written.
@@ -385,7 +430,7 @@ summary.TP <- function(object,
 #' ggplot objects is invisibly returned.
 #'
 #' @examples
-#' data("PhenovatorDat1")
+#' ## Create a TP object containing the data from the Phenovator.
 #' phenoTP <- createTimePoints(dat = PhenovatorDat1,
 #'                             experimentName = "Phenovator",
 #'                             genotype = "Genotype",
@@ -422,9 +467,9 @@ summary.TP <- function(object,
 #' plot(phenoTP,
 #'      traits = "EffpsII",
 #'      plotType = "raw",
-#'      genotypes = c("G1","G2","check1","check2"))
+#'      genotypes = c("G001","G002","check1","check2"))
 #'
-#' @family Data preparation
+#' @family functions for data preparation
 #'
 #' @export
 plot.TP <- function(x,
@@ -816,12 +861,29 @@ plot.TP <- function(x,
   return(r)
 }
 
+#' Coerce TP object to data.frame
+#'
 #' Function for converting an object of class TP to a data.frame.
 #'
 #' @param x An object of class TP.
 #' @param ... Ignored.
 #'
-#' @family Data preparation
+#' @examples
+#' ## Create a TP object containing the data from the Phenovator.
+#' phenoTP <- createTimePoints(dat = PhenovatorDat1,
+#'                             experimentName = "Phenovator",
+#'                             genotype = "Genotype",
+#'                             timePoint = "timepoints",
+#'                             repId = "Replicate",
+#'                             plotId = "pos",
+#'                             rowNum = "y", colNum = "x",
+#'                             addCheck = TRUE,
+#'                             checkGenotypes = c("check1", "check2",
+#'                                                "check3", "check4"))
+#' ## Convert phenoTP to data.frame.
+#' phenoDat <- as.data.frame(phenoTP)
+#'
+#' @family functions for data preparation
 #'
 #' @export
 as.data.frame.TP <- function (x,

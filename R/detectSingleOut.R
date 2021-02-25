@@ -1,4 +1,4 @@
-#' Detect outliers in a time series
+#' Detect outliers for single observations
 #'
 #' Detect outlying observations in a time series by modeling each plotId using
 #' a local regression.
@@ -11,30 +11,30 @@
 #'   confIntSize to exclude less outliers}
 #' }
 #'
-#' @param TP An object of class TP.
-#' @param trait A character vector indicating the trait to model in TP.
+#' @param TP An object of class \code{TP}.
+#' @param trait A character vector indicating the trait to model in \code{TP}.
 #' @param plotIds A character vector of plotIds for which the outliers should be
-#' detected. If \code{NULL}, all plotId in TP are used.
+#' detected. If \code{NULL}, all plotIds in \code{TP} are used.
 #' @param checkEdges Before fitting the local regression should a check be done
 #' if the first and last time point for a plot are outlying observations?
-#' @param confIntSize A numeric value defining the confidence interval.
+#' @param confIntSize A numeric value defining the confidence interval (see
+#' Details).
 #' @param nnLocfit A numeric value defining the constant component of the
-#' smoothing parameter nn. (see the locfit())
+#' smoothing parameter nn (see Details).
 #'
-#' @return An object of class singleOut, a data.frame with the following
+#' @return An object of class singleOut, a \code{data.frame} with the following
 #' columns.
 #' \describe{
-#'   \item{plotId}{the id variable}
-#'   \item{timePoint}{time variable in datain}
-#'   \item{trait}{name of the modeled variable in datain}
-#'   \item{yPred}{the locfit prediction}
+#'   \item{plotId}{plotId}
+#'   \item{timePoint}{time point}
+#'   \item{trait}{modeled trait}
+#'   \item{yPred}{prediction from the local regression}
 #'   \item{sd_yPred}{standard deviation of the prediction}
 #'   \item{lwr}{lower bound of the confidence interval}
 #'   \item{upr}{upper bound of the confidence interval}
-#'   \item{outlier}{flag of detected outlier (0 is outlier, 1 is not)}
+#'   \item{outlier}{flag for detected outlier (a value of 1 indicates the
+#'   observation is an outlier)}
 #' }
-#'
-#' @seealso plot.singleOut
 #'
 #' @examples
 #' ## Create a TP object containing the data from the Phenovator.
@@ -60,7 +60,7 @@
 #'                                  confIntSize = 3,
 #'                                  nnLocfit = 0.1)
 #'
-#' @family Detect outliers in a time series
+#' @family functions for detecting outliers for single observations
 #'
 #' @export
 detectSingleOut <- function(TP,
@@ -159,17 +159,20 @@ detectSingleOut <- function(TP,
   return(plotPred)
 }
 
-#' Plot outliers in a time series
+#' Plot outliers for single observations
 #'
-#' Plot the modeled smoothing and detected outliers for each plotId.
+#' Plot the fitted local regression, confidence intervals and detected outliers
+#' for each plotId.
 #'
 #' @inheritParams detectSingleOut
 #' @inheritParams plot.TP
 #'
-#' @param x An object of class singleOut
+#' @param x An object of class singleOut.
+#' @param ... Ignored.
 #' @param outOnly Should only plots containing outliers be plotted?
 #'
-#' @examples ## Create a TP object containing the data from the Phenovator.
+#' @examples
+#' ## Create a TP object containing the data from the Phenovator.
 #' PhenovatorDat1 <- PhenovatorDat1[!PhenovatorDat1$pos %in%
 #'                                  c("c24r41", "c7r18", "c7r49"), ]
 #' phenoTP <- createTimePoints(dat = PhenovatorDat1,
@@ -183,21 +186,21 @@ detectSingleOut <- function(TP,
 #'                             checkGenotypes = c("check1", "check2",
 #'                                                "check3", "check4"))
 #'
-#' ## First select a subset of plants, for example here 9 plants.
+#' ## Select a subset of plants, for example here 9 plants.
 #' plantSel <- phenoTP[[1]]$plotId[1:9]
-#' # Then run on the subset
+#' # Then run on the subset.
 #' resuVatorHTP <- detectSingleOut(TP = phenoTP,
 #'                                trait = "EffpsII",
 #'                                plotIds = plantSel,
 #'                                confIntSize = 3,
 #'                                nnLocfit = 0.1)
 #'
-#' ## We can then visualize the prediction by choosing a single plant...
+#' ## Visualize the prediction by choosing a single plant...
 #' plot(resuVatorHTP, plotIds = "c21r24", outOnly = FALSE)
 #' ## ...or a subset of plants.
 #' plot(resuVatorHTP, plotIds = plantSel, outOnly = FALSE)
 #'
-#' @family Detect outliers in a time series
+#' @family functions for detecting outliers for single observations
 #'
 #' @export
 plot.singleOut <- function(x,
@@ -277,16 +280,16 @@ plot.singleOut <- function(x,
   invisible(pPag)
 }
 
-#' Remove point outliers
+#' Replace outliers for single observations by NA
 #'
-#' Function for setting point outliers to NA.
+#' Function for replacing outliers for single observations by NA.
 #'
 #' @param TP An object of class TP.
 #' @param singleOut A data.frame with at least the columns plotId and
 #' timePoint with values corresponding to those in TP. If a column outlier is
-#' present, as in the output of \code{detectSingleOut}, only plot x time
-#' combinations for which outlier = 1 will be set to NA. If no column outlier is
-#' present, all observations in singleOut will be set to NA.
+#' present, as in the output of \code{detectSingleOut}, only plotId x
+#' timePoint combinations for which outlier = 1 will be set to NA. If no
+#' column outlier is present, all observations in singleOut will be set to NA.
 #' @param trait The trait that should be set to NA. Can be ignored when using
 #' the output of \code{detectSingleOut} as input.
 
@@ -314,10 +317,10 @@ plot.singleOut <- function(x,
 #'                                 confIntSize = 3,
 #'                                 nnLocfit = 0.1)
 #'
-#' ## The annotated points can be replaced by NA for the studied trait
+#' ## Replace the studied trait by NA for the plants marked as outliers.
 #' phenoTPOut <- removeSingleOut(phenoTP, resuVatorHTP)
 #'
-#' @family Detect point outliers
+#' @family functions for detecting outliers for single observations
 #'
 #' @export
 removeSingleOut <- function(TP,

@@ -40,11 +40,11 @@
 
 
 <meta property="og:title" content="Extract corrected phenotypic values — getCorrected" />
-<meta property="og:description" content="Extract corrected phenotype from an object of class fitMod. After fitting a
-spatial model at each time point, the raw phenotypic data is corrected by
-subtracting the (estimated) sources of (environmental, design effect) which
-are of no interest (nuisances). This allows keeping the data resolution at
-the plot/plant level." />
+<meta property="og:description" content="Extract corrected phenotypic values from an object of class fitMod. After
+fitting a spatial model at each time point, the raw phenotypic data is
+corrected by subtracting the (estimated) sources of variation (environmental,
+design  effect) that are of no interest (nuisances). This allows keeping
+the data resolution at the plot/plant level." />
 
 
 
@@ -129,7 +129,7 @@ the plot/plant level." />
 </li>
 <li>
   <a href="https://github.com/Biometris/statgenHTP">
-    <span class="fas fa-github fa-lg"></span>
+    <span class="fas fa-github fa-lg fab"></span>
      
     github
   </a>
@@ -153,11 +153,11 @@ the plot/plant level." />
     </div>
 
     <div class="ref-description">
-    <p>Extract corrected phenotype from an object of class fitMod. After fitting a
-spatial model at each time point, the raw phenotypic data is corrected by
-subtracting the (estimated) sources of (environmental, design effect) which
-are of no interest (nuisances). This allows keeping the data resolution at
-the plot/plant level.</p>
+    <p>Extract corrected phenotypic values from an object of class fitMod. After
+fitting a spatial model at each time point, the raw phenotypic data is
+corrected by subtracting the (estimated) sources of variation (environmental,
+design  effect) that are of no interest (nuisances). This allows keeping
+the data resolution at the plot/plant level.</p>
     </div>
 
     <pre class="usage"><span class='fu'>getCorrected</span><span class='op'>(</span><span class='va'>fitMod</span>, timePoints <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='op'>(</span><span class='va'>fitMod</span><span class='op'>)</span>, outFile <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
@@ -167,15 +167,15 @@ the plot/plant level.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>fitMod</th>
-      <td><p>An object of class fitMod.</p></td>
+      <td><p>An object of class <code>fitMod</code>.</p></td>
     </tr>
     <tr>
       <th>timePoints</th>
       <td><p>A character or numeric vector indicating the time point(s)
-to be modeled. When using a character string to reference a time point, the
-value has to be an exact match to one of the existing time points. When using
-a number it will be matched by its number ("timeNumber") in the timePoints
-attribute of the TP object.</p></td>
+for which the corrected values should be extracted. When using a character
+string to reference a time point, the value has to be an exact match to one
+of the existing time points. When using a number it will be matched by its
+number ("timeNumber") in the timePoints attribute of the TP object.</p></td>
     </tr>
     <tr>
       <th>outFile</th>
@@ -189,7 +189,7 @@ results should be written. If <code>NULL</code> no file is written.</p></td>
     <p>A data.frame with spatially corrected values per time point.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>Other Spatial modeling: 
+    <div class='dont-index'><p>Other functions for spatial modeling: 
 <code><a href='fitModels.html'>fitModels</a>()</code>,
 <code><a href='getEffDims.html'>getEffDims</a>()</code>,
 <code><a href='getGenoPred.html'>getGenoPred</a>()</code>,
@@ -200,8 +200,7 @@ results should be written. If <code>NULL</code> no file is written.</p></td>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='co'>## Using the first example dataset (PhenovatorDat1):</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"PhenovatorDat1"</span><span class='op'>)</span>
+<span class='co'>## Using the first example dataset (PhenovatorDat1).</span>
 <span class='va'>phenoTP</span> <span class='op'>&lt;-</span> <span class='fu'><a href='createTimePoints.html'>createTimePoints</a></span><span class='op'>(</span>dat <span class='op'>=</span> <span class='va'>PhenovatorDat1</span>,
                             experimentName <span class='op'>=</span> <span class='st'>"Phenovator"</span>,
                             genotype <span class='op'>=</span> <span class='st'>"Genotype"</span>,
@@ -214,7 +213,7 @@ results should be written. If <code>NULL</code> no file is written.</p></td>
                                                <span class='st'>"check3"</span>, <span class='st'>"check4"</span><span class='op'>)</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='warning'>Warning: The following plotIds have observations for less than 50% of the time points:</span>
 #&gt; <span class='warning'>c24r41, c7r18, c7r49</span></div><div class='input'>
-<span class='co'>## Fit a SpATS model on few time points:</span>
+<span class='co'>## Fit a SpATS model on few time points.</span>
 <span class='va'>modPhenoSp</span> <span class='op'>&lt;-</span> <span class='fu'><a href='fitModels.html'>fitModels</a></span><span class='op'>(</span>TP <span class='op'>=</span> <span class='va'>phenoTP</span>,
                         trait <span class='op'>=</span> <span class='st'>"EffpsII"</span>,
                         timePoints <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>6</span>, <span class='fl'>20</span><span class='op'>)</span><span class='op'>)</span>
@@ -222,7 +221,21 @@ results should be written. If <code>NULL</code> no file is written.</p></td>
 <span class='co'>## Extract the corrected values for one time point:</span>
 <span class='va'>spatCorrSp</span> <span class='op'>&lt;-</span> <span class='fu'>getCorrected</span><span class='op'>(</span><span class='va'>modPhenoSp</span>,
                            timePoints <span class='op'>=</span> <span class='fl'>6</span><span class='op'>)</span>
-<span class='co'># }</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>spatCorrSp</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;   timeNumber           timePoint EffpsII_corr EffpsII       wt genotype rowId
+#&gt; 1          6 2018-06-02 09:07:00    0.6858633   0.678 41.86999   check1    56
+#&gt; 2          6 2018-06-02 09:07:00    0.6961872   0.688 41.86999   check1    56
+#&gt; 3          6 2018-06-02 09:07:00    0.6955437   0.707 41.86999   check1    10
+#&gt; 4          6 2018-06-02 09:07:00    0.6700324   0.668 41.86999   check1    37
+#&gt; 5          6 2018-06-02 09:07:00    0.6348952   0.644 41.86999   check1    42
+#&gt; 6          6 2018-06-02 09:07:00    0.6409509   0.633 41.86999   check1    43
+#&gt;   colId plotId
+#&gt; 1     9  c9r56
+#&gt; 2    11 c11r56
+#&gt; 3    12 c12r10
+#&gt; 4    10 c10r37
+#&gt; 5    15 c15r42
+#&gt; 6    22 c22r43</div><div class='input'><span class='co'># }</span>
 
 </div></pre>
   </div>

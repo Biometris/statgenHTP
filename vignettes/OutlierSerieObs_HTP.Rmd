@@ -52,7 +52,7 @@ The data from the Phenovator platform have been corrected for spatial trends and
 
 ```{r fitSplineVator, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 data(spatCorrectedVator)  
-# Run the function to fit P-splines using the mgcv package on a subset of genotypes
+# Fit P-splines using on a subset of genotypes.
 subGenoVator <- c("G070", "G160", "G151", "G179", "G175", "G004", "G055")
 
 fit.spline <- fitSpline(inDat = spatCorrectedVator,
@@ -60,14 +60,14 @@ fit.spline <- fitSpline(inDat = spatCorrectedVator,
                         genotypes = subGenoVator,
                         knots = 50)
 # Extracting the tables of predicted values and P-spline coefficients
-pred.Dat <- fit.spline$predDat
-coef.Dat <- fit.spline$coefDat
+predDat <- fit.spline$predDat
+coefDat <- fit.spline$coefDat
 ```
 
 The object `fit.spline` contains the P-spline model coefficients (`coefDat`) and the predicted value (`pred.value` in the table below), i.e the values predicted using the P-spline model coefficients. Predictions are made on a denser grid of time points: the time points for prediction are calculated as the smallest gap between two time points divided by 9, so dividing the smallest gap in 10 segments. The object `fit.spline` also contains the first and second derivatives (`deriv` and `deriv2` in the table below, see also [**statgenHTP tutorial: 5. Estimation of parameters from time courses**](ParameterEstimation_HTP.html)).
 
 ```{r headpredDat, echo=FALSE, message=FALSE, eval=TRUE}
-knitr::kable(head(pred.Dat), align=c('c','c'), booktabs = TRUE)
+knitr::kable(head(predDat), align=c('c','c'), booktabs = TRUE)
 ```
 
 Conversion to numerical time is required to fit P-splines. To keep the same time scale as in the original `timePoint` column, a numerical transformation of the time points is made using the first time point as origin (column `timeNumber` in the table above).  
@@ -101,17 +101,17 @@ plot(fit.spline,
 The object `fit.spline` also contains the values of the P-splines coefficients:
 
 ```{r headcoefDat, echo=FALSE, message=FALSE, eval=TRUE}
-knitr::kable(head(coef.Dat), align=c('c','c'), booktabs = TRUE)
+knitr::kable(head(coefDat), align=c('c','c'), booktabs = TRUE)
 ```
 
-The coefficients are then used to tag suspect time courses with the function `detectSerieOut()`. This function performs a PCA on the coefficients (from data.frame `coef.Dat`) per `genotype` and calculates the pairwise angle between the plants in the PCA plot. Plants are tagged when the mean angle is above threshold (`thrPca)`, see the lines `reason = angle` in the table below. The function also calculates the pairwise-correlation of the coefficients per genotype. Plants are tagged when the correlation is below a given threshold (`thrCor`), see the lines `reason = mean corr` in the table below.
+The coefficients are then used to tag suspect time courses with the function `detectSerieOut()`. This function performs a PCA on the coefficients (from data.frame `coefDat`) per `genotype` and calculates the pairwise angle between the plants in the PCA plot. Plants are tagged when the mean angle is above threshold (`thrPca)`, see the lines `reason = angle` in the table below. The function also calculates the pairwise-correlation of the coefficients per genotype. Plants are tagged when the correlation is below a given threshold (`thrCor`), see the lines `reason = mean corr` in the table below.
 
 For obvious reasons, the detection will only work when there are at least three replicates per genotype. Genotypes with less than three replicates will be skipped.
 
 ```{r OutVator, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 outVator <- detectSerieOut(corrDat = spatCorrectedVator,
-                           predDat = pred.Dat,
-                           coefDat = coef.Dat,
+                           predDat = predDat,
+                           coefDat = coefDat,
                            trait = "EffpsII_corr",
                            genotypes = subGenoVator,
                            thrCor = 0.9,
@@ -212,8 +212,8 @@ fit.splineArch <- fitSpline(inDat = spatCorrectedArch,
                             knots = 30,
                             minNoTP = 18)
 
-pred.DatArch <- fit.splineArch$predDat
-coef.DatArch <- fit.splineArch$coefDat
+predDatArch <- fit.splineArch$predDat
+coefDatArch <- fit.splineArch$coefDat
 ```
 
 ```{r plotArch,  fig.height=3, fig.width=4, message=FALSE, eval=TRUE}
@@ -229,8 +229,8 @@ Here, the `geno.decomp` option is also to split the plants of each genotype thos
 
 ```{r OutArch, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 outArch <- detectSerieOut(corrDat = spatCorrectedArch,
-                          predDat = pred.DatArch,
-                          coefDat = coef.DatArch,
+                          predDat = predDatArch,
+                          coefDat = coefDatArch,
                           trait = "LA_Estimated_corr",
                           genotypes = subGenoArch,
                           thrCor = 0.9,
@@ -273,9 +273,9 @@ fit.splineRoot <- fitSpline(inDat = noCorrectedRoot,
                             useTimeNumber = TRUE,
                             timeNumber = "thermalTime")
 
-pred.DatRoot <- fit.splineRoot$predDat
-coef.DatRoot <- fit.splineRoot$coefDat
-row.names(coef.DatRoot) <- 1:nrow(coef.DatRoot)
+predDatRoot <- fit.splineRoot$predDat
+coefDatRoot <- fit.splineRoot$coefDat
+row.names(coefDatRoot) <- 1:nrow(coefDatRoot)
 ```
 
 
@@ -286,8 +286,8 @@ plot(fit.splineRoot,
 
 ```{r OutRoot, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 outRoot <- detectSerieOut(corrDat = noCorrectedRoot,
-                          predDat = pred.DatRoot,
-                          coefDat = coef.DatRoot,
+                          predDat = predDatRoot,
+                          coefDat = coefDatRoot,
                           trait = "tipPos_y",
                           genotypes = subGenoRoot,
                           thrCor = 0.9,

@@ -32,7 +32,7 @@ the time points.}
 
 \item{timeFormat}{A character string indicating the input format of the time
 points. E.g. for a date/time input of the form day/month/year hour:minute,
-use \\%d/\\%m/\\%Y \\%H:\\%M. For a full list of abbreviations see
+use "\%d/\%m/\%Y \%H:\%M". For a full list of abbreviations see
 \code{\link[base]{strptime}}. If \code{NULL}, a best guess is done based on
 the input.}
 
@@ -55,10 +55,10 @@ checkGenotypes cannot be \code{NULL}.}
 checks in the experiment.}
 }
 \value{
-An object of class TP. A list with, per time point in the input, a
-data.frame containing the data for that time point. A data.frame with
-columns timeNumber and timePoint is added as attribute timePoints to the
-data. This data.frame can be used for referencing timePoints by their
+An object of class \code{TP}. A list with, per time point in the
+input, a data.frame containing the data for that time point. A data.frame
+with columns timeNumber and timePoint is added as attribute timePoints to
+the data. This data.frame can be used for referencing timePoints by their
 number.
 }
 \description{
@@ -66,15 +66,20 @@ Convert a data.frame to an object of class TP (Time Points).
 The function converts a data.frame to an object of class TP in the following
 steps:
 \itemize{
-\item{Check input data}
-\item{Rename columns to default column names - default column names:
-genotype, timePoint, plotId, repId, rowNum, colNum}.
-\item{Add columns rowId and colId to data. These are copies of rowId and
-colId converted to factors.}
-\item{Convert column types to default column types - rowNum and colNum
-are converted to numeric columns, all other renamed columns to factor
-columns. Columns other than the default columns, e.g. traits or other
-covariates will be included in the output unchanged.}
+\item{Quality control on the input data. For example, warnings will be given
+when more than 50\% of observations are missing for a plant.}
+\item{Rename columns to default column names used by the functions in the
+statgenHTP package. For example, the column in the data containing
+variety/accession/genotype is renamed to “genotype.” Original column names
+are stored as an attribute of the individual data.frames in the TP object.}
+\item{Convert column types to the default column types. For example, the
+column “genotype” is converted to a factor and “rowNum” to a numeric column.}
+\item{Convert the column containing time into time format. If needed, the
+time format can be provided in \code{timeFormat}. For example, with a
+date/time input of the form “day/month/year hour:minute”, use
+"\%d/\%m/\%Y \%H:\%M". For a full list of abbreviations see the R package
+strptime. When the input time is a numeric value, the function will
+convert it to time from 01-01-1970.}
 \item{If \code{addCheck = TRUE}, the genotypes listed in
 \code{checkGenotypes} are reference genotypes (or check). It will add a
 column check with a value "noCheck" for the genotypes that are not in
@@ -84,10 +89,13 @@ the genotypes that are not in \code{checkGenotypes} and \code{NA} for the
 \code{checkGenotypes}. These columns are necessary for fitting models on
 data that includes check genotypes, e.g. reference genotypes that are
 highly replicated or in case of augmented design.}
-\item{Split input data by time point - each time point in the input data will
-become a list item in the output.}
-\item{Add a list of time points as attribute \code{timePoints} to the
-output.}
+\item{Split the data into separate data.frames by time point. A TP object is
+a list of data.frames where each data.frame contains the data for a single
+time point. If there is only one time point the output will be a list with
+only one item.}
+\item{Add a data.frame with columns timeNumber and timePoint as attribute
+“timePoints” to the TP object. This data.frame can be used for referencing
+time points by a unique number.}
 }
 Note that \code{plotId} needs to be a unique identifier for a plot or a
 plant. It cannot occur more than once per time point.
@@ -108,10 +116,11 @@ summary(phenoTP)
 
 }
 \seealso{
-Other Data preparation: 
+Other functions for data preparation: 
 \code{\link{as.data.frame.TP}()},
+\code{\link{getTimePoints}()},
 \code{\link{plot.TP}()},
 \code{\link{removeTimePoints}()},
 \code{\link{summary.TP}()}
 }
-\concept{Data preparation}
+\concept{functions for data preparation}

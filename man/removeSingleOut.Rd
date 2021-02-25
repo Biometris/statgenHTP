@@ -2,7 +2,7 @@
 % Please edit documentation in R/detectSingleOut.R
 \name{removeSingleOut}
 \alias{removeSingleOut}
-\title{Remove point outliers}
+\title{Replace outliers for single observations by NA}
 \usage{
 removeSingleOut(TP, singleOut, trait = attr(x = singleOut, which = "trait"))
 }
@@ -11,15 +11,15 @@ removeSingleOut(TP, singleOut, trait = attr(x = singleOut, which = "trait"))
 
 \item{singleOut}{A data.frame with at least the columns plotId and
 timePoint with values corresponding to those in TP. If a column outlier is
-present, as in the output of \code{detectSingleOut}, only plot x time
-combinations for which outlier = 1 will be set to NA. If no column outlier is
-present, all observations in singleOut will be set to NA.}
+present, as in the output of \code{detectSingleOut}, only plotId x
+timePoint combinations for which outlier = 1 will be set to NA. If no
+column outlier is present, all observations in singleOut will be set to NA.}
 
 \item{trait}{The trait that should be set to NA. Can be ignored when using
 the output of \code{detectSingleOut} as input.}
 }
 \description{
-Function for setting point outliers to NA.
+Function for replacing outliers for single observations by NA.
 }
 \examples{
 ## Create a TP object containing the data from the Phenovator.
@@ -45,12 +45,14 @@ resuVatorHTP <- detectSingleOut(TP = phenoTP,
                                 confIntSize = 3,
                                 nnLocfit = 0.1)
 
-## The annotated points can be replaced by NA for the studied trait
+## Replace the studied trait by NA for the plants marked as outliers.
 phenoTPOut <- removeSingleOut(phenoTP, resuVatorHTP)
 
 }
 \seealso{
-Other Detect point outliers: 
-\code{\link{detectSingleOutMaize}()}
+Other functions for detecting outliers for single observations: 
+\code{\link{detectSingleOutMaize}()},
+\code{\link{detectSingleOut}()},
+\code{\link{plot.singleOut}()}
 }
-\concept{Detect point outliers}
+\concept{functions for detecting outliers for single observations}

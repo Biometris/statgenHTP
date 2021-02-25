@@ -35,11 +35,11 @@ attribute of the TP object.}
 default title is added to the plot depending on \code{plotType}.}
 
 \item{output}{Should the plot be output to the current device? If
-\code{FALSE} only a list of ggplot objects is invisibly returned. Ignored if
+\code{FALSE} only a (list of) ggplot object(s) is invisibly returned. Ignored if
 \code{outFile} is specified.}
 
 \item{outFile}{A character string indicating the .pdf file or .gif file
-(For \code{plotType} = "timeLapse") to which the plots should be written.}
+(for \code{plotType} = "timeLapse") to which the plots should be written.}
 
 \item{outFileOpts}{A named list of extra options for the pdf outfile, e.g.
 width and height. See \code{\link[grDevices]{pdf}} for all possible options.}
@@ -49,44 +49,47 @@ Depending on the plot type either a ggplot object or a list of
 ggplot objects is invisibly returned.
 }
 \description{
-Plotting function for objects of class fitMod. A detailed description and
-optional extra parameters of the different plots is given in the sections
-below.
+Plotting function for objects of class \code{fitMod}. Seven different types
+of plots can be made for an object of class \code{fitMod}. A detailed
+description and optional extra parameters for the different plots is given
+in the sections below.
 }
 \section{rawPred plot}{
 
-Plots the raw data (coloured lines) overlayed with the predicted values from
-the fitted model (black line). For each genotype a plot is made per
+Plots the raw data (colored dots) overlayed with the predicted values from
+the fitted model (black dots). For each genotype a plot is made per
 plot/plant over time. These plots are put together in a 5x5 grid. By using
 the parameter \code{genotypes} a selection of genotypes can be plotted.
 Extra parameter options:
 \describe{
 \item{genotypes}{A character vector indicating the genotypes to be plotted.}
 \item{plotChecks}{Should the check genotypes be included in the plot?}
-\item{plotLine}{Should the data be displayed as lines? Default is FALSE.}
+\item{plotLine}{Should the data be displayed as lines? Default is
+\code{FALSE}.}
 }
 }
 
 \section{corrPred plot}{
 
-Plots the spatially corrected data (coloured lines) overlayed with the
-predicted values from the fitted model(black line). For each genotype a plot
+Plots the spatially corrected data (colored dots) overlayed with the
+predicted values from the fitted model (black dors). For each genotype a plot
 is made per plot/plant over time. These plots are put together in a 5x5 grid.
 By using the parameter \code{genotypes} a selection of genotypes can be
 plotted. Extra parameter options:
 \describe{
 \item{genotypes}{A character vector indicating the genotypes to be plotted.}
 \item{plotChecks}{Should the check genotypes be included in the plot?}
-\item{plotLine}{Should the data be displayed as lines? Default is FALSE.}
+\item{plotLine}{Should the data be displayed as lines? Default is
+\code{FALSE}.}
 }
 }
 
 \section{herit plot}{
 
 Plots the heritability over time. This plot is only available when genotype
-is set as random. If \code{geno.decomp} is used when fitting
-the model, heritabilities are plotted for each level of geno.decomp in a
-single plot. Extra parameter options:
+is fitted as random factor in the model. If \code{geno.decomp} is used when
+fitting the model, heritabilities are plotted for each level of geno.decomp
+in a single plot. Extra parameter options:
 \describe{
 \item{yLim}{A numerical vector of length two, used for setting the limits of
 the y-axis of the plot. If values outside of the plotting range are given,
@@ -96,11 +99,11 @@ then these are ignored.}
 
 \section{effDim plot}{
 
-Plots the effective dimension from models fitted using SpATS over time.
+Plots the effective dimension over time for models fitted using SpATS.
 Extra parameter options:
 \describe{
 \item{whichED}{A character vector indicating which effective dimensions
-shoul be plotted. This should be a subset of "colId", "rowId", "fCol",
+should be plotted. This should be a subset of "colId", "rowId", "fCol",
 "fRow", "fColRow", "colfRow", "fColfRow" and "surface". When
 \code{useRepId = TRUE}, the effective dimensions of "colId" and "rowId"
 become "RepId:colId" and "RepId:rowId". Default all effective dimensions
@@ -116,7 +119,7 @@ then these are ignored.}
 
 \section{variance plot}{
 
-Plots the residual, column and row variances for the fitted model over time.
+Plots the residual, column and row variances over time for the fitted models.
 Extra parameter options:
 \describe{
 \item{yLim}{A numerical vector of length two, used for setting the limits of
@@ -133,7 +136,10 @@ time.
 
 \section{spatial plot}{
 
-Create a series of six spatial plots. Extra parameter options:
+Creates five plots per time point, spatial plots of the raw data,
+fitted values, residuals and either BLUEs or BLUPs, and a histogram of the
+BLUEs or BLUPs. When SpATS was used for modeling an extra plot with the
+fitted spatial trend is included Extra parameter options:
 \describe{
 \item{spaTrend}{A character string indicating how the spatial trend should
 be displayed. Either "raw" for raw values, or "percentage" for displaying
@@ -144,7 +150,7 @@ as a percentage of the original phenotypic values.}
 \examples{
 \donttest{
 ## Using the first example dataset (PhenovatorDat1):
-data("PhenovatorDat1")
+## Create an object of class TP.
 phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             experimentName = "Phenovator",
                             genotype = "Genotype",
@@ -156,12 +162,12 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             checkGenotypes = c("check1", "check2",
                                                "check3", "check4"))
 
-## Fit a SpATS model on few time points:
+## Fit a SpATS model on three points:
 modPhenoSp <- fitModels(TP = phenoTP,
                         trait = "EffpsII",
                         timePoints = c(1, 6, 36))
 
-## Plot the spatial trends of one time point:
+## Plot the spatial trends for one time point:
 plot(modPhenoSp,
      timePoints = 36,
      plotType = "spatial",
@@ -181,7 +187,7 @@ plot(modPhenoSp,
      plotType = "corrPred",
      genotypes = c("check1", "check2", "G007", "G058") )
 
-## Plot the variances of all available time points in the model
+## Plot the effective dimensions of all available time points in the model
 ## for a subset of effective dimensions:
 plot(modPhenoSp,
      plotType = "effDim",
@@ -191,7 +197,7 @@ plot(modPhenoSp,
 
 }
 \seealso{
-Other Spatial modeling: 
+Other functions for spatial modeling: 
 \code{\link{fitModels}()},
 \code{\link{getCorrected}()},
 \code{\link{getEffDims}()},
@@ -200,4 +206,4 @@ Other Spatial modeling:
 \code{\link{getVar}()},
 \code{\link{summary.fitMod}()}
 }
-\concept{Spatial modeling}
+\concept{functions for spatial modeling}

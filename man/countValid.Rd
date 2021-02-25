@@ -15,3 +15,20 @@ observations should be counted.}
 \description{
 Count valid observations per time point for a given trait.
 }
+\examples{
+## Create a TP object containing the data from the Phenovator.
+phenoTP <- createTimePoints(dat = PhenovatorDat1,
+                            experimentName = "Phenovator",
+                            genotype = "Genotype",
+                            timePoint = "timepoints",
+                            repId = "Replicate",
+                            plotId = "pos",
+                            rowNum = "y", colNum = "x",
+                            addCheck = TRUE,
+                            checkGenotypes = c("check1", "check2",
+                                               "check3", "check4"))
+## Count valid observations for EffpsII per time point.
+validPheno <- countValid(phenoTP, trait = "EffpsII")
+head(validPheno)
+
+}

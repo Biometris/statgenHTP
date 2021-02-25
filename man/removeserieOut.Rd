@@ -2,7 +2,7 @@
 % Please edit documentation in R/detectSerieOut.R
 \name{removeSerieOut}
 \alias{removeSerieOut}
-\title{Remove time course outliers}
+\title{Replace outliers for series of observations by NA}
 \usage{
 removeSerieOut(
   dat = NULL,
@@ -12,24 +12,24 @@ removeSerieOut(
 )
 }
 \arguments{
-\item{dat}{A data.frame.}
+\item{dat}{A \code{data.frame}.}
 
-\item{fitSpline}{An object of class HTPSpline, the output of the
+\item{fitSpline}{An object of class \code{HTPSpline}, the output of the
 \code{\link{fitSpline}} function.}
 
 \item{serieOut}{A data.frame with at least the column plotId with
-values corresponding to those in dat.}
+values corresponding to those in dat/fitSpline.}
 
-\item{trait}{The trait that should be set to NA. Can be ignored when using
-the output of \code{detectSerieOut} as input.}
+\item{trait}{The trait that should be replaced by NA. Can be ignored when
+using the output of \code{detectSerieOut} as input.}
 }
 \value{
-Depending on the input either a data.frame or an object of class
-HTPSpline for which the outliers specified in \code{serieOut} are
-set to NA.
+Depending on the input either a \code{data.frame} or an object of
+class \code{HTPSpline} for which the outliers specified in \code{serieOut}
+are replace by NA.
 }
 \description{
-Function for setting time course outliers in the data to NA.
+Function for replacing outliers for series of observations in the data by NA.
 The input can either be a data.frame, specified in \code{dat}, or the output
 of the \code{fitSpline} function, specified in \code{fitSpline}. Exactly one
 of these should be provided as input for the function.
@@ -43,26 +43,26 @@ fit.spline <- fitSpline(inDat = spatCorrectedVator,
                         knots = 50)
 
 ## Extract the tables of predicted values and P-spline coefficients.
-pred.Dat <- fit.spline$predDat
-coef.Dat <- fit.spline$coefDat
+predDat <- fit.spline$predDat
+coefDat <- fit.spline$coefDat
 
 ## The coefficients are then used to tag suspect time courses
 outVator <- detectSerieOut(corrDat = spatCorrectedVator,
-                           predDat = pred.Dat,
-                           coefDat = coef.Dat,
+                           predDat = predDat,
+                           coefDat = coefDat,
                            trait = "EffpsII_corr",
                            genotypes = subGenoVator,
                            thrCor = 0.9,
                            thrPca = 30)
 
-## The outliers can be removed from the dataset.
+## Replace the outliers by NA in the corrected data.
 spatCorrectedVatorOut <- removeSerieOut(dat = spatCorrectedVator,
-                                    serieOut = outVator)
+                                        serieOut = outVator)
 
 }
 \seealso{
-Other Detect time course outliers: 
+Other functions for detecting outliers for series of observations: 
 \code{\link{detectSerieOut}()},
 \code{\link{plot.serieOut}()}
 }
-\concept{Detect time course outliers}
+\concept{functions for detecting outliers for series of observations}

@@ -84,7 +84,7 @@
 </li>
 <li>
   <a href="https://github.com/Biometris/statgenHTP">
-    <span class="fas fa-github fa-lg"></span>
+    <span class="fas fa-github fa-lg fab"></span>
      
     github
   </a>
@@ -105,7 +105,7 @@
       <h1 data-toc-skip>statgenHTP tutorial: 4. Outlier detection for series of observations</h1>
                         <h4 class="author">Emilie Millet, Bart-Jan van Rossum, Isabelle Sanchez, Nadine Hilgert, Fred van Eeuwijk</h4>
             
-            <h4 class="date">2021-02-23</h4>
+            <h4 class="date">2021-02-25</h4>
       
       
       <div class="hidden name"><code>OutlierSerieObs_HTP.Rmd</code></div>
@@ -143,7 +143,7 @@ P-spline smoothing with 20 knots and a low penalty, from <span class="citation">
 <p>The data from the Phenovator platform have been corrected for spatial trends and time points outliers have been removed (see <a href="OutlierSingleObs_HTP.html"><em>statgenHTP tutorial: 2. Outlier detection for single observations</em></a> and <a href="SpatialModel_HTP.html"><strong>statgenHTP tutorial: 3. Correction for spatial trends</strong></a>). At this stage, the cleaned and corrected data are used:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">spatCorrectedVator</span><span class="op">)</span>  
-<span class="co"># Run the function to fit P-splines using the mgcv package on a subset of genotypes</span>
+<span class="co"># Fit P-splines using on a subset of genotypes.</span>
 <span class="va">subGenoVator</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"G070"</span>, <span class="st">"G160"</span>, <span class="st">"G151"</span>, <span class="st">"G179"</span>, <span class="st">"G175"</span>, <span class="st">"G004"</span>, <span class="st">"G055"</span><span class="op">)</span>
 
 <span class="va">fit.spline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fitSpline.html">fitSpline</a></span><span class="op">(</span>inDat <span class="op">=</span> <span class="va">spatCorrectedVator</span>,
@@ -151,8 +151,8 @@ P-spline smoothing with 20 knots and a low penalty, from <span class="citation">
                         genotypes <span class="op">=</span> <span class="va">subGenoVator</span>,
                         knots <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>
 <span class="co"># Extracting the tables of predicted values and P-spline coefficients</span>
-<span class="va">pred.Dat</span> <span class="op">&lt;-</span> <span class="va">fit.spline</span><span class="op">$</span><span class="va">predDat</span>
-<span class="va">coef.Dat</span> <span class="op">&lt;-</span> <span class="va">fit.spline</span><span class="op">$</span><span class="va">coefDat</span></code></pre></div>
+<span class="va">predDat</span> <span class="op">&lt;-</span> <span class="va">fit.spline</span><span class="op">$</span><span class="va">predDat</span>
+<span class="va">coefDat</span> <span class="op">&lt;-</span> <span class="va">fit.spline</span><span class="op">$</span><span class="va">coefDat</span></code></pre></div>
 <p>The object <code>fit.spline</code> contains the P-spline model coefficients (<code>coefDat</code>) and the predicted value (<code>pred.value</code> in the table below), i.e the values predicted using the P-spline model coefficients. Predictions are made on a denser grid of time points: the time points for prediction are calculated as the smallest gap between two time points divided by 9, so dividing the smallest gap in 10 segments. The object <code>fit.spline</code> also contains the first and second derivatives (<code>deriv</code> and <code>deriv2</code> in the table below, see also <a href="ParameterEstimation_HTP.html"><strong>statgenHTP tutorial: 5. Estimation of parameters from time courses</strong></a>).</p>
 <table class="table">
 <thead><tr class="header">
@@ -292,12 +292,12 @@ The numerical time can also be provided by the user using the option <code>useTi
 </tr>
 </tbody>
 </table>
-<p>The coefficients are then used to tag suspect time courses with the function <code><a href="../reference/detectSerieOut.html">detectSerieOut()</a></code>. This function performs a PCA on the coefficients (from data.frame <code>coef.Dat</code>) per <code>genotype</code> and calculates the pairwise angle between the plants in the PCA plot. Plants are tagged when the mean angle is above threshold (<code>thrPca)</code>, see the lines <code>reason = angle</code> in the table below. The function also calculates the pairwise-correlation of the coefficients per genotype. Plants are tagged when the correlation is below a given threshold (<code>thrCor</code>), see the lines <code>reason = mean corr</code> in the table below.</p>
+<p>The coefficients are then used to tag suspect time courses with the function <code><a href="../reference/detectSerieOut.html">detectSerieOut()</a></code>. This function performs a PCA on the coefficients (from data.frame <code>coefDat</code>) per <code>genotype</code> and calculates the pairwise angle between the plants in the PCA plot. Plants are tagged when the mean angle is above threshold (<code>thrPca)</code>, see the lines <code>reason = angle</code> in the table below. The function also calculates the pairwise-correlation of the coefficients per genotype. Plants are tagged when the correlation is below a given threshold (<code>thrCor</code>), see the lines <code>reason = mean corr</code> in the table below.</p>
 <p>For obvious reasons, the detection will only work when there are at least three replicates per genotype. Genotypes with less than three replicates will be skipped.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">outVator</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectSerieOut.html">detectSerieOut</a></span><span class="op">(</span>corrDat <span class="op">=</span> <span class="va">spatCorrectedVator</span>,
-                           predDat <span class="op">=</span> <span class="va">pred.Dat</span>,
-                           coefDat <span class="op">=</span> <span class="va">coef.Dat</span>,
+                           predDat <span class="op">=</span> <span class="va">predDat</span>,
+                           coefDat <span class="op">=</span> <span class="va">coefDat</span>,
                            trait <span class="op">=</span> <span class="st">"EffpsII_corr"</span>,
                            genotypes <span class="op">=</span> <span class="va">subGenoVator</span>,
                            thrCor <span class="op">=</span> <span class="fl">0.9</span>,
@@ -344,7 +344,7 @@ The numerical time can also be provided by the user using the option <code>useTi
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">outVator</span>, genotypes <span class="op">=</span> <span class="st">"G151"</span><span class="op">)</span></code></pre></div>
 <p><img src="OutlierSerieObs_HTP_files/figure-html/plotOutVator-1.png" width="576"></p>
-<pre><code>#&gt; Failed to get face: , 1845533439</code></pre>
+<pre><code>#&gt; Failed to get face: , 0</code></pre>
 <p>The figure above contains:</p>
 <ul>
 <li>(top) A scatter plot of the trait value on the y-axis and time on the x-axis. Points are the raw or corrected data and lines are the P-spline predictions, with one color per plant (in legend). Filled dots represent outlying plants, open dots non-outlying plants.<br>
@@ -428,8 +428,8 @@ The numerical time can also be provided by the user using the option <code>useTi
                             knots <span class="op">=</span> <span class="fl">30</span>,
                             minNoTP <span class="op">=</span> <span class="fl">18</span><span class="op">)</span>
 
-<span class="va">pred.DatArch</span> <span class="op">&lt;-</span> <span class="va">fit.splineArch</span><span class="op">$</span><span class="va">predDat</span>
-<span class="va">coef.DatArch</span> <span class="op">&lt;-</span> <span class="va">fit.splineArch</span><span class="op">$</span><span class="va">coefDat</span></code></pre></div>
+<span class="va">predDatArch</span> <span class="op">&lt;-</span> <span class="va">fit.splineArch</span><span class="op">$</span><span class="va">predDat</span>
+<span class="va">coefDatArch</span> <span class="op">&lt;-</span> <span class="va">fit.splineArch</span><span class="op">$</span><span class="va">coefDat</span></code></pre></div>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">fit.splineArch</span>,
      plotIds <span class="op">=</span> <span class="st">"c11r9"</span>,
@@ -443,8 +443,8 @@ The numerical time can also be provided by the user using the option <code>useTi
 <p>Here, the <code>geno.decomp</code> option is also to split the plants of each genotype those under well watered and water deficit conditions. The outlier detection is run per treatment with a narrow angle threshold</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">outArch</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectSerieOut.html">detectSerieOut</a></span><span class="op">(</span>corrDat <span class="op">=</span> <span class="va">spatCorrectedArch</span>,
-                          predDat <span class="op">=</span> <span class="va">pred.DatArch</span>,
-                          coefDat <span class="op">=</span> <span class="va">coef.DatArch</span>,
+                          predDat <span class="op">=</span> <span class="va">predDatArch</span>,
+                          coefDat <span class="op">=</span> <span class="va">coefDatArch</span>,
                           trait <span class="op">=</span> <span class="st">"LA_Estimated_corr"</span>,
                           genotypes <span class="op">=</span> <span class="va">subGenoArch</span>,
                           thrCor <span class="op">=</span> <span class="fl">0.9</span>,
@@ -517,17 +517,17 @@ The numerical time can also be provided by the user using the option <code>useTi
                             useTimeNumber <span class="op">=</span> <span class="cn">TRUE</span>,
                             timeNumber <span class="op">=</span> <span class="st">"thermalTime"</span><span class="op">)</span>
 
-<span class="va">pred.DatRoot</span> <span class="op">&lt;-</span> <span class="va">fit.splineRoot</span><span class="op">$</span><span class="va">predDat</span>
-<span class="va">coef.DatRoot</span> <span class="op">&lt;-</span> <span class="va">fit.splineRoot</span><span class="op">$</span><span class="va">coefDat</span>
-<span class="fu"><a href="https://rdrr.io/r/base/row.names.html">row.names</a></span><span class="op">(</span><span class="va">coef.DatRoot</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">coef.DatRoot</span><span class="op">)</span></code></pre></div>
+<span class="va">predDatRoot</span> <span class="op">&lt;-</span> <span class="va">fit.splineRoot</span><span class="op">$</span><span class="va">predDat</span>
+<span class="va">coefDatRoot</span> <span class="op">&lt;-</span> <span class="va">fit.splineRoot</span><span class="op">$</span><span class="va">coefDat</span>
+<span class="fu"><a href="https://rdrr.io/r/base/row.names.html">row.names</a></span><span class="op">(</span><span class="va">coefDatRoot</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">coefDatRoot</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">fit.splineRoot</span>,
      genotypes <span class="op">=</span> <span class="st">"2"</span><span class="op">)</span></code></pre></div>
 <p><img src="OutlierSerieObs_HTP_files/figure-html/plotRoot-1.png" width="672"></p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">outRoot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectSerieOut.html">detectSerieOut</a></span><span class="op">(</span>corrDat <span class="op">=</span> <span class="va">noCorrectedRoot</span>,
-                          predDat <span class="op">=</span> <span class="va">pred.DatRoot</span>,
-                          coefDat <span class="op">=</span> <span class="va">coef.DatRoot</span>,
+                          predDat <span class="op">=</span> <span class="va">predDatRoot</span>,
+                          coefDat <span class="op">=</span> <span class="va">coefDatRoot</span>,
                           trait <span class="op">=</span> <span class="st">"tipPos_y"</span>,
                           genotypes <span class="op">=</span> <span class="va">subGenoRoot</span>,
                           thrCor <span class="op">=</span> <span class="fl">0.9</span>,

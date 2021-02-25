@@ -41,9 +41,9 @@
 
 #' Arabidopsis data corrected for spatial trends.
 #'
-#' This dataset contains the corrected data obtained by (1) removing point
-#' outliers and (2) running a spatial model on the PhenovatorDat1 dataset.
-#' See the vignettes for details.
+#' This dataset contains the corrected data obtained by (1) removing outliers
+#' for single observations and (2) running a spatial model on the PhenovatorDat1
+#' dataset. See the vignettes for details.
 #'
 #' @format A data.frame with 103,801 rows and 11 columns:
 #' \describe{
@@ -104,9 +104,9 @@
 
 #' Maize data corrected for spatial trends.
 #'
-#' This dataset contains the corrected data obtained by (1) removing point
-#' outliers and (2) running a spatial model on the PhenoarchDat1 dataset.
-#' See the vignettes for details.
+#' This dataset contains the corrected data obtained by (1) removing outliers
+#' for single observations and (2) running a spatial model on the
+#' PhenoarchDat1 dataset. See the vignettes for details.
 #'
 #' @format A data.frame with 37,038 rows and 9 columns:
 #' \describe{
@@ -126,9 +126,9 @@
 
 #' Maize data, genotypic predictions.
 #'
-#' This dataset contains the genotypic predictions obtained by (1) removing point
-#' outliers and (2) running a spatial model on the PhenoarchDat1 dataset.
-#' See the vignettes for details.
+#' This dataset contains the genotypic predictions obtained by (1) removing
+#' outliers for single observations and (2) running a spatial model on the
+#' PhenoarchDat1 dataset. See the vignettes for details.
 #'
 #' @format A data.frame with 6,120 rows and 6 columns:
 #' \describe{
@@ -168,10 +168,10 @@
 #' }
 "RootDat1"
 
-#' Root data corrected for point outliers.
+#' Root data corrected for outliers for single observations.
 #'
-#' This dataset contains the corrected data obtained by removing point outliers
-#' on the RootDat1 dataset. See the vignettes for details.
+#' This dataset contains the corrected data obtained by removing outliers for
+#' single observations on the RootDat1 dataset. See the vignettes for details.
 #'
 #' @format A data.frame with 15,934 rows and 8 columns:
 #' \describe{

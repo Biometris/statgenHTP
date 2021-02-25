@@ -21,8 +21,8 @@ genotypic variance (see vignettes)}
 spatPredArch
 }
 \description{
-This dataset contains the genotypic predictions obtained by (1) removing point
-outliers and (2) running a spatial model on the PhenoarchDat1 dataset.
-See the vignettes for details.
+This dataset contains the genotypic predictions obtained by (1) removing
+outliers for single observations and (2) running a spatial model on the
+PhenoarchDat1 dataset. See the vignettes for details.
 }
 \keyword{datasets}

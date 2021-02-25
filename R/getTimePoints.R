@@ -9,8 +9,7 @@
 #' time points in x
 #'
 #' @examples
-#' ## Create an object of class TP
-#' data("PhenovatorDat1")
+#' ## Create an object of class TP.
 #' phenoTP <- createTimePoints(dat = PhenovatorDat1,
 #'                             experimentName = "Phenovator",
 #'                             genotype = "Genotype",
@@ -24,6 +23,8 @@
 #'
 #' ## Extract the time points from the object.
 #' head(getTimePoints(phenoTP))
+#'
+#' @family functions for data preparation
 #'
 #' @export
 getTimePoints <- function(x) {

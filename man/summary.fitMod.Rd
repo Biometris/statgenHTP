@@ -2,7 +2,7 @@
 % Please edit documentation in R/createFitMod.R
 \name{summary.fitMod}
 \alias{summary.fitMod}
-\title{Summary function for class fitMod}
+\title{Summary function for fitMod objects}
 \usage{
 \method{summary}{fitMod}(object, ...)
 }
@@ -12,10 +12,38 @@
 \item{...}{Ignored.}
 }
 \description{
-Summary function for class fitMod
+Function for creating a short summary of the contents of a TP object. The
+summary consists of the name of the experiment, the number of time points,
+the engine used to fit the models and, in case spatial models where fitted
+using asreml, the selected spatial model.
+}
+\examples{
+\donttest{
+## Using the first example dataset (PhenovatorDat1):
+## Create an object of class TP.
+phenoTP <- createTimePoints(dat = PhenovatorDat1,
+                            experimentName = "Phenovator",
+                            genotype = "Genotype",
+                            timePoint = "timepoints",
+                            repId = "Replicate",
+                            plotId = "pos",
+                            rowNum = "y", colNum = "x",
+                            addCheck = TRUE,
+                            checkGenotypes = c("check1", "check2",
+                                               "check3", "check4"))
+
+## Fit a SpATS model on few time points:
+modPhenoSp <- fitModels(TP = phenoTP,
+                        trait = "EffpsII",
+                        timePoints = c(1, 6, 36))
+
+## Create a summary.
+summary(modPhenoSp)
+}
+
 }
 \seealso{
-Other Spatial modeling: 
+Other functions for spatial modeling: 
 \code{\link{fitModels}()},
 \code{\link{getCorrected}()},
 \code{\link{getEffDims}()},
@@ -24,4 +52,4 @@ Other Spatial modeling:
 \code{\link{getVar}()},
 \code{\link{plot.fitMod}()}
 }
-\concept{Spatial modeling}
+\concept{functions for spatial modeling}

@@ -19,3 +19,21 @@ counted for all plotIds in TP.}
 \description{
 Count valid observations per plotId for a given trait.
 }
+\examples{
+## Create a TP object containing the data from the Phenovator.
+phenoTP <- createTimePoints(dat = PhenovatorDat1,
+                            experimentName = "Phenovator",
+                            genotype = "Genotype",
+                            timePoint = "timepoints",
+                            repId = "Replicate",
+                            plotId = "pos",
+                            rowNum = "y", colNum = "x",
+                            addCheck = TRUE,
+                            checkGenotypes = c("check1", "check2",
+                                               "check3", "check4"))
+## Count valid observations for EffpsII for a suset of plots.
+countValidPlot(phenoTP,
+               trait = "EffpsII",
+               plotIds = c("c12r22", "c24r41", "c14r32"))
+
+}

@@ -19,7 +19,7 @@ fitModels(
 )
 }
 \arguments{
-\item{TP}{An object of class TP.}
+\item{TP}{An object of class \code{TP}.}
 
 \item{trait}{A character string indicating the trait used as response
 variable in the model.}
@@ -28,7 +28,7 @@ variable in the model.}
 to be modeled. When using a character string to reference a time point, the
 value has to be an exact match to one of the existing time points. When using
 a number it will be matched by its number ("timeNumber") in the timePoints
-attribute of the TP object.}
+attribute of the \code{TP} object.}
 
 \item{extraFixedFactors}{A character vector indicating the variables to use
 as extra fixed effects in the model.}
@@ -45,8 +45,8 @@ possible.}
 model?}
 
 \item{useRepId}{Should repId be used as a fixed effect in the model? When
-fitting a spatial model repId is also added as an interaction term with
-rowId and colId in the random part of the model.}
+fitting a spatial model rowId and colId are also nested within repId in the
+random part of the model.}
 
 \item{engine}{A character string indicating the engine used to fit the
 models.}
@@ -56,7 +56,7 @@ models.}
 \item{quiet}{Should printed progress messages be suppressed?}
 }
 \value{
-An object of class fitMod, a list of fitted models.
+An object of class \code{fitMod}, a list of fitted models.
 }
 \description{
 Perform REML analysis at each time point using either SpATS or asreml. The
@@ -65,22 +65,22 @@ effects at each time point. SpATS is used as a default method. See details
 for the exact models fitted.
 }
 \details{
-The actual model fitted depends on the function parameters secified. The
+The actual model fitted depends on the function parameters specified. The
 basic model is the following:\cr
 trait = \strong{genotype} + e\cr
-In case \code{useCheck = TRUE}, instead of genotype genoCheck is used as
+In case \code{useCheck = TRUE}, instead of genotype, genoCheck is used as
 genotype and check is used as an extra fixed effect. So then the model
 becomes:\cr
 trait = \emph{check} + \strong{genoCheck} + e\cr
 Variables in \code{extraFixedFactors} are fitted as extra fixed
 effects.\cr\cr
-When \code{SpATS} is used for modeling, an extra spatial term is included
-in the model. This term is constructed using the function
+When \code{SpATS} is used for modeling, an extra spatial term is always
+included in the model. This term is constructed using the function
 \code{\link[SpATS]{PSANOVA}} from the SpATS package as\cr
 \code{PSANOVA(colNum, rowNum, nseg = nSeg, nest.div = 2)}
-where\cr \code{nSeg = (number of columns, number of rows)}.\cr\cr
+where\cr \code{nSeg = c(number of columns, number of rows)}.\cr\cr
 When \code{asreml} is used for modeling and \code{spatial = TRUE},
-four models are fitted with different random terms and covariance structures.
+four models are fitted with different covariance structures.
 The best model is determined based on a goodness-of-fit criterion, AIC,
 on 20\% of the time points or at least 10 time points. The best model is then
 run on all time points.
@@ -100,9 +100,9 @@ trait = \emph{treatment} + \strong{treatment:genotype} + e\cr
 }
 \examples{
 ## Using the first example dataset (PhenovatorDat1):
-## Fit a SpATS model on few time points:
+## Fit a model using SpATS on few time points:
 \donttest{
-data("PhenovatorDat1")
+## Create an object of class TP.
 phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             experimentName = "Phenovator",
                             genotype = "Genotype",
@@ -113,7 +113,7 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             addCheck = TRUE,
                             checkGenotypes = c("check1", "check2",
                                                "check3", "check4"))
-
+## Fit a model with SpATS for three time points.
 modPhenoSp <- fitModels(TP = phenoTP,
                         trait = "EffpsII",
                         timePoints = c(3, 6, 20))
@@ -161,13 +161,12 @@ modPhenoSpGD <- fitModels(TP = phenoTParch,
 Maria Xose Rodriguez-Alvarez, Martin P. Boer, Fred A. van Eeuwijk, Paul H.C.
 Eilers (2017). Correcting for spatial heterogeneity in plant breeding
 experiments with P-splines. Spatial Statistics
-\url{https://doi.org/10.1016/j.spasta.2017.10.003}
-
-Butler, D. G., et al. (2018).ASReml-R Reference Manual Version 4. VSN
+\doi{10.1016/j.spasta.2017.10.003}
+Butler, D. G., et al. (2018). ASReml-R Reference Manual Version 4. VSN
 International Ltd, http://asreml.org
 }
 \seealso{
-Other Spatial modeling: 
+Other functions for spatial modeling: 
 \code{\link{getCorrected}()},
 \code{\link{getEffDims}()},
 \code{\link{getGenoPred}()},
@@ -176,4 +175,4 @@ Other Spatial modeling:
 \code{\link{plot.fitMod}()},
 \code{\link{summary.fitMod}()}
 }
-\concept{Spatial modeling}
+\concept{functions for spatial modeling}

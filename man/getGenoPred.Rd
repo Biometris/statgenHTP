@@ -2,7 +2,7 @@
 % Please edit documentation in R/getMethods.R
 \name{getGenoPred}
 \alias{getGenoPred}
-\title{Extract genotypic predicted values}
+\title{Extract predicted genotypic values}
 \usage{
 getGenoPred(
   fitMod,
@@ -12,35 +12,35 @@ getGenoPred(
 )
 }
 \arguments{
-\item{fitMod}{An object of class fitMod.}
+\item{fitMod}{An object of class \code{fitMod}.}
 
 \item{timePoints}{A character or numeric vector indicating the time point(s)
-to be modeled. When using a character string to reference a time point, the
-value has to be an exact match to one of the existing time points. When using
-a number it will be matched by its number ("timeNumber") in the timePoints
-attribute of the TP object.}
+for which the predictions should be extracted. When using a character string
+to reference a time point, the value has to be an exact match to one of the
+existing time points. When using a number it will be matched by its number
+("timeNumber") in the timePoints attribute of the TP object.}
 
 \item{predictChecks}{Should predictions of the check genotypes be included
-in the ouptut. If \code{TRUE} a list of two data.frames is returned from the
-function, one with the predictions for the regular genotypes and one with
-the predictions for the checks.}
+in the ouptut. If \code{TRUE} a list of two \code{data.frames} is returned
+from the function, one with the predictions for the regular genotypes and
+one with the predictions for the checks.}
 
 \item{outFile}{A character string indicating the .csv file to which the
 results should be written. If \code{NULL} no file is written.}
 }
 \value{
-A list of two data.frames with genotypic predicted values per time
+A list of two data.frames with predicted genotypic values per time
 point. \code{genoPred} with the predicted values for the genotypes and
-\code{checkPred} with the predicted values for the check. If
+\code{checkPred} with the predicted values for the checks. If
 \code{predictChecks = FALSE} the latter will be \code{NULL}.
 }
 \description{
-Extract predictions of the genotypic value from an object of class fitMod.
+Extract predictions of the genotypic value from an object of class
+\code{fitMod}.
 }
 \examples{
-## Using the first example dataset (PhenovatorDat1):
+## Using the first example dataset (PhenovatorDat1).
 \donttest{
-data("PhenovatorDat1")
 phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             experimentName = "Phenovator",
                             genotype = "Genotype",
@@ -52,7 +52,7 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             checkGenotypes = c("check1", "check2",
                                                "check3", "check4"))
 
-## Fit a SpATS model on few time points:
+## Fit a SpATS model on few time points.
 modPhenoSp <- fitModels(TP = phenoTP,
                         trait = "EffpsII",
                         timePoints = c(1, 6, 20))
@@ -60,11 +60,12 @@ modPhenoSp <- fitModels(TP = phenoTP,
 ## Extract the genotypic predictions for one time point:
 genoPredSp <- getGenoPred(modPhenoSp,
                           timePoints = 6)
+head(genoPredSp)
 }
 
 }
 \seealso{
-Other Spatial modeling: 
+Other functions for spatial modeling: 
 \code{\link{fitModels}()},
 \code{\link{getCorrected}()},
 \code{\link{getEffDims}()},
@@ -73,4 +74,4 @@ Other Spatial modeling:
 \code{\link{plot.fitMod}()},
 \code{\link{summary.fitMod}()}
 }
-\concept{Spatial modeling}
+\concept{functions for spatial modeling}

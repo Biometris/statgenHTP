@@ -125,7 +125,7 @@
 </li>
 <li>
   <a href="https://github.com/Biometris/statgenHTP">
-    <span class="fas fa-github fa-lg"></span>
+    <span class="fas fa-github fa-lg fab"></span>
      
     github
   </a>
@@ -170,28 +170,27 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>An object of class HTPSpline.</p></td>
+      <td><p>An object of class <code>HTPSpline</code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Extra plot options. Described per plotType in their respective
-section.</p></td>
+      <td><p>Ignored.</p></td>
     </tr>
     <tr>
       <th>plotType</th>
-      <td><p>A character string indicating for which spline component
+      <td><p>A character string indicating which spline component
 should be plotted, either predictions, derivatives or second derivatives
 ("derivatives2").</p></td>
     </tr>
     <tr>
       <th>genotypes</th>
       <td><p>A character vector indicating the genotypes for which
-splines should be plotted.</p></td>
+spline components should be plotted.</p></td>
     </tr>
     <tr>
       <th>plotIds</th>
-      <td><p>A character vector indicating the plotIds for which splines
-should be plotted.</p></td>
+      <td><p>A character vector indicating the plotIds for which spline
+components should be plotted.</p></td>
     </tr>
     <tr>
       <th>title</th>
@@ -201,7 +200,7 @@ default title is added to the plot depending on <code>plotType</code>.</p></td>
     <tr>
       <th>output</th>
       <td><p>Should the plot be output to the current device? If
-<code>FALSE</code> only a list of ggplot objects is invisibly returned. Ignored if
+<code>FALSE</code> only a (list of) ggplot object(s) is invisibly returned. Ignored if
 <code>outFile</code> is specified.</p></td>
     </tr>
     <tr>
@@ -218,10 +217,29 @@ width and height. See <code><a href='https://rdrr.io/r/grDevices/pdf.html'>pdf</
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>Other Fit splines: 
+    <div class='dont-index'><p>Other functions for fitting splines: 
 <code><a href='estimateSplineParameters.html'>estimateSplineParameters</a>()</code>,
 <code><a href='fitSpline.html'>fitSpline</a>()</code></p></div>
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='co'>## The data from the Phenovator platform have been corrected for spatial</span>
+<span class='co'>## trends and outliers for single observations have been removed.</span>
+
+<span class='co'>## Fit P-Splines on a subset of genotypes</span>
+<span class='va'>subGeno</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"G070"</span>, <span class='st'>"G160"</span><span class='op'>)</span>
+<span class='va'>fit.spline</span> <span class='op'>&lt;-</span> <span class='fu'><a href='fitSpline.html'>fitSpline</a></span><span class='op'>(</span>inDat <span class='op'>=</span> <span class='va'>spatCorrectedVator</span>,
+                        trait <span class='op'>=</span> <span class='st'>"EffpsII_corr"</span>,
+                        genotypes <span class='op'>=</span> <span class='va'>subGeno</span>,
+                        knots <span class='op'>=</span> <span class='fl'>50</span><span class='op'>)</span>
+
+<span class='co'>## Visualize the P-Spline predictions for one genotype.</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>fit.spline</span>, genotypes <span class='op'>=</span> <span class='st'>"G160"</span><span class='op'>)</span>
+</div><div class='img'><img src='plot.HTPSpline-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='co'>## Visualize the first and second derivatives of the predictions for one plant.</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>fit.spline</span>, plotIds <span class='op'>=</span> <span class='st'>"c10r29"</span>, plotType <span class='op'>=</span>  <span class='st'>"derivatives"</span><span class='op'>)</span>
+</div><div class='img'><img src='plot.HTPSpline-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>fit.spline</span>, plotIds <span class='op'>=</span> <span class='st'>"c10r29"</span>, plotType <span class='op'>=</span>  <span class='st'>"derivatives2"</span><span class='op'>)</span>
+</div><div class='img'><img src='plot.HTPSpline-3.png' alt='' width='700' height='433' /></div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

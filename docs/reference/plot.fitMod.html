@@ -40,9 +40,10 @@
 
 
 <meta property="og:title" content="Plot function for class fitMod — plot.fitMod" />
-<meta property="og:description" content="Plotting function for objects of class fitMod. A detailed description and
-optional extra parameters of the different plots is given in the sections
-below." />
+<meta property="og:description" content="Plotting function for objects of class fitMod. Seven different types
+of plots can be made for an object of class fitMod. A detailed
+description and optional extra parameters for the different plots is given
+in the sections below." />
 
 
 
@@ -127,7 +128,7 @@ below." />
 </li>
 <li>
   <a href="https://github.com/Biometris/statgenHTP">
-    <span class="fas fa-github fa-lg"></span>
+    <span class="fas fa-github fa-lg fab"></span>
      
     github
   </a>
@@ -151,9 +152,10 @@ below." />
     </div>
 
     <div class="ref-description">
-    <p>Plotting function for objects of class fitMod. A detailed description and
-optional extra parameters of the different plots is given in the sections
-below.</p>
+    <p>Plotting function for objects of class <code>fitMod</code>. Seven different types
+of plots can be made for an object of class <code>fitMod</code>. A detailed
+description and optional extra parameters for the different plots is given
+in the sections below.</p>
     </div>
 
     <pre class="usage"><span class='co'># S3 method for fitMod</span>
@@ -202,13 +204,13 @@ default title is added to the plot depending on <code>plotType</code>.</p></td>
     <tr>
       <th>output</th>
       <td><p>Should the plot be output to the current device? If
-<code>FALSE</code> only a list of ggplot objects is invisibly returned. Ignored if
+<code>FALSE</code> only a (list of) ggplot object(s) is invisibly returned. Ignored if
 <code>outFile</code> is specified.</p></td>
     </tr>
     <tr>
       <th>outFile</th>
       <td><p>A character string indicating the .pdf file or .gif file
-(For <code>plotType</code> = "timeLapse") to which the plots should be written.</p></td>
+(for <code>plotType</code> = "timeLapse") to which the plots should be written.</p></td>
     </tr>
     <tr>
       <th>outFileOpts</th>
@@ -225,14 +227,15 @@ ggplot objects is invisibly returned.</p>
 
     
 
-<p>Plots the raw data (coloured lines) overlayed with the predicted values from
-the fitted model (black line). For each genotype a plot is made per
+<p>Plots the raw data (colored dots) overlayed with the predicted values from
+the fitted model (black dots). For each genotype a plot is made per
 plot/plant over time. These plots are put together in a 5x5 grid. By using
 the parameter <code>genotypes</code> a selection of genotypes can be plotted.
 Extra parameter options:</p><dl>
 <dt>genotypes</dt><dd><p>A character vector indicating the genotypes to be plotted.</p></dd>
 <dt>plotChecks</dt><dd><p>Should the check genotypes be included in the plot?</p></dd>
-<dt>plotLine</dt><dd><p>Should the data be displayed as lines? Default is FALSE.</p></dd>
+<dt>plotLine</dt><dd><p>Should the data be displayed as lines? Default is
+<code>FALSE</code>.</p></dd>
 
 </dl>
 
@@ -240,14 +243,15 @@ Extra parameter options:</p><dl>
 
     
 
-<p>Plots the spatially corrected data (coloured lines) overlayed with the
-predicted values from the fitted model(black line). For each genotype a plot
+<p>Plots the spatially corrected data (colored dots) overlayed with the
+predicted values from the fitted model (black dors). For each genotype a plot
 is made per plot/plant over time. These plots are put together in a 5x5 grid.
 By using the parameter <code>genotypes</code> a selection of genotypes can be
 plotted. Extra parameter options:</p><dl>
 <dt>genotypes</dt><dd><p>A character vector indicating the genotypes to be plotted.</p></dd>
 <dt>plotChecks</dt><dd><p>Should the check genotypes be included in the plot?</p></dd>
-<dt>plotLine</dt><dd><p>Should the data be displayed as lines? Default is FALSE.</p></dd>
+<dt>plotLine</dt><dd><p>Should the data be displayed as lines? Default is
+<code>FALSE</code>.</p></dd>
 
 </dl>
 
@@ -256,9 +260,9 @@ plotted. Extra parameter options:</p><dl>
     
 
 <p>Plots the heritability over time. This plot is only available when genotype
-is set as random. If <code>geno.decomp</code> is used when fitting
-the model, heritabilities are plotted for each level of geno.decomp in a
-single plot. Extra parameter options:</p><dl>
+is fitted as random factor in the model. If <code>geno.decomp</code> is used when
+fitting the model, heritabilities are plotted for each level of geno.decomp
+in a single plot. Extra parameter options:</p><dl>
 <dt>yLim</dt><dd><p>A numerical vector of length two, used for setting the limits of
 the y-axis of the plot. If values outside of the plotting range are given,
 then these are ignored.</p></dd>
@@ -269,10 +273,10 @@ then these are ignored.</p></dd>
 
     
 
-<p>Plots the effective dimension from models fitted using SpATS over time.
+<p>Plots the effective dimension over time for models fitted using SpATS.
 Extra parameter options:</p><dl>
 <dt>whichED</dt><dd><p>A character vector indicating which effective dimensions
-shoul be plotted. This should be a subset of "colId", "rowId", "fCol",
+should be plotted. This should be a subset of "colId", "rowId", "fCol",
 "fRow", "fColRow", "colfRow", "fColfRow" and "surface". When
 <code>useRepId = TRUE</code>, the effective dimensions of "colId" and "rowId"
 become "RepId:colId" and "RepId:rowId". Default all effective dimensions
@@ -290,7 +294,7 @@ then these are ignored.</p></dd>
 
     
 
-<p>Plots the residual, column and row variances for the fitted model over time.
+<p>Plots the residual, column and row variances over time for the fitted models.
 Extra parameter options:</p><dl>
 <dt>yLim</dt><dd><p>A numerical vector of length two, used for setting the limits of
 the y-axis of the plot. If values outside of the plotting range are given,
@@ -308,7 +312,10 @@ time.</p>
 
     
 
-<p>Create a series of six spatial plots. Extra parameter options:</p><dl>
+<p>Creates five plots per time point, spatial plots of the raw data,
+fitted values, residuals and either BLUEs or BLUPs, and a histogram of the
+BLUEs or BLUPs. When SpATS was used for modeling an extra plot with the
+fitted spatial trend is included Extra parameter options:</p><dl>
 <dt>spaTrend</dt><dd><p>A character string indicating how the spatial trend should
 be displayed. Either "raw" for raw values, or "percentage" for displaying
 as a percentage of the original phenotypic values.</p></dd>
@@ -317,7 +324,7 @@ as a percentage of the original phenotypic values.</p></dd>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>Other Spatial modeling: 
+    <div class='dont-index'><p>Other functions for spatial modeling: 
 <code><a href='fitModels.html'>fitModels</a>()</code>,
 <code><a href='getCorrected.html'>getCorrected</a>()</code>,
 <code><a href='getEffDims.html'>getEffDims</a>()</code>,
@@ -329,7 +336,7 @@ as a percentage of the original phenotypic values.</p></dd>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
 <span class='co'>## Using the first example dataset (PhenovatorDat1):</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"PhenovatorDat1"</span><span class='op'>)</span>
+<span class='co'>## Create an object of class TP.</span>
 <span class='va'>phenoTP</span> <span class='op'>&lt;-</span> <span class='fu'><a href='createTimePoints.html'>createTimePoints</a></span><span class='op'>(</span>dat <span class='op'>=</span> <span class='va'>PhenovatorDat1</span>,
                             experimentName <span class='op'>=</span> <span class='st'>"Phenovator"</span>,
                             genotype <span class='op'>=</span> <span class='st'>"Genotype"</span>,
@@ -342,12 +349,12 @@ as a percentage of the original phenotypic values.</p></dd>
                                                <span class='st'>"check3"</span>, <span class='st'>"check4"</span><span class='op'>)</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='warning'>Warning: The following plotIds have observations for less than 50% of the time points:</span>
 #&gt; <span class='warning'>c24r41, c7r18, c7r49</span></div><div class='input'>
-<span class='co'>## Fit a SpATS model on few time points:</span>
+<span class='co'>## Fit a SpATS model on three points:</span>
 <span class='va'>modPhenoSp</span> <span class='op'>&lt;-</span> <span class='fu'><a href='fitModels.html'>fitModels</a></span><span class='op'>(</span>TP <span class='op'>=</span> <span class='va'>phenoTP</span>,
                         trait <span class='op'>=</span> <span class='st'>"EffpsII"</span>,
                         timePoints <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>6</span>, <span class='fl'>36</span><span class='op'>)</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>2018-05-31 16:37:00</span></div><div class='output co'>#&gt; <span class='message'>2018-06-02 09:07:00</span></div><div class='output co'>#&gt; <span class='message'>2018-06-09 14:37:00</span></div><div class='input'>
-<span class='co'>## Plot the spatial trends of one time point:</span>
+<span class='co'>## Plot the spatial trends for one time point:</span>
 <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>modPhenoSp</span>,
      timePoints <span class='op'>=</span> <span class='fl'>36</span>,
      plotType <span class='op'>=</span> <span class='st'>"spatial"</span>,
@@ -367,7 +374,7 @@ as a percentage of the original phenotypic values.</p></dd>
      plotType <span class='op'>=</span> <span class='st'>"corrPred"</span>,
      genotypes <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"check1"</span>, <span class='st'>"check2"</span>, <span class='st'>"G007"</span>, <span class='st'>"G058"</span><span class='op'>)</span> <span class='op'>)</span>
 </div><div class='img'><img src='plot.fitMod-2.png' alt='' width='700' height='433' /></div><div class='input'>
-<span class='co'>## Plot the variances of all available time points in the model</span>
+<span class='co'>## Plot the effective dimensions of all available time points in the model</span>
 <span class='co'>## for a subset of effective dimensions:</span>
 <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>modPhenoSp</span>,
      plotType <span class='op'>=</span> <span class='st'>"effDim"</span>,

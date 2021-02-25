@@ -41,10 +41,11 @@
 
 <meta property="og:title" content="Fit Splines — fitSpline" />
 <meta property="og:description" content="Fit P-Splines on corrected or raw data. The number of
-knots are chosen by the user. The function outputs are predicted P-Spline
-values and its first and second derivatives at a denser time step. The idea
-is to use the outputs for outlier detection and to estimate relevant
-parameters from the curve." />
+knots is chosen by the user. The function outputs are predicted P-Spline
+values and their first and second derivatives on a dense grid. The
+outputs can then be used for outlier detection for time series
+(see detectSerieOut) and to estimate relevant parameters from
+the curve for further analysis (see estimateSplineParameters)." />
 
 
 
@@ -129,7 +130,7 @@ parameters from the curve." />
 </li>
 <li>
   <a href="https://github.com/Biometris/statgenHTP">
-    <span class="fas fa-github fa-lg"></span>
+    <span class="fas fa-github fa-lg fab"></span>
      
     github
   </a>
@@ -154,10 +155,11 @@ parameters from the curve." />
 
     <div class="ref-description">
     <p>Fit P-Splines on corrected or raw data. The number of
-knots are chosen by the user. The function outputs are predicted P-Spline
-values and its first and second derivatives at a denser time step. The idea
-is to use the outputs for outlier detection and to estimate relevant
-parameters from the curve.</p>
+knots is chosen by the user. The function outputs are predicted P-Spline
+values and their first and second derivatives on a dense grid. The
+outputs can then be used for outlier detection for time series
+(see <code><a href='detectSerieOut.html'>detectSerieOut</a></code>) and to estimate relevant parameters from
+the curve for further analysis (see <code><a href='estimateSplineParameters.html'>estimateSplineParameters</a></code>).</p>
     </div>
 
     <pre class="usage"><span class='fu'>fitSpline</span><span class='op'>(</span>
@@ -186,12 +188,13 @@ should be fitted.</p></td>
     <tr>
       <th>genotypes</th>
       <td><p>A character vector indicating the genotypes for which
-splines are fitted. If <code>NULL</code>, splines will be fitted for all genotypes.</p></td>
+splines should be fitted. If <code>NULL</code>, splines will be fitted for all
+genotypes.</p></td>
     </tr>
     <tr>
       <th>plotIds</th>
       <td><p>A character vector indicating the plotIds for which splines
-are fitted. If <code>NULL</code>, splines will be fitted for all plotIds.</p></td>
+should be fitted. If <code>NULL</code>, splines will be fitted for all plotIds.</p></td>
     </tr>
     <tr>
       <th>knots</th>
@@ -208,39 +211,65 @@ indicating the column containing the numerical time to use.</p></td>
     </tr>
     <tr>
       <th>minNoTP</th>
-      <td><p>The minimum number of time point for which data should be
-available for a plot. Defaults to 80% of all time points present in the
-TP object.</p></td>
+      <td><p>The minimum number of time points for which data should be
+available for a plant. Defaults to 80% of all time points present in the
+TP object. No splines are fitted for plants with less than the minimum number
+of timepoints.</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>An object of class <code>HTPSpline</code>, a list with two
+<code>data.frames</code>, <code>predDat</code> with predicted values and <code>coefDat</code>
+with P-Spline coefficients on a dense grid.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>Other Fit splines: 
+    <div class='dont-index'><p>Other functions for fitting splines: 
 <code><a href='estimateSplineParameters.html'>estimateSplineParameters</a>()</code>,
 <code><a href='plot.HTPSpline.html'>plot.HTPSpline</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'>## The data from the Phenovator platform have been corrected for</span>
-<span class='co'>## spatial trends and time points outliers have been removed.</span>
+    <pre class="examples"><div class='input'><span class='co'>## The data from the Phenovator platform have been corrected for spatial</span>
+<span class='co'>## trends and outliers for single observations have been removed.</span>
 
-<span class='co'>## Run the function to fit P-Spline on a subset of</span>
-<span class='co'>## genotypes</span>
+<span class='co'>## Fit P-Splines on a subset of genotypes</span>
 <span class='va'>subGeno</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"G070"</span>, <span class='st'>"G160"</span><span class='op'>)</span>
 <span class='va'>fit.spline</span> <span class='op'>&lt;-</span> <span class='fu'>fitSpline</span><span class='op'>(</span>inDat <span class='op'>=</span> <span class='va'>spatCorrectedVator</span>,
                         trait <span class='op'>=</span> <span class='st'>"EffpsII_corr"</span>,
                         genotypes <span class='op'>=</span> <span class='va'>subGeno</span>,
                         knots <span class='op'>=</span> <span class='fl'>50</span><span class='op'>)</span>
 
-<span class='co'>## Extract the tables of predicted values and P-Spline coefficients.</span>
-<span class='va'>pred.Dat</span> <span class='op'>&lt;-</span> <span class='va'>fit.spline</span><span class='op'>$</span><span class='va'>predDat</span>
-<span class='va'>coef.Dat</span> <span class='op'>&lt;-</span> <span class='va'>fit.spline</span><span class='op'>$</span><span class='va'>coefDat</span>
-
-<span class='co'>## We can then visualize the P-Spline predictions and first derivatives</span>
-<span class='co'>## for a subset of genotypes...</span>
+<span class='co'>## Extract the data.frames with predicted values and P-Spline coefficients.</span>
+<span class='va'>predDat</span> <span class='op'>&lt;-</span> <span class='va'>fit.spline</span><span class='op'>$</span><span class='va'>predDat</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>predDat</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;   timeNumber           timePoint pred.value         deriv       deriv2 plotId
+#&gt; 1          0 2018-05-31 16:37:00  0.6697508 -8.895665e-07 2.050206e-12 c10r29
+#&gt; 2        800 2018-05-31 16:50:20  0.6690398 -8.878210e-07 2.313593e-12 c10r29
+#&gt; 3       1600 2018-05-31 17:03:40  0.6683303 -8.858648e-07 2.576979e-12 c10r29
+#&gt; 4       2400 2018-05-31 17:17:00  0.6676225 -8.836978e-07 2.840366e-12 c10r29
+#&gt; 5       3200 2018-05-31 17:30:20  0.6669164 -8.813202e-07 3.103753e-12 c10r29
+#&gt; 6       4000 2018-05-31 17:43:40  0.6662124 -8.787318e-07 3.367140e-12 c10r29
+#&gt;   genotype
+#&gt; 1     G160
+#&gt; 2     G160
+#&gt; 3     G160
+#&gt; 4     G160
+#&gt; 5     G160
+#&gt; 6     G160</div><div class='input'>
+<span class='va'>coefDat</span> <span class='op'>&lt;-</span> <span class='va'>fit.spline</span><span class='op'>$</span><span class='va'>coefDat</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>coefDat</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;   obj.coefficients plotId        type genotype
+#&gt; 1        0.6980810 c10r29 timeNumber1     G160
+#&gt; 2        0.6694202 c10r29 timeNumber2     G160
+#&gt; 3        0.6427428 c10r29 timeNumber3     G160
+#&gt; 4        0.6279562 c10r29 timeNumber4     G160
+#&gt; 5        0.6286394 c10r29 timeNumber5     G160
+#&gt; 6        0.6474903 c10r29 timeNumber6     G160</div><div class='input'>
+<span class='co'>## Visualize the P-Spline predictions for one genotype.</span>
 <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>fit.spline</span>, genotypes <span class='op'>=</span> <span class='st'>"G160"</span><span class='op'>)</span>
 </div><div class='img'><img src='fitSpline-1.png' alt='' width='700' height='433' /></div><div class='input'>
-<span class='co'>## ...or for a subset of plots.</span>
+<span class='co'>## Visualize the P-Spline predictions and first derivatives for one plant.</span>
 <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>fit.spline</span>, plotIds <span class='op'>=</span> <span class='st'>"c10r29"</span>, plotType <span class='op'>=</span>  <span class='st'>"predictions"</span><span class='op'>)</span>
 </div><div class='img'><img src='fitSpline-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>fit.spline</span>, plotIds <span class='op'>=</span> <span class='st'>"c10r29"</span>, plotType <span class='op'>=</span>  <span class='st'>"derivatives"</span><span class='op'>)</span>
 </div><div class='img'><img src='fitSpline-3.png' alt='' width='700' height='433' /></div><div class='input'>

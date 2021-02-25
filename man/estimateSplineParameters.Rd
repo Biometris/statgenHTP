@@ -18,8 +18,8 @@ estimateSplineParameters(
 \item{HTPSpline}{An object of class HTPSpline, the output of the
 \code{\link{fitSpline}} function.}
 
-\item{estimate}{The type of estimate that should be extracted,
-the predictions, the first derivatives or the second derivatives
+\item{estimate}{The P-Spline component for which the estimate should be
+extracted, the predictions, the first derivatives or the second derivatives
 ("derivatives2")}
 
 \item{what}{The type of estimate that should be extracted. Either minimum
@@ -36,10 +36,12 @@ estimates should be extracted. If \code{NULL} the largest time value for
 which the splines were fitted is used.}
 
 \item{genotypes}{A character vector indicating the genotypes for which
-splines are fitted. If \code{NULL}, splines will be fitted for all genotypes.}
+estimates should be extracted. If \code{NULL}, estimates will be extracted
+for all genotypes for which splines where fitted.}
 
-\item{plotIds}{A character vector indicating the plotIds for which splines
-are fitted. If \code{NULL}, splines will be fitted for all plotIds.}
+\item{plotIds}{A character vector indicating the plotIds for which
+estimates should be extracted. If \code{NULL}, estimates will be extracted
+for all plotIds for which splines where fitted.}
 }
 \description{
 Function for extracting parameter estimates from fitted splines on a
@@ -53,18 +55,19 @@ fit.spline <- fitSpline(inDat = spatCorrectedVator,
                         genotypes = subGeno,
                         knots = 50)
 
-## Estimate the maximum value of the trait at the beginning of the time course.
-paramVator1 <- estimateSplineParameters(HTPSpline = fit.spline,
-                                        estimate = "predictions",
-                                        what = "max",
-                                        timeMin = 1527784620,
-                                        timeMax = 1528500000,
-                                        genotypes = subGeno)
+## Estimate the maximum value of the predictions at the beginning of the time course.
+paramVator <- estimateSplineParameters(HTPSpline = fit.spline,
+                                       estimate = "predictions",
+                                       what = "max",
+                                       timeMin = 1527784620,
+                                       timeMax = 1528500000,
+                                       genotypes = subGeno)
+head(paramVator)
 
 }
 \seealso{
-Other Fit splines: 
+Other functions for fitting splines: 
 \code{\link{fitSpline}()},
 \code{\link{plot.HTPSpline}()}
 }
-\concept{Fit splines}
+\concept{functions for fitting splines}

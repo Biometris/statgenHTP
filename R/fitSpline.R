@@ -1,51 +1,59 @@
 #' Fit Splines
 #'
 #' Fit P-Splines on corrected or raw data. The number of
-#' knots are chosen by the user. The function outputs are predicted P-Spline
-#' values and its first and second derivatives at a denser time step. The idea
-#' is to use the outputs for outlier detection and to estimate relevant
-#' parameters from the curve.
+#' knots is chosen by the user. The function outputs are predicted P-Spline
+#' values and their first and second derivatives on a dense grid. The
+#' outputs can then be used for outlier detection for time series
+#' (see \code{\link{detectSerieOut}}) and to estimate relevant parameters from
+#' the curve for further analysis (see \code{\link{estimateSplineParameters}}).
 #'
 #' @param inDat A data.frame with corrected spatial data.
 #' @param trait A character string indicating the trait for which the spline
 #' should be fitted.
 #' @param genotypes A character vector indicating the genotypes for which
-#' splines are fitted. If \code{NULL}, splines will be fitted for all genotypes.
+#' splines should be fitted. If \code{NULL}, splines will be fitted for all
+#' genotypes.
 #' @param plotIds A character vector indicating the plotIds for which splines
-#' are fitted. If \code{NULL}, splines will be fitted for all plotIds.
+#' should be fitted. If \code{NULL}, splines will be fitted for all plotIds.
 #' @param knots The number of knots to use when fitting the spline.
 #' @param useTimeNumber Should the timeNumber be used instead of the timePoint?
 #' @param timeNumber If \code{useTimeNumber = TRUE}, a character vector
 #' indicating the column containing the numerical time to use.
-#' @param minNoTP The minimum number of time point for which data should be
-#' available for a plot. Defaults to 80% of all time points present in the
-#' TP object.
+#' @param minNoTP The minimum number of time points for which data should be
+#' available for a plant. Defaults to 80% of all time points present in the
+#' TP object. No splines are fitted for plants with less than the minimum number
+#' of timepoints.
+#'
+#' @return An object of class \code{HTPSpline}, a list with two
+#' \code{data.frames}, \code{predDat} with predicted values and \code{coefDat}
+#' with P-Spline coefficients on a dense grid.
 #'
 #' @examples
-#' ## The data from the Phenovator platform have been corrected for
-#' ## spatial trends and time points outliers have been removed.
+#' ## The data from the Phenovator platform have been corrected for spatial
+#' ## trends and outliers for single observations have been removed.
 #'
-#' ## Run the function to fit P-Spline on a subset of
-#' ## genotypes
+#' ## Fit P-Splines on a subset of genotypes
 #' subGeno <- c("G070", "G160")
 #' fit.spline <- fitSpline(inDat = spatCorrectedVator,
 #'                         trait = "EffpsII_corr",
 #'                         genotypes = subGeno,
 #'                         knots = 50)
 #'
-#' ## Extract the tables of predicted values and P-Spline coefficients.
-#' pred.Dat <- fit.spline$predDat
-#' coef.Dat <- fit.spline$coefDat
+#' ## Extract the data.frames with predicted values and P-Spline coefficients.
+#' predDat <- fit.spline$predDat
+#' head(predDat)
 #'
-#' ## We can then visualize the P-Spline predictions and first derivatives
-#' ## for a subset of genotypes...
+#' coefDat <- fit.spline$coefDat
+#' head(coefDat)
+#'
+#' ## Visualize the P-Spline predictions for one genotype.
 #' plot(fit.spline, genotypes = "G160")
 #'
-#' ## ...or for a subset of plots.
+#' ## Visualize the P-Spline predictions and first derivatives for one plant.
 #' plot(fit.spline, plotIds = "c10r29", plotType =  "predictions")
 #' plot(fit.spline, plotIds = "c10r29", plotType =  "derivatives")
 #'
-#' @family Fit splines
+#' @family functions for fitting splines
 #'
 #' @export
 fitSpline <- function(inDat,
@@ -249,16 +257,35 @@ fitSpline <- function(inDat,
 #'
 #' @inheritParams plot.TP
 #'
-#' @param x An object of class HTPSpline.
-#' @param plotType A character string indicating for which spline component
+#' @param x An object of class \code{HTPSpline}.
+#' @param ... Ignored.
+#' @param plotType A character string indicating which spline component
 #' should be plotted, either predictions, derivatives or second derivatives
 #' ("derivatives2").
 #' @param genotypes A character vector indicating the genotypes for which
-#' splines should be plotted.
-#' @param plotIds A character vector indicating the plotIds for which splines
-#' should be plotted.
+#' spline components should be plotted.
+#' @param plotIds A character vector indicating the plotIds for which spline
+#' components should be plotted.
 #'
-#' @family Fit splines
+#' @examples
+#' ## The data from the Phenovator platform have been corrected for spatial
+#' ## trends and outliers for single observations have been removed.
+#'
+#' ## Fit P-Splines on a subset of genotypes
+#' subGeno <- c("G070", "G160")
+#' fit.spline <- fitSpline(inDat = spatCorrectedVator,
+#'                         trait = "EffpsII_corr",
+#'                         genotypes = subGeno,
+#'                         knots = 50)
+#'
+#' ## Visualize the P-Spline predictions for one genotype.
+#' plot(fit.spline, genotypes = "G160")
+#'
+#' ## Visualize the first and second derivatives of the predictions for one plant.
+#' plot(fit.spline, plotIds = "c10r29", plotType =  "derivatives")
+#' plot(fit.spline, plotIds = "c10r29", plotType =  "derivatives2")
+#'
+#' @family functions for fitting splines
 #'
 #' @export
 plot.HTPSpline <- function(x,
@@ -401,8 +428,8 @@ plot.HTPSpline <- function(x,
 #'
 #' @param HTPSpline An object of class HTPSpline, the output of the
 #' \code{\link{fitSpline}} function.
-#' @param estimate The type of estimate that should be extracted,
-#' the predictions, the first derivatives or the second derivatives
+#' @param estimate The P-Spline component for which the estimate should be
+#' extracted, the predictions, the first derivatives or the second derivatives
 #' ("derivatives2")
 #' @param what The type of estimate that should be extracted. Either minimum
 #' ("min"), maximum ("max"), mean, area under the curve ("AUC") or a percentile.
@@ -415,9 +442,11 @@ plot.HTPSpline <- function(x,
 #' estimates should be extracted. If \code{NULL} the largest time value for
 #' which the splines were fitted is used.
 #' @param genotypes A character vector indicating the genotypes for which
-#' splines are fitted. If \code{NULL}, splines will be fitted for all genotypes.
-#' @param plotIds A character vector indicating the plotIds for which splines
-#' are fitted. If \code{NULL}, splines will be fitted for all plotIds.
+#' estimates should be extracted. If \code{NULL}, estimates will be extracted
+#' for all genotypes for which splines where fitted.
+#' @param plotIds A character vector indicating the plotIds for which
+#' estimates should be extracted. If \code{NULL}, estimates will be extracted
+#' for all plotIds for which splines where fitted.
 #'
 #' @examples
 #' ## Run the function to fit P-splines on a subset of genotypes.
@@ -427,15 +456,16 @@ plot.HTPSpline <- function(x,
 #'                         genotypes = subGeno,
 #'                         knots = 50)
 #'
-#' ## Estimate the maximum value of the trait at the beginning of the time course.
-#' paramVator1 <- estimateSplineParameters(HTPSpline = fit.spline,
-#'                                         estimate = "predictions",
-#'                                         what = "max",
-#'                                         timeMin = 1527784620,
-#'                                         timeMax = 1528500000,
-#'                                         genotypes = subGeno)
+#' ## Estimate the maximum value of the predictions at the beginning of the time course.
+#' paramVator <- estimateSplineParameters(HTPSpline = fit.spline,
+#'                                        estimate = "predictions",
+#'                                        what = "max",
+#'                                        timeMin = 1527784620,
+#'                                        timeMax = 1528500000,
+#'                                        genotypes = subGeno)
+#' head(paramVator)
 #'
-#' @family Fit splines
+#' @family functions for fitting splines
 #'
 #' @export
 estimateSplineParameters <- function(HTPSpline,

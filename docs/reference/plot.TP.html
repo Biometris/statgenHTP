@@ -44,8 +44,8 @@
 for different time points within the TP object. Also a boxplot can be made
 for selected traits and time points and a plot of correlations
 between time points. Finally the raw data can be displayed per
-genotype. A detailed description and optional extra parameters of the
-different plots is given in the sections below." />
+genotype. A detailed description and optional extra parameters for the
+different plots are given in the sections below." />
 
 
 
@@ -130,7 +130,7 @@ different plots is given in the sections below." />
 </li>
 <li>
   <a href="https://github.com/Biometris/statgenHTP">
-    <span class="fas fa-github fa-lg"></span>
+    <span class="fas fa-github fa-lg fab"></span>
      
     github
   </a>
@@ -158,8 +158,8 @@ different plots is given in the sections below." />
 for different time points within the TP object. Also a boxplot can be made
 for selected traits and time points and a plot of correlations
 between time points. Finally the raw data can be displayed per
-genotype. A detailed description and optional extra parameters of the
-different plots is given in the sections below.</p>
+genotype. A detailed description and optional extra parameters for the
+different plots are given in the sections below.</p>
     </div>
 
     <pre class="usage"><span class='co'># S3 method for TP</span>
@@ -214,7 +214,7 @@ other plotTypes, providing multiple traits will create multiple plots.</p></td>
     <tr>
       <th>output</th>
       <td><p>Should the plot be output to the current device? If
-<code>FALSE</code> only a list of ggplot objects is invisibly returned. Ignored if
+<code>FALSE</code> only a (list of) ggplot object(s) is invisibly returned. Ignored if
 <code>outFile</code> is specified.</p></td>
     </tr>
     <tr>
@@ -245,7 +245,7 @@ If replicates (<code>repId</code>) are available, a black line is plotted betwee
 diffent replicates. Missing plots are indicated in white. This can either be
 single plots in a time point or complete missing columns or rows.<br />
 Extra parameter options:</p><dl>
-<dt>showGeno</dt><dd><p>Should individual genotypes be indicated in the plot?
+<dt>showGeno</dt><dd><p>Should individual genotypes be labeled in the plot?
 Defaults to <code>FALSE</code></p></dd>
 <dt>highlight</dt><dd><p>A character vector of genotypes to be highlighted in the
 plot.</p></dd>
@@ -268,7 +268,7 @@ using <code>repId</code>.</p></dd>
 <dt>orderBy</dt><dd><p>A character string indicating the way the boxes should be
 ordered. Either "alphabetic" for alphabetical ordering of the groups,
 "ascending" for ordering by ascending mean, or "descending" for ordering by
-descending mean. Default boxes are ordered alphabetically.</p></dd>
+descending mean. By default boxes are ordered alphabetically.</p></dd>
 
 </dl>
 
@@ -283,11 +283,11 @@ trait for selected time points (all available time points by default).</p>
     
 
 <p>Create a plot of the raw data of the selected trait over time for selected
-time points (all available time points by default). Plots are grouped per
-genotypes, or by genotype x treatment when the <code>geno.decomp</code> option is
-specified. By default, all the genotypes will be plotted wich might take
-time and memory when the output is not saved in a file (see <code>outFile</code>).
-Warning about the labels with few time points? Extra parameter options:</p><dl>
+time points (all available time points by default). Plots are grouped by
+genotype, or by genotype x treatment when the <code>geno.decomp</code> option is
+specified. By default, all the genotypes will be plotted which might take
+time and memory when the output is not saved in a file (see parameter
+<code>outFile</code>). Extra parameter options:</p><dl>
 <dt>genotypes</dt><dd><p>A character vector indicating the genotypes to be plotted.</p></dd>
 <dt>geno.decomp</dt><dd><p>A character vector indicating the grouping of the
 genotypes to be plotted.</p></dd>
@@ -297,14 +297,15 @@ genotypes to be plotted.</p></dd>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>Other Data preparation: 
+    <div class='dont-index'><p>Other functions for data preparation: 
 <code><a href='as.data.frame.TP.html'>as.data.frame.TP</a>()</code>,
 <code><a href='createTimePoints.html'>createTimePoints</a>()</code>,
+<code><a href='getTimePoints.html'>getTimePoints</a>()</code>,
 <code><a href='removeTimePoints.html'>removeTimePoints</a>()</code>,
 <code><a href='summary.TP.html'>summary.TP</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"PhenovatorDat1"</span><span class='op'>)</span>
+    <pre class="examples"><div class='input'><span class='co'>## Create a TP object containing the data from the Phenovator.</span>
 <span class='va'>phenoTP</span> <span class='op'>&lt;-</span> <span class='fu'><a href='createTimePoints.html'>createTimePoints</a></span><span class='op'>(</span>dat <span class='op'>=</span> <span class='va'>PhenovatorDat1</span>,
                             experimentName <span class='op'>=</span> <span class='st'>"Phenovator"</span>,
                             genotype <span class='op'>=</span> <span class='st'>"Genotype"</span>,
@@ -342,7 +343,7 @@ genotypes to be plotted.</p></dd>
 <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>phenoTP</span>,
      traits <span class='op'>=</span> <span class='st'>"EffpsII"</span>,
      plotType <span class='op'>=</span> <span class='st'>"raw"</span>,
-     genotypes <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"G1"</span>,<span class='st'>"G2"</span>,<span class='st'>"check1"</span>,<span class='st'>"check2"</span><span class='op'>)</span><span class='op'>)</span>
+     genotypes <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"G001"</span>,<span class='st'>"G002"</span>,<span class='st'>"check1"</span>,<span class='st'>"check2"</span><span class='op'>)</span><span class='op'>)</span>
 </div><div class='img'><img src='plot.TP-4.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>

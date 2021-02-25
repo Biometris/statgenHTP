@@ -24,7 +24,7 @@ navbar:
           href: https://biometris.github.io/statgenGxE
         - text: "statgenGWAS"
           href: https://biometris.github.io/statgenGWAS
-    - icon: fa-github fa-lg
+    - icon: fa-github fa-lg fab
       text: "github"
       href: https://github.com/Biometris/statgenHTP
 
@@ -49,7 +49,7 @@ reference:
   - getTimePoints
   - removeTimePoints
   - as.data.frame.TP
-- title: Detect point outliers
+- title: Detect outliers for single observations
 - contents:
   - detectSingleOut
   - removeSingleOut
@@ -70,7 +70,7 @@ reference:
   - fitSpline
   - plot.HTPSpline
   - estimateSplineParameters
-- title: Detect time course outliers
+- title: Detect outliers for series of observations
 - contents:
   - detectSerieOut
   - removeSerieOut

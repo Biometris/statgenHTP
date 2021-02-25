@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot outliers in a time series — plot.singleOut • statgenHTP</title>
+<title>Plot outliers for single observations — plot.singleOut • statgenHTP</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,9 @@
 
 
 
-<meta property="og:title" content="Plot outliers in a time series — plot.singleOut" />
-<meta property="og:description" content="Plot the modeled smoothing and detected outliers for each plotId." />
+<meta property="og:title" content="Plot outliers for single observations — plot.singleOut" />
+<meta property="og:description" content="Plot the fitted local regression, confidence intervals and detected outliers
+for each plotId." />
 
 
 
@@ -125,7 +126,7 @@
 </li>
 <li>
   <a href="https://github.com/Biometris/statgenHTP">
-    <span class="fas fa-github fa-lg"></span>
+    <span class="fas fa-github fa-lg fab"></span>
      
     github
   </a>
@@ -143,13 +144,14 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot outliers in a time series</h1>
+    <h1>Plot outliers for single observations</h1>
     
     <div class="hidden name"><code>plot.singleOut.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Plot the modeled smoothing and detected outliers for each plotId.</p>
+    <p>Plot the fitted local regression, confidence intervals and detected outliers
+for each plotId.</p>
     </div>
 
     <pre class="usage"><span class='co'># S3 method for singleOut</span>
@@ -160,17 +162,16 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>An object of class singleOut</p></td>
+      <td><p>An object of class singleOut.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Extra plot options. Described per plotType in their respective
-section.</p></td>
+      <td><p>Ignored.</p></td>
     </tr>
     <tr>
       <th>plotIds</th>
       <td><p>A character vector of plotIds for which the outliers should be
-detected. If <code>NULL</code>, all plotId in TP are used.</p></td>
+detected. If <code>NULL</code>, all plotIds in <code>TP</code> are used.</p></td>
     </tr>
     <tr>
       <th>outOnly</th>
@@ -179,15 +180,17 @@ detected. If <code>NULL</code>, all plotId in TP are used.</p></td>
     <tr>
       <th>output</th>
       <td><p>Should the plot be output to the current device? If
-<code>FALSE</code> only a list of ggplot objects is invisibly returned. Ignored if
+<code>FALSE</code> only a (list of) ggplot object(s) is invisibly returned. Ignored if
 <code>outFile</code> is specified.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>Other Detect outliers in a time series: 
-<code><a href='detectSingleOut.html'>detectSingleOut</a>()</code></p></div>
+    <div class='dont-index'><p>Other functions for detecting outliers for single observations: 
+<code><a href='detectSingleOutMaize.html'>detectSingleOutMaize</a>()</code>,
+<code><a href='detectSingleOut.html'>detectSingleOut</a>()</code>,
+<code><a href='removeSingleOut.html'>removeSingleOut</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'>## Create a TP object containing the data from the Phenovator.</span>
@@ -204,16 +207,16 @@ detected. If <code>NULL</code>, all plotId in TP are used.</p></td>
                             checkGenotypes <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"check1"</span>, <span class='st'>"check2"</span>,
                                                <span class='st'>"check3"</span>, <span class='st'>"check4"</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='co'>## First select a subset of plants, for example here 9 plants.</span>
+<span class='co'>## Select a subset of plants, for example here 9 plants.</span>
 <span class='va'>plantSel</span> <span class='op'>&lt;-</span> <span class='va'>phenoTP</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span><span class='op'>$</span><span class='va'>plotId</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>9</span><span class='op'>]</span>
-<span class='co'># Then run on the subset</span>
+<span class='co'># Then run on the subset.</span>
 <span class='va'>resuVatorHTP</span> <span class='op'>&lt;-</span> <span class='fu'><a href='detectSingleOut.html'>detectSingleOut</a></span><span class='op'>(</span>TP <span class='op'>=</span> <span class='va'>phenoTP</span>,
                                trait <span class='op'>=</span> <span class='st'>"EffpsII"</span>,
                                plotIds <span class='op'>=</span> <span class='va'>plantSel</span>,
                                confIntSize <span class='op'>=</span> <span class='fl'>3</span>,
                                nnLocfit <span class='op'>=</span> <span class='fl'>0.1</span><span class='op'>)</span>
 
-<span class='co'>## We can then visualize the prediction by choosing a single plant...</span>
+<span class='co'>## Visualize the prediction by choosing a single plant...</span>
 <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>resuVatorHTP</span>, plotIds <span class='op'>=</span> <span class='st'>"c21r24"</span>, outOnly <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
 </div><div class='img'><img src='plot.singleOut-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'>## ...or a subset of plants.</span>
 <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>resuVatorHTP</span>, plotIds <span class='op'>=</span> <span class='va'>plantSel</span>, outOnly <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>

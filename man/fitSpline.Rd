@@ -22,10 +22,11 @@ fitSpline(
 should be fitted.}
 
 \item{genotypes}{A character vector indicating the genotypes for which
-splines are fitted. If \code{NULL}, splines will be fitted for all genotypes.}
+splines should be fitted. If \code{NULL}, splines will be fitted for all
+genotypes.}
 
 \item{plotIds}{A character vector indicating the plotIds for which splines
-are fitted. If \code{NULL}, splines will be fitted for all plotIds.}
+should be fitted. If \code{NULL}, splines will be fitted for all plotIds.}
 
 \item{knots}{The number of knots to use when fitting the spline.}
 
@@ -34,45 +35,53 @@ are fitted. If \code{NULL}, splines will be fitted for all plotIds.}
 \item{timeNumber}{If \code{useTimeNumber = TRUE}, a character vector
 indicating the column containing the numerical time to use.}
 
-\item{minNoTP}{The minimum number of time point for which data should be
-available for a plot. Defaults to 80\% of all time points present in the
-TP object.}
+\item{minNoTP}{The minimum number of time points for which data should be
+available for a plant. Defaults to 80\% of all time points present in the
+TP object. No splines are fitted for plants with less than the minimum number
+of timepoints.}
+}
+\value{
+An object of class \code{HTPSpline}, a list with two
+\code{data.frames}, \code{predDat} with predicted values and \code{coefDat}
+with P-Spline coefficients on a dense grid.
 }
 \description{
 Fit P-Splines on corrected or raw data. The number of
-knots are chosen by the user. The function outputs are predicted P-Spline
-values and its first and second derivatives at a denser time step. The idea
-is to use the outputs for outlier detection and to estimate relevant
-parameters from the curve.
+knots is chosen by the user. The function outputs are predicted P-Spline
+values and their first and second derivatives on a dense grid. The
+outputs can then be used for outlier detection for time series
+(see \code{\link{detectSerieOut}}) and to estimate relevant parameters from
+the curve for further analysis (see \code{\link{estimateSplineParameters}}).
 }
 \examples{
-## The data from the Phenovator platform have been corrected for
-## spatial trends and time points outliers have been removed.
+## The data from the Phenovator platform have been corrected for spatial
+## trends and outliers for single observations have been removed.
 
-## Run the function to fit P-Spline on a subset of
-## genotypes
+## Fit P-Splines on a subset of genotypes
 subGeno <- c("G070", "G160")
 fit.spline <- fitSpline(inDat = spatCorrectedVator,
                         trait = "EffpsII_corr",
                         genotypes = subGeno,
                         knots = 50)
 
-## Extract the tables of predicted values and P-Spline coefficients.
-pred.Dat <- fit.spline$predDat
-coef.Dat <- fit.spline$coefDat
+## Extract the data.frames with predicted values and P-Spline coefficients.
+predDat <- fit.spline$predDat
+head(predDat)
 
-## We can then visualize the P-Spline predictions and first derivatives
-## for a subset of genotypes...
+coefDat <- fit.spline$coefDat
+head(coefDat)
+
+## Visualize the P-Spline predictions for one genotype.
 plot(fit.spline, genotypes = "G160")
 
-## ...or for a subset of plots.
+## Visualize the P-Spline predictions and first derivatives for one plant.
 plot(fit.spline, plotIds = "c10r29", plotType =  "predictions")
 plot(fit.spline, plotIds = "c10r29", plotType =  "derivatives")
 
 }
 \seealso{
-Other Fit splines: 
+Other functions for fitting splines: 
 \code{\link{estimateSplineParameters}()},
 \code{\link{plot.HTPSpline}()}
 }
-\concept{Fit splines}
+\concept{functions for fitting splines}

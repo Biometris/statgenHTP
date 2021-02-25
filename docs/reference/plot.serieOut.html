@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>plot.serieOut — plot.serieOut • statgenHTP</title>
+<title>Plot outliers for series of observations — plot.serieOut • statgenHTP</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,10 @@
 
 
 
-<meta property="og:title" content="plot.serieOut — plot.serieOut" />
-<meta property="og:description" content="plot.serieOut" />
+<meta property="og:title" content="Plot outliers for series of observations — plot.serieOut" />
+<meta property="og:description" content="Plot the fitted spline, correlation matrix and PCA biplot for each of the
+genotypes. Outlying series of observations are shown as filled dots in the
+fitted spline plot, other observations are shown as open dots." />
 
 
 
@@ -125,7 +127,7 @@
 </li>
 <li>
   <a href="https://github.com/Biometris/statgenHTP">
-    <span class="fas fa-github fa-lg"></span>
+    <span class="fas fa-github fa-lg fab"></span>
      
     github
   </a>
@@ -143,13 +145,15 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>plot.serieOut</h1>
+    <h1>Plot outliers for series of observations</h1>
     
     <div class="hidden name"><code>plot.serieOut.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>plot.serieOut</p>
+    <p>Plot the fitted spline, correlation matrix and PCA biplot for each of the
+genotypes. Outlying series of observations are shown as filled dots in the
+fitted spline plot, other observations are shown as open dots.</p>
     </div>
 
     <pre class="usage"><span class='co'># S3 method for serieOut</span>
@@ -168,23 +172,21 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>An object of class serieOut.</p></td>
+      <td><p>An object of class <code>serieOut</code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Extra plot options. Described per plotType in their respective
-section.</p></td>
+      <td><p>Ignored.</p></td>
     </tr>
     <tr>
       <th>genotypes</th>
-      <td><p>A character vector indicating the genotypes for which to
-detect outliers. If <code>NULL</code>, outlier detection will be done for all
-genotypes.</p></td>
+      <td><p>A character vector indicating which genotypes should be
+plotted.</p></td>
     </tr>
     <tr>
       <th>useTimeNumber</th>
       <td><p>Should the timeNumber be used instead of the timePoint
-in the x-axis labels?</p></td>
+in the labels on the x-axis?</p></td>
     </tr>
     <tr>
       <th>timeNumber</th>
@@ -199,45 +201,46 @@ default title is added to the plot depending on <code>plotType</code>.</p></td>
     <tr>
       <th>output</th>
       <td><p>Should the plot be output to the current device? If
-<code>FALSE</code> only a list of ggplot objects is invisibly returned. Ignored if
+<code>FALSE</code> only a (list of) ggplot object(s) is invisibly returned. Ignored if
 <code>outFile</code> is specified.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>Other Detect time course outliers: 
+    <div class='dont-index'><p>Other functions for detecting outliers for series of observations: 
 <code><a href='detectSerieOut.html'>detectSerieOut</a>()</code>,
 <code><a href='removeSerieOut.html'>removeSerieOut</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'>## The data from the Phenovator platform have been corrected for spatial</span>
-<span class='co'>## trends and time points outliers have been removed.</span>
+    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
+<span class='co'>## The data from the Phenovator platform have been corrected for spatial</span>
+<span class='co'>## trends and outliers for single observations have been removed.</span>
 
-<span class='co'>## Run the function to fit P-splines on a subset of</span>
-<span class='co'>## genotypes.</span>
-<span class='va'>subGenoVator</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"G070"</span>, <span class='st'>"G160"</span>, <span class='st'>"G151"</span>, <span class='st'>"G179"</span>, <span class='st'>"G175"</span>, <span class='st'>"G004"</span>, <span class='st'>"G055"</span><span class='op'>)</span>
+<span class='co'>## Fit P-splines on a subset of genotypes</span>
+<span class='va'>subGenoVator</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"G160"</span>, <span class='st'>"G151"</span><span class='op'>)</span>
 <span class='va'>fit.spline</span> <span class='op'>&lt;-</span> <span class='fu'><a href='fitSpline.html'>fitSpline</a></span><span class='op'>(</span>inDat <span class='op'>=</span> <span class='va'>spatCorrectedVator</span>,
                         trait <span class='op'>=</span> <span class='st'>"EffpsII_corr"</span>,
                         genotypes <span class='op'>=</span> <span class='va'>subGenoVator</span>,
                         knots <span class='op'>=</span> <span class='fl'>50</span><span class='op'>)</span>
 
-<span class='co'>## Extract the tables of predicted values and P-spline coefficients.</span>
-<span class='va'>pred.Dat</span> <span class='op'>&lt;-</span> <span class='va'>fit.spline</span><span class='op'>$</span><span class='va'>predDat</span>
-<span class='va'>coef.Dat</span> <span class='op'>&lt;-</span> <span class='va'>fit.spline</span><span class='op'>$</span><span class='va'>coefDat</span>
+<span class='co'>## Extract the data.frames with predicted values and P-Spline coefficients.</span>
+<span class='va'>predDat</span> <span class='op'>&lt;-</span> <span class='va'>fit.spline</span><span class='op'>$</span><span class='va'>predDat</span>
+<span class='va'>coefDat</span> <span class='op'>&lt;-</span> <span class='va'>fit.spline</span><span class='op'>$</span><span class='va'>coefDat</span>
 
-<span class='co'>## The coefficients are then used to tag suspect time courses</span>
+<span class='co'>## The coefficients are then used to tag suspect time courses.</span>
 <span class='va'>outVator</span> <span class='op'>&lt;-</span> <span class='fu'><a href='detectSerieOut.html'>detectSerieOut</a></span><span class='op'>(</span>corrDat <span class='op'>=</span> <span class='va'>spatCorrectedVator</span>,
-                            predDat <span class='op'>=</span> <span class='va'>pred.Dat</span>,
-                            coefDat <span class='op'>=</span> <span class='va'>coef.Dat</span>,
-                            trait <span class='op'>=</span> <span class='st'>"EffpsII_corr"</span>,
-                            genotypes <span class='op'>=</span> <span class='va'>subGenoVator</span>,
-                            thrCor <span class='op'>=</span> <span class='fl'>0.9</span>,
-                            thrPca <span class='op'>=</span> <span class='fl'>30</span><span class='op'>)</span>
+                           predDat <span class='op'>=</span> <span class='va'>predDat</span>,
+                           coefDat <span class='op'>=</span> <span class='va'>coefDat</span>,
+                           trait <span class='op'>=</span> <span class='st'>"EffpsII_corr"</span>,
+                           genotypes <span class='op'>=</span> <span class='va'>subGenoVator</span>,
+                           thrCor <span class='op'>=</span> <span class='fl'>0.9</span>,
+                           thrPca <span class='op'>=</span> <span class='fl'>30</span><span class='op'>)</span>
 
 <span class='co'>## The `outVator` can be visualized for selected genotypes.</span>
 <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>outVator</span>, genotypes <span class='op'>=</span> <span class='st'>"G151"</span><span class='op'>)</span>
-</div><div class='img'><img src='plot.serieOut-1.png' alt='' width='700' height='433' /></div><div class='input'>
+</div><div class='img'><img src='plot.serieOut-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># }</span>
+
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

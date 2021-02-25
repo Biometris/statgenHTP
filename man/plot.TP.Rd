@@ -39,7 +39,7 @@ If \code{plotType} = "layout" only a single trait may be plotted. For the
 other plotTypes, providing multiple traits will create multiple plots.}
 
 \item{output}{Should the plot be output to the current device? If
-\code{FALSE} only a list of ggplot objects is invisibly returned. Ignored if
+\code{FALSE} only a (list of) ggplot object(s) is invisibly returned. Ignored if
 \code{outFile} is specified.}
 
 \item{outFile}{A character string indicating the .pdf file to which the
@@ -57,8 +57,8 @@ Plotting function for objects of class TP. Plots the layout of the platform
 for different time points within the TP object. Also a boxplot can be made
 for selected traits and time points and a plot of correlations
 between time points. Finally the raw data can be displayed per
-genotype. A detailed description and optional extra parameters of the
-different plots is given in the sections below.
+genotype. A detailed description and optional extra parameters for the
+different plots are given in the sections below.
 }
 \section{Layout Plot}{
 
@@ -71,7 +71,7 @@ diffent replicates. Missing plots are indicated in white. This can either be
 single plots in a time point or complete missing columns or rows.\cr
 Extra parameter options:
 \describe{
-\item{showGeno}{Should individual genotypes be indicated in the plot?
+\item{showGeno}{Should individual genotypes be labeled in the plot?
 Defaults to \code{FALSE}}
 \item{highlight}{A character vector of genotypes to be highlighted in the
 plot.}
@@ -93,7 +93,7 @@ using \code{repId}.}
 \item{orderBy}{A character string indicating the way the boxes should be
 ordered. Either "alphabetic" for alphabetical ordering of the groups,
 "ascending" for ordering by ascending mean, or "descending" for ordering by
-descending mean. Default boxes are ordered alphabetically.}
+descending mean. By default boxes are ordered alphabetically.}
 }
 }
 
@@ -106,11 +106,11 @@ trait for selected time points (all available time points by default).
 \section{Raw data plot}{
 
 Create a plot of the raw data of the selected trait over time for selected
-time points (all available time points by default). Plots are grouped per
-genotypes, or by genotype x treatment when the \code{geno.decomp} option is
-specified. By default, all the genotypes will be plotted wich might take
-time and memory when the output is not saved in a file (see \code{outFile}).
-Warning about the labels with few time points? Extra parameter options:
+time points (all available time points by default). Plots are grouped by
+genotype, or by genotype x treatment when the \code{geno.decomp} option is
+specified. By default, all the genotypes will be plotted which might take
+time and memory when the output is not saved in a file (see parameter
+\code{outFile}). Extra parameter options:
 \describe{
 \item{genotypes}{A character vector indicating the genotypes to be plotted.}
 \item{geno.decomp}{A character vector indicating the grouping of the
@@ -120,7 +120,7 @@ genotypes to be plotted.}
 }
 
 \examples{
-data("PhenovatorDat1")
+## Create a TP object containing the data from the Phenovator.
 phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             experimentName = "Phenovator",
                             genotype = "Genotype",
@@ -157,14 +157,15 @@ plot(phenoTP,
 plot(phenoTP,
      traits = "EffpsII",
      plotType = "raw",
-     genotypes = c("G1","G2","check1","check2"))
+     genotypes = c("G001","G002","check1","check2"))
 
 }
 \seealso{
-Other Data preparation: 
+Other functions for data preparation: 
 \code{\link{as.data.frame.TP}()},
 \code{\link{createTimePoints}()},
+\code{\link{getTimePoints}()},
 \code{\link{removeTimePoints}()},
 \code{\link{summary.TP}()}
 }
-\concept{Data preparation}
+\concept{functions for data preparation}

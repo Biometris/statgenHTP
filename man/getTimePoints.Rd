@@ -18,8 +18,7 @@ Function for extracting a data.frame with timeNumbers and timePoints from
 an object of class TP or fitMod.
 }
 \examples{
-## Create an object of class TP
-data("PhenovatorDat1")
+## Create an object of class TP.
 phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             experimentName = "Phenovator",
                             genotype = "Genotype",
@@ -35,3 +34,12 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
 head(getTimePoints(phenoTP))
 
 }
+\seealso{
+Other functions for data preparation: 
+\code{\link{as.data.frame.TP}()},
+\code{\link{createTimePoints}()},
+\code{\link{plot.TP}()},
+\code{\link{removeTimePoints}()},
+\code{\link{summary.TP}()}
+}
+\concept{functions for data preparation}

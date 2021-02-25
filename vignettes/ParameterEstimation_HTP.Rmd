@@ -57,11 +57,11 @@ fit.splineNum <- fitSpline(inDat = spatCorrectedVator,
                            knots = 50,
                            useTimeNumber = TRUE,
                            timeNumber = "timeNumHour")
-pred.Dat <- fit.splineNum$predDat
-coef.Dat <- fit.splineNum$coefDat
+predDat <- fit.splineNum$predDat
+coefDat <- fit.splineNum$coefDat
 outVator <- detectSerieOut(corrDat = spatCorrectedVator,
-                           predDat = pred.Dat,
-                           coefDat = coef.Dat,
+                           predDat = predDat,
+                           coefDat = coefDat,
                            trait = "EffpsII_corr",
                            genotypes = subGenoVator,
                            thrCor = 0.9,
@@ -161,12 +161,12 @@ fit.splineRoot <- fitSpline(inDat = noCorrectedRoot,
                             useTimeNumber = TRUE,
                             timeNumber = "thermalTime")
 
-pred.DatRoot <- fit.splineRoot$predDat
-coef.DatRoot <- fit.splineRoot$coefDat
+predDatRoot <- fit.splineRoot$predDat
+coefDatRoot <- fit.splineRoot$coefDat
 
 outRoot <- detectSerieOut(corrDat = noCorrectedRoot,
-                          predDat = pred.DatRoot,
-                          coefDat = coef.DatRoot,
+                          predDat = predDatRoot,
+                          coefDat = coefDatRoot,
                           trait = "tipPos_y",
                           genotypes = subGenoRoot,
                           thrCor = 0.9,
