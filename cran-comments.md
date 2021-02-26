@@ -22,12 +22,11 @@ There were 2 NOTES:
     New submission
   
     Possibly mis-spelled words in DESCRIPTION:
-    EPPN (37:67)
-    HTP (2:37)
+    EPPN (40:16)
+    HTP (2:37, 38:18)
     Phenotyping (2:24)
-    phenotyping (39:41)
-    statgenHTP (37:18)
-    
+    phenotyping (38:5)
+
     - These are all spelled correctly.
 
     Suggests or Enhances not in mainstream repositories: asreml

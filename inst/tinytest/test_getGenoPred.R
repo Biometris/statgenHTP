@@ -33,12 +33,17 @@ expect_warning(getGenoPred(testFitMod1, predictChecks = TRUE),
 
 gp1 <- getGenoPred(testFitMod1)
 gp2 <- getGenoPred(testFitMod2)
+
+if (getRversion() < "4.1") {
+
 gp3 <- getGenoPred(testFitMod3)
 gp4a <- getGenoPred(testFitMod4)
 gp4b <- getGenoPred(testFitMod4, predictChecks = TRUE)
 gp5 <- getGenoPred(testFitMod5)
 gp6a <- getGenoPred(testFitMod6)
 gp6b <- getGenoPred(testFitMod6, predictChecks = TRUE)
+
+}
 
 ## Check output structure
 
@@ -49,6 +54,9 @@ expect_inherits(gp1$genoPred, "data.frame")
 expect_equal(dim(gp1$genoPred), c(110, 5))
 expect_equal(colnames(gp1$genoPred), c("timeNumber", "timePoint", "genotype",
                                        "predicted.values", "standard.errors"))
+
+if (getRversion() < "4.1") {
+
 # Extra column for geno.decomp.
 # Check1 is in both replicates, so one extra prediction per time point.
 expect_equal(dim(gp3$genoPred), c(115, 6))
@@ -68,12 +76,17 @@ expect_equal(dim(gp6b$checkPred), c(10, 6))
 expect_equal(setdiff(colnames(gp6b$genoPred),
                      colnames(gp4a$genoPred)), "geno.decomp")
 
+}
+
 ## Check that results are as expected.
 ## Function is complicated and not always obvious so a thorough check is needed.
 
 # Extract genotype and check predictions.
 gp1 <- gp1$genoPred
 gp2 <- gp2$genoPred
+
+if (getRversion() < "4.1") {
+
 gp3 <- gp3$genoPred
 gp4 <- gp4a$genoPred
 gp4Check <- gp4b$checkPred
@@ -81,14 +94,23 @@ gp5 <- gp5$genoPred
 gp6 <- gp6a$genoPred
 gp6Check <- gp6b$checkPred
 
+}
+
 expect_equal_to_reference(gp1, file = "gp1Comp")
 expect_equal_to_reference(gp2, file = "gp2Comp")
+
+if (getRversion() < "4.1") {
+
 expect_equal_to_reference(gp3, file = "gp3Comp")
 expect_equal_to_reference(gp4, file = "gp4Comp")
 expect_equal_to_reference(gp4Check, file = "gp4CheckComp")
 expect_equal_to_reference(gp5, file = "gp5Comp")
 expect_equal_to_reference(gp6, file = "gp6Comp")
 expect_equal_to_reference(gp6Check, file = "gp6CheckComp")
+
+}
+
+if (getRversion() < "4.1") {
 
 ## Check that results can be written to a file.
 tmpFile <- tempfile(fileext = ".csv")
@@ -108,6 +130,8 @@ expect_equal(gpIn2, gpIn)
 cpIn <- read.csv(gsub(pattern = ".csv", replacement = "Check.csv",
                       x = tmpFile2))
 expect_equal(gpOut2$checkPred[["predicted.values"]], cpIn[["predicted.values"]])
+
+}
 
 ## Test for models fitted using asreml.
 ## Limited set of tests, focused on differences between SpATS and asreml.

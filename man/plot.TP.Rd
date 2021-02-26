@@ -144,7 +144,7 @@ plot(phenoTP,
 plot(phenoTP,
      plotType = "box",
      traits = "EffpsII",
-     timePoints = c(1:5),
+     timePoints = 1:5,
      colorBy = "repId")
 
 ## Create a correlation plot for "EffpsII" for a selection of time points.

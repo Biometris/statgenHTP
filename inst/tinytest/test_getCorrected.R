@@ -31,10 +31,15 @@ expect_error(getCorrected("fitMod"),
 
 corr1 <- getCorrected(testFitMod1)
 corr2 <- getCorrected(testFitMod2)
+
+if (getRversion() < "4.1") {
+
 corr3 <- getCorrected(testFitMod3)
 corr4 <- getCorrected(testFitMod4)
 corr5 <- getCorrected(testFitMod5)
 corr6 <- getCorrected(testFitMod6)
+
+}
 
 ## Check output structure
 
@@ -45,17 +50,27 @@ expect_equal(colnames(corr1), c("timeNumber", "timePoint", "t1_corr", "t1",
 
 # Extra column for fixed factors and geno.decomp.
 expect_equal(setdiff(colnames(corr2), colnames(corr1)), "Basin")
-expect_equal(setdiff(colnames(corr3), colnames(corr1)), "geno.decomp")
+
+if (getRversion() < "4.1") {
+
+  expect_equal(setdiff(colnames(corr3), colnames(corr1)), "geno.decomp")
+
+}
 
 ## Check that results are as expected.
 ## Function is complicated and not always obvious so a thorough check is needed.
 
 expect_equal_to_reference(corr1, file = "corr1Comp", tolerance = 1e-6)
 expect_equal_to_reference(corr2, file = "corr2Comp", tolerance = 1e-6)
+
+if (getRversion() < "4.1") {
+
 expect_equal_to_reference(corr3, file = "corr3Comp", tolerance = 1e-6)
 expect_equal_to_reference(corr4, file = "corr4Comp", tolerance = 1e-6)
 expect_equal_to_reference(corr5, file = "corr5Comp", tolerance = 1e-6)
 expect_equal_to_reference(corr6, file = "corr6Comp", tolerance = 1e-6)
+
+}
 
 ## Check that results can be written to a file.
 tmpFile <- tempfile(fileext = ".csv")
