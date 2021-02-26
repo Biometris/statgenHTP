@@ -16,3 +16,4 @@ testScript*
 ^pkgdown$
 ^testData$
 ^gettingStarted$
+^cran-comments\.md$
