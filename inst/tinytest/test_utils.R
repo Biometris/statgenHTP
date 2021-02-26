@@ -55,7 +55,8 @@ expect_equal(statgenHTP:::dfBind(list(data.frame())), data.frame())
 times <- strptime(c("1sep2019", "2sep2019"), "%d%b%Y")
 timeNums <- c(1, 1, 2)
 df1 <- data.frame(timePoint = times[timeNums], timeNumber = timeNums,
-                  id = c("p1", "p2", "p1"), trait = 1:3)
+                  id = c("p1", "p2", "p1"), trait = 1:3,
+                  stringsAsFactors = FALSE)
 
 ## Check that single missing value is added when no extra columns present.
 dfOut1 <- statgenHTP:::addMissVals(df1, "trait")
