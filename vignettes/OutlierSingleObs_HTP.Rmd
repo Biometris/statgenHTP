@@ -46,7 +46,7 @@ The detection requires fitting a model from the data, as a function of time. Two
 
 # Illustration of the non-parametric function
 
-Local regression is a well known smoothing technique which locally approximates an unknown function by parametric functions. It is a two-step procedure included in the `detectSingleOut` function: the `locfit()` [function](https://cran.r-project.org/web/packages/locfit/index.html) fits a local regression at a set of points, then, the `predict()` function is used to interpolate this fit to other points. A confidence interval can then be calculated. Points outside this interval will be annotated as outliers.
+Local regression is a well known smoothing technique which locally approximates an unknown function by parametric functions. It is a two-step procedure included in the `detectSingleOut` function: the `locfit()` [function](https://CRAN.R-project.org/package=locfit) fits a local regression at a set of points, then, the `predict()` function is used to interpolate this fit to other points. A confidence interval can then be calculated. Points outside this interval will be annotated as outliers.
 
 The user can set:
 
