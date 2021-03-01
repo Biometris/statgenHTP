@@ -70,19 +70,15 @@ nRow <- ggplot2::ggplot_build(p2[[1]])$layout$facet$params$nrow
 expect_equal(nRow, 1)
 expect_equal(nCol, 1)
 
-if (getRversion() < "4.1") {
+## Check that rawPred plot functions for model with geno.decomp.
+expect_silent(p3 <- plot(testFitMod2, plotType = "rawPred", outFile = tmpFile))
 
-  ## Check that rawPred plot functions for model with geno.decomp.
-  expect_silent(p3 <- plot(testFitMod2, plotType = "rawPred", outFile = tmpFile))
-
-  ## Check that rawPred plot functions for model with check.
-  expect_silent(p4 <- plot(testFitMod3, plotType = "rawPred", outFile = tmpFile))
-  expect_silent(p5 <- plot(testFitMod3, plotType = "rawPred", plotChecks = TRUE,
-                           outFile = tmpFile))
-  expect_equal(nrow(p4[[1]]$data), 105)
-  expect_equal(nrow(p5[[1]]$data), 125)
-
-}
+## Check that rawPred plot functions for model with check.
+expect_silent(p4 <- plot(testFitMod3, plotType = "rawPred", outFile = tmpFile))
+expect_silent(p5 <- plot(testFitMod3, plotType = "rawPred", plotChecks = TRUE,
+                         outFile = tmpFile))
+expect_equal(nrow(p4[[1]]$data), 105)
+expect_equal(nrow(p5[[1]]$data), 125)
 
 if (at_home() && FALSE) {
   ## Check that rawPred plot functions for asreml.
@@ -120,8 +116,6 @@ nRow <- ggplot2::ggplot_build(p2[[1]])$layout$facet$params$nrow
 expect_equal(nRow, 1)
 expect_equal(nCol, 1)
 
-if (getRversion() < "4.1") {
-
 ## Check that corrPred plot functions for model with geno.decomp.
 expect_silent(p3 <- plot(testFitMod2, plotType = "corrPred", outFile = tmpFile))
 
@@ -131,8 +125,6 @@ expect_silent(p5 <- plot(testFitMod3, plotType = "corrPred", plotChecks = TRUE,
                          outFile = tmpFile))
 expect_equal(nrow(p4[[1]]$data), 105)
 expect_equal(nrow(p5[[1]]$data), 125)
-
-}
 
 if (at_home() && FALSE) {
   ## Check that rawPred plot functions for asreml.
@@ -242,15 +234,11 @@ expect_error(plot(testFitMod, plotType = "spatial", spaTrend = "sTr"),
 expect_silent(p1 <- plot(testFitMod, plotType = "spatial",
                          spaTrend = "percentage", outFile = tmpFile))
 
-if (getRversion() < "4.1") {
+  ## Check that spatial plot functions for model with check.
+  expect_silent(plot(testFitMod3, plotType = "spatial", outFile = tmpFile))
 
-## Check that spatial plot functions for model with check.
-expect_silent(plot(testFitMod3, plotType = "spatial", outFile = tmpFile))
-
-## Check that effDim plot functions for model with geno.decomp.
-expect_silent(p2 <- plot(testFitMod2, plotType = "spatial", outFile = tmpFile))
-
-}
+  ## Check that effDim plot functions for model with geno.decomp.
+  expect_silent(p2 <- plot(testFitMod2, plotType = "spatial", outFile = tmpFile))
 
 if (at_home()) {
   ## Check that spatial plots cannot be made for asreml when spatial = FALSE.

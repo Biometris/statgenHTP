@@ -1,7 +1,7 @@
 Package: statgenHTP
 Title: High Throughput Phenotyping (HTP) Data Analysis
 Version: 1.0.0
-Date: 2021-02-25
+Date: 2021-03-01
 Authors@R: 
     c(person(given = "Emilie J",
              family = "Millet",
@@ -57,7 +57,7 @@ Imports:
     lubridate,
     reshape2,
     scales,
-    SpATS (>= 1.0-10),
+    SpATS (>= 1.0-11),
     splines
 Suggests: 
    asreml (>= 4.0), 

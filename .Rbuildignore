@@ -17,3 +17,4 @@ testScript*
 ^testData$
 ^gettingStarted$
 ^cran-comments\.md$
+^CRAN-RELEASE$
