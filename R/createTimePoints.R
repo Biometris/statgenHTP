@@ -430,6 +430,7 @@ summary.TP <- function(object,
 #' ggplot objects is invisibly returned.
 #'
 #' @examples
+#' \donttest{
 #' ## Create a TP object containing the data from the Phenovator.
 #' phenoTP <- createTimePoints(dat = PhenovatorDat1,
 #'                             experimentName = "Phenovator",
@@ -468,6 +469,7 @@ summary.TP <- function(object,
 #'      traits = "EffpsII",
 #'      plotType = "raw",
 #'      genotypes = c("G001","G002","check1","check2"))
+#' }
 #'
 #' @family functions for data preparation
 #'

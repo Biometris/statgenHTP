@@ -120,6 +120,7 @@ genotypes to be plotted.}
 }
 
 \examples{
+\donttest{
 ## Create a TP object containing the data from the Phenovator.
 phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             experimentName = "Phenovator",
@@ -158,6 +159,7 @@ plot(phenoTP,
      traits = "EffpsII",
      plotType = "raw",
      genotypes = c("G001","G002","check1","check2"))
+}
 
 }
 \seealso{
