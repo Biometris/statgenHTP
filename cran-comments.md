@@ -5,7 +5,7 @@
 ## Test environments
 
 * local Windows 10 install, R 4.0.4
-* local Debian, R 4.0.2
+* local Debian, R 3.6.3
 * R-hub (devel and release)
 * winbuilder (devel and release)
 

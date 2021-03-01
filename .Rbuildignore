@@ -18,3 +18,4 @@ testScript*
 ^gettingStarted$
 ^cran-comments\.md$
 ^CRAN-RELEASE$
+^\.github$
