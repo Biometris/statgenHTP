@@ -3,7 +3,7 @@ stages:
   - deploy
 
 variables:
-    APT_PKGS: "libcurl4-openssl-dev libssh2-1-dev libssl-dev libxml2-dev zlib1g-dev git build-essential gobjc++ libomp-dev libmagick++-6.q16-dev tcltk diaglog"
+    APT_PKGS: "libcurl4-openssl-dev libssh2-1-dev libssl-dev libxml2-dev zlib1g-dev git build-essential gobjc++ libomp-dev libmagick++-6.q16-dev tk dialog"
     _R_CHECK_FORCE_SUGGESTS_: "false"
     TT_AT_HOME: "false"
 
