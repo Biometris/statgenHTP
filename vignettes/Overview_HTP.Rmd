@@ -217,9 +217,9 @@ To get corrected values and genotypic predictions we want to accurately separate
 
 When SpATS is used for modeling, an extra spatial term is included in the model. This spatial component is composed using the `PSANOVA` function in the SpATS package which uses 2-dimensional smoothing with P-splines as described in @Lee2013 and in @RodAlv2018.
 
-In the example below the model is fitted for a single time point. 
+In the example below the model is fitted for a few points. 
 ```{r fitSp, message=FALSE}
-## Fit a model for a single time points.
+## Fit a model for a few time points.
 modPhenoSp <- fitModels(TP = phenoTPOut, 
                         trait = "EffpsII",
                         timePoints = c(1, 33, 36, 54, 73))
@@ -246,6 +246,7 @@ plot(modPhenoSp,
 
 In the **rawPred** plot the raw data (colored dots, one color per plotId) is plotted overlaid with the predicted values (black dots) from the fitted model. 
 
+*Note: The model has been fitted on a limited number of time points, which is reflected in the plots. For plots using more time point see [this vignette](https://biometris.github.io/statgenHTP/articles/vignettesSite/SpatialModel_HTP.html).*
 ```{r plotSpPred, message=FALSE, fig.height=2, fig.width=6, fig.align = 'center'}
 plot(modPhenoSp, 
      plotType = "rawPred",
