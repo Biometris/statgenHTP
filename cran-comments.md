@@ -1,5 +1,7 @@
 ## Initial release
 
+After earlier submission, the 5 vignettes are now condensed to a single overview vignette. Still takes about a minute to check but I hope this is acceptable. This also reduced the package size from 8Mb to 3.5Mb.
+
 ----
 
 ## Test environments
