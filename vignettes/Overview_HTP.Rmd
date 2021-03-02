@@ -222,7 +222,7 @@ In the example below the model is fitted for a single time point.
 ## Fit a model for a single time points.
 modPhenoSp <- fitModels(TP = phenoTPOut, 
                         trait = "EffpsII",
-                        timePoints = 36) 
+                        timePoints = c(1, 33, 36, 54, 73))
 summary(modPhenoSp)
 ```
 
@@ -232,6 +232,7 @@ Several types of plots can be made for fitted models. A **spatial** plot consist
 
 ```{r plotSpatPerc,  fig.height=4, fig.width=7.3, message=FALSE, eval=TRUE}
 plot(modPhenoSp,
+     timePoints = 36,
      plotType = "spatial",
      spaTrend = "percentage")
 ```
