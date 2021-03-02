@@ -19,3 +19,4 @@ testScript*
 ^cran-comments\.md$
 ^CRAN-RELEASE$
 ^\.github$
+vignettesSite

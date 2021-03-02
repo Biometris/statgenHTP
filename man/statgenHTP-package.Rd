@@ -14,6 +14,15 @@ Phenotypic analysis of data coming from high throughput
     package 'asreml' for the 'ASReml' software, which can be obtained upon 
     purchase from 'VSN' international (<https://www.vsni.co.uk/software/asreml>).
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://biometris.github.io/statgenHTP/index.html}
+  \item \url{https://github.com/Biometris/statgenHTP/}
+  \item Report bugs at \url{https://github.com/Biometris/statgenHTP/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Bart-Jan van Rossum \email{bart-jan.vanrossum@wur.nl} (\href{https://orcid.org/0000-0002-8673-2514}{ORCID})
 
