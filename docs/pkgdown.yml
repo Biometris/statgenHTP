@@ -2,10 +2,10 @@ pandoc: 2.11.2
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
-  Intro_HTP: Intro_HTP.html
-  OutlierSerieObs_HTP: OutlierSerieObs_HTP.html
-  OutlierSingleObs_HTP: OutlierSingleObs_HTP.html
-  ParameterEstimation_HTP: ParameterEstimation_HTP.html
-  SpatialModel_HTP: SpatialModel_HTP.html
-last_built: 2021-02-25T14:56Z
+  vignettesSite/Intro_HTP: Intro_HTP.html
+  vignettesSite/OutlierSerieObs_HTP: OutlierSerieObs_HTP.html
+  vignettesSite/OutlierSingleObs_HTP: OutlierSingleObs_HTP.html
+  vignettesSite/ParameterEstimation_HTP: ParameterEstimation_HTP.html
+  vignettesSite/SpatialModel_HTP: SpatialModel_HTP.html
+last_built: 2021-03-02T08:22Z
 

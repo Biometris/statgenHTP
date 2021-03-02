@@ -1,0 +1,359 @@
+---
+title: "statgenHTP tutorial: 4. Outlier detection for series of observations"
+author: "Emilie Millet, Bart-Jan van Rossum, Isabelle Sanchez, Nadine Hilgert, Fred van Eeuwijk"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    number_sections: yes
+    toc: no
+bibliography: bibliography.bib
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+  )
+options(rmarkdown.html_vignette.check_title = FALSE)
+library(statgenHTP)
+```
+
+# Introduction
+
+This document describes a protocol to detect outlying time courses, observed on a single plant or plot, with examples from various platforms. Traits may be measured directly or indirectly (through image analysis for example). The protocol considers time series on single traits. The protocol is applicable to raw data or data that were corrected spatially before (see [**statgenHTP tutorial: 3. Correction for spatial trends**](SpatialModel_HTP.html)) or on raw data.
+
+## A nonparametric smoothing associated with a PCA
+
+Each time course is modeled by a non-parametric smoothing spline with a fixed number of knots. This is a piecewise cubic polynomial ([@Eubank1999], [@Eilers2015]) fitted  as a mixed model ([@Currie2002]).
+
+```{r PSplineFig, fig.cap='P-spline smoothing with 20 knots and a low penalty, from [@Hugelier2016]. The individual B-splines (with the correct coefficients) are shown (colored lines), as well as their sum representing the fit (thick black line).', out.width='40%', fig.pos='c', echo=FALSE}
+knitr::include_graphics("figures/pspline.png", auto_pdf = TRUE)
+```
+
+The estimates for the spline coefficients are then extracted per time course (typically per plant) and correlations between those coefficient vectors are calculated to identify outlying time courses, *i.e.*, plants. An outlying time course will have low correlation to the majority of time courses. To support the analysis by correlations, a principal component analysis can be done on the plant (time course) by spline coefficient matrix. A PCA plot of the plant scores will show the outlying plants.
+
+For P-splines in a mixed model, the smoothing coefficient is optimized by restricted maximum likelihood but the number of knots is chosen by the user.
+
+------------------------------------------------------------------------
+
+# Principal component analysis on smoothed time series to identify outlying series.
+
+The function `fitSpline()` fits a P-spline per plant for the selected `trait`. The penalty (i.e. the amount of smoothing) will be chosen by REML and the number of knots can be determined by the user using `knots`. In P-spline, the knots are equally spaced and their number can be large. The user should also chose an appropriate minimum number of time points that should be in the data set per plant `minNoTP`. When a plant has less time points than the minimum, it will be skipped from the analysis.
+
+The functions are illustrated with the three example data sets. For more information about the data, see [**statgenHTP tutorial: 1. Introduction**](Intro_HTP.html).
+
+## Example 1
+
+The data from the Phenovator platform have been corrected for spatial trends and time points outliers have been removed (see [*statgenHTP tutorial: 2. Outlier detection for single observations*](OutlierSingleObs_HTP.html) and [**statgenHTP tutorial: 3. Correction for spatial trends**](SpatialModel_HTP.html)). At this stage, the cleaned and corrected data are used:
+
+```{r fitSplineVator, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+data(spatCorrectedVator)  
+# Fit P-splines using on a subset of genotypes.
+subGenoVator <- c("G070", "G160", "G151", "G179", "G175", "G004", "G055")
+
+fit.spline <- fitSpline(inDat = spatCorrectedVator,
+                        trait = "EffpsII_corr",
+                        genotypes = subGenoVator,
+                        knots = 50)
+# Extracting the tables of predicted values and P-spline coefficients
+predDat <- fit.spline$predDat
+coefDat <- fit.spline$coefDat
+```
+
+The object `fit.spline` contains the P-spline model coefficients (`coefDat`) and the predicted value (`pred.value` in the table below), i.e the values predicted using the P-spline model coefficients. Predictions are made on a denser grid of time points: the time points for prediction are calculated as the smallest gap between two time points divided by 9, so dividing the smallest gap in 10 segments. The object `fit.spline` also contains the first and second derivatives (`deriv` and `deriv2` in the table below, see also [**statgenHTP tutorial: 5. Estimation of parameters from time courses**](ParameterEstimation_HTP.html)).
+
+```{r headpredDat, echo=FALSE, message=FALSE, eval=TRUE}
+knitr::kable(head(predDat), align=c('c','c'), booktabs = TRUE)
+```
+
+Conversion to numerical time is required to fit P-splines. To keep the same time scale as in the original `timePoint` column, a numerical transformation of the time points is made using the first time point as origin (column `timeNumber` in the table above).  
+The numerical time can also be provided by the user using the option `useTimeNumber = TRUE`. It allows using thermal time or any other manual conversion. In this example, we provide a new column specified in `timeNumber` with time in hours since first measurement.
+
+```{r fitSplineVatorNum, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+fit.splineNum <- fitSpline(inDat = spatCorrectedVator,
+                           trait = "EffpsII_corr",
+                           genotypes = subGenoVator,
+                           knots = 50,
+                           useTimeNumber = TRUE,
+                           timeNumber = "timeNumHour")
+```
+
+We can then visualize the P-spline predictions and first derivatives for a subset of genotypes or for a subset of plots.
+
+```{r plotSplGeno,  fig.height=4, fig.width=7, message=FALSE, eval=TRUE}
+plot(fit.spline,
+     genotypes = "G160")
+```
+
+```{r plotSplPlot,  fig.height=2.5, fig.width=4, message=FALSE, eval=TRUE}
+plot(fit.spline,
+     plotIds = "c10r29",
+     plotType = "predictions")
+plot(fit.spline,
+     plotIds = "c10r29",
+     plotType = "derivatives")
+```
+
+The object `fit.spline` also contains the values of the P-splines coefficients:
+
+```{r headcoefDat, echo=FALSE, message=FALSE, eval=TRUE}
+knitr::kable(head(coefDat), align=c('c','c'), booktabs = TRUE)
+```
+
+The coefficients are then used to tag suspect time courses with the function `detectSerieOut()`. This function performs a PCA on the coefficients (from data.frame `coefDat`) per `genotype` and calculates the pairwise angle between the plants in the PCA plot. Plants are tagged when the mean angle is above threshold (`thrPca)`, see the lines `reason = angle` in the table below. The function also calculates the pairwise-correlation of the coefficients per genotype. Plants are tagged when the correlation is below a given threshold (`thrCor`), see the lines `reason = mean corr` in the table below.
+
+For obvious reasons, the detection will only work when there are at least three replicates per genotype. Genotypes with less than three replicates will be skipped.
+
+```{r OutVator, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+outVator <- detectSerieOut(corrDat = spatCorrectedVator,
+                           predDat = predDat,
+                           coefDat = coefDat,
+                           trait = "EffpsII_corr",
+                           genotypes = subGenoVator,
+                           thrCor = 0.9,
+                           thrPca = 30)
+```
+
+```{r headOutPoint, echo=FALSE, message=FALSE, eval=TRUE}
+knitr::kable(head(outVator), align=c('c','c'), booktabs = TRUE, row.names=F)
+```
+
+For this subset of genotypes, 4 plants were tagged as outliers:
+
+-   c21r25 and c9r4 had both low correlations and high angles.
+
+The `outVator` can be visualized by selecting genotypes. Here genotype G151 which has plant c21r25 tagged as outlier:
+
+```{r plotOutVator,  fig.height=6, fig.width=6, echo=TRUE, message=FALSE, warning=FALSE}
+plot(outVator, genotypes = "G151")
+```
+
+The figure above contains:
+
+-   (top) A scatter plot of the trait value on the y-axis and time on the x-axis. Points are the raw or corrected data and lines are the P-spline predictions, with one color per plant (in legend). Filled dots represent outlying plants, open dots non-outlying plants.\
+-   (bottom left) A correlation matrix of the plant scores as a heatmap. The scale is centered on 0.9 to see at a glance the outlying plants with low correlations (usually correlation is high between plants).\
+-   (bottom right) A PCA plot of the plant scores. Usually, all plants are grouped and the first axis explains most of the variation. When a plant is outlying, it will be located apart from the other plants on the second axis.
+
+When numerical time was used to fit the splines, it can be used also to plot the outliers using the same options `useTimeNumber = TRUE` and providing the column name in `timeNumber`.
+
+```{r plotOutVatorNum, echo=TRUE, eval=FALSE}
+plot(outVator, 
+     genotypes = "G151",  
+     useTimeNumber = TRUE, 
+     timeNumber = "timeNumHour")
+```
+
+Finally, the outlying plants can be removed from the data set...
+
+```{r rmOutVator}
+spatCorrectedVatorOut <- removeSerieOut(dat = spatCorrectedVator,
+                                        serieOut = outVator)
+# Check for time series outliers in data from which individual outlying 
+# observations were already removed and to which a spatial adjustment has been applied
+head(spatCorrectedVator[spatCorrectedVator$plotId == "c21r25",
+                        c("EffpsII_corr", "EffpsII")])
+# Check the same value in the new corrected data.frame
+head(spatCorrectedVatorOut[spatCorrectedVatorOut$plotId == "c21r25",
+                           c("EffpsII_corr", "EffpsII")])
+```
+
+... and from the predictions.
+
+```{r rmOutVatorspline}
+fit.splineOut <- removeSerieOut(fitSpline = fit.spline,
+                                serieOut = outVator)
+fit.splineNumOut <- removeSerieOut(fitSpline = fit.splineNum,
+                                   serieOut = outVator)
+```
+
+### Impact of the number of knots on the smoothing
+
+For one plant of the same data set, we fit the P-spline with 10 or 50 knots and visualize the predictions to compare the smoothness. We advise the user to perform tests of the number of knots on a subset of plants before running the function on all plants.
+
+*With 10 knots:*
+
+```{r fitSplineVatorKnots10, fig.height=3, fig.width=4, echo=TRUE, warning=FALSE, eval=TRUE}
+sp10k <- fitSpline(inDat = spatCorrectedVator,
+                   trait = "EffpsII_corr",
+                   plotIds = "c10r29",
+                   knots = 10)
+plot(sp10k)
+```
+
+The predicted curve is very smooth and, in this case, it is not following precisely the real data curve shape. When comparing the plants of a same genotype with this curve shape we might not identify the outlying plant.
+
+*With 50 knots:*
+
+```{r fitSplineVatorKnots50, fig.height=3, fig.width=4, echo=TRUE, warning=FALSE, eval=TRUE}
+sp50k <- fitSpline(inDat = spatCorrectedVator,
+                   trait = "EffpsII_corr",
+                   plotIds = "c10r29",
+                   knots = 50)
+plot(sp50k)
+```
+
+The predicted curve is less smooth and follows the actual curve shape. This seems to be a good setting to detect strange curve shape among the replicates of a genotype.
+
+## Example 2
+
+The data from the PhenoArch platform have been corrected for spatial trends and individually outlying observations have been removed (see [**statgenHTP tutorial: 2. Outlier detection for single observations**](OutlierSingleObs_HTP.html) and [**statgenHTP tutorial: 3. Correction for spatial trends**](SpatialModel_HTP.html)). 
+
+```{r fitSplineArch, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+data(spatCorrectedArch)  
+subGenoArch <- c("GenoA01", "GenoA02", "GenoA34", "GenoA04", "GenoB01", "GenoB02", "GenoB07")
+
+fit.splineArch <- fitSpline(inDat = spatCorrectedArch, 
+                            trait = "LA_Estimated_corr",
+                            genotypes = subGenoArch,
+                            knots = 30,
+                            minNoTP = 18)
+
+predDatArch <- fit.splineArch$predDat
+coefDatArch <- fit.splineArch$coefDat
+```
+
+```{r plotArch,  fig.height=3, fig.width=4, message=FALSE, eval=TRUE}
+plot(fit.splineArch,
+     plotIds = "c11r9",
+     plotType =  "predictions")
+plot(fit.splineArch,
+     plotIds = "c11r9",
+     plotType =  "derivatives")
+```
+
+Here, the `geno.decomp` option is also to split the plants of each genotype those under well watered and water deficit conditions. The outlier detection is run per treatment with a narrow angle threshold
+
+```{r OutArch, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+outArch <- detectSerieOut(corrDat = spatCorrectedArch,
+                          predDat = predDatArch,
+                          coefDat = coefDatArch,
+                          trait = "LA_Estimated_corr",
+                          genotypes = subGenoArch,
+                          thrCor = 0.9,
+                          thrPca = 6,
+                          geno.decomp = "geno.decomp")
+```
+
+
+```{r headOutPointArch, echo=FALSE, message=FALSE, eval=TRUE}
+knitr::kable(head(outArch), align=c('c','c'), booktabs = TRUE, row.names=F)
+```
+
+```{r plotOutArch,  fig.height=6, fig.width=6, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+plot(outArch, genotypes = "GenoB07")
+```
+
+```{r rmOutArch}
+spatCorrectedArchOut <- removeSerieOut(dat = spatCorrectedArch,
+                                       serieOut = outArch)
+# Check for time series outliers in data from which individual outlying 
+# observations were already removed and to which a spatial adjustment has been applied
+head(spatCorrectedArch[spatCorrectedArch$plotId=="c7r2",
+                       c("LA_Estimated_corr","LA_Estimated")])
+# Check the same value in the new corrected data.frame
+head(spatCorrectedArchOut[spatCorrectedArchOut$plotId=="c7r2",
+                          c("LA_Estimated_corr","LA_Estimated")])
+```
+
+## Example 3
+
+The data from the RootPhAir platform have not been corrected for spatial trends but individually outlying observations have been removed (see [**statgenHTP tutorial: 2. Outlier detection for single observations**](OutlierSingleObs_HTP.html)). 
+
+```{r fitSplineRoot, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+subGenoRoot <- c( "2", "6", "8", "9", "10", "520", "522")
+fit.splineRoot <- fitSpline(inDat = noCorrectedRoot,
+                            trait = "tipPos_y",
+                            knots = 10,
+                            genotypes = subGenoRoot,
+                            minNoTP = 0,
+                            useTimeNumber = TRUE,
+                            timeNumber = "thermalTime")
+
+predDatRoot <- fit.splineRoot$predDat
+coefDatRoot <- fit.splineRoot$coefDat
+row.names(coefDatRoot) <- 1:nrow(coefDatRoot)
+```
+
+
+```{r plotRoot,  fig.height=4, fig.width=7, message=FALSE, eval=TRUE}
+plot(fit.splineRoot,
+     genotypes = "2")
+```
+
+```{r OutRoot, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+outRoot <- detectSerieOut(corrDat = noCorrectedRoot,
+                          predDat = predDatRoot,
+                          coefDat = coefDatRoot,
+                          trait = "tipPos_y",
+                          genotypes = subGenoRoot,
+                          thrCor = 0.9,
+                          thrPca = 20)
+```
+
+```{r plotRootOut,  fig.height=6, fig.width=7, message=FALSE, eval=TRUE}
+plot(outRoot,
+     genotypes = "10")
+```
+
+```{r rmOutRoot}
+noCorrectedRootOut <- removeSerieOut(dat = noCorrectedRoot,
+                                     serieOut = outRoot)
+# Check one value annotated as outlier in the original corrected data.frame
+head(noCorrectedRoot[noCorrectedRoot$plotId == "A_29_2", "tipPos_y"])
+# Check the same value in the new corrected data.frame
+head(noCorrectedRootOut[noCorrectedRootOut$plotId == "A_29_2", "tipPos_y"])
+```
+
+------------------------------------------------------------------------
+
+# Detection of outlier plants on a multi-criteria basis, with expert rules
+
+An outlier plant is defined as a biological replicate deviating from the overall distribution of plants on a multi-criteria basis, regardless of the quality of measurements. Detecting outlier plants can be done by monitoring a single criterion, such as plant height or biomass. In this case, a procedure for detecting outlying series of observations should be used, as discussed in the previous sections. But taking into account only one criterion can sometimes be restrictive in deciding whether a plant is outlier or not. A multi-criteria approach will then be more relevant. A multi-criteria method considers several traits jointly, with rules set by experts depending on the species. We describe below the approach followed on a maize experiment, see [@AlvarezPrado2019].
+
+## Rules in the case of maize
+
+We consider two categories of potentially outlier plants, namely apparently **too small** or **too large** plants. For the detection of unexpectedly small plants with likely physiological disorders, the progression of leaf stages was considered in addition to the time course of shoot biomass. Indeed, leaf appearance rate carries a non-redundant information compared with biomass (confirmed by standard correlation calculations). It usually presents a low plant-to-plant variability except in case of severe disorders, and is relatively insensitive to environmental cues other than temperature. For the detection of unexpectedly large plants, potentially associated with wrong genotype identification, combining plant height and biomass can result in an efficient identification.
+
+## Statistical modelling: a mixed model at a given time (defined by the expert)
+
+Each of the selected traits was measured (or estimated) at a specific time (for example 24 d20°C for the PhenoArch data set), time just before the beginning of the differentiation of the two watering treatments. This allows to have more replicates per genotype. It also reduces the dimensionality of the time courses to only one point, which will simplify the statistical models to be implemented later.
+
+```{r MultiTraitFig, fig.cap='Schematic representation of a multi-trait approach for detection of outlier plants (case of maize), from @AlvarezPrado2019.', out.width='90%', fig.pos='c', echo=FALSE}
+knitr::include_graphics("figures/multi_trait_approach.png", auto_pdf = TRUE)
+```
+
+As shown above, traits are modeled with a mixed model that considers fixed experiment (Env) effect and random genotypic (G), replicate (R) and spatial (C) effects. The model can be fitted with the SpATS R-package, (@RodAlv2018). Residuals (deviations) can be directly computed from the fitting, with a confidence interval. Plants, whose deviations for the criteria of leaf appearance rate and biomass are less than the lower bound of this interval, are considered as **outlier small plants**. Plants, whose deviations for the criteria of plant height and biomass are greater than the upper bound of the confidence interval, are considered as **outlier large plants**.
+
+## Implementation in statgenHTP
+
+Mixed models are fitted with the R-package SpATS through the use of the `detectSingleOutMaize` function, which was developed specifically for the maize data, as described above. This function fits a mixed model for each parameter, and tests whether the residual deviations are lower (for the criteria considered for small plants) or higher (for the criteria considered for big plants) than a specified threshold.
+
+```{r maizPl}
+phenoTParch <- createTimePoints(dat = PhenoarchDat1,
+                                experimentName = "Phenoarch",
+                                genotype = "geno",
+                                timePoint = "Time",
+                                plotId = "pos",
+                                rowNum = "Row",
+                                colNum = "Col")
+
+test2 <- detectSingleOutMaize(phenoTParch, 
+                              timeBeforeTrt = "2017-04-27",
+                              trait1 = "Biomass_Estimated",
+                              trait2 = "Height_Estimated",
+                              trait3 = "phyllocron")
+```
+
+The `detectSingleOutMaize` returns a list of 3 elements :
+
+-   modDat: a data.frame with the used data set, the fitted values and residuals calculated by the models, and the plants flagged as outlier
+-   smallPlants: a data.frame of the "small" plants detected as outliers
+-   bigPlants: a data.frame of the "big" plants detected as outliers
+
+```{r headsmallPl, echo=FALSE, message=FALSE, eval=TRUE}
+knitr::kable(test2$smallPlants[1:6, 1:5], align=c('c','c'), booktabs = TRUE)
+```
+
+------------------------------------------------------------------------
+
+## References

@@ -34,11 +34,11 @@ articles:
       The vignettes provide a full description of the statgenHTP package
       including some fully worked examples.
     contents:
-      - Intro_HTP
-      - OutlierSingleObs_HTP
-      - SpatialModel_HTP
-      - OutlierSerieObs_HTP
-      - ParameterEstimation_HTP
+      - vignettesSite/Intro_HTP
+      - vignettesSite/OutlierSingleObs_HTP
+      - vignettesSite/SpatialModel_HTP
+      - vignettesSite/OutlierSerieObs_HTP
+      - vignettesSite/ParameterEstimation_HTP
 
 reference:
 - title: Data preparation

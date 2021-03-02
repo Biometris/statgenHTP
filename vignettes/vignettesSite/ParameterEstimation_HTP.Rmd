@@ -1,0 +1,205 @@
+---
+title: "statgenHTP tutorial: 5. Estimation of parameters from time courses"
+author: "Emilie Millet, Bart-Jan van Rossum, Martin Boer, Fred van Eeuwijk"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    number_sections: yes
+    toc: no
+bibliography: bibliography.bib
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+  )
+options(rmarkdown.html_vignette.check_title = FALSE)
+library(statgenHTP)
+library(ggplot2)
+```
+
+# Introduction
+
+This document presents the final step of the HTP data analysis: extracting interesting parameters from the modeled time courses [@Brien2020]. For example, in the second data set from the PhenoArch platform, the maximum leaf area (from the P-splines) or the maximum leaf growth rate (from the first derivatives) are relevant parameters (see figure below). We could assess their variability in the genotypes and the difference between treatments, *e.g.* has the water scenario decreased the maximum leaf area? 
+
+```{r PSplineDerivArchFig, out.width='80%', fig.pos='c', echo=FALSE}
+knitr::include_graphics("figures/psplinederiv_Arch.png", auto_pdf = TRUE)
+```
+
+It is also possible to specify a period for the parameter estimation. For example, in the first data set from the Phenovator platform, we can select the period with the high light intensity (see figure below) and estimate the maximum slope during that period (from the first derivatives). This could be interpreted as a recovery rate of the photosystem II efficiency. 
+
+```{r PSplineDerivVatorFig, out.width='80%', fig.pos='c', echo=FALSE}
+knitr::include_graphics("figures/psplinederiv_Vator.png", auto_pdf = TRUE)
+```
+
+These parameters could then be further analyzed, for example in a GxE analysis (see [*statgenGxE*](https://biometris.github.io/statgenGxE/index.html)), or a genetic analysis (see [*statgenGWAS*](https://biometris.github.io/statgenGWAS/index.html)).
+
+The functions described in this tutorial can be applied to corrected data, genotypic means (BLUEs or BLUPS) (see [**statgenHTP tutorial: 3. Correction for spatial trends**](SpatialModel_HTP.html)) or on raw data. It allows estimating maximum, minimum, mean, area under the curve (auc) or percentile using predicted values, first or second derivative, during a given period or for the whole time course. 
+
+------------------------------------------------------------------------
+
+# Estimation of parameters from curves
+
+## Example 1
+
+We will use the `fit.splineNumOut` previously created (see [**statgenHTP tutorial: 4. Outlier detection for series of observations**](OutlierSerieObs_HTP.html)). It contains the P-spline prediction on a subset of plants without the time course outliers. We will estimate the area under the curve of the trait:
+
+```{r fitSplineVatorNum, echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE}
+subGenoVator <- c("G070", "G160", "G151", "G179", "G175", "G004", "G055")
+fit.splineNum <- fitSpline(inDat = spatCorrectedVator,
+                           trait = "EffpsII_corr",
+                           genotypes = subGenoVator,
+                           knots = 50,
+                           useTimeNumber = TRUE,
+                           timeNumber = "timeNumHour")
+predDat <- fit.splineNum$predDat
+coefDat <- fit.splineNum$coefDat
+outVator <- detectSerieOut(corrDat = spatCorrectedVator,
+                           predDat = predDat,
+                           coefDat = coefDat,
+                           trait = "EffpsII_corr",
+                           genotypes = subGenoVator,
+                           thrCor = 0.9,
+                           thrPca = 30) 
+fit.splineNumOut <- removeSerieOut(fitSpline = fit.splineNum,
+                                   serieOut = outVator)
+```
+
+
+```{r paramVator, fig.height=2, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+subGenoVator <- c("G070", "G160", "G151", "G179", "G175", "G004", "G055")
+paramVator1 <- 
+  estimateSplineParameters(HTPSpline = fit.splineNumOut,
+                           estimate = "predictions",
+                           what = "AUC",
+                           timeMin = 330,
+                           timeMax = 432,
+                           genotypes = subGenoVator)
+
+ggplot(paramVator1, aes(x = genotype, y = AUC_predictions)) + 
+  geom_boxplot(na.rm = TRUE) +
+  ylab("AUC of EffPsII") +
+  theme_classic()
+```
+
+For this subset of genotypes, there is a variability in AUC of the psII efficiency. This could be used in genetic analysis and maybe to perform a GWAS.
+
+Another example is using the derivative during the recovery period (at the end of the time course, so after the light change) to get the maximum slope, or the maximum rate of the psII per time unit during this period.
+
+```{r paramVator2, fig.height=2, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+paramVator2 <-
+  estimateSplineParameters(HTPSpline = fit.splineNumOut,
+                           estimate = "derivatives",
+                           what = "max",
+                           timeMin = 210,
+                           timeMax = 312,
+                           genotypes = subGenoVator)
+
+ggplot(paramVator2, aes(x = genotype, y = max_derivatives)) + 
+  geom_boxplot(na.rm = TRUE) +
+  ylab("Max recovery slope") +
+  theme_classic()
+```
+
+> Note: when "min" or "max" is selected, the output also contains the parameter occurence time point, as numerical `timeNumber` and date `timePoint`. See in the table below:
+
+```{r headParam2, echo=FALSE, message=FALSE, eval=TRUE}
+knitr::kable(head(paramVator2), align=c('c','c'), booktabs = TRUE)
+```
+
+
+
+## Example 2
+
+For this example, we will use the genotypic prediction (BLUPs, see [**statgenHTP tutorial: 3. Correction for spatial trends**](SpatialModel_HTP.html)) available in the `spatPredArch` data set. We will fit P-splines at the genotypic level using the `geno.decomp` levels defined in the spatial model.
+
+```{r fitSplineArch,  fig.height=3, fig.width=6, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+data(spatPredArch)  
+fit.splineGenoArch <- fitSpline(inDat = spatPredArch, 
+                                trait = "predicted.values",
+                                knots = 15,
+                                minNoTP = 18)
+
+plot(fit.splineGenoArch, 
+     genotypes = "GenoA36")
+```
+
+We can estimate the maximum value of the leaf area from the predicted P-splines:
+
+```{r paramArch1, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+paramArch1 <-
+  estimateSplineParameters(HTPSpline = fit.splineGenoArch,
+                           estimate = "predictions",
+                           what = "max")
+```
+
+
+```{r paramArch1fig, fig.height=2, fig.width=6, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+ggplot(paramArch1, aes(max_predictions)) + 
+  geom_histogram(binwidth = 0.015) +
+  theme_classic() +
+  facet_grid(. ~ geno.decomp, scales="free_x",space = "free_x")
+```
+
+
+## Example 3
+
+For this example, we will use the raw data from the RootPhAir, corrected for individually outlying observations (see [**statgenHTP tutorial: 2. Outlier detection for single observations**](OutlierSingleObs_HTP.html)) and time course outliers (see [**statgenHTP tutorial: 4. Outlier detection Time course**](OutlierSerieObs_HTP.html)). We will fit P-splines at the plant level on a subset of genotypes.
+
+```{r rmOutRoot, echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE}
+subGenoRoot <- c( "2", "6", "8", "9", "10", "520", "522")
+fit.splineRoot <- fitSpline(inDat = noCorrectedRoot,
+                            trait = "tipPos_y",
+                            knots = 10,
+                            genotypes = subGenoRoot,
+                            minNoTP = 0,
+                            useTimeNumber = TRUE,
+                            timeNumber = "thermalTime")
+
+predDatRoot <- fit.splineRoot$predDat
+coefDatRoot <- fit.splineRoot$coefDat
+
+outRoot <- detectSerieOut(corrDat = noCorrectedRoot,
+                          predDat = predDatRoot,
+                          coefDat = coefDatRoot,
+                          trait = "tipPos_y",
+                          genotypes = subGenoRoot,
+                          thrCor = 0.9,
+                          thrPca = 25)
+
+outRootFinal <- outRoot[outRoot$plotId %in% c("A_03_5","A_29_2"),]
+noCorrectedRootOut <- removeSerieOut(dat = noCorrectedRoot,
+                                     serieOut = outRootFinal)
+noCorrectedRootOut <- noCorrectedRootOut[!is.na(noCorrectedRootOut$tipPos_y),]
+noCorrectedRootOut <- droplevels(noCorrectedRootOut)
+```
+
+```{r fitSplineRoot, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+subGenoRoot <- c( "2","6","8","9","10","520","522")
+fit.splineRootOut <- fitSpline(inDat = noCorrectedRootOut,
+                               trait = "tipPos_y",
+                               knots = 10,
+                               genotypes = subGenoRoot,
+                               minNoTP = 0,
+                               useTimeNumber = TRUE,
+                               timeNumber = "thermalTime")
+```
+
+We will then estimate the mean growth rate using `what = "mean"` for the subset of genotypes:
+```{r paramRoot1, fig.height=2, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+paramRoot1 <-
+  estimateSplineParameters(HTPSpline = fit.splineRootOut,
+                           estimate = "derivatives",
+                           what = "mean")
+
+ggplot(paramRoot1, aes(x = as.factor(genotype), y = mean_derivatives)) + 
+  geom_boxplot(na.rm = TRUE) +
+  ylab("Max root tip growth rate") +
+  xlab("genotype") +
+  theme_classic()
+```
+
+------------------------------------------------------------------------
+
+## References
