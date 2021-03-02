@@ -34,11 +34,11 @@ The aim of this package is to provide a suit of functions to (1) detect outliers
 
 The overall structure of the package is in 5 main parts:
 
-1.  Data description and preparation - *statgenHTP tutorial: 1. Introduction, data description and preparation*
-2.  Outlier detection: single observations - [*statgenHTP tutorial: 2. Outlier detection for single observations*](OutlierSingleObs_HTP.html)
-3.  Correction for spatial trends - [*statgenHTP tutorial: 3. Correction for spatial trends*](SpatialModel_HTP.html)
-4.  Outlier detection: series of observations - [*statgenHTP tutorial: 4. Outlier detection for series of observations*](OutlierSerieObs_HTP.html)
-5.  Parameter estimation - [*statgenHTP tutorial: 5. Estimation of parameters for time courses*](ParameterEstimation_HTP.html)
+1.  Data description and preparation - [*statgenHTP tutorial: 1. Introduction, data description and preparation*](https://biometris.github.io/statgenHTP/articles/vignettesSite/Intro_HTP.html)
+2.  Outlier detection: single observations - [*statgenHTP tutorial: 2. Outlier detection for single observations*](https://biometris.github.io/statgenHTP/articles/vignettesSite/OutlierSingleObs_HTP.html)
+3.  Correction for spatial trends - [*statgenHTP tutorial: 3. Correction for spatial trends*](https://biometris.github.io/statgenHTP/articles/vignettesSite/SpatialModel_HTP.html)
+4.  Outlier detection: series of observations - [*statgenHTP tutorial: 4. Outlier detection for series of observations*](https://biometris.github.io/statgenHTP/articles/vignettesSite/OutlierSerieObs_HTP.html)
+5.  Parameter estimation - [*statgenHTP tutorial: 5. Estimation of parameters for time courses*](https://biometris.github.io/statgenHTP/articles/vignettesSite/ParameterEstimation_HTP.html)
 
 This document gives an overview of these five steps and how to use the package to perform an analysis. For a more in depth description of the data, a theoretical background for the different steps and examples with additional data sets see the package [website](https://biometris.github.io/statgenHTP/).
 
@@ -127,7 +127,7 @@ plot(phenoTP,
      showGeno = TRUE)
 ```
 
-We can visualize the raw data of a given trait on the layout, as a heatmap. This type of plot gives a first indication of the spatial variability at a given time point. This can be further investigated with the spatial modeling (see [*statgenHTP tutorial: 3. Correction for spatial trends*](SpatialModel_HTP.html)).
+We can visualize the raw data of a given trait on the layout, as a heatmap. This type of plot gives a first indication of the spatial variability at a given time point. This can be further investigated with the spatial modeling.
 
 ```{r layoutPlotheatmap, fig.height=7, fig.width=8, fig.align = 'center'}
 ## Plot the layout for the third time point.
@@ -195,7 +195,7 @@ knitr::kable(head(resuVatorHTP), align = c('c','c'), padding = 0)
 
 The predicted values and the confidence interval can be visualized using the `plot` function. 
 
-```{r plotOutVatorFA1, fig.height=3, fig.width=5, fig.align = 'center'}
+```{r plotOutVatorFA1, fig.height=1.5, fig.width=5, fig.align = 'center'}
 plot(resuVatorHTP,
      outOnly = FALSE)
 ```
@@ -222,7 +222,7 @@ In the example below the model is fitted for a single time point.
 ## Fit a model for a single time points.
 modPhenoSp <- fitModels(TP = phenoTPOut, 
                         trait = "EffpsII",
-                        timePoints = 33) 
+                        timePoints = 36) 
 summary(modPhenoSp)
 ```
 
