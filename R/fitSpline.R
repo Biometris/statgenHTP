@@ -267,6 +267,8 @@ fitSpline <- function(inDat,
 #' @param plotIds A character vector indicating the plotIds for which spline
 #' components should be plotted.
 #'
+#' @return A list of object of class ggplot is invisibly returned.
+#'
 #' @examples
 #' ## The data from the Phenovator platform have been corrected for spatial
 #' ## trends and outliers for single observations have been removed.
@@ -447,6 +449,8 @@ plot.HTPSpline <- function(x,
 #' @param plotIds A character vector indicating the plotIds for which
 #' estimates should be extracted. If \code{NULL}, estimates will be extracted
 #' for all plotIds for which splines where fitted.
+#'
+#' @return A data.frame containing the estimated parameters.
 #'
 #' @examples
 #' ## Run the function to fit P-splines on a subset of genotypes.

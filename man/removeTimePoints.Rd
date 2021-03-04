@@ -15,6 +15,10 @@ value has to be an exact match to one of the existing timePoints. When using
 a number it will be matched by its number ("timeNumber") in the timePoints
 attribute of the TP object.}
 }
+\value{
+An object of class TP, the input with the selected time points
+removed.
+}
 \description{
 Function for removing selected time points from an object of class TP.
 }

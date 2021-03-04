@@ -262,6 +262,9 @@ createTimePoints <- function(dat,
 #' a number it will be matched by its number ("timeNumber") in the timePoints
 #' attribute of the TP object.
 #'
+#' @return An object of class TP, the input with the selected time points
+#' removed.
+#'
 #' @examples
 #' ## Create a TP object containing the data from the Phenovator.
 #' phenoTP <- createTimePoints(dat = PhenovatorDat1,
@@ -303,6 +306,8 @@ removeTimePoints <- function(TP,
 #'
 #' @param object An object of class TP.
 #' @param ... Ignored.
+#'
+#' @return No return value, a summary is printed.
 #'
 #' @examples
 #' ## Create a TP object containing the data from the Phenovator.
@@ -884,6 +889,9 @@ plot.TP <- function(x,
 #'                                                "check3", "check4"))
 #' ## Convert phenoTP to data.frame.
 #' phenoDat <- as.data.frame(phenoTP)
+#'
+#' @return A data.frame containing the data.frames for all time points in the
+#' TP object bound together.
 #'
 #' @family functions for data preparation
 #'

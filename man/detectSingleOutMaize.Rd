@@ -30,6 +30,12 @@ existing timePoints. When using a number it will be matched by its number
 
 \item{thr}{A numeric value indicating the threshold.}
 }
+\value{
+A list with three data.frames, \code{modDat} containing the
+data used for fitting the models, \code{smallPlants} containing the plants
+identified as small plants and \code{bigPlants} containing the plants
+identified as big plants.
+}
 \description{
 Function to detect plant outliers in a temporal lattice experiment on Maize
 which can be extended to other experiment types.

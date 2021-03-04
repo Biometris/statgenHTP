@@ -467,6 +467,9 @@ angle <- function(M) {
 #' @param trait A character string indicating the trait for which valid
 #' observations should be counted.
 #'
+#' @return A named numerical vector with he number of valid observations per
+#' time point .
+#'
 #' @examples
 #' ## Create a TP object containing the data from the Phenovator.
 #' phenoTP <- createTimePoints(dat = PhenovatorDat1,
@@ -508,6 +511,9 @@ countValid <- function(TP,
 #' observations should be checked. If \code{NULL} valid observations are
 #' counted for all plotIds in TP.
 #'
+#' @return A named numerical vector with he number of valid observations per
+#' plotId.
+#'
 #' @examples
 #' ## Create a TP object containing the data from the Phenovator.
 #' phenoTP <- createTimePoints(dat = PhenovatorDat1,
@@ -520,7 +526,7 @@ countValid <- function(TP,
 #'                             addCheck = TRUE,
 #'                             checkGenotypes = c("check1", "check2",
 #'                                                "check3", "check4"))
-#' ## Count valid observations for EffpsII for a suset of plots.
+#' ## Count valid observations for EffpsII for a subset of plots.
 #' countValidPlot(phenoTP,
 #'                trait = "EffpsII",
 #'                plotIds = c("c12r22", "c24r41", "c14r32"))

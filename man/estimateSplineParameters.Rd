@@ -43,6 +43,9 @@ for all genotypes for which splines where fitted.}
 estimates should be extracted. If \code{NULL}, estimates will be extracted
 for all plotIds for which splines where fitted.}
 }
+\value{
+A data.frame containing the estimated parameters.
+}
 \description{
 Function for extracting parameter estimates from fitted splines on a
 specified interval.

@@ -11,6 +11,10 @@
 
 \item{...}{Ignored.}
 }
+\value{
+A data.frame containing the data.frames for all time points in the
+TP object bound together.
+}
 \description{
 Function for converting an object of class TP to a data.frame.
 }

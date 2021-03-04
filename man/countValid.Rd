@@ -12,6 +12,10 @@ countValid(TP, trait)
 \item{trait}{A character string indicating the trait for which valid
 observations should be counted.}
 }
+\value{
+A named numerical vector with he number of valid observations per
+time point .
+}
 \description{
 Count valid observations per time point for a given trait.
 }

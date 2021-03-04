@@ -20,6 +20,9 @@ detected. If \code{NULL}, all plotIds in \code{TP} are used.}
 \code{FALSE} only a (list of) ggplot object(s) is invisibly returned. Ignored if
 \code{outFile} is specified.}
 }
+\value{
+A list of ggplot objects is invisibly returned.
+}
 \description{
 Plot the fitted local regression, confidence intervals and detected outliers
 for each plotId.

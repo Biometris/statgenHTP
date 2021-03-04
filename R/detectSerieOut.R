@@ -347,6 +347,8 @@ detectSerieOut <- function(corrDat,
 #' @param timeNumber If \code{useTimeNumber = TRUE}, a character vector
 #' indicating the column containing the numerical time to use.
 #'
+#' @return A list of ggplot objects is invisibly returned.
+#'
 #' @examples
 #' \donttest{
 #' ## The data from the Phenovator platform have been corrected for spatial

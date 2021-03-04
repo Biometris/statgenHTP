@@ -16,6 +16,10 @@ observations should be counted.}
 observations should be checked. If \code{NULL} valid observations are
 counted for all plotIds in TP.}
 }
+\value{
+A named numerical vector with he number of valid observations per
+plotId.
+}
 \description{
 Count valid observations per plotId for a given trait.
 }
@@ -31,7 +35,7 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
                             addCheck = TRUE,
                             checkGenotypes = c("check1", "check2",
                                                "check3", "check4"))
-## Count valid observations for EffpsII for a suset of plots.
+## Count valid observations for EffpsII for a subset of plots.
 countValidPlot(phenoTP,
                trait = "EffpsII",
                plotIds = c("c12r22", "c24r41", "c14r32"))

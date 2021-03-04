@@ -28,6 +28,8 @@ createFitMod <- function(models,
 #' @param object An object of class fitMod.
 #' @param ... Ignored.
 #'
+#' @return No return value, a summary is printed.
+#'
 #' @examples
 #' \donttest{
 #' ## Using the first example dataset (PhenovatorDat1):

@@ -18,6 +18,9 @@ column outlier is present, all observations in singleOut will be set to NA.}
 \item{trait}{The trait that should be set to NA. Can be ignored when using
 the output of \code{detectSingleOut} as input.}
 }
+\value{
+An object of class TP, the input with the outlier replaced by NA.
+}
 \description{
 Function for replacing outliers for single observations by NA.
 }

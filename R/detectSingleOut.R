@@ -171,6 +171,8 @@ detectSingleOut <- function(TP,
 #' @param ... Ignored.
 #' @param outOnly Should only plots containing outliers be plotted?
 #'
+#' @return A list of ggplot objects is invisibly returned.
+#'
 #' @examples
 #' ## Create a TP object containing the data from the Phenovator.
 #' PhenovatorDat1 <- PhenovatorDat1[!PhenovatorDat1$pos %in%
@@ -292,7 +294,9 @@ plot.singleOut <- function(x,
 #' column outlier is present, all observations in singleOut will be set to NA.
 #' @param trait The trait that should be set to NA. Can be ignored when using
 #' the output of \code{detectSingleOut} as input.
-
+#'
+#' @return An object of class TP, the input with the outlier replaced by NA.
+#'
 #' @examples
 #' ## Create a TP object containing the data from the Phenovator.
 #' PhenovatorDat1 <- PhenovatorDat1[!PhenovatorDat1$pos %in%

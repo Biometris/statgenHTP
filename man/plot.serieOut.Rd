@@ -35,6 +35,9 @@ default title is added to the plot depending on \code{plotType}.}
 \code{FALSE} only a (list of) ggplot object(s) is invisibly returned. Ignored if
 \code{outFile} is specified.}
 }
+\value{
+A list of ggplot objects is invisibly returned.
+}
 \description{
 Plot the fitted spline, correlation matrix and PCA biplot for each of the
 genotypes. Outlying series of observations are shown as filled dots in the

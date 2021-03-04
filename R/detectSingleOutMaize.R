@@ -22,6 +22,11 @@
 #' @param trait3 A character vector indicating the third trait to model in TP.
 #' @param thr A numeric value indicating the threshold.
 #'
+#' @return A list with three data.frames, \code{modDat} containing the
+#' data used for fitting the models, \code{smallPlants} containing the plants
+#' identified as small plants and \code{bigPlants} containing the plants
+#' identified as big plants.
+#'
 #' @examples
 #' \donttest{
 #' ## Create a TP object containing the data from the PhenoArch.

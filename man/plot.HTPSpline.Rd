@@ -44,6 +44,9 @@ plots should be written. If \code{NULL}, no file is written.}
 \item{outFileOpts}{A named list of extra options for the pdf outfile, e.g.
 width and height. See \code{\link[grDevices]{pdf}} for all possible options.}
 }
+\value{
+A list of object of class ggplot is invisibly returned.
+}
 \description{
 Plot the results of a fitted spline.
 }

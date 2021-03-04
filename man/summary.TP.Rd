@@ -11,6 +11,9 @@
 
 \item{...}{Ignored.}
 }
+\value{
+No return value, a summary is printed.
+}
 \description{
 Function for creating a short summary of the contents of a \code{TP} object.
 The summary consists of the name of the experiment, the number of time
