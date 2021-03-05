@@ -40,9 +40,9 @@ jobs:
         run: |
           install.packages(c("remotes"))
           remotes::install_deps(dependencies = NA)
-          remotes::install_cran("covr")
+          remotes::install_cran(c("covr", "tinytest"))
         shell: Rscript {0}
 
       - name: Test coverage
-        run: covr::codecov()
+        run: covr::codecov(type = "none", code = "tinytest::run_test_dir(at_home = FALSE)")
         shell: Rscript {0}
