@@ -1,6 +1,6 @@
-## Initial release
+## Update to fix additional issues in checks
 
-After earlier submission, added return values to the documentation for the functions where this wasn't done.
+Fixed test issues with noLD, OpenBLAS and MKL
 
 ----
 
@@ -21,17 +21,12 @@ There were 2 NOTES:
 
   * checking CRAN incoming feasibility ... NOTE    
   
-    New submission
-  
-    Possibly mis-spelled words in DESCRIPTION:
-    EPPN (40:16)
-    HTP (2:37, 38:18)
-    Phenotyping (2:24)
-    phenotyping (38:5)
-
-    - These are all spelled correctly.
-
-    Suggests or Enhances not in mainstream repositories: asreml
+       Days since last update: 3
+       
+    - In the initial version of the package one test didn't pass the noLD, OpenBLAS and MKL checks after being accepted. This is fixed now.
+   
+   Suggests or Enhances not in mainstream repositories:
+     asreml
 
     - asreml is a commercial R package that is used as one of the alternatives for modeling data.
 
