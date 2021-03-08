@@ -50,12 +50,12 @@ expect_equal(setdiff(colnames(corr3), colnames(corr1)), "geno.decomp")
 ## Check that results are as expected.
 ## Function is complicated and not always obvious so a thorough check is needed.
 
-expect_equal_to_reference(corr1, file = "corr1Comp", tolerance = 1e-6)
-expect_equal_to_reference(corr2, file = "corr2Comp", tolerance = 1e-6)
-expect_equal_to_reference(corr3, file = "corr3Comp", tolerance = 1e-6)
-expect_equal_to_reference(corr4, file = "corr4Comp", tolerance = 1e-6)
-expect_equal_to_reference(corr5, file = "corr5Comp", tolerance = 1e-6)
-expect_equal_to_reference(corr6, file = "corr6Comp", tolerance = 1e-6)
+expect_equal_to_reference(corr1, file = "corr1Comp", tolerance = 1e-5)
+expect_equal_to_reference(corr2, file = "corr2Comp", tolerance = 1e-5)
+expect_equal_to_reference(corr3, file = "corr3Comp", tolerance = 1e-5)
+expect_equal_to_reference(corr4, file = "corr4Comp", tolerance = 1e-5)
+expect_equal_to_reference(corr5, file = "corr5Comp", tolerance = 1e-5)
+expect_equal_to_reference(corr6, file = "corr6Comp", tolerance = 1e-5)
 
 ## Check that results can be written to a file.
 tmpFile <- tempfile(fileext = ".csv")
