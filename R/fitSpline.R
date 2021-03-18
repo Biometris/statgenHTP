@@ -301,7 +301,8 @@ plot.HTPSpline <- function(x,
                            outFile = NULL,
                            outFileOpts = NULL) {
   plotType <- match.arg(plotType)
-  plotVar <- if (plotType == "predictions") "pred.value" else "deriv"
+  plotVar <- if (plotType == "predictions") "pred.value" else if
+  (plotType == "derivatives") "deriv" else "deriv2"
   modDat <- attr(x, which = "modDat")
   trait <- attr(x, which = "trait")
   fitLevel <- attr(x, which = "fitLevel")
@@ -362,8 +363,10 @@ plot.HTPSpline <- function(x,
   if (is.null(title)) {
     if (plotType == "predictions") {
       title <- "Corrected data and P-spline prediction"
-    } else {
+    } else if (plotType == "derivatives") {
       title <- "P-spline first derivatives"
+    } else {
+      title <- "P-spline second derivatives"
     }
   }
   timeVar <- if (useTimeNumber) "timeNumber" else "timePoint"
