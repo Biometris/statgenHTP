@@ -289,7 +289,7 @@ detectSerieOut <- function(corrDat,
       thrPcaPlant <- thrPca
     }
     if (any(meanPcAngles >= thrPcaPlant)) {
-      ## Create data.frame with info on plants with average difference.
+      ## Create data.frame with info on plants with average difference
       ## above threshold.
       annPlotsPcAngle <- meanPcAngles[meanPcAngles >= thrPcaPlant]
       return(data.frame(plotId = names(annPlotsPcAngle), reason = "angle",
@@ -298,8 +298,49 @@ detectSerieOut <- function(corrDat,
       return(NULL)
     }
   })
+
+  annotatePlantsSlope <- lapply(X = plantDats, FUN = function(plantDat) {
+    ## Convert matrix to data.frame for lm.
+    plantDat <- as.data.frame(plantDat)
+    ## Construct empty matrix for storing results.
+    slopes <- matrix(nrow = ncol(plantDat), ncol = ncol(plantDat),
+                       dimnames = list(colnames(plantDat), colnames(plantDat)))
+    ## Compute slope per pair of plots.
+    slopes[lower.tri(slopes)] <-
+      combn(x = colnames(plantDat), m = 2, FUN = function(plants) {
+        ## Fit linear model and extract slope.
+        modForm <- formula(paste(plants, collapse = "~"))
+        slope <- coef(lm(modForm, data = plantDat))[2]
+        if (slope > 1) slope <- 1 / slope
+        return(slope)
+      }, simplify = TRUE)
+    ## Fill upper triangle of slopes matrix with copy of lower triangle.
+    slopes[upper.tri(slopes)] <- t(slopes)[upper.tri(slopes)]
+    ## Compute mean slope per plot.
+    meanSlopes <- apply(X = slopes, MARGIN = 1, FUN = function(x) {
+      mean(sort(x)[-1])
+    })
+    # if (!is.null(geno.decomp)) {
+    #   thrSlopePlant <- thrSlope[attr(plantPcas[[geno]], which = "genoDecomp")]
+    # } else {
+    #   thrSlopePlant <- thrSlope
+    # }
+    thrSlopePlant <- 0.7
+    if (any(meanSlopes < thrSlopePlant)) {
+      ## Create data.frame with info on plants with average difference
+      ## above threshold.
+      annPlotsSlope <- meanSlopes[meanSlopes < thrSlopePlant]
+      return(data.frame(plotId = names(annPlotsSlope), reason = "slope",
+                        value = annPlotsSlope))
+    } else {
+      return(NULL)
+    }
+  })
+
   ## Create full data.frame with annotated plants.
-  annotatePlants <- do.call(rbind, c(annotatePlantsCor, annotatePlantsPcaAngle))
+  annotatePlants <- do.call(rbind, c(annotatePlantsCor,
+                                     annotatePlantsPcaAngle,
+                                     annotatePlantsSlope))
   if (!is.null(annotatePlants)) {
     ## Merge genotype and geno.decomp to annotated plants.
     annotatePlants <- merge(unique(corrDatPred[c("genotype", geno.decomp,
