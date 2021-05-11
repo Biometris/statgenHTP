@@ -188,6 +188,12 @@ fitModels <- function(TP,
       if (!all(sapply(X = TP, FUN = hasName, name = extraFF))) {
         stop(extraFF, " should be a column in TP for all timePoints.\n")
       }
+      for (timePoint in TP) {
+        if (all(is.na(timePoint[[extraFF]]))) {
+          stop(extraFF, " has only missing values for ",
+               timePoint[["timePoint"]][[1]], ".\n")
+        }
+      }
     }
   }
   ## Check geno.decomp.
