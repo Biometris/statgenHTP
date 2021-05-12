@@ -23,6 +23,8 @@
 #' based on correlation between plots.
 #' @param thrPca A numerical value used as threshold for determining outliers
 #' based on angles (in degrees) between PCA scores.
+#' @param thrSlope A numerical value used as threshold for determining outliers
+#' based on slopes.
 #'
 #' @return An object of class \code{serieOut}, a \code{data.frame} with outlying
 #' series of observations.
@@ -67,7 +69,8 @@ detectSerieOut <- function(corrDat,
                            genotypes = NULL,
                            geno.decomp = NULL,
                            thrCor = 0.9,
-                           thrPca = 30) {
+                           thrPca = 30,
+                           thrSlope = 0.7) {
   ## Checks.
   if (!is.character(trait) || length(trait) > 1) {
     stop("trait should be a character string of length 1.\n")
@@ -118,6 +121,9 @@ detectSerieOut <- function(corrDat,
   if (!is.numeric(thrPca) || any(thrPca < 0)) {
     stop("thrPca should be a numerical vector with positive values.\n")
   }
+  if (!is.numeric(thrSlope) || any(thrSlope < 0) || any(thrSlope > 1)) {
+    stop("thrSlope should be a numerical vector with values between 0 and 1.\n")
+  }
   genoPlotId <- sapply(X = genotypes, FUN = function(genotype) {
     length(unique(corrDat[corrDat[["genotype"]] == genotype, "plotId"]))
   })
@@ -151,12 +157,22 @@ detectSerieOut <- function(corrDat,
       stop("thrPca should be a named vector, with names matching the levels ",
            "in geno.decomp.\n")
     }
+    if (length(thrSlope) == 1) {
+      thrSlope <- setNames(rep(thrSlope, times = nGenoDecomp), genoDecompLevs)
+    } else if (is.null(names(thrSlope)) ||
+               !all(genoDecompLevs %in% names(thrSlope))) {
+      stop("thrSlope should be a named vector, with names matching the levels ",
+           "in geno.decomp.\n")
+    }
   } else {
     if (length(thrCor) != 1) {
       stop("thrCor should be a vector of length 1.\n")
     }
     if (length(thrPca) != 1) {
       stop("thrPca should be a vector of length 1.\n")
+    }
+    if (length(thrSlope) != 1) {
+      stop("thrSlope should be a vector of length 1.\n")
     }
   }
   ## Restrict predDat and coefDat to genotypes.
@@ -298,13 +314,12 @@ detectSerieOut <- function(corrDat,
       return(NULL)
     }
   })
-
   annotatePlantsSlope <- lapply(X = plantDats, FUN = function(plantDat) {
     ## Convert matrix to data.frame for lm.
     plantDat <- as.data.frame(plantDat)
     ## Construct empty matrix for storing results.
     slopes <- matrix(nrow = ncol(plantDat), ncol = ncol(plantDat),
-                       dimnames = list(colnames(plantDat), colnames(plantDat)))
+                     dimnames = list(colnames(plantDat), colnames(plantDat)))
     ## Compute slope per pair of plots.
     slopes[lower.tri(slopes)] <-
       combn(x = colnames(plantDat), m = 2, FUN = function(plants) {
@@ -320,12 +335,11 @@ detectSerieOut <- function(corrDat,
     meanSlopes <- apply(X = slopes, MARGIN = 1, FUN = function(x) {
       mean(sort(x)[-1])
     })
-    # if (!is.null(geno.decomp)) {
-    #   thrSlopePlant <- thrSlope[attr(plantPcas[[geno]], which = "genoDecomp")]
-    # } else {
-    #   thrSlopePlant <- thrSlope
-    # }
-    thrSlopePlant <- 0.7
+    if (!is.null(geno.decomp)) {
+      thrSlopePlant <- thrSlope[attr(plantDat, which = "genoDecomp")]
+    } else {
+      thrSlopePlant <- thrSlope
+    }
     if (any(meanSlopes < thrSlopePlant)) {
       ## Create data.frame with info on plants with average difference
       ## above threshold.
@@ -336,7 +350,6 @@ detectSerieOut <- function(corrDat,
       return(NULL)
     }
   })
-
   ## Create full data.frame with annotated plants.
   annotatePlants <- do.call(rbind, c(annotatePlantsCor,
                                      annotatePlantsPcaAngle,
@@ -361,6 +374,7 @@ detectSerieOut <- function(corrDat,
   class(annotatePlants) <- c("serieOut", class(annotatePlants))
   attr(x = annotatePlants, which = "thrCor") <- thrCor
   attr(x = annotatePlants, which = "thrPca") <- thrPca
+  attr(x = annotatePlants, which = "thrSlope") <- thrSlope
   attr(x = annotatePlants, which = "trait") <- trait
   attr(x = annotatePlants, which = "geno.decomp") <- geno.decomp
   attr(x = annotatePlants, which = "plotInfo") <- plotInfo
@@ -568,7 +582,7 @@ plot.serieOut <- function(x,
 #'
 #' @return Depending on the input either a \code{data.frame} or an object of
 #' class \code{HTPSpline} for which the outliers specified in \code{serieOut}
-#' are replace by NA.
+#' are replaced by NA.
 #'
 #' @examples
 #' ## Run the function to fit P-spline on a subset of genotypes.

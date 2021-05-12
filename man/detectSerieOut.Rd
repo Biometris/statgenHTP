@@ -12,7 +12,8 @@ detectSerieOut(
   genotypes = NULL,
   geno.decomp = NULL,
   thrCor = 0.9,
-  thrPca = 30
+  thrPca = 30,
+  thrSlope = 0.7
 )
 }
 \arguments{
@@ -37,6 +38,9 @@ based on correlation between plots.}
 
 \item{thrPca}{A numerical value used as threshold for determining outliers
 based on angles (in degrees) between PCA scores.}
+
+\item{thrSlope}{A numerical value used as threshold for determining outliers
+based on slopes.}
 }
 \value{
 An object of class \code{serieOut}, a \code{data.frame} with outlying
