@@ -281,17 +281,18 @@ The last three types of plot display different model parameters over time. Plot 
 ```{r plotSpHerit, message=FALSE, fig.height=2.5, fig.width=3.5, fig.align = 'center'}
 plot(modPhenoSp, 
      plotType = "herit",
-     yLim = c(0.5,1))
+     yLim = c(0.5, 1))
 ```
 
-Plot type **variance** plots the residual, column and row variances over time. These plots can serve as diagnostics of the experiment.
+Plot type **variance** plots the residual, column and row variances over time. These plots can serve as diagnostics of the experiment. The scale of the plot can be adjusted using `yLim`.
 ```{r plotSpVar, fig.height=3, fig.width=5, message=FALSE, fig.align = 'center'}
 plot(modPhenoSp, 
-     plotType = "variance")
+     plotType = "variance",
+     yLim = c(0, 0.00125))
 ```
 
 Plot type **effDim** plots the effective dimension from models fitted using SpATS over time. 
-By default, all the spatial components are plotted. This can be restricted using the option `whichED`.
+By default, all the spatial components are plotted. This can be restricted using the option `whichED`. The scale of the plot can be adjusted using `yLim`.
 ```{r plotSpED, message=FALSE, fig.height=3, fig.width=5, fig.align = 'center'}
 plot(modPhenoSp, 
      plotType = "effDim",
