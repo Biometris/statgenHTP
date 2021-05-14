@@ -396,7 +396,10 @@ detectSerieOut <- function(corrDat,
 #' @param x An object of class \code{serieOut}.
 #' @param ... Ignored.
 #' @param genotypes A character vector indicating which genotypes should be
-#' plotted.
+#' plotted. If \code{NULL} all genotypes are plotted.
+#' @param geno.decomp A character vector indicating which levels of
+#' \code{geno.decomp} should be plotted. If \code{NULL} all levels are plotted.
+#' Ignored if \code{geno.decomp} was not used when fitting models.
 #' @param useTimeNumber Should the timeNumber be used instead of the timePoint
 #' in the labels on the x-axis?
 #' @param timeNumber If \code{useTimeNumber = TRUE}, a character vector
@@ -439,6 +442,7 @@ detectSerieOut <- function(corrDat,
 plot.serieOut <- function(x,
                           ...,
                           genotypes = NULL,
+                          geno.decomp = NULL,
                           useTimeNumber = FALSE,
                           timeNumber = NULL,
                           title = NULL,
@@ -450,18 +454,25 @@ plot.serieOut <- function(x,
   thrCor <- attr(x = x, which = "thrCor")
   thrPca <- attr(x = x, which = "thrPca")
   trait <- attr(x = x, which = "trait")
-  geno.decomp <- attr(x = x, which = "geno.decomp")
+  geno.decompVar <- attr(x = x, which = "geno.decomp")
   plotInfo <- attr(x = x, which = "plotInfo")
+  ## Restrict to selected levels of geno.decomp.
+  if (!is.null(geno.decomp) && !is.null(geno.decompVar)) {
+    if (!all(geno.decomp %in% plotInfo[[geno.decompVar]])) {
+      stop("All selected geno.decomp levels should be in the data.\n")
+    }
+    plotInfo <- plotInfo[plotInfo[[geno.decompVar]] %in% geno.decomp, ]
+  }
   if (!is.null(genotypes) && (!is.character(genotypes) ||
                               !all(genotypes %in% plotInfo[["genotype"]]))) {
     stop("genotypes should be a character vector of genotypes used for ",
          "outlier detection.\n")
   }
   if (is.null(genotypes)) {
-    genotypes <- interaction(plotInfo[c("genotype", geno.decomp)])
+    genotypes <- interaction(plotInfo[c("genotype", geno.decompVar)])
   } else {
     genotypes <- interaction(plotInfo[plotInfo[["genotype"]] %in% genotypes,
-                                      c("genotype", geno.decomp)])
+                                      c("genotype", geno.decompVar)])
   }
   genotypes <- as.character(genotypes)
   cormats <- attr(x = x, which = "cormats")[genotypes]

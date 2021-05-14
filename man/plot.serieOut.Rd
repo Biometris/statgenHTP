@@ -8,6 +8,7 @@
   x,
   ...,
   genotypes = NULL,
+  geno.decomp = NULL,
   useTimeNumber = FALSE,
   timeNumber = NULL,
   title = NULL,
@@ -20,7 +21,11 @@
 \item{...}{Ignored.}
 
 \item{genotypes}{A character vector indicating which genotypes should be
-plotted.}
+plotted. If \code{NULL} all genotypes are plotted.}
+
+\item{geno.decomp}{A character vector indicating which levels of
+\code{geno.decomp} should be plotted. If \code{NULL} all levels are plotted.
+Ignored if \code{geno.decomp} was not used when fitting models.}
 
 \item{useTimeNumber}{Should the timeNumber be used instead of the timePoint
 in the labels on the x-axis?}

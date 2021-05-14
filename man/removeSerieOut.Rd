@@ -8,7 +8,7 @@ removeSerieOut(
   dat = NULL,
   fitSpline = NULL,
   serieOut,
-  trait = attr(x = serieOut, which = "trait")
+  traits = attr(x = serieOut, which = "trait")
 )
 }
 \arguments{
@@ -20,13 +20,14 @@ removeSerieOut(
 \item{serieOut}{A data.frame with at least the column plotId with
 values corresponding to those in dat/fitSpline.}
 
-\item{trait}{The trait that should be replaced by NA. Can be ignored when
-using the output of \code{detectSerieOut} as input.}
+\item{traits}{The traits that should be replaced by NA. When using the
+output of \code{detectSerieOut} as input for \code{serieOut} this defaults
+to the trait used for when detecting the outliers.}
 }
 \value{
 Depending on the input either a \code{data.frame} or an object of
 class \code{HTPSpline} for which the outliers specified in \code{serieOut}
-are replace by NA.
+are replaced by NA.
 }
 \description{
 Function for replacing outliers for series of observations in the data by NA.
@@ -35,7 +36,7 @@ of the \code{fitSpline} function, specified in \code{fitSpline}. Exactly one
 of these should be provided as input for the function.
 }
 \examples{
-## Run the function to fit P-spline on a subset of genotypes.
+## Run the function to fit P-splines on a subset of genotypes.
 subGenoVator <- c("G160", "G151")
 fit.spline <- fitSpline(inDat = spatCorrectedVator,
                         trait = "EffpsII_corr",
@@ -58,6 +59,13 @@ outVator <- detectSerieOut(corrDat = spatCorrectedVator,
 ## Replace the outliers by NA in the corrected data.
 spatCorrectedVatorOut <- removeSerieOut(dat = spatCorrectedVator,
                                         serieOut = outVator)
+
+## Replace the outliers by NA in the corrected data.
+## Replace both the corrected value and the raw trait value by NA.
+spatCorrectedVatorOut2 <-
+  removeSerieOut(dat = spatCorrectedVator,
+                 serieOut = outVator,
+                 traits = c("EffpsII", "EffpsII_corr"))
 
 }
 \seealso{

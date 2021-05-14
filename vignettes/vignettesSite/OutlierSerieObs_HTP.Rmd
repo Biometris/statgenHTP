@@ -236,7 +236,7 @@ outArch <- detectSerieOut(corrDat = spatCorrectedArch,
 
 
 ```{r headOutPointArch, echo=FALSE, message=FALSE, eval=TRUE}
-knitr::kable(head(outArch), align=c('c','c'), booktabs = TRUE, row.names=F)
+knitr::kable(head(outArch), align=c('c','c'), booktabs = TRUE, row.names=FALSE)
 ```
 
 ```{r plotOutArch,  fig.height=6, fig.width=6, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
