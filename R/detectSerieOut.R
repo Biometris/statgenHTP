@@ -577,15 +577,16 @@ plot.serieOut <- function(x,
 #' \code{\link{fitSpline}} function.
 #' @param serieOut A data.frame with at least the column plotId with
 #' values corresponding to those in dat/fitSpline.
-#' @param trait The trait that should be replaced by NA. Can be ignored when
-#' using the output of \code{detectSerieOut} as input.
+#' @param traits The traits that should be replaced by NA. When using the
+#' output of \code{detectSerieOut} as input for \code{serieOut} this defaults
+#' to the trait used for when detecting the outliers.
 #'
 #' @return Depending on the input either a \code{data.frame} or an object of
 #' class \code{HTPSpline} for which the outliers specified in \code{serieOut}
 #' are replaced by NA.
 #'
 #' @examples
-#' ## Run the function to fit P-spline on a subset of genotypes.
+#' ## Run the function to fit P-splines on a subset of genotypes.
 #' subGenoVator <- c("G160", "G151")
 #' fit.spline <- fitSpline(inDat = spatCorrectedVator,
 #'                         trait = "EffpsII_corr",
@@ -609,13 +610,20 @@ plot.serieOut <- function(x,
 #' spatCorrectedVatorOut <- removeSerieOut(dat = spatCorrectedVator,
 #'                                         serieOut = outVator)
 #'
+#' ## Replace the outliers by NA in the corrected data.
+#' ## Replace both the corrected value and the raw trait value by NA.
+#' spatCorrectedVatorOut2 <-
+#'   removeSerieOut(dat = spatCorrectedVator,
+#'                  serieOut = outVator,
+#'                  traits = c("EffpsII", "EffpsII_corr"))
+#'
 #' @family functions for detecting outliers for series of observations
 #'
 #' @export
 removeSerieOut <- function(dat = NULL,
                            fitSpline = NULL,
                            serieOut,
-                           trait = attr(x = serieOut,
+                           traits = attr(x = serieOut,
                                         which = "trait")) {
   ## Check that one of dat and fitSpline are specified.
   if ((is.null(dat) && is.null(fitSpline)) || (
@@ -644,14 +652,18 @@ removeSerieOut <- function(dat = NULL,
     }
     if (!is.null(dat)) {
       ## Remove plots that are in serieOut.
-      dat[dat[["plotId"]] %in% serieOut[["plotId"]], trait] <- NA
+      for (trait in traits) {
+        dat[dat[["plotId"]] %in% serieOut[["plotId"]], trait] <- NA
+      }
     } else if (!is.null(fitSpline)) {
       fitSpline$coefDat[fitSpline$coefDat[["plotId"]] %in%
                           serieOut[["plotId"]], "obj.coefficients"] <- NA
       fitSpline$predDat[fitSpline$predDat[["plotId"]] %in%
                           serieOut[["plotId"]], c("pred.value", "deriv")] <- NA
       modDat <- attr(x = fitSpline, which = "modDat")
-      modDat[modDat[["plotId"]] %in% serieOut[["plotId"]], trait] <- NA
+      for (trait in traits) {
+        modDat[modDat[["plotId"]] %in% serieOut[["plotId"]], trait] <- NA
+      }
       attr(x = fitSpline, which = "modDat") <- modDat
     }
   }
