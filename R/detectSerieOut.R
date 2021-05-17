@@ -225,7 +225,7 @@ detectSerieOut <- function(corrDat,
                         }
                         return(plantDat)
                       })
-  ## Compute correlation matrix.
+  ## Compute correlation matrices.
   cormats <- lapply(X = plantDats, FUN = function(plantDat) {
     if (!is.null(dim(plantDat))) {
       ## if there are plants, estimate the correlation...
@@ -257,6 +257,41 @@ detectSerieOut <- function(corrDat,
       return(NULL)
     }
   })
+  ## Compute slope matrices.
+  slopemats <- lapply(X = plantDats, FUN = function(plantDat) {
+    if (!is.null(dim(plantDat))) {
+      ## if there are plants, estimate the slopes.
+      ## Convert matrix to data.frame for lm.
+      plantDat <- as.data.frame(plantDat)
+      ## Construct empty matrix for storing results.
+      slopemat <- matrix(nrow = ncol(plantDat), ncol = ncol(plantDat),
+                       dimnames = list(colnames(plantDat), colnames(plantDat)))
+      ## Compute slope per pair of plots.
+      slopemat[lower.tri(slopemat)] <-
+        combn(x = colnames(plantDat), m = 2, FUN = function(plants) {
+          ## Fit linear model and extract slope.
+          modForm <- formula(paste(plants, collapse = "~"))
+          slope <- coef(lm(modForm, data = plantDat))[2]
+          if (slope > 1) slope <- 1 / slope
+          return(slope)
+        }, simplify = TRUE)
+      ## Fill upper triangle of slopemat matrix with copy of lower triangle.
+      slopemat[upper.tri(slopemat)] <- t(slopemat)[upper.tri(slopemat)]
+      attr(slopemat, which = "genoDecomp") <-
+        attr(plantDat, which = "genoDecomp")
+      if (!is.null(geno.decomp)) {
+        attr(slopemat, which = "thrSlope") <-
+          thrSlope[attr(plantDat, which = "genoDecomp")]
+      } else {
+        attr(slopemat, which = "thrSlope") <- thrSlope
+      }
+      return(slopemat)
+    } else {
+      ## ... if not, return a null matrix
+      return(NULL)
+    }
+  })
+  ## Find outlying plots based on correlation.
   annotatePlantsCor <- lapply(X = names(cormats), FUN = function(geno) {
     if (!is.null(cormats[[geno]])) {
       ## Compute mean based on all but the worst correlation per plant.
@@ -278,6 +313,7 @@ detectSerieOut <- function(corrDat,
       return(NULL)
     }
   })
+  ## Convert cormats to format used by ggplot.
   cormats <- lapply(X = cormats, FUN = function(cormat) {
     ## Set lower part of cormat to NA for plotting.
     cormat[lower.tri(cormat)] <- NA
@@ -286,6 +322,7 @@ detectSerieOut <- function(corrDat,
     attr(meltedCormat, which = "thrCor") <- attr(cormat, which = "thrCor")
     return(meltedCormat)
   })
+  ## Find outlying plots based on PCA angles.
   annotatePlantsPcaAngle <- lapply(X = names(plantPcas), FUN = function(geno) {
     ## Calculate the pairwise difference of coordinates on the 2nd axis and
     ## annotate plant with average diff larger than threshold.
@@ -314,41 +351,37 @@ detectSerieOut <- function(corrDat,
       return(NULL)
     }
   })
-  annotatePlantsSlope <- lapply(X = plantDats, FUN = function(plantDat) {
-    ## Convert matrix to data.frame for lm.
-    plantDat <- as.data.frame(plantDat)
-    ## Construct empty matrix for storing results.
-    slopes <- matrix(nrow = ncol(plantDat), ncol = ncol(plantDat),
-                     dimnames = list(colnames(plantDat), colnames(plantDat)))
-    ## Compute slope per pair of plots.
-    slopes[lower.tri(slopes)] <-
-      combn(x = colnames(plantDat), m = 2, FUN = function(plants) {
-        ## Fit linear model and extract slope.
-        modForm <- formula(paste(plants, collapse = "~"))
-        slope <- coef(lm(modForm, data = plantDat))[2]
-        if (slope > 1) slope <- 1 / slope
-        return(slope)
-      }, simplify = TRUE)
-    ## Fill upper triangle of slopes matrix with copy of lower triangle.
-    slopes[upper.tri(slopes)] <- t(slopes)[upper.tri(slopes)]
-    ## Compute mean slope per plot.
-    meanSlopes <- apply(X = slopes, MARGIN = 1, FUN = function(x) {
-      mean(sort(x)[-1])
-    })
-    if (!is.null(geno.decomp)) {
-      thrSlopePlant <- thrSlope[attr(plantDat, which = "genoDecomp")]
+  ## Find outlying plots based on slopes.
+  annotatePlantsSlope <- lapply(X = names(slopemats), FUN = function(geno) {
+    if (!is.null(slopemats[[geno]])) {
+      ## Compute mean slope per plot on all but the worst slope per plant.
+      ## This prevents one bad correlation causing all plants to be outliers.
+      meanSlope <- apply(slopemats[[geno]], MARGIN = 1,
+                         FUN = function(plant) {
+                           mean(sort(plant)[-1])
+                         })
+      thrSlopePlant <- attr(slopemats[[geno]], which = "thrSlope")
     } else {
-      thrSlopePlant <- thrSlope
+      meanSlope <- NULL
     }
-    if (any(meanSlopes < thrSlopePlant)) {
+    if (any(meanSlope < thrSlopePlant)) {
       ## Create data.frame with info on plants with average difference
       ## above threshold.
-      annPlotsSlope <- meanSlopes[meanSlopes < thrSlopePlant]
+      annPlotsSlope <- meanSlope[meanSlope < thrSlopePlant]
       return(data.frame(plotId = names(annPlotsSlope), reason = "slope",
                         value = annPlotsSlope))
     } else {
       return(NULL)
     }
+  })
+  ## Convert slopemats to format used by ggplot.
+  slopemats <- lapply(X = slopemats, FUN = function(slopemat) {
+    ## Set lower part of cormat to NA for plotting.
+    slopemat[lower.tri(slopemat)] <- NA
+    ## Melt to format used by ggplot.
+    meltedSlopemat <- reshape2::melt(slopemat, na.rm = TRUE)
+    attr(meltedSlopemat, which = "thrCor") <- attr(slopemat, which = "thrCor")
+    return(meltedSlopemat)
   })
   ## Create full data.frame with annotated plants.
   annotatePlants <- do.call(rbind, c(annotatePlantsCor,
@@ -380,6 +413,7 @@ detectSerieOut <- function(corrDat,
   attr(x = annotatePlants, which = "plotInfo") <- plotInfo
   attr(x = annotatePlants, which = "cormats") <- cormats
   attr(x = annotatePlants, which = "plantPcas") <- plantPcas
+  attr(x = annotatePlants, which = "slopemats") <- slopemats
   attr(x = annotatePlants, which = "genoPreds") <- genoPreds
   attr(x = annotatePlants, which = "genoDats") <- genoDats
   return(annotatePlants)
