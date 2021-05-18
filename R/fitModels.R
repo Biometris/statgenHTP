@@ -328,12 +328,13 @@ fitModels <- function(TP,
       }
       ## number of segments for SpATS.
       nseg <- c(length(unique(modDat[["colNum"]])),
-                length(unique(modDat[["rowNum"]]))) #/ 2
+                length(unique(modDat[["rowNum"]])))
       ## Fit and return the model.
       SpATS::SpATS(response = trait, fixed = fixedForm,
                    random = randForm,
                    spatial = ~ SpATS::PSANOVA(colNum, rowNum, nseg = nseg,
-                                              nest.div = c(2, 2)),
+                                              nest.div = c(2, 2),
+                                              center = TRUE),
                    genotype = genoCol, genotype.as.random = genoRand,
                    geno.decomp = geno.decomp, data = modDat,
                    control = list(maxit = 50, tolerance = 1e-03,
