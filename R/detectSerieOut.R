@@ -511,10 +511,13 @@ plot.serieOut <- function(x,
   genotypes <- as.character(genotypes)
   cormats <- attr(x = x, which = "cormats")[genotypes]
   plantPcas <- attr(x = x, which = "plantPcas")[genotypes]
+  slopemats <- attr(x = x, which = "slopemats")[genotypes]
   genoPreds <- attr(x = x, which = "genoPreds")[genotypes]
   genoDats <- attr(x = x, which = "genoDats")[genotypes]
   ## Get minimum correlation. Cannot be higher than 0.8.
   minCor <- min(c(unlist(cormats, use.names = FALSE), 0.8), na.rm = TRUE)
+  ## Get minimum slope. Cannot be higher than 0.8.
+  minSlope <- min(c(unlist(slopemats, use.names = FALSE), 0.8), na.rm = TRUE)
   ## Compute the number of breaks for the time scale based on all plants.
   ## If there are less than 3 time points use the number of time points.
   ## Otherwise use 3.
@@ -560,6 +563,7 @@ plot.serieOut <- function(x,
     }
     ## Correlation plot.
     thrCorGeno <- attr(cormats[[genotype]], which = "thrCor")
+    thrSlopeGeno <- attr(cormats[[genotype]], which = "thrSlope")
     correl <- ggplot2::ggplot(data = cormats[[genotype]],
                               ggplot2::aes_string("Var2", "Var1",
                                                   fill = "value")) +
@@ -569,6 +573,16 @@ plot.serieOut <- function(x,
                                                                thrCorGeno, 1)),
                                     limits = c(minCor, 1),
                                     name = "Pearson\nCorrelation") +
+      ggnewscale::new_scale_fill() +
+      ## Add slope to upper left.
+      ggplot2::geom_tile(data = slopemats[[genotype]],
+                         ggplot2::aes_string("Var1", "Var2", fill = "value"),
+                         color = "white") +
+      ggplot2::scale_fill_gradientn(colors = c("yellow", "white", "green"),
+                                     values = scales::rescale(c(minSlope,
+                                                                thrSlopeGeno, 1)),
+                                     limits = c(minSlope, 1),
+                                     name = "Slope\nCorrelation") +
       ## Move y-axis to the right.
       ggplot2::scale_y_discrete(position = "right") +
       ## Use coord fixed to create a square shaped output.
@@ -578,10 +592,13 @@ plot.serieOut <- function(x,
                      panel.grid = ggplot2::element_line(color = "grey92"),
                      plot.title = ggplot2::element_text(hjust = 0.5),
                      axis.ticks = ggplot2::element_blank(),
+                     panel.grid.major = ggplot2::element_blank(),
+                     panel.grid.minor = ggplot2::element_blank(),
                      axis.text.x = ggplot2::element_text(angle = 45, vjust = 1,
-                                                         size = 12, hjust = 1),
-                     legend.position = "left") +
-      ggplot2::labs(title = "Correl of coef", x = NULL, y = NULL)
+                                                         hjust = 1),
+                     legend.position = "left",
+                     legend.box = "horizontal") +
+      ggplot2::labs(title = "Correlations", x = NULL, y = NULL)
     ## PCA biplot.
     pcaplot <- factoextra::fviz_pca_var(plantPcas[[genotype]])
     ## Arrange plots.

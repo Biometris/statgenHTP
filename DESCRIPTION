@@ -51,6 +51,7 @@ Imports:
     factoextra,
     ggforce,
     ggplot2 (>= 3.3.0),
+    ggnewscale,
     grid,
     gridExtra,
     locfit,
