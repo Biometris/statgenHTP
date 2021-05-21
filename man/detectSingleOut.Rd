@@ -76,11 +76,11 @@ phenoTP <- createTimePoints(dat = PhenovatorDat1,
 ## First select a subset of plants, for example here 9 plants
 plantSel <- phenoTP[[1]]$plotId[1:9]
 # Then run on the subset
-resuVatorHTP <- detectSingleOut (TP = phenoTP,
-                                 trait = "EffpsII",
-                                 plotIds = plantSel,
-                                 confIntSize = 3,
-                                 nnLocfit = 0.1)
+resuVatorHTP <- detectSingleOut(TP = phenoTP,
+                                trait = "EffpsII",
+                                plotIds = plantSel,
+                                confIntSize = 3,
+                                nnLocfit = 0.1)
 
 }
 \seealso{

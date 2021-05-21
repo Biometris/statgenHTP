@@ -54,11 +54,11 @@
 #' ## First select a subset of plants, for example here 9 plants
 #' plantSel <- phenoTP[[1]]$plotId[1:9]
 #' # Then run on the subset
-#' resuVatorHTP <- detectSingleOut (TP = phenoTP,
-#'                                  trait = "EffpsII",
-#'                                  plotIds = plantSel,
-#'                                  confIntSize = 3,
-#'                                  nnLocfit = 0.1)
+#' resuVatorHTP <- detectSingleOut(TP = phenoTP,
+#'                                 trait = "EffpsII",
+#'                                 plotIds = plantSel,
+#'                                 confIntSize = 3,
+#'                                 nnLocfit = 0.1)
 #'
 #' @family functions for detecting outliers for single observations
 #'
@@ -151,6 +151,9 @@ detectSingleOut <- function(TP,
   })
   ## Bind everything together in a single data.frame.
   plotPred <- do.call(rbind, plotPreds)
+  if (is.null(plotPred)) {
+    stop("Not enough data points (<= 6) for any of the plots.\n")
+  }
   ## Rownames are confusing and redundant.
   rownames(plotPred) <- NULL
   ## Add class and trait as attribute.
