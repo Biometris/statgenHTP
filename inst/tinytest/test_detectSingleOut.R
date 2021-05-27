@@ -110,7 +110,7 @@ expect_error(plot(singleOut2),
              "No outliers present for selected plotIds")
 expect_silent(plot(singleOut2, outOnly = FALSE))
 
-### Check removal of outliers detected by detectSSinleOut
+### Check removal of outliers detected by detectSingleOut
 
 ## Check that general checks in plot function correctly.
 expect_error(removeSingleOut(1),
