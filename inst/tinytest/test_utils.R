@@ -139,7 +139,33 @@ expect_equal(statgenHTP:::chkTimePoints(testTP, 1),
 
 expect_error(getTimePoints(x = 1:3),
              "x should be an object of class TP or fitMod")
-## Create TP object.
 expect_inherits(getTimePoints(testTP), "data.frame")
 expect_equal(getTimePoints(testTP), attr(x = testTP, which = "timePoints"))
 
+## Test countValid
+expect_error(countValid(1),
+             "TP should be an object of class TP")
+expect_error(countValid(testTP, trait = 1),
+             "trait should be a character string of length one")
+valCount <- countValid(testTP, trait = "t1")
+expect_equivalent(valCount, rep(24, times = 5))
+expect_equal(names(valCount),
+             c("2018-06-01 16:37:00", "2018-06-02 09:07:00",
+               "2018-06-02 11:37:00", "2018-06-02 14:37:00",
+               "2018-06-02 16:37:00"))
+
+
+## Test countValidPlot
+expect_error(countValidPlot(1),
+             "TP should be an object of class TP")
+expect_error(countValidPlot(testTP, trait = 1),
+             "trait should be a character string of length one")
+expect_error(countValidPlot(testTP, trait = "a"),
+             "a should be a column in TP")
+expect_error(countValidPlot(testTP, trait = "t1", plotIds = 1),
+             "plotIds should be NULL or a character vector")
+expect_error(countValidPlot(testTP, trait = "t1", plotIds = "a"),
+             "All plotIds should be in TP")
+valPlotCount <- countValidPlot(testTP, trait = "t1")
+expect_equivalent(valPlotCount, c(rep(5, times = 7), 0, rep(5, times = 17)))
+expect_equal(names(valPlotCount), unique(testDat$pos))
