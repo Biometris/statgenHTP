@@ -1,5 +1,7 @@
 ### Test fitSpline
 
+Sys.setlocale("LC_COLLATE", "C")
+
 ## Read test data from .csv
 testDat <- read.csv("testDat.csv", stringsAsFactors = FALSE)
 
@@ -41,8 +43,8 @@ coefDat <- splineRes[["coefDat"]]
 predDat <- splineRes[["predDat"]]
 
 ## Check that full coefDat and predDat results are correct.
-expect_equal_to_reference(coefDat, file = "coefDat")
-expect_equal_to_reference(predDat, file = "predDat")
+expect_equal_to_reference(coefDat, file = "coefDat", tolerance = 1e-6)
+expect_equal_to_reference(predDat, file = "predDat", tolerance = 1e-6)
 
 ## Check that option timeNumber functions correctly.
 expect_error(fitSpline(corr, trait = "t1_corr", useTimeNumber = TRUE),
@@ -102,8 +104,8 @@ expect_warning(splineRes5 <- fitSpline(inDat = corr2, trait = "t1_corr",
                                        minNoTP = 5),
                "More than 5 plotIds have observations for less than the minimum")
 expect_equal(attr(splineRes5, which = "plotLimObs"),
-             c("c10r1", "c10r2", "c10r3", "c10r5", "c12r1", "c12r2", "c12r3",
-               "c12r4", "c13r2", "c14r3"))
+             c("c10r1", "c10r2", "c10r3", "c10r5", "c11r2", "c12r3", "c12r4",
+               "c13r1", "c13r5", "c14r2", "c14r3"))
 
 ## Check that splines are fitted correctly when plotId is absent.
 corr3 <- corr[, !colnames(corr) == "plotId"]
@@ -171,7 +173,7 @@ expect_error(estimateSplineParameters(splineRes, what = "min",
 
 expect_silent(est1 <- estimateSplineParameters(splineRes, what = "min"))
 
-expect_equal_to_reference(est1, "splineEst")
+expect_equal_to_reference(est1, "splineEst", tolerance = 1e-6)
 
 ## Check that options timeMin and timeMax function correctly.
 # Get first and last timePoint from data.
