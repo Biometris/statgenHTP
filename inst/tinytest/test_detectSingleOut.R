@@ -47,7 +47,7 @@ expect_equal(colnames(singleOut),
              c("plotId", "timePoint", "EffpsII", "yPred", "sd_yPred",
                "lwr", "upr", "outlier"))
 
-## Check that full output contenct is correct.
+## Check that full output content is correct.
 expect_equal_to_reference(singleOut, file = "singleOut")
 
 ## Check that parameter confIntSize functions correctly.

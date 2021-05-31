@@ -115,8 +115,8 @@ detectSerieOut <- function(corrDat,
   if (!all(genotypes %in% corrDat[["genotype"]])) {
     stop("all genotypes should be in corrDat")
   }
-  if (!is.numeric(thrCor) || any(thrCor < 0) || any(thrCor > 1)) {
-    stop("thrCor should be a numerical vector with values between 0 and 1.\n")
+  if (!is.numeric(thrCor) || any(thrCor < -1) || any(thrCor > 1)) {
+    stop("thrCor should be a numerical vector with values between -1 and 1.\n")
   }
   if (!is.numeric(thrPca) || any(thrPca < 0)) {
     stop("thrPca should be a numerical vector with positive values.\n")
@@ -211,13 +211,13 @@ detectSerieOut <- function(corrDat,
                                                     formula = type ~ plotId,
                                                     value.var = "obj.coefficients")
                         ## Remove intercept.
-                        plantDat <- plantDat[-1, ]
+                        plantDat <- plantDat[-1, , drop = FALSE]
                         ## Remove plants with only NA.
                         NAplants <- apply(X = plantDat, MARGIN = 2,
                                           FUN = function(plant) {
                                             all(is.na(plant))
                                           })
-                        plantDat <- plantDat[, !NAplants]
+                        plantDat <- plantDat[, !NAplants, drop = FALSE]
                         ## Add geno.decomp as attribute for later use.
                         if (!is.null(geno.decomp)) {
                           attr(plantDat, which = "genoDecomp") <-
@@ -271,7 +271,7 @@ detectSerieOut <- function(corrDat,
         combn(x = colnames(plantDat), m = 2, FUN = function(plants) {
           ## Fit linear model and extract slope.
           modForm <- formula(paste(plants, collapse = "~"))
-          slope <- coef(lm(modForm, data = plantDat))[2]
+          slope <- abs(coef(lm(modForm, data = plantDat))[2])
           if (slope > 1) slope <- 1 / slope
           return(slope)
         }, simplify = TRUE)
@@ -702,7 +702,7 @@ removeSerieOut <- function(dat = NULL,
   }
   if (!is.null(fitSpline)) {
     if (!inherits(fitSpline, "HTPSpline")) {
-      stop("dat should be an object of class HTPSpline.\n")
+      stop("fitSpline should be an object of class HTPSpline.\n")
     }
   }
   if (!inherits(serieOut, "data.frame")) {
@@ -720,8 +720,8 @@ removeSerieOut <- function(dat = NULL,
     } else if (!is.null(fitSpline)) {
       fitSpline$coefDat[fitSpline$coefDat[["plotId"]] %in%
                           serieOut[["plotId"]], "obj.coefficients"] <- NA
-      fitSpline$predDat[fitSpline$predDat[["plotId"]] %in%
-                          serieOut[["plotId"]], c("pred.value", "deriv")] <- NA
+      fitSpline$predDat[fitSpline$predDat[["plotId"]] %in% serieOut[["plotId"]],
+                        c("pred.value", "deriv", "deriv2")] <- NA
       modDat <- attr(x = fitSpline, which = "modDat")
       for (trait in traits) {
         modDat[modDat[["plotId"]] %in% serieOut[["plotId"]], trait] <- NA
