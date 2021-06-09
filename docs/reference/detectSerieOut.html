@@ -47,7 +47,10 @@ outlying time courses, i.e., plants. An outlying time course will have low
 correlation to the majority of time courses. To support the analysis by
 correlations, a principal component analysis is done on the plant
 (time course) by spline coefficient matrix. A PCA plot of the plant scores
-will show the outlying plants." />
+will show the outlying plants. Finally the pairwise-ratios of the slopes of
+a linear model fitted through the spline coefficients are computed. Plants
+are tagged when the average pairwise-ratio is lower the a given threshold
+(thrSlope)." />
 
 
 
@@ -163,7 +166,10 @@ outlying time courses, i.e., plants. An outlying time course will have low
 correlation to the majority of time courses. To support the analysis by
 correlations, a principal component analysis is done on the plant
 (time course) by spline coefficient matrix. A PCA plot of the plant scores
-will show the outlying plants.</p>
+will show the outlying plants. Finally the pairwise-ratios of the slopes of
+a linear model fitted through the spline coefficients are computed. Plants
+are tagged when the average pairwise-ratio is lower the a given threshold
+(<code>thrSlope</code>).</p>
     </div>
 
     <pre class="usage"><span class='fu'>detectSerieOut</span><span class='op'>(</span>
@@ -259,7 +265,8 @@ series of observations.</p>
                            trait <span class='op'>=</span> <span class='st'>"EffpsII_corr"</span>,
                            genotypes <span class='op'>=</span> <span class='va'>subGenoVator</span>,
                            thrCor <span class='op'>=</span> <span class='fl'>0.9</span>,
-                           thrPca <span class='op'>=</span> <span class='fl'>30</span><span class='op'>)</span>
+                           thrPca <span class='op'>=</span> <span class='fl'>30</span>,
+                           thrSlope <span class='op'>=</span> <span class='fl'>0.7</span><span class='op'>)</span>
 
 <span class='co'>## The `outVator` can be visualized for selected genotypes.</span>
 <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>outVator</span>, genotypes <span class='op'>=</span> <span class='st'>"G151"</span><span class='op'>)</span>

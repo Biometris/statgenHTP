@@ -56,7 +56,7 @@
 #'                            genotypes = subGenoVator,
 #'                            thrCor = 0.9,
 #'                            thrPca = 30,
-#'                            thrSpline = 0.7)
+#'                            thrSlope = 0.7)
 #'
 #' ## The `outVator` can be visualized for selected genotypes.
 #' plot(outVator, genotypes = "G151")
@@ -469,7 +469,7 @@ detectSerieOut <- function(corrDat,
 #'                            genotypes = subGenoVator,
 #'                            thrCor = 0.9,
 #'                            thrPca = 30,
-#'                            thrSpline = 0.7)
+#'                            thrSlope = 0.7)
 #'
 #' ## The `outVator` can be visualized for selected genotypes.
 #' plot(outVator, genotypes = "G151")
@@ -672,7 +672,7 @@ plot.serieOut <- function(x,
 #'                            genotypes = subGenoVator,
 #'                            thrCor = 0.9,
 #'                            thrPca = 30,
-#'                            thrSpline = 0.7)
+#'                            thrSlope = 0.7)
 #'
 #' ## Replace the outliers by NA in the corrected data.
 #' spatCorrectedVatorOut <- removeSerieOut(dat = spatCorrectedVator,

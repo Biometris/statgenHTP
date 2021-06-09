@@ -292,7 +292,7 @@ The numerical time can also be provided by the user using the option <code>useTi
 </tr>
 </tbody>
 </table>
-<p>The coefficients are then used to tag suspect time courses with the function <code><a href="../../reference/detectSerieOut.html">detectSerieOut()</a></code>. This function performs a PCA on the coefficients (from data.frame <code>coefDat</code>) per <code>genotype</code> and calculates the pairwise angle between the plants in the PCA plot. Plants are tagged when the mean angle is above threshold (<code>thrPca)</code>, see the lines <code>reason = angle</code> in the table below. The function also calculates the pairwise-correlation of the coefficients per genotype. Plants are tagged when the correlation is below a given threshold (<code>thrCor</code>), see the lines <code>reason = mean corr</code> in the table below.</p>
+<p>The coefficients are then used to tag suspect time courses with the function <code><a href="../../reference/detectSerieOut.html">detectSerieOut()</a></code>. This function performs a PCA on the coefficients (from data.frame <code>coefDat</code>) per <code>genotype</code> and calculates the pairwise angle between the plants in the PCA plot. Plants are tagged when the mean angle is above threshold (<code>thrPca)</code>, see the lines <code>reason = angle</code> in the table below. The function also calculates the pairwise-correlation of the coefficients per genotype. Plants are tagged when the correlation is below a given threshold (<code>thrCor</code>), see the lines <code>reason = mean corr</code> in the table below. Finally the pairwise-ratios of the slopes of a linear model fitted through the spline coefficients are computed. Plants are tagged when the average pairwise-ratio is lower the a given threshold (<code>thrSlope</code>), see the lines <code>reasion = slope</code> in the table below.</p>
 <p>For obvious reasons, the detection will only work when there are at least three replicates per genotype. Genotypes with less than three replicates will be skipped.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">outVator</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/detectSerieOut.html">detectSerieOut</a></span><span class="op">(</span>corrDat <span class="op">=</span> <span class="va">spatCorrectedVator</span>,
@@ -301,7 +301,8 @@ The numerical time can also be provided by the user using the option <code>useTi
                            trait <span class="op">=</span> <span class="st">"EffpsII_corr"</span>,
                            genotypes <span class="op">=</span> <span class="va">subGenoVator</span>,
                            thrCor <span class="op">=</span> <span class="fl">0.9</span>,
-                           thrPca <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></code></pre></div>
+                           thrPca <span class="op">=</span> <span class="fl">30</span>,
+                           thrSlope <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="center">plotId</th>
@@ -342,20 +343,18 @@ The numerical time can also be provided by the user using the option <code>useTi
 </tr>
 </tbody>
 </table>
-<p>For this subset of genotypes, 4 plants were tagged as outliers:</p>
+<p>For this subset of genotypes, 2 plants were tagged as outliers:</p>
 <ul>
-<li>c21r25 and c9r4 had both low correlations and high angles.</li>
+<li>c21r25 and c9r4 had both low correlations and high angles. In addition c9r4 also had a low average ratio for the slope.</li>
 </ul>
 <p>The <code>outVator</code> can be visualized by selecting genotypes. Here genotype G151 which has plant c21r25 tagged as outlier:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">outVator</span>, genotypes <span class="op">=</span> <span class="st">"G151"</span><span class="op">)</span></code></pre></div>
-<p><img src="OutlierSerieObs_HTP_files/figure-html/plotOutVator-1.png" width="576"></p>
+<p><img src="OutlierSerieObs_HTP_files/figure-html/plotOutVator-1.png" width="768"></p>
 <p>The figure above contains:</p>
 <ul>
-<li>(top) A scatter plot of the trait value on the y-axis and time on the x-axis. Points are the raw or corrected data and lines are the P-spline predictions, with one color per plant (in legend). Filled dots represent outlying plants, open dots non-outlying plants.<br>
-</li>
-<li>(bottom left) A correlation matrix of the plant scores as a heatmap. The scale is centered on 0.9 to see at a glance the outlying plants with low correlations (usually correlation is high between plants).<br>
-</li>
+<li>(top) A scatter plot of the trait value on the y-axis and time on the x-axis. Points are the raw or corrected data and lines are the P-spline predictions, with one color per plant (in legend). Filled dots represent outlying plants, open dots non-outlying plants.</li>
+<li>(bottom left) A matrix with in the bottom right the correlations of the plant scores as a heatmap. The scale is centered on 0.9 (the correlation threshold) to see at a glance the outlying plants with low correlations (usually correlation is high between plants). The top left of the matrix shows the average slopes as a heatmap. The scale is centered on 0.7 (the slope threshold) to see at a glance the outlying plants with low average slope (usually average slopes are high between plants).</li>
 <li>(bottom right) A PCA plot of the plant scores. Usually, all plants are grouped and the first axis explains most of the variation. When a plant is outlying, it will be located apart from the other plants on the second axis.</li>
 </ul>
 <p>When numerical time was used to fit the splines, it can be used also to plot the outliers using the same options <code>useTimeNumber = TRUE</code> and providing the column name in <code>timeNumber</code>.</p>
@@ -453,7 +452,8 @@ The numerical time can also be provided by the user using the option <code>useTi
                           trait <span class="op">=</span> <span class="st">"LeafArea_corr"</span>,
                           genotypes <span class="op">=</span> <span class="va">subGenoArch</span>,
                           thrCor <span class="op">=</span> <span class="fl">0.9</span>,
-                          thrPca <span class="op">=</span> <span class="fl">6</span>,
+                          thrPca <span class="op">=</span> <span class="fl">10</span>,
+                          thrSlope <span class="op">=</span> <span class="fl">0.8</span>,
                           geno.decomp <span class="op">=</span> <span class="st">"geno.decomp"</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
@@ -463,33 +463,17 @@ The numerical time can also be provided by the user using the option <code>useTi
 <th align="center">reason</th>
 <th align="center">value</th>
 </tr></thead>
-<tbody>
-<tr class="odd">
-<td align="center">c12r6</td>
-<td align="center">GenoA04</td>
-<td align="center">WD_Panel1</td>
-<td align="center">angle</td>
-<td align="center">8.075109</td>
-</tr>
-<tr class="even">
-<td align="center">c27r22</td>
-<td align="center">GenoB07</td>
-<td align="center">WD_Panel2</td>
-<td align="center">angle</td>
-<td align="center">6.398537</td>
-</tr>
-<tr class="odd">
+<tbody><tr class="odd">
 <td align="center">c7r2</td>
 <td align="center">GenoB07</td>
 <td align="center">WD_Panel2</td>
 <td align="center">angle</td>
-<td align="center">12.966133</td>
-</tr>
-</tbody>
+<td align="center">12.96613</td>
+</tr></tbody>
 </table>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">outArch</span>, genotypes <span class="op">=</span> <span class="st">"GenoB07"</span><span class="op">)</span></code></pre></div>
-<p><img src="OutlierSerieObs_HTP_files/figure-html/plotOutArch-1.png" width="576"><img src="OutlierSerieObs_HTP_files/figure-html/plotOutArch-2.png" width="576"></p>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">outArch</span>, genotypes <span class="op">=</span> <span class="st">"GenoB07"</span>, geno.decomp <span class="op">=</span> <span class="st">"WD_Panel2"</span><span class="op">)</span></code></pre></div>
+<p><img src="OutlierSerieObs_HTP_files/figure-html/plotOutArch-1.png" width="768"></p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">spatCorrectedArchOut</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/removeSerieOut.html">removeSerieOut</a></span><span class="op">(</span>dat <span class="op">=</span> <span class="va">spatCorrectedArch</span>,
                                        serieOut <span class="op">=</span> <span class="va">outArch</span><span class="op">)</span>
@@ -543,7 +527,8 @@ The numerical time can also be provided by the user using the option <code>useTi
                           trait <span class="op">=</span> <span class="st">"tipPos_y"</span>,
                           genotypes <span class="op">=</span> <span class="va">subGenoRoot</span>,
                           thrCor <span class="op">=</span> <span class="fl">0.9</span>,
-                          thrPca <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></code></pre></div>
+                          thrPca <span class="op">=</span> <span class="fl">20</span>,
+                          thrSlope <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">outRoot</span>,
      genotypes <span class="op">=</span> <span class="st">"10"</span><span class="op">)</span></code></pre></div>

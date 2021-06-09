@@ -442,6 +442,9 @@ plot.HTPSpline <- function(x,
 #' ("min"), maximum ("max"), mean, area under the curve ("AUC") or a percentile.
 #' Percentiles should be given as p + percentile. E.g. for the 10th percentile
 #' specify what = "p10"
+#' @param AUCScale The area under the curve is dependent on the scale used on
+#' the x-axis. By default the area is computed assuming a scale in minutes. This
+#' can be changed to either hours or days.
 #' @param timeMin The lower bound of the time interval from which the
 #' estimates should be extracted. If \code{NULL} the smallest time value for
 #' which the splines were fitted is used.
@@ -481,6 +484,7 @@ estimateSplineParameters <- function(HTPSpline,
                                      estimate = c("predictions", "derivatives",
                                                   "derivatives2"),
                                      what = c("min", "max", "mean", "AUC", "p"),
+                                     AUCScale = c("min", "hour", "day"),
                                      timeMin = NULL,
                                      timeMax = NULL,
                                      genotypes = NULL,
@@ -545,28 +549,24 @@ estimateSplineParameters <- function(HTPSpline,
                        predDat[[timeVar]] <= timeMax, ]
   ## Area under the curve corresponds to sum.
   if (what == "AUC") {
-    estFun <- "sum"
-    # estFun <- "AUCFun"
-    # AUCFun <- function(x, y) {
-    #   splineFun <- stats::splinefun(y, x, method = "natural")
-    #   stats::integrate(myfunction, lower = timeMin, upper = timeMax,
-    #                    subdivisions = 100)$value
-    # }
-    # res <- aggregate(x = predDat[c(timeVar, estVar)],
-    #                  by = predDat[c("genotype", if (useGenoDecomp) "geno.decomp",
-    #                                 if (fitLevel == "plotId") "plotId")],
-    #                  FUN = function(df) {
-    #                    splineFun <- stats::splinefun(x = df[[timeVar]],
-    #                                                  y = df[[estVar]],
-    #                                                  method = "natural")
-    #                    stats::integrate(myfunction, lower = timeMin,
-    #                                     upper = timeMax,
-    #                                     subdivisions = 100)$value
-    #                  })
+    intWidth <- diff(predDat[1:2, timeVar])
+    if (timeVar == "timePoint") {
+      ## x-axis scale for time variables as computed by diff is in minutes.
+      ## For conversino to hours/days divide by appropriate factor.
+      AUCScale <- match.arg(AUCScale)
+      if (AUCScale == "hour") {
+        intWidth <- intWidth / 60
+      } else if (AUCScale == "day") {
+        intWidth <- intWidth / (24 * 60)
+      }
+    }
+    estFun <- function(x, ...) {
+      ## All intervals have the same (small) width.
+      ## Just summing and multiplying by this width gives a good
+      ## approximation of the area under the curve.
+      return(as.numeric(sum(x) * intWidth))
+    }
   }
-
-
-
   ## Percentiles are calculated using quantile
   if (substr(what, 1, 1) == "p") estFun <- "quantile"
   ## Get estimates.
@@ -574,7 +574,8 @@ estimateSplineParameters <- function(HTPSpline,
                    by = predDat[c("genotype", if (useGenoDecomp) "geno.decomp",
                                   if (fitLevel == "plotId") "plotId")],
                    FUN = estFun,
-                   probs = if (estFun == "quantile") percentile)
+                   probs = if (is.character(estFun) &&
+                               estFun == "quantile") percentile)
   colnames(res)[colnames(res) == "x"] <- paste0(what, "_", estimate)
   ## For min and max get corresponding time point.
   if (what %in% c("min", "max")) {

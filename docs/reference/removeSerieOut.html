@@ -220,7 +220,8 @@ are replaced by NA.</p>
                            trait <span class='op'>=</span> <span class='st'>"EffpsII_corr"</span>,
                            genotypes <span class='op'>=</span> <span class='va'>subGenoVator</span>,
                            thrCor <span class='op'>=</span> <span class='fl'>0.9</span>,
-                           thrPca <span class='op'>=</span> <span class='fl'>30</span><span class='op'>)</span>
+                           thrPca <span class='op'>=</span> <span class='fl'>30</span>,
+                           thrSlope <span class='op'>=</span> <span class='fl'>0.7</span><span class='op'>)</span>
 
 <span class='co'>## Replace the outliers by NA in the corrected data.</span>
 <span class='va'>spatCorrectedVatorOut</span> <span class='op'>&lt;-</span> <span class='fu'>removeSerieOut</span><span class='op'>(</span>dat <span class='op'>=</span> <span class='va'>spatCorrectedVator</span>,

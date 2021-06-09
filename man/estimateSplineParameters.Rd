@@ -8,6 +8,7 @@ estimateSplineParameters(
   HTPSpline,
   estimate = c("predictions", "derivatives", "derivatives2"),
   what = c("min", "max", "mean", "AUC", "p"),
+  AUCScale = c("min", "hour", "day"),
   timeMin = NULL,
   timeMax = NULL,
   genotypes = NULL,
@@ -26,6 +27,10 @@ extracted, the predictions, the first derivatives or the second derivatives
 ("min"), maximum ("max"), mean, area under the curve ("AUC") or a percentile.
 Percentiles should be given as p + percentile. E.g. for the 10th percentile
 specify what = "p10"}
+
+\item{AUCScale}{The area under the curve is dependent on the scale used on
+the x-axis. By default the area is computed assuming a scale in minutes. This
+can be changed to either hours or days.}
 
 \item{timeMin}{The lower bound of the time interval from which the
 estimates should be extracted. If \code{NULL} the smallest time value for

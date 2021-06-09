@@ -158,6 +158,7 @@ specified interval.</p>
   <span class='va'>HTPSpline</span>,
   estimate <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"predictions"</span>, <span class='st'>"derivatives"</span>, <span class='st'>"derivatives2"</span><span class='op'>)</span>,
   what <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"min"</span>, <span class='st'>"max"</span>, <span class='st'>"mean"</span>, <span class='st'>"AUC"</span>, <span class='st'>"p"</span><span class='op'>)</span>,
+  AUCScale <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"min"</span>, <span class='st'>"hour"</span>, <span class='st'>"day"</span><span class='op'>)</span>,
   timeMin <span class='op'>=</span> <span class='cn'>NULL</span>,
   timeMax <span class='op'>=</span> <span class='cn'>NULL</span>,
   genotypes <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -184,6 +185,12 @@ extracted, the predictions, the first derivatives or the second derivatives
 ("min"), maximum ("max"), mean, area under the curve ("AUC") or a percentile.
 Percentiles should be given as p + percentile. E.g. for the 10th percentile
 specify what = "p10"</p></td>
+    </tr>
+    <tr>
+      <th>AUCScale</th>
+      <td><p>The area under the curve is dependent on the scale used on
+the x-axis. By default the area is computed assuming a scale in minutes. This
+can be changed to either hours or days.</p></td>
     </tr>
     <tr>
       <th>timeMin</th>

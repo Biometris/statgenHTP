@@ -365,7 +365,6 @@ fit.splineOut <- removeSerieOut(fitSpline = fit.spline,
 
 The final step in the HTP data analysis is extracting interesting parameters from the modeled time courses. The parameters can then be further analyzed, for example in a GxE analysis (see [*statgenGxE*](https://biometris.github.io/statgenGxE/index.html)), or a genetic analysis (see [*statgenGWAS*](https://biometris.github.io/statgenGWAS/index.html)).
 
-
 ```{r paramVator, fig.height=2, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 subGenoVator <- c("G160", "G151")
 paramVator1 <- 
