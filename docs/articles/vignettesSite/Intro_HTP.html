@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">statgenHTP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.1.1</span>
       </span>
     </div>
 
@@ -99,13 +99,13 @@
 
       
 
-      </header><script src="Intro_HTP_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
+      </header><script src="Intro_HTP_files/header-attrs-2.8/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>statgenHTP tutorial: 1. Introduction, data description and preparation</h1>
                         <h4 class="author">Emilie Millet, Bart-Jan van Rossum</h4>
             
-            <h4 class="date">2021-03-09</h4>
+            <h4 class="date">2021-06-09</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Biometris/statgenHTP/blob/master/vignettes/vignettesSite/Intro_HTP.Rmd"><code>vignettes/vignettesSite/Intro_HTP.Rmd</code></a></small>
       <div class="hidden name"><code>Intro_HTP.Rmd</code></div>
@@ -245,18 +245,18 @@
 <p>In this dataset, there are two genotypic panels (<code>population</code>) and two water scenarios (<code>Scenario</code>), well-watered (WW) and water deficit (WD). The first population contains 60 genotypes (<code>geno</code>) with 14 replicates: 7 in WW and 7 in WD. The second population contains 30 genotypes with 8 replicates, 4 in WW and 4 in WD.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"PhenoarchDat1"</span><span class="op">)</span></code></pre></div>
-<p>The leaf area and the biomass of individual plants are estimated from images taken in 13 directions. Briefly, pixels extracted from RGB images are converted into biomass and leaf area (<span class="citation">(Brichet et al. 2017)</span>). Time courses for biomass (<code>Biomass_Estimated</code>) and leaf area (<code>LA_Estimated</code>) are expressed as a function of thermal time (<code>TT</code>). The height of each plants (<code>Height_Estimated</code>) is also estimated from the pictures. The number of visible leaves (<code>count_leaf</code>) is counted at least once a week on each plant. To prevent errors in leaf counting, leaves 5 and 10 of each plant are marked soon after appearance. The <code>phyllocron</code> is calculated as the slope of the linear regression of number of leaves on thermal time before the beginning of the water deficit.</p>
+<p>The leaf area and the biomass of individual plants are estimated from images taken in 13 directions. Briefly, pixels extracted from RGB images are converted into biomass and leaf area (<span class="citation">(Brichet et al. 2017)</span>). Time courses for biomass (<code>Biomass</code>) and leaf area (<code>LeafArea</code>) are expressed as a function of thermal time (<code>TT</code>). The height of each plants (<code>PlantHeight</code>) is also estimated from the pictures. The number of visible leaves (<code>LeafCount</code>) is counted at least once a week on each plant. To prevent errors in leaf counting, leaves 5 and 10 of each plant are marked soon after appearance. The <code>phyllocron</code> is calculated as the slope of the linear regression of number of leaves on thermal time before the beginning of the water deficit.</p>
 <p>The unique ID of the plant is recorded (<code>pos</code>), together with the pot position in row (<code>Row</code>) and in column (<code>Col</code>).</p>
 <table class="table">
 <thead><tr class="header">
 <th align="center">Date</th>
 <th align="center">pos</th>
-<th align="center">geno</th>
+<th align="center">Genotype</th>
 <th align="center">Scenario</th>
 <th align="center">population</th>
 <th align="center">Row</th>
 <th align="center">Col</th>
-<th align="center">Biomass_Estimated</th>
+<th align="center">Biomass</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -622,17 +622,20 @@
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">phenoTParch</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/createTimePoints.html">createTimePoints</a></span><span class="op">(</span>dat <span class="op">=</span> <span class="va">PhenoarchDat1</span>,
                                 experimentName <span class="op">=</span> <span class="st">"Phenoarch"</span>,
-                                genotype <span class="op">=</span> <span class="st">"geno"</span>,
-                                timePoint <span class="op">=</span> <span class="st">"Time"</span>,
+                                genotype <span class="op">=</span> <span class="st">"Genotype"</span>,
+                                timePoint <span class="op">=</span> <span class="st">"Date"</span>,
                                 plotId <span class="op">=</span> <span class="st">"pos"</span>,
                                 rowNum <span class="op">=</span> <span class="st">"Row"</span>,
                                 colNum <span class="op">=</span> <span class="st">"Col"</span><span class="op">)</span>
+<span class="co">#&gt; Warning: More than 5 plotIds have observations for less than 50% of the time points. The first 5 are printed, to see them all run</span>
+<span class="co">#&gt;               attr(..., 'plotLimObs') on the output</span>
+<span class="co">#&gt; c10r36, c11r54, c12r47, c15r30, c18r9</span>
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">phenoTParch</span><span class="op">)</span>
 <span class="co">#&gt; phenoTParch contains data for experiment Phenoarch.</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; It contains 35 time points.</span>
+<span class="co">#&gt; It contains 33 time points.</span>
 <span class="co">#&gt; First time point: 2017-04-13 </span>
-<span class="co">#&gt; Last time point: 2017-05-17 </span>
+<span class="co">#&gt; Last time point: 2017-05-15 </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; No check genotypes are defined.</span></code></pre></div>
 <p>The “phenoTParch” object just created is a <code>list</code> with 35 items, one for each time points in the original <code>data.frame</code> (called “PhenoarchDat1,” see section <a href="#ex2">3.2</a>). We can visualize the layout and the raw data the same way as for the Phenovator data.</p>
@@ -640,7 +643,7 @@
 <p>Note that for the raw data, we can use the <code>geno.decomp</code> option to split the genotypes using the water scenario. Doing so, we can visualize the difference between the irrigation levels for two genotypes: the leaf area in WW is larger than in WD and the slope of the leaf area progression also seems to be larger:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">phenoTParch</span>, 
-     traits <span class="op">=</span> <span class="st">"LA_Estimated"</span>,
+     traits <span class="op">=</span> <span class="st">"LeafArea"</span>,
      plotType <span class="op">=</span> <span class="st">"raw"</span>,
      genotypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"GenoA01"</span>, <span class="st">"GenoA02"</span><span class="op">)</span>,
      geno.decomp <span class="op">=</span> <span class="st">"Scenario"</span><span class="op">)</span></code></pre></div>

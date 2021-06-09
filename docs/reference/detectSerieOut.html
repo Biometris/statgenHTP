@@ -79,7 +79,7 @@ will show the outlying plants." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">statgenHTP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.1.1</span>
       </span>
     </div>
 
@@ -174,7 +174,8 @@ will show the outlying plants.</p>
   genotypes <span class='op'>=</span> <span class='cn'>NULL</span>,
   geno.decomp <span class='op'>=</span> <span class='cn'>NULL</span>,
   thrCor <span class='op'>=</span> <span class='fl'>0.9</span>,
-  thrPca <span class='op'>=</span> <span class='fl'>30</span>
+  thrPca <span class='op'>=</span> <span class='fl'>30</span>,
+  thrSlope <span class='op'>=</span> <span class='fl'>0.7</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -218,6 +219,11 @@ based on correlation between plots.</p></td>
       <td><p>A numerical value used as threshold for determining outliers
 based on angles (in degrees) between PCA scores.</p></td>
     </tr>
+    <tr>
+      <th>thrSlope</th>
+      <td><p>A numerical value used as threshold for determining outliers
+based on slopes.</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -257,7 +263,7 @@ series of observations.</p>
 
 <span class='co'>## The `outVator` can be visualized for selected genotypes.</span>
 <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>outVator</span>, genotypes <span class='op'>=</span> <span class='st'>"G151"</span><span class='op'>)</span>
-</div><div class='img'><img src='detectSerieOut-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; Failed to get face: , 0</div><div class='input'><span class='co'># }</span>
+</div><div class='img'><img src='detectSerieOut-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># }</span>
 
 </div></pre>
   </div>

@@ -10,8 +10,9 @@ A data.frame with 37,038 rows and 9 columns:
 \item{timeNumber}{Time number obtained after formatting the original
 dataset with the function createTP.}
 \item{timePoint}{Original time point.}
-\item{Biomass_Estimated_corr}{Biomass, corrected data}
-\item{Biomass_Estimated}{Biomass from the picture, raw data}
+\item{LeafArea_corr}{Leaf area, corrected data}
+\item{LeafArea}{Leaf area from the picture, raw data}
+\item{wt}{Weight factor}
 \item{genotype}{Genotypes}
 \item{geno.decomp}{Combination of treatment levels to decompose the
 genotypic variance (see vignettes)}

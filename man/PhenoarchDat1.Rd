@@ -9,17 +9,16 @@ A data.frame with 42,536 rows and 14 columns:
 \describe{
 \item{Date}{Date of measurement}
 \item{pos}{Unique pot using rowcol coordinate}
-\item{geno}{Genotype}
+\item{Genotype}{Genotype}
 \item{Scenario}{Water regime, WW or WD}
 \item{population}{Panel 1 or 2}
 \item{Row}{Pot position on the conveyor belt (i.e. row coordinate)}
 \item{Col}{Line of conveyor belt (i.e. column coordinate)}
-\item{Biomass_Estimated}{Biomass from the picture}
-\item{LA_Estimated}{Leaf area from the picture}
-\item{Height_Estimated}{Plant height from the picture}
-\item{count_leaf}{Number of leaves manually scored}
+\item{Biomass}{Biomass from the picture}
+\item{LeafArea}{Leaf area from the picture}
+\item{PlantHeight}{Plant height from the picture}
+\item{LeafCount}{Number of leaves manually scored}
 \item{phyllocron}{Leaf emission rate}
-\item{TT}{Thermal time cumulated from emergence}
 }
 }
 \usage{
@@ -33,8 +32,8 @@ scenarios, well-watered (WW) and water deficit (WD). There are two
 populations of genotypes, panel 1 and panel 2. Panel 1 contains 60 genotypes
 with 14 replicates: 7 in WW and 7 in WD. Panel 2 contains 30
 genotypes with 8 replicates, 4 in WW and 4 in WD. The studied trait is the
-leaf area extracted from the pictures over time (LA_Estimated).
-Plants were pictured every day for 35 days. This dataset was kindly
+leaf area extracted from the pictures over time (LeafArea).
+Plants were pictured every day for 33 days. This dataset was kindly
 provided by Llorenç Cabrera-Bosquet and Claude Welcker.
 }
 \references{

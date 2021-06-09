@@ -73,7 +73,7 @@ In this dataset, there are two genotypic panels (`population`) and two water sce
 data("PhenoarchDat1")
 ```
 
-The leaf area and the biomass of individual plants are estimated from images taken in 13 directions. Briefly, pixels extracted from RGB images are converted into biomass and leaf area ([@Brichet2017]). Time courses for biomass (`Biomass_Estimated`) and leaf area (`LA_Estimated`) are expressed as a function of thermal time (`TT`). The height of each plants (`Height_Estimated`) is also estimated from the pictures. The number of visible leaves (`count_leaf`) is counted at least once a week on each plant. To prevent errors in leaf counting, leaves 5 and 10 of each plant are marked soon after appearance. The `phyllocron` is calculated as the slope of the linear regression of number of leaves on thermal time before the beginning of the water deficit.
+The leaf area and the biomass of individual plants are estimated from images taken in 13 directions. Briefly, pixels extracted from RGB images are converted into biomass and leaf area ([@Brichet2017]). Time courses for biomass (`Biomass`) and leaf area (`LeafArea`) are expressed as a function of thermal time (`TT`). The height of each plants (`PlantHeight`) is also estimated from the pictures. The number of visible leaves (`LeafCount`) is counted at least once a week on each plant. To prevent errors in leaf counting, leaves 5 and 10 of each plant are marked soon after appearance. The `phyllocron` is calculated as the slope of the linear regression of number of leaves on thermal time before the beginning of the water deficit.
 
 The unique ID of the plant is recorded (`pos`), together with the pot position in row (`Row`) and in column (`Col`).
 
@@ -277,15 +277,15 @@ A second `TP` object is created containing all the observations in time:
 ```{r createTP2}
 phenoTParch <- createTimePoints(dat = PhenoarchDat1,
                                 experimentName = "Phenoarch",
-                                genotype = "geno",
-                                timePoint = "Time",
+                                genotype = "Genotype",
+                                timePoint = "Date",
                                 plotId = "pos",
                                 rowNum = "Row",
                                 colNum = "Col")
 summary(phenoTParch)
 ```
 
-The "phenoTParch" object just created is a `list` with 35 items, one for each time points in the original `data.frame` (called "PhenoarchDat1", see section [3.2](#ex2)). We can visualize the layout and the raw data the same way as for the Phenovator data.
+The "phenoTParch" object just created is a `list` with 33 items, one for each time point in the original `data.frame` (called "PhenoarchDat1", see section [3.2](#ex2)). We can visualize the layout and the raw data the same way as for the Phenovator data.
 
 ```{r layoutArch, echo=FALSE, fig.align='center', fig.height=5, fig.width=6}
 plot(phenoTParch, 
@@ -298,7 +298,7 @@ Note that for the raw data, we can use the `geno.decomp` option to split the gen
 
 ```{r rawArch, include=TRUE, fig.height=3, fig.width=7, fig.align = 'center'}
 plot(phenoTParch, 
-     traits = "LA_Estimated",
+     traits = "LeafArea",
      plotType = "raw",
      genotypes = c("GenoA01", "GenoA02"),
      geno.decomp = "Scenario")

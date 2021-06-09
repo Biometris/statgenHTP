@@ -74,7 +74,7 @@ fitted spline plot, other observations are shown as open dots." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">statgenHTP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.1.1</span>
       </span>
     </div>
 
@@ -161,6 +161,7 @@ fitted spline plot, other observations are shown as open dots.</p>
   <span class='va'>x</span>,
   <span class='va'>...</span>,
   genotypes <span class='op'>=</span> <span class='cn'>NULL</span>,
+  geno.decomp <span class='op'>=</span> <span class='cn'>NULL</span>,
   useTimeNumber <span class='op'>=</span> <span class='cn'>FALSE</span>,
   timeNumber <span class='op'>=</span> <span class='cn'>NULL</span>,
   title <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -181,7 +182,13 @@ fitted spline plot, other observations are shown as open dots.</p>
     <tr>
       <th>genotypes</th>
       <td><p>A character vector indicating which genotypes should be
-plotted.</p></td>
+plotted. If <code>NULL</code> all genotypes are plotted.</p></td>
+    </tr>
+    <tr>
+      <th>geno.decomp</th>
+      <td><p>A character vector indicating which levels of
+<code>geno.decomp</code> should be plotted. If <code>NULL</code> all levels are plotted.
+Ignored if <code>geno.decomp</code> was not used when fitting models.</p></td>
     </tr>
     <tr>
       <th>useTimeNumber</th>

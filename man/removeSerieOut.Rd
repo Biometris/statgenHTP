@@ -54,7 +54,8 @@ outVator <- detectSerieOut(corrDat = spatCorrectedVator,
                            trait = "EffpsII_corr",
                            genotypes = subGenoVator,
                            thrCor = 0.9,
-                           thrPca = 30)
+                           thrPca = 30,
+                           thrSpline = 0.7)
 
 ## Replace the outliers by NA in the corrected data.
 spatCorrectedVatorOut <- removeSerieOut(dat = spatCorrectedVator,

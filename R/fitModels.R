@@ -111,14 +111,14 @@
 #' data("PhenoarchDat1")
 #' phenoTParch <- createTimePoints(dat = PhenoarchDat1,
 #'                                 experimentName = "Phenoarch",
-#'                                 genotype = "geno",
-#'                                 timePoint = "Time",
+#'                                 genotype = "Genotype",
+#'                                 timePoint = "Date",
 #'                                 plotId = "pos",
 #'                                 rowNum = "Row",
 #'                                 colNum = "Col")
 #'
 #' modPhenoSpGD <- fitModels(TP = phenoTParch,
-#'                           trait = "LA_Estimated",
+#'                           trait = "LeafArea",
 #'                           geno.decomp = c("Scenario", "population"),
 #'                           timePoints = 16)
 #' }

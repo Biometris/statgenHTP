@@ -77,14 +77,43 @@ usethis::use_data(spatCorrectedVator, overwrite = TRUE)
 ####### 2. Phenoarch data set
 #### 2.1 Raw data
 # Read raw data.
-PhenoarchDat1 <- read.csv("./data-raw/Phenoarch_ZA17_extraVariables.csv",
+PhenoarchDat1 <- read.csv("./data-raw/Phenoarch_ZA17.csv",
                           stringsAsFactors = TRUE)
-# Rename genotypes.
-genoArch <- levels(PhenoarchDat1$geno)
-genoArchRen <- genoArch[nchar(genoArch) == 6]
-genoArch[genoArch %in% genoArchRen] <-
-  paste0(substr(genoArchRen, 1, 5), "0", substr(genoArchRen, 6, 6))
-levels(PhenoarchDat1$geno) <- genoArch
+PhenoarchDatExtra <- read.csv("./data-raw/Phenoarch_ZA17_extraVariables.csv",
+                              stringsAsFactors = TRUE)
+
+## Remove data for DAS > 39.
+PhenoarchDat1 <- PhenoarchDat1[PhenoarchDat1[["DAS"]] < 40, ]
+
+## Rename columns.
+colnames(PhenoarchDat1)[colnames(PhenoarchDat1) == "Position"] <- "Row"
+colnames(PhenoarchDat1)[colnames(PhenoarchDat1) == "Line"] <- "Col"
+
+## Merge extra variables.
+PhenoarchDat1[["date"]] <- lubridate::dmy(PhenoarchDat1[["Day"]])
+PhenoarchDatExtra[["date"]] <- lubridate::ymd(PhenoarchDatExtra[["Date"]])
+
+PhenoarchDat1 <- merge(PhenoarchDat1,
+                       PhenoarchDatExtra[c("date", "count_leaf", "phyllocron",
+                                           "Row", "Col")], all.x = TRUE)
+
+## Add extra variables.
+PhenoarchDat1[["pos"]] <- paste0("c", PhenoarchDat1[["Col"]],
+                                 "r", PhenoarchDat1[["Row"]])
+PhenoarchDat1[["Date"]] <- as.character(PhenoarchDat1[["date"]])
+
+colnames(PhenoarchDat1)[colnames(PhenoarchDat1) == "count_leaf"] <- "LeafCount"
+colnames(PhenoarchDat1)[colnames(PhenoarchDat1) == "Panel"] <- "population"
+
+## Replace 0 values by NA.
+PhenoarchDat1[PhenoarchDat1[["LeafArea"]] == 0, "LeafArea"] <- NA
+PhenoarchDat1[PhenoarchDat1[["Biomass"]] == 0, "Biomass"] <- NA
+
+## Reorder columns.
+PhenoarchDat1 <- PhenoarchDat1[c("Date", "pos", "Genotype", "Scenario",
+                                 "population", "Row",  "Col", "Biomass",
+                                 "LeafArea", "PlantHeight", "LeafCount",
+                                 "phyllocron")]
 
 # Export to package
 usethis::use_data(PhenoarchDat1, overwrite = TRUE)
@@ -94,18 +123,18 @@ usethis::use_data(PhenoarchDat1, overwrite = TRUE)
 ## Create csv containing corrected data.
 # Commented out since it runs a long time and the .csv is saved for later use.
 
-# # Create TP object.
+# Create TP object.
 # phenoTParch <- createTimePoints(dat = PhenoarchDat1,
-#                                 experimentName = "Phenoarch", genotype = "geno",
-#                                 timePoint = "Time", plotId = "pos",
-#                                 rowNum = "Row", colNum = "Col")
+#                                 experimentName = "Phenoarch",
+#                                 genotype = "Genotype", timePoint = "Date",
+#                                 plotId = "pos", rowNum = "Row", colNum = "Col")
 # # Detect and remove outliers.
-# resuArchHTP <- detectSingleOut(TP = phenoTParch, trait = "LA_Estimated",
-#                                confIntSize = 5, mylocfit = 0.5)
+# resuArchHTP <- detectSingleOut(TP = phenoTParch, trait = "LeafArea",
+#                                confIntSize = 5, nnLocfit = 0.5)
 # # Fit models.
 # phenoTParchOut <- removeSingleOut(phenoTParch, resuArchHTP)
 #
-# modPhenoSpGD <- fitModels(TP = phenoTParchOut, trait = "LA_Estimated",
+# modPhenoSpGD <- fitModels(TP = phenoTParchOut, trait = "LeafArea",
 #                           geno.decomp = c("Scenario", "population"))
 #
 # # Get and write corrected values and predictions.

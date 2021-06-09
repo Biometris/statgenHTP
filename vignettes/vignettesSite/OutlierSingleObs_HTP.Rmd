@@ -125,8 +125,8 @@ First a `TP` object is created containing all the time points.
 ```{r createTP2, warning=TRUE}
 phenoTParch <- createTimePoints(dat = PhenoarchDat1,
                                 experimentName = "Phenoarch",
-                                genotype = "geno",
-                                timePoint = "Time",
+                                genotype = "Genotype",
+                                timePoint = "Date",
                                 plotId = "pos",
                                 rowNum = "Row",
                                 colNum = "Col")
@@ -139,7 +139,7 @@ We then run the function on a subset of plants to set the parameters, using the 
 plantSelArch <- c("c22r7", "c8r22", "c1r10", "c21r43", "c14r15", "c25r12", "c6r54")
 # Then run on the subset
 resuArchHTP <- detectSingleOut(TP = phenoTParch,
-                               trait = "LA_Estimated",
+                               trait = "LeafArea",
                                plotIds = plantSelArch,
                                confIntSize = 5,
                                nnLocfit = 0.5)
@@ -170,7 +170,7 @@ It is possible to run the outlier detection without first checking if the first 
 ```{r setParamVatorNoEdge}
 # Detect outliers without first checking edges.
 resuArchHTPNoEdges <- detectSingleOut(TP = phenoTParch,
-                                      trait = "LA_Estimated",
+                                      trait = "LeafArea",
                                       plotIds = "c14r15",
                                       checkEdges = FALSE,
                                       confIntSize = 5,
@@ -187,9 +187,9 @@ The annotated points can be replaced by NA for the studied trait using the funct
 phenoTParchOut <- removeSingleOut(phenoTParch,
                                   resuArchHTP)
 # Check one value annotated as outlier in the original TP object
-phenoTParch[[30]][phenoTParch[[30]]$plotId=="c12r31", c("plotId", "LA_Estimated")]
+phenoTParch[[30]][phenoTParch[[30]]$plotId == "c12r31", c("plotId", "LeafArea")]
 # Check the same value in the new TP object
-phenoTParchOut[[30]][phenoTParchOut[[30]]$plotId=="c12r31", c("plotId", "LA_Estimated")]
+phenoTParchOut[[30]][phenoTParchOut[[30]]$plotId == "c12r31", c("plotId", "LeafArea")]
 ```
 
 ## Example 3

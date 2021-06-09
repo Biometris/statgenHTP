@@ -82,7 +82,7 @@ plant height \(res_i &amp;gt; \mu_{res} + qnorm(threshold) * sd_{res}\)
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">statgenHTP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.1.1</span>
       </span>
     </div>
 
@@ -175,8 +175,8 @@ plant height \(res_i &gt; \mu_{res} + qnorm(threshold) * sd_{res}\)</p></dd>
     <pre class="usage"><span class='fu'>detectSingleOutMaize</span><span class='op'>(</span>
   <span class='va'>TP</span>,
   <span class='va'>timeBeforeTrt</span>,
-  trait1 <span class='op'>=</span> <span class='st'>"Biomass_Estimated"</span>,
-  trait2 <span class='op'>=</span> <span class='st'>"Height_Estimated"</span>,
+  trait1 <span class='op'>=</span> <span class='st'>"Biomass"</span>,
+  trait2 <span class='op'>=</span> <span class='st'>"PlantHeight"</span>,
   trait3 <span class='op'>=</span> <span class='st'>"phyllocron"</span>,
   thr <span class='op'>=</span> <span class='fl'>0.95</span>
 <span class='op'>)</span></pre>
@@ -232,15 +232,17 @@ identified as big plants.</p>
 <span class='co'>## Create a TP object containing the data from the PhenoArch.</span>
 <span class='va'>phenoTParch</span> <span class='op'>&lt;-</span> <span class='fu'><a href='createTimePoints.html'>createTimePoints</a></span><span class='op'>(</span>dat <span class='op'>=</span> <span class='va'>PhenoarchDat1</span>,
                                 experimentName <span class='op'>=</span> <span class='st'>"Phenoarch"</span>,
-                                genotype <span class='op'>=</span> <span class='st'>"geno"</span>,
-                                timePoint <span class='op'>=</span> <span class='st'>"Time"</span>,
+                                genotype <span class='op'>=</span> <span class='st'>"Genotype"</span>,
+                                timePoint <span class='op'>=</span> <span class='st'>"Date"</span>,
                                 plotId <span class='op'>=</span> <span class='st'>"pos"</span>,
                                 rowNum <span class='op'>=</span> <span class='st'>"Row"</span>,
                                 colNum <span class='op'>=</span> <span class='st'>"Col"</span><span class='op'>)</span>
-<span class='va'>singleOutMaize</span> <span class='op'>&lt;-</span> <span class='fu'>detectSingleOutMaize</span><span class='op'>(</span><span class='va'>phenoTParch</span>,
+</div><div class='output co'>#&gt; <span class='warning'>Warning: More than 5 plotIds have observations for less than 50% of the time points. The first 5 are printed, to see them all run</span>
+#&gt; <span class='warning'>              attr(..., 'plotLimObs') on the output</span>
+#&gt; <span class='warning'>c10r36, c11r54, c12r47, c15r30, c18r9</span></div><div class='input'><span class='va'>singleOutMaize</span> <span class='op'>&lt;-</span> <span class='fu'>detectSingleOutMaize</span><span class='op'>(</span><span class='va'>phenoTParch</span>,
                                        timeBeforeTrt <span class='op'>=</span> <span class='st'>"2017-04-27"</span>,
-                                       trait1 <span class='op'>=</span> <span class='st'>"Biomass_Estimated"</span>,
-                                       trait2 <span class='op'>=</span> <span class='st'>"Height_Estimated"</span>,
+                                       trait1 <span class='op'>=</span> <span class='st'>"Biomass"</span>,
+                                       trait2 <span class='op'>=</span> <span class='st'>"PlantHeight"</span>,
                                        trait3 <span class='op'>=</span> <span class='st'>"phyllocron"</span>,
                                        thr <span class='op'>=</span> <span class='fl'>0.95</span><span class='op'>)</span>
 <span class='co'># }</span>

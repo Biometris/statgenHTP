@@ -581,15 +581,14 @@ estimateSplineParameters <- function(HTPSpline,
     res <- merge(res, predDat, by.x = colnames(res),
                  by.y = c(colnames(res)[-ncol(res)], estVar))
     res <- res[, 1:(4 + (fitLevel == "plotId"))]
-    colnames(res)[(3 + (fitLevel == "plotId")):(4 + (fitLevel == "plotId"))] <-
-      paste0(what, "_", colnames(res)[(3 + (fitLevel == "plotId")):(4 + (fitLevel == "plotId"))])
+    colnames(res)[ncol(res)] <- paste0(what, "_", colnames(res)[ncol(res)])
   }
   return(res)
 }
 
 #### Helper function for fitting splines.
 
-#' Spectral decompositoin of D'D
+#' Spectral decomposition of D'D
 #'
 #' Spectral decomposition of D'D, returns a q x (q - ord) matrix.
 #' @noRd

@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">statgenHTP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.1.1</span>
       </span>
     </div>
 
@@ -99,13 +99,13 @@
 
       
 
-      </header><script src="OutlierSingleObs_HTP_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
+      </header><script src="OutlierSingleObs_HTP_files/header-attrs-2.8/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>statgenHTP tutorial: 2. Outlier detection for single observations</h1>
                         <h4 class="author">Emilie Millet, Bart-Jan van Rossum, Isabelle Sanchez, Nadine Hilgert</h4>
             
-            <h4 class="date">2021-03-09</h4>
+            <h4 class="date">2021-06-09</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Biometris/statgenHTP/blob/master/vignettes/vignettesSite/OutlierSingleObs_HTP.Rmd"><code>vignettes/vignettesSite/OutlierSingleObs_HTP.Rmd</code></a></small>
       <div class="hidden name"><code>OutlierSingleObs_HTP.Rmd</code></div>
@@ -280,18 +280,21 @@ Heatmap of the biomass estimated at a specific time point (with a color gradient
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">phenoTParch</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/createTimePoints.html">createTimePoints</a></span><span class="op">(</span>dat <span class="op">=</span> <span class="va">PhenoarchDat1</span>,
                                 experimentName <span class="op">=</span> <span class="st">"Phenoarch"</span>,
-                                genotype <span class="op">=</span> <span class="st">"geno"</span>,
-                                timePoint <span class="op">=</span> <span class="st">"Time"</span>,
+                                genotype <span class="op">=</span> <span class="st">"Genotype"</span>,
+                                timePoint <span class="op">=</span> <span class="st">"Date"</span>,
                                 plotId <span class="op">=</span> <span class="st">"pos"</span>,
                                 rowNum <span class="op">=</span> <span class="st">"Row"</span>,
-                                colNum <span class="op">=</span> <span class="st">"Col"</span><span class="op">)</span></code></pre></div>
+                                colNum <span class="op">=</span> <span class="st">"Col"</span><span class="op">)</span>
+<span class="co">#&gt; Warning: More than 5 plotIds have observations for less than 50% of the time points. The first 5 are printed, to see them all run</span>
+<span class="co">#&gt;               attr(..., 'plotLimObs') on the output</span>
+<span class="co">#&gt; c10r36, c11r54, c12r47, c15r30, c18r9</span></code></pre></div>
 <p>We then run the function on a subset of plants to set the parameters, using the <code>plotIds</code> option. The smoothing parameter <code>nnLocfit</code> is set at 0.5. The curves are linear and medium smooth is enough. The confidence interval size <code>confIntSize</code> is set at 5 which is a medium interval.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># First select a subset of plants, for example here 7 plants </span>
 <span class="va">plantSelArch</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"c22r7"</span>, <span class="st">"c8r22"</span>, <span class="st">"c1r10"</span>, <span class="st">"c21r43"</span>, <span class="st">"c14r15"</span>, <span class="st">"c25r12"</span>, <span class="st">"c6r54"</span><span class="op">)</span>
 <span class="co"># Then run on the subset</span>
 <span class="va">resuArchHTP</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/detectSingleOut.html">detectSingleOut</a></span><span class="op">(</span>TP <span class="op">=</span> <span class="va">phenoTParch</span>,
-                               trait <span class="op">=</span> <span class="st">"LA_Estimated"</span>,
+                               trait <span class="op">=</span> <span class="st">"LeafArea"</span>,
                                plotIds <span class="op">=</span> <span class="va">plantSelArch</span>,
                                confIntSize <span class="op">=</span> <span class="fl">5</span>,
                                nnLocfit <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></code></pre></div>
@@ -300,7 +303,7 @@ Heatmap of the biomass estimated at a specific time point (with a color gradient
 <th align="left"></th>
 <th align="center">plotId</th>
 <th align="center">timePoint</th>
-<th align="center">LA_Estimated</th>
+<th align="center">LeafArea</th>
 <th align="center">yPred</th>
 <th align="center">sd_yPred</th>
 <th align="center">lwr</th>
@@ -381,7 +384,7 @@ Heatmap of the biomass estimated at a specific time point (with a color gradient
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Detect outliers without first checking edges.</span>
 <span class="va">resuArchHTPNoEdges</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/detectSingleOut.html">detectSingleOut</a></span><span class="op">(</span>TP <span class="op">=</span> <span class="va">phenoTParch</span>,
-                                      trait <span class="op">=</span> <span class="st">"LA_Estimated"</span>,
+                                      trait <span class="op">=</span> <span class="st">"LeafArea"</span>,
                                       plotIds <span class="op">=</span> <span class="st">"c14r15"</span>,
                                       checkEdges <span class="op">=</span> <span class="cn">FALSE</span>,
                                       confIntSize <span class="op">=</span> <span class="fl">5</span>,
@@ -394,13 +397,13 @@ Heatmap of the biomass estimated at a specific time point (with a color gradient
 <code class="sourceCode R"><span class="va">phenoTParchOut</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/removeSingleOut.html">removeSingleOut</a></span><span class="op">(</span><span class="va">phenoTParch</span>,
                                   <span class="va">resuArchHTP</span><span class="op">)</span>
 <span class="co"># Check one value annotated as outlier in the original TP object</span>
-<span class="va">phenoTParch</span><span class="op">[[</span><span class="fl">30</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="va">phenoTParch</span><span class="op">[[</span><span class="fl">30</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">plotId</span><span class="op">==</span><span class="st">"c12r31"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"plotId"</span>, <span class="st">"LA_Estimated"</span><span class="op">)</span><span class="op">]</span>
-<span class="co">#&gt;       plotId LA_Estimated</span>
-<span class="co">#&gt; 37368 c12r31    0.2447164</span>
+<span class="va">phenoTParch</span><span class="op">[[</span><span class="fl">30</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="va">phenoTParch</span><span class="op">[[</span><span class="fl">30</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">plotId</span> <span class="op">==</span> <span class="st">"c12r31"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"plotId"</span>, <span class="st">"LeafArea"</span><span class="op">)</span><span class="op">]</span>
+<span class="co">#&gt;       plotId  LeafArea</span>
+<span class="co">#&gt; 16673 c12r31 0.2447164</span>
 <span class="co"># Check the same value in the new TP object</span>
-<span class="va">phenoTParchOut</span><span class="op">[[</span><span class="fl">30</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="va">phenoTParchOut</span><span class="op">[[</span><span class="fl">30</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">plotId</span><span class="op">==</span><span class="st">"c12r31"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"plotId"</span>, <span class="st">"LA_Estimated"</span><span class="op">)</span><span class="op">]</span>
-<span class="co">#&gt;       plotId LA_Estimated</span>
-<span class="co">#&gt; 37368 c12r31    0.2447164</span></code></pre></div>
+<span class="va">phenoTParchOut</span><span class="op">[[</span><span class="fl">30</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="va">phenoTParchOut</span><span class="op">[[</span><span class="fl">30</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">plotId</span> <span class="op">==</span> <span class="st">"c12r31"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"plotId"</span>, <span class="st">"LeafArea"</span><span class="op">)</span><span class="op">]</span>
+<span class="co">#&gt;       plotId  LeafArea</span>
+<span class="co">#&gt; 16673 c12r31 0.2447164</span></code></pre></div>
 </div>
 <div id="example-3" class="section level2">
 <h2 class="hasAnchor">

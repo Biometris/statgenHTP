@@ -7,8 +7,8 @@
 detectSingleOutMaize(
   TP,
   timeBeforeTrt,
-  trait1 = "Biomass_Estimated",
-  trait2 = "Height_Estimated",
+  trait1 = "Biomass",
+  trait2 = "PlantHeight",
   trait3 = "phyllocron",
   thr = 0.95
 )
@@ -53,15 +53,15 @@ plant height \eqn{res_i > \mu_{res} + qnorm(threshold) * sd_{res}}}
 ## Create a TP object containing the data from the PhenoArch.
 phenoTParch <- createTimePoints(dat = PhenoarchDat1,
                                 experimentName = "Phenoarch",
-                                genotype = "geno",
-                                timePoint = "Time",
+                                genotype = "Genotype",
+                                timePoint = "Date",
                                 plotId = "pos",
                                 rowNum = "Row",
                                 colNum = "Col")
 singleOutMaize <- detectSingleOutMaize(phenoTParch,
                                        timeBeforeTrt = "2017-04-27",
-                                       trait1 = "Biomass_Estimated",
-                                       trait2 = "Height_Estimated",
+                                       trait1 = "Biomass",
+                                       trait2 = "PlantHeight",
                                        trait3 = "phyllocron",
                                        thr = 0.95)
 }

@@ -319,7 +319,7 @@ The table below gives an overview of the effective dimensions and an explanation
 
 When ASReml is used for modeling and `spatial = TRUE`, four models are fitted with different random terms and covariance structures. The best model is determined based on a goodness-of-fit criterion, AIC, on 20% of the time points or at least 10 time points. The best model is then run on all time points. As for SpATS, all the ASReml models can be extended by fitting extra fixed factors using the option `extraFixedFactors`. 
 
-> *Note that for the moment, it is only running with ASReml-R version 4 only.*
+> *Note that for the moment, it is only running with ASReml-R version 4 or higher.*
 
 | OPTION | MODEL FITTED | SPATIAL TERM |
 |----------------------|------------------------------------------|-----------------|
@@ -409,13 +409,13 @@ We will use the `TP` object **phenoTParchOut** in which annotated time points ha
 ```{r createTP2, warning=FALSE, echo=FALSE}
 phenoTParch <- createTimePoints(dat = PhenoarchDat1,
                                 experimentName = "Phenoarch",
-                                genotype = "geno",
-                                timePoint = "Time",
+                                genotype = "Genotype",
+                                timePoint = "Date",
                                 plotId = "pos",
                                 rowNum = "Row",
                                 colNum = "Col")
 resuArchHTP <- detectSingleOut(TP = phenoTParch,
-                               trait = "LA_Estimated",
+                               trait = "LeafArea",
                                confIntSize = 5,
                                nnLocfit = 0.5)
 phenoTParchOut <- removeSingleOut(phenoTParch,
@@ -425,15 +425,15 @@ phenoTParchOut <- removeSingleOut(phenoTParch,
 We can first check the number of time points containing data for a given trait:
 
 ```{r checkTP2, echo=TRUE}
-countValid(phenoTParchOut, "LA_Estimated")
+countValid(phenoTParchOut, "LeafArea")
 ```
 
-In this case, time point "2017-05-14" has only 488 observation, less than half of the total number of observation. It can bias the modeling at this time point and one may want to remove it before running the spatial analysis. 
+In this case, time point "2017-05-14" has only 455 observations, less than half of the total number of observations. It can bias the modeling at this time point and one may want to remove it before running the spatial analysis. 
 
 ```{r rmTP2, echo=TRUE}
 # getTimePoints(phenoTParchOut)
 phenoTParchOut <- removeTimePoints(phenoTParchOut,
-                                    timePoints = 32)
+                                   timePoints = 32)
 ```
 
 ## Modeling
@@ -447,15 +447,15 @@ The table below provides one example with three models:
 | geno.decomp = "treatment", useCheck = TRUE, extraFixedFactors = "covar1" | SpATS | $y$ = $\mu$ + *treatment* + *treatment:covar1* + *treatment:check* + **treatment:genoCheck** + **rowId** + **colId** + **$\epsilon$** |  PSANOVA |
 | spatial = TRUE, geno.decomp = "treatment" | ASReml | $y$ = $\mu$ + *treatment* + **treatment:genotype** + **rowId** + **colId** + **$\epsilon$** | AR1(rowId):AR1(colId) |
 
-> *NOTE: At the moment, it is not possible to use the combination of `geno.decomp` and `what = "fixed".*
+> *NOTE: At the moment, it is not possible to use the combination of `geno.decomp` and `what = "fixed"`.*
 
 Using the Phenoarch example, we will apply a genotype decomposition using the variables "Scenario" and "population":
 
 ```{r fitSpGD, message=FALSE, eval=TRUE}
 modPhenoSpGD <- fitModels(TP = phenoTParchOut,
-                          trait = "LA_Estimated",
+                          trait = "LeafArea",
                           geno.decomp = c("Scenario", "population"),
-                          timePoints = seq(from = 1, to = 35, by = 3))
+                          timePoints = seq(from = 1, to = 33, by = 3))
 ```
 
 ## Output
@@ -492,7 +492,7 @@ knitr::kable(head(genoHeritSpGD), align = c('c','c','c','c'), padding = 0)
 ```{r plotSpHeritGD, echo=FALSE, fig.align='center', fig.height=3, fig.width=5, message=FALSE}
 plot(modPhenoSpGD, 
      plotType = "herit",
-     yLim = c(0.4,1))
+     yLim = c(0.4, 1))
 ```
 
 The prediction and corrected data plots display one plot per combination genotype × geno.decomp.

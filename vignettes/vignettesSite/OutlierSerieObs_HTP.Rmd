@@ -100,7 +100,7 @@ The object `fit.spline` also contains the values of the P-splines coefficients:
 knitr::kable(head(coefDat), align=c('c','c'), booktabs = TRUE)
 ```
 
-The coefficients are then used to tag suspect time courses with the function `detectSerieOut()`. This function performs a PCA on the coefficients (from data.frame `coefDat`) per `genotype` and calculates the pairwise angle between the plants in the PCA plot. Plants are tagged when the mean angle is above threshold (`thrPca)`, see the lines `reason = angle` in the table below. The function also calculates the pairwise-correlation of the coefficients per genotype. Plants are tagged when the correlation is below a given threshold (`thrCor`), see the lines `reason = mean corr` in the table below.
+The coefficients are then used to tag suspect time courses with the function `detectSerieOut()`. This function performs a PCA on the coefficients (from data.frame `coefDat`) per `genotype` and calculates the pairwise angle between the plants in the PCA plot. Plants are tagged when the mean angle is above threshold (`thrPca)`, see the lines `reason = angle` in the table below. The function also calculates the pairwise-correlation of the coefficients per genotype. Plants are tagged when the correlation is below a given threshold (`thrCor`), see the lines `reason = mean corr` in the table below. Finally the pairwise-ratios of the slopes of a linear model fitted through the spline coefficients are computed. Plants are tagged when the average pairwise-ratio is lower the a given threshold (`thrSlope`), see the lines `reasion = slope` in the table below.
 
 For obvious reasons, the detection will only work when there are at least three replicates per genotype. Genotypes with less than three replicates will be skipped.
 
@@ -111,27 +111,28 @@ outVator <- detectSerieOut(corrDat = spatCorrectedVator,
                            trait = "EffpsII_corr",
                            genotypes = subGenoVator,
                            thrCor = 0.9,
-                           thrPca = 30)
+                           thrPca = 30,
+                           thrSlope = 0.7)
 ```
 
 ```{r headOutPoint, echo=FALSE, message=FALSE, eval=TRUE}
 knitr::kable(head(outVator), align=c('c','c'), booktabs = TRUE, row.names=F)
 ```
 
-For this subset of genotypes, 4 plants were tagged as outliers:
+For this subset of genotypes, 2 plants were tagged as outliers:
 
--   c21r25 and c9r4 had both low correlations and high angles.
+-   c21r25 and c9r4 had both low correlations and high angles. In addition c9r4 also had a low average ratio for the slope.
 
 The `outVator` can be visualized by selecting genotypes. Here genotype G151 which has plant c21r25 tagged as outlier:
 
-```{r plotOutVator,  fig.height=6, fig.width=6, echo=TRUE, message=FALSE, warning=FALSE}
+```{r plotOutVator,  fig.height=6, fig.width=8, echo=TRUE, message=FALSE, warning=FALSE}
 plot(outVator, genotypes = "G151")
 ```
 
 The figure above contains:
 
--   (top) A scatter plot of the trait value on the y-axis and time on the x-axis. Points are the raw or corrected data and lines are the P-spline predictions, with one color per plant (in legend). Filled dots represent outlying plants, open dots non-outlying plants.\
--   (bottom left) A correlation matrix of the plant scores as a heatmap. The scale is centered on 0.9 to see at a glance the outlying plants with low correlations (usually correlation is high between plants).\
+-   (top) A scatter plot of the trait value on the y-axis and time on the x-axis. Points are the raw or corrected data and lines are the P-spline predictions, with one color per plant (in legend). Filled dots represent outlying plants, open dots non-outlying plants.
+-   (bottom left) A matrix with in the bottom right the correlations of the plant scores as a heatmap. The scale is centered on 0.9 (the correlation threshold) to see at a glance the outlying plants with low correlations (usually correlation is high between plants). The top left of the matrix shows the average slopes as a heatmap. The scale is centered on 0.7 (the slope threshold) to see at a glance the outlying plants with low average slope (usually average slopes are high between plants).
 -   (bottom right) A PCA plot of the plant scores. Usually, all plants are grouped and the first axis explains most of the variation. When a plant is outlying, it will be located apart from the other plants on the second axis.
 
 When numerical time was used to fit the splines, it can be used also to plot the outliers using the same options `useTimeNumber = TRUE` and providing the column name in `timeNumber`.
@@ -203,7 +204,7 @@ data(spatCorrectedArch)
 subGenoArch <- c("GenoA01", "GenoA02", "GenoA34", "GenoA04", "GenoB01", "GenoB02", "GenoB07")
 
 fit.splineArch <- fitSpline(inDat = spatCorrectedArch, 
-                            trait = "LA_Estimated_corr",
+                            trait = "LeafArea_corr",
                             genotypes = subGenoArch,
                             knots = 30,
                             minNoTP = 18)
@@ -227,10 +228,11 @@ Here, the `geno.decomp` option is also to split the plants of each genotype thos
 outArch <- detectSerieOut(corrDat = spatCorrectedArch,
                           predDat = predDatArch,
                           coefDat = coefDatArch,
-                          trait = "LA_Estimated_corr",
+                          trait = "LeafArea_corr",
                           genotypes = subGenoArch,
                           thrCor = 0.9,
-                          thrPca = 6,
+                          thrPca = 10,
+                          thrSlope = 0.8,
                           geno.decomp = "geno.decomp")
 ```
 
@@ -239,8 +241,8 @@ outArch <- detectSerieOut(corrDat = spatCorrectedArch,
 knitr::kable(head(outArch), align=c('c','c'), booktabs = TRUE, row.names=FALSE)
 ```
 
-```{r plotOutArch,  fig.height=6, fig.width=6, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
-plot(outArch, genotypes = "GenoB07")
+```{r plotOutArch,  fig.height=6, fig.width=8, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+plot(outArch, genotypes = "GenoB07", geno.decomp = "WD_Panel2")
 ```
 
 ```{r rmOutArch}
@@ -249,10 +251,10 @@ spatCorrectedArchOut <- removeSerieOut(dat = spatCorrectedArch,
 # Check for time series outliers in data from which individual outlying 
 # observations were already removed and to which a spatial adjustment has been applied
 head(spatCorrectedArch[spatCorrectedArch$plotId=="c7r2",
-                       c("LA_Estimated_corr","LA_Estimated")])
+                       c("LeafArea_corr", "LeafArea")])
 # Check the same value in the new corrected data.frame
 head(spatCorrectedArchOut[spatCorrectedArchOut$plotId=="c7r2",
-                          c("LA_Estimated_corr","LA_Estimated")])
+                          c("LeafArea_corr", "LeafArea")])
 ```
 
 ## Example 3
@@ -287,7 +289,8 @@ outRoot <- detectSerieOut(corrDat = noCorrectedRoot,
                           trait = "tipPos_y",
                           genotypes = subGenoRoot,
                           thrCor = 0.9,
-                          thrPca = 20)
+                          thrPca = 20,
+                          thrSlope = 0.7)
 ```
 
 ```{r plotRootOut,  fig.height=6, fig.width=7, message=FALSE, eval=TRUE}
@@ -331,16 +334,16 @@ Mixed models are fitted with the R-package SpATS through the use of the `detectS
 ```{r maizPl}
 phenoTParch <- createTimePoints(dat = PhenoarchDat1,
                                 experimentName = "Phenoarch",
-                                genotype = "geno",
-                                timePoint = "Time",
+                                genotype = "Genotype",
+                                timePoint = "Date",
                                 plotId = "pos",
                                 rowNum = "Row",
                                 colNum = "Col")
 
 test2 <- detectSingleOutMaize(phenoTParch, 
                               timeBeforeTrt = "2017-04-27",
-                              trait1 = "Biomass_Estimated",
-                              trait2 = "Height_Estimated",
+                              trait1 = "Biomass",
+                              trait2 = "PlantHeight",
                               trait3 = "phyllocron")
 ```
 

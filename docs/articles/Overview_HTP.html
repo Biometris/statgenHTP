@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">statgenHTP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.1.1</span>
       </span>
     </div>
 
@@ -99,13 +99,13 @@
 
       
 
-      </header><script src="Overview_HTP_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
+      </header><script src="Overview_HTP_files/header-attrs-2.8/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>statgenHTP: A short overview</h1>
                         <h4 class="author">Emilie Millet, Bart-Jan van Rossum</h4>
             
-            <h4 class="date">2021-03-09</h4>
+            <h4 class="date">2021-06-09</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Biometris/statgenHTP/blob/master/vignettes/Overview_HTP.Rmd"><code>vignettes/Overview_HTP.Rmd</code></a></small>
       <div class="hidden name"><code>Overview_HTP.Rmd</code></div>
@@ -594,42 +594,42 @@
 <td align="center">1</td>
 <td align="center">2018-05-31 16:37:00</td>
 <td align="center">check1</td>
-<td align="center">0.6708889</td>
-<td align="center">0.0050546</td>
+<td align="center">0.6708932</td>
+<td align="center">0.0050545</td>
 </tr>
 <tr class="even">
 <td align="center">1</td>
 <td align="center">2018-05-31 16:37:00</td>
 <td align="center">check2</td>
-<td align="center">0.5811487</td>
-<td align="center">0.0068929</td>
+<td align="center">0.5811530</td>
+<td align="center">0.0068930</td>
 </tr>
 <tr class="odd">
 <td align="center">1</td>
 <td align="center">2018-05-31 16:37:00</td>
 <td align="center">check3</td>
-<td align="center">0.6432132</td>
+<td align="center">0.6432175</td>
 <td align="center">0.0067430</td>
 </tr>
 <tr class="even">
 <td align="center">1</td>
 <td align="center">2018-05-31 16:37:00</td>
 <td align="center">check4</td>
-<td align="center">0.6808214</td>
+<td align="center">0.6808257</td>
 <td align="center">0.0049853</td>
 </tr>
 <tr class="odd">
 <td align="center">1</td>
 <td align="center">2018-05-31 16:37:00</td>
 <td align="center">G001</td>
-<td align="center">0.6706447</td>
+<td align="center">0.6706490</td>
 <td align="center">0.0089158</td>
 </tr>
 <tr class="even">
 <td align="center">1</td>
 <td align="center">2018-05-31 16:37:00</td>
 <td align="center">G002</td>
-<td align="center">0.6640325</td>
+<td align="center">0.6640368</td>
 <td align="center">0.0089164</td>
 </tr>
 </tbody>
@@ -701,15 +701,20 @@
 <td align="center">angle</td>
 <td align="center">45.1419532</td>
 </tr>
+<tr class="odd">
+<td align="center">c9r4</td>
+<td align="center">G160</td>
+<td align="center">slope</td>
+<td align="center">0.6432851</td>
+</tr>
 </tbody>
 </table>
 <p>Visualizing the results we see that for genotype G151 plant c21r25 is tagged as outlier:</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">outVator</span>, genotypes <span class="op">=</span> <span class="st">"G151"</span><span class="op">)</span></code></pre></div>
 <p><img src="Overview_HTP_files/figure-html/plotOutVator-1.png" width="576"></p>
-<pre><code>#&gt; Failed to get face: , 0</code></pre>
 <p>We can then remove the outlying plants from the data set or fitted spline.</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">fit.splineOut</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/removeSerieOut.html">removeSerieOut</a></span><span class="op">(</span>fitSpline <span class="op">=</span> <span class="va">fit.spline</span>,
                                 serieOut <span class="op">=</span> <span class="va">outVator</span><span class="op">)</span></code></pre></div>
 </div>
@@ -717,7 +722,7 @@
 <h1 class="hasAnchor">
 <a href="#estimation-of-parameters-from-time-courses" class="anchor"></a>Estimation of parameters from time courses</h1>
 <p>The final step in the HTP data analysis is extracting interesting parameters from the modeled time courses. The parameters can then be further analyzed, for example in a GxE analysis (see <a href="https://biometris.github.io/statgenGxE/index.html"><em>statgenGxE</em></a>), or a genetic analysis (see <a href="https://biometris.github.io/statgenGWAS/index.html"><em>statgenGWAS</em></a>).</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">subGenoVator</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"G160"</span>, <span class="st">"G151"</span><span class="op">)</span>
 <span class="va">paramVator1</span> <span class="op">&lt;-</span> 
   <span class="fu"><a href="../reference/estimateSplineParameters.html">estimateSplineParameters</a></span><span class="op">(</span>HTPSpline <span class="op">=</span> <span class="va">fit.splineOut</span>,

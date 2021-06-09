@@ -75,7 +75,7 @@ of these should be provided as input for the function." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">statgenHTP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.1.1</span>
       </span>
     </div>
 
@@ -162,7 +162,7 @@ of these should be provided as input for the function.</p>
   dat <span class='op'>=</span> <span class='cn'>NULL</span>,
   fitSpline <span class='op'>=</span> <span class='cn'>NULL</span>,
   <span class='va'>serieOut</span>,
-  trait <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>serieOut</span>, which <span class='op'>=</span> <span class='st'>"trait"</span><span class='op'>)</span>
+  traits <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>serieOut</span>, which <span class='op'>=</span> <span class='st'>"trait"</span><span class='op'>)</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -183,9 +183,10 @@ of these should be provided as input for the function.</p>
 values corresponding to those in dat/fitSpline.</p></td>
     </tr>
     <tr>
-      <th>trait</th>
-      <td><p>The trait that should be replaced by NA. Can be ignored when
-using the output of <code>detectSerieOut</code> as input.</p></td>
+      <th>traits</th>
+      <td><p>The traits that should be replaced by NA. When using the
+output of <code>detectSerieOut</code> as input for <code>serieOut</code> this defaults
+to the trait used for when detecting the outliers.</p></td>
     </tr>
     </table>
 
@@ -193,7 +194,7 @@ using the output of <code>detectSerieOut</code> as input.</p></td>
 
     <p>Depending on the input either a <code>data.frame</code> or an object of
 class <code>HTPSpline</code> for which the outliers specified in <code>serieOut</code>
-are replace by NA.</p>
+are replaced by NA.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other functions for detecting outliers for series of observations: 
@@ -201,7 +202,7 @@ are replace by NA.</p>
 <code><a href='plot.serieOut.html'>plot.serieOut</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'>## Run the function to fit P-spline on a subset of genotypes.</span>
+    <pre class="examples"><div class='input'><span class='co'>## Run the function to fit P-splines on a subset of genotypes.</span>
 <span class='va'>subGenoVator</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"G160"</span>, <span class='st'>"G151"</span><span class='op'>)</span>
 <span class='va'>fit.spline</span> <span class='op'>&lt;-</span> <span class='fu'><a href='fitSpline.html'>fitSpline</a></span><span class='op'>(</span>inDat <span class='op'>=</span> <span class='va'>spatCorrectedVator</span>,
                         trait <span class='op'>=</span> <span class='st'>"EffpsII_corr"</span>,
@@ -224,6 +225,13 @@ are replace by NA.</p>
 <span class='co'>## Replace the outliers by NA in the corrected data.</span>
 <span class='va'>spatCorrectedVatorOut</span> <span class='op'>&lt;-</span> <span class='fu'>removeSerieOut</span><span class='op'>(</span>dat <span class='op'>=</span> <span class='va'>spatCorrectedVator</span>,
                                         serieOut <span class='op'>=</span> <span class='va'>outVator</span><span class='op'>)</span>
+
+<span class='co'>## Replace the outliers by NA in the corrected data.</span>
+<span class='co'>## Replace both the corrected value and the raw trait value by NA.</span>
+<span class='va'>spatCorrectedVatorOut2</span> <span class='op'>&lt;-</span>
+  <span class='fu'>removeSerieOut</span><span class='op'>(</span>dat <span class='op'>=</span> <span class='va'>spatCorrectedVator</span>,
+                 serieOut <span class='op'>=</span> <span class='va'>outVator</span>,
+                 traits <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"EffpsII"</span>, <span class='st'>"EffpsII_corr"</span><span class='op'>)</span><span class='op'>)</span>
 
 </div></pre>
   </div>

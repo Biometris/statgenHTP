@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">statgenHTP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.1.1</span>
       </span>
     </div>
 
@@ -99,13 +99,13 @@
 
       
 
-      </header><script src="OutlierSerieObs_HTP_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
+      </header><script src="OutlierSerieObs_HTP_files/header-attrs-2.8/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>statgenHTP tutorial: 4. Outlier detection for series of observations</h1>
                         <h4 class="author">Emilie Millet, Bart-Jan van Rossum, Isabelle Sanchez, Nadine Hilgert, Fred van Eeuwijk</h4>
             
-            <h4 class="date">2021-03-09</h4>
+            <h4 class="date">2021-06-09</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Biometris/statgenHTP/blob/master/vignettes/vignettesSite/OutlierSerieObs_HTP.Rmd"><code>vignettes/vignettesSite/OutlierSerieObs_HTP.Rmd</code></a></small>
       <div class="hidden name"><code>OutlierSerieObs_HTP.Rmd</code></div>
@@ -334,6 +334,12 @@ The numerical time can also be provided by the user using the option <code>useTi
 <td align="center">angle</td>
 <td align="center">45.1419532</td>
 </tr>
+<tr class="odd">
+<td align="center">c9r4</td>
+<td align="center">G160</td>
+<td align="center">slope</td>
+<td align="center">0.6432851</td>
+</tr>
 </tbody>
 </table>
 <p>For this subset of genotypes, 4 plants were tagged as outliers:</p>
@@ -344,7 +350,6 @@ The numerical time can also be provided by the user using the option <code>useTi
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">outVator</span>, genotypes <span class="op">=</span> <span class="st">"G151"</span><span class="op">)</span></code></pre></div>
 <p><img src="OutlierSerieObs_HTP_files/figure-html/plotOutVator-1.png" width="576"></p>
-<pre><code>#&gt; Failed to get face: , 0</code></pre>
 <p>The figure above contains:</p>
 <ul>
 <li>(top) A scatter plot of the trait value on the y-axis and time on the x-axis. Points are the raw or corrected data and lines are the P-spline predictions, with one color per plant (in legend). Filled dots represent outlying plants, open dots non-outlying plants.<br>
@@ -354,13 +359,13 @@ The numerical time can also be provided by the user using the option <code>useTi
 <li>(bottom right) A PCA plot of the plant scores. Usually, all plants are grouped and the first axis explains most of the variation. When a plant is outlying, it will be located apart from the other plants on the second axis.</li>
 </ul>
 <p>When numerical time was used to fit the splines, it can be used also to plot the outliers using the same options <code>useTimeNumber = TRUE</code> and providing the column name in <code>timeNumber</code>.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">outVator</span>, 
      genotypes <span class="op">=</span> <span class="st">"G151"</span>,  
      useTimeNumber <span class="op">=</span> <span class="cn">TRUE</span>, 
      timeNumber <span class="op">=</span> <span class="st">"timeNumHour"</span><span class="op">)</span></code></pre></div>
 <p>Finally, the outlying plants can be removed from the data set…</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">spatCorrectedVatorOut</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/removeSerieOut.html">removeSerieOut</a></span><span class="op">(</span>dat <span class="op">=</span> <span class="va">spatCorrectedVator</span>,
                                         serieOut <span class="op">=</span> <span class="va">outVator</span><span class="op">)</span>
 <span class="co"># Check for time series outliers in data from which individual outlying </span>
@@ -385,7 +390,7 @@ The numerical time can also be provided by the user using the option <code>useTi
 <span class="co">#&gt; 15156           NA   0.563</span>
 <span class="co">#&gt; 16581           NA      NA</span></code></pre></div>
 <p>… and from the predictions.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">fit.splineOut</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/removeSerieOut.html">removeSerieOut</a></span><span class="op">(</span>fitSpline <span class="op">=</span> <span class="va">fit.spline</span>,
                                 serieOut <span class="op">=</span> <span class="va">outVator</span><span class="op">)</span>
 <span class="va">fit.splineNumOut</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/removeSerieOut.html">removeSerieOut</a></span><span class="op">(</span>fitSpline <span class="op">=</span> <span class="va">fit.splineNum</span>,
@@ -395,7 +400,7 @@ The numerical time can also be provided by the user using the option <code>useTi
 <a href="#impact-of-the-number-of-knots-on-the-smoothing" class="anchor"></a>Impact of the number of knots on the smoothing</h3>
 <p>For one plant of the same data set, we fit the P-spline with 10 or 50 knots and visualize the predictions to compare the smoothness. We advise the user to perform tests of the number of knots on a subset of plants before running the function on all plants.</p>
 <p><em>With 10 knots:</em></p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sp10k</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fitSpline.html">fitSpline</a></span><span class="op">(</span>inDat <span class="op">=</span> <span class="va">spatCorrectedVator</span>,
                    trait <span class="op">=</span> <span class="st">"EffpsII_corr"</span>,
                    plotIds <span class="op">=</span> <span class="st">"c10r29"</span>,
@@ -404,7 +409,7 @@ The numerical time can also be provided by the user using the option <code>useTi
 <p><img src="OutlierSerieObs_HTP_files/figure-html/fitSplineVatorKnots10-1.png" width="384"></p>
 <p>The predicted curve is very smooth and, in this case, it is not following precisely the real data curve shape. When comparing the plants of a same genotype with this curve shape we might not identify the outlying plant.</p>
 <p><em>With 50 knots:</em></p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sp50k</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fitSpline.html">fitSpline</a></span><span class="op">(</span>inDat <span class="op">=</span> <span class="va">spatCorrectedVator</span>,
                    trait <span class="op">=</span> <span class="st">"EffpsII_corr"</span>,
                    plotIds <span class="op">=</span> <span class="st">"c10r29"</span>,
@@ -418,34 +423,34 @@ The numerical time can also be provided by the user using the option <code>useTi
 <h2 class="hasAnchor">
 <a href="#example-2" class="anchor"></a>Example 2</h2>
 <p>The data from the PhenoArch platform have been corrected for spatial trends and individually outlying observations have been removed (see <a href="OutlierSingleObs_HTP.html"><strong>statgenHTP tutorial: 2. Outlier detection for single observations</strong></a> and <a href="SpatialModel_HTP.html"><strong>statgenHTP tutorial: 3. Correction for spatial trends</strong></a>).</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">spatCorrectedArch</span><span class="op">)</span>  
 <span class="va">subGenoArch</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"GenoA01"</span>, <span class="st">"GenoA02"</span>, <span class="st">"GenoA34"</span>, <span class="st">"GenoA04"</span>, <span class="st">"GenoB01"</span>, <span class="st">"GenoB02"</span>, <span class="st">"GenoB07"</span><span class="op">)</span>
 
 <span class="va">fit.splineArch</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fitSpline.html">fitSpline</a></span><span class="op">(</span>inDat <span class="op">=</span> <span class="va">spatCorrectedArch</span>, 
-                            trait <span class="op">=</span> <span class="st">"LA_Estimated_corr"</span>,
+                            trait <span class="op">=</span> <span class="st">"LeafArea_corr"</span>,
                             genotypes <span class="op">=</span> <span class="va">subGenoArch</span>,
                             knots <span class="op">=</span> <span class="fl">30</span>,
                             minNoTP <span class="op">=</span> <span class="fl">18</span><span class="op">)</span>
 
 <span class="va">predDatArch</span> <span class="op">&lt;-</span> <span class="va">fit.splineArch</span><span class="op">$</span><span class="va">predDat</span>
 <span class="va">coefDatArch</span> <span class="op">&lt;-</span> <span class="va">fit.splineArch</span><span class="op">$</span><span class="va">coefDat</span></code></pre></div>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">fit.splineArch</span>,
      plotIds <span class="op">=</span> <span class="st">"c11r9"</span>,
      plotType <span class="op">=</span>  <span class="st">"predictions"</span><span class="op">)</span></code></pre></div>
 <p><img src="OutlierSerieObs_HTP_files/figure-html/plotArch-1.png" width="384"></p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">fit.splineArch</span>,
      plotIds <span class="op">=</span> <span class="st">"c11r9"</span>,
      plotType <span class="op">=</span>  <span class="st">"derivatives"</span><span class="op">)</span></code></pre></div>
 <p><img src="OutlierSerieObs_HTP_files/figure-html/plotArch-2.png" width="384"></p>
 <p>Here, the <code>geno.decomp</code> option is also to split the plants of each genotype those under well watered and water deficit conditions. The outlier detection is run per treatment with a narrow angle threshold</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">outArch</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/detectSerieOut.html">detectSerieOut</a></span><span class="op">(</span>corrDat <span class="op">=</span> <span class="va">spatCorrectedArch</span>,
                           predDat <span class="op">=</span> <span class="va">predDatArch</span>,
                           coefDat <span class="op">=</span> <span class="va">coefDatArch</span>,
-                          trait <span class="op">=</span> <span class="st">"LA_Estimated_corr"</span>,
+                          trait <span class="op">=</span> <span class="st">"LeafArea_corr"</span>,
                           genotypes <span class="op">=</span> <span class="va">subGenoArch</span>,
                           thrCor <span class="op">=</span> <span class="fl">0.9</span>,
                           thrPca <span class="op">=</span> <span class="fl">6</span>,
@@ -460,54 +465,61 @@ The numerical time can also be provided by the user using the option <code>useTi
 </tr></thead>
 <tbody>
 <tr class="odd">
+<td align="center">c12r6</td>
+<td align="center">GenoA04</td>
+<td align="center">WD_Panel1</td>
+<td align="center">angle</td>
+<td align="center">8.075109</td>
+</tr>
+<tr class="even">
 <td align="center">c27r22</td>
 <td align="center">GenoB07</td>
 <td align="center">WD_Panel2</td>
 <td align="center">angle</td>
-<td align="center">6.341971</td>
+<td align="center">6.398537</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="center">c7r2</td>
 <td align="center">GenoB07</td>
 <td align="center">WD_Panel2</td>
 <td align="center">angle</td>
-<td align="center">11.241027</td>
+<td align="center">12.966133</td>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">outArch</span>, genotypes <span class="op">=</span> <span class="st">"GenoB07"</span><span class="op">)</span></code></pre></div>
 <p><img src="OutlierSerieObs_HTP_files/figure-html/plotOutArch-1.png" width="576"><img src="OutlierSerieObs_HTP_files/figure-html/plotOutArch-2.png" width="576"></p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">spatCorrectedArchOut</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/removeSerieOut.html">removeSerieOut</a></span><span class="op">(</span>dat <span class="op">=</span> <span class="va">spatCorrectedArch</span>,
                                        serieOut <span class="op">=</span> <span class="va">outArch</span><span class="op">)</span>
 <span class="co"># Check for time series outliers in data from which individual outlying </span>
 <span class="co"># observations were already removed and to which a spatial adjustment has been applied</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">spatCorrectedArch</span><span class="op">[</span><span class="va">spatCorrectedArch</span><span class="op">$</span><span class="va">plotId</span><span class="op">==</span><span class="st">"c7r2"</span>,
-                       <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"LA_Estimated_corr"</span>,<span class="st">"LA_Estimated"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>
-<span class="co">#&gt;      LA_Estimated_corr LA_Estimated</span>
-<span class="co">#&gt; 1351       0.003295642  0.002829922</span>
-<span class="co">#&gt; 2786       0.004807734  0.004433653</span>
-<span class="co">#&gt; 4456       0.006370454  0.005812666</span>
-<span class="co">#&gt; 6121       0.008279225  0.007868383</span>
-<span class="co">#&gt; 7791       0.010840331  0.010250315</span>
-<span class="co">#&gt; 9274       0.011954786  0.012271859</span>
+                       <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"LeafArea_corr"</span>, <span class="st">"LeafArea"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>
+<span class="co">#&gt;      LeafArea_corr    LeafArea</span>
+<span class="co">#&gt; 1352   0.003266173 0.002829922</span>
+<span class="co">#&gt; 2790   0.004797373 0.004433653</span>
+<span class="co">#&gt; 4460   0.006359950 0.005812666</span>
+<span class="co">#&gt; 6128   0.008256599 0.007868383</span>
+<span class="co">#&gt; 7800   0.010844756 0.010250315</span>
+<span class="co">#&gt; 9285   0.012058584 0.012271859</span>
 <span class="co"># Check the same value in the new corrected data.frame</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">spatCorrectedArchOut</span><span class="op">[</span><span class="va">spatCorrectedArchOut</span><span class="op">$</span><span class="va">plotId</span><span class="op">==</span><span class="st">"c7r2"</span>,
-                          <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"LA_Estimated_corr"</span>,<span class="st">"LA_Estimated"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>
-<span class="co">#&gt;      LA_Estimated_corr LA_Estimated</span>
-<span class="co">#&gt; 1351                NA  0.002829922</span>
-<span class="co">#&gt; 2786                NA  0.004433653</span>
-<span class="co">#&gt; 4456                NA  0.005812666</span>
-<span class="co">#&gt; 6121                NA  0.007868383</span>
-<span class="co">#&gt; 7791                NA  0.010250315</span>
-<span class="co">#&gt; 9274                NA  0.012271859</span></code></pre></div>
+                          <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"LeafArea_corr"</span>, <span class="st">"LeafArea"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>
+<span class="co">#&gt;      LeafArea_corr    LeafArea</span>
+<span class="co">#&gt; 1352            NA 0.002829922</span>
+<span class="co">#&gt; 2790            NA 0.004433653</span>
+<span class="co">#&gt; 4460            NA 0.005812666</span>
+<span class="co">#&gt; 6128            NA 0.007868383</span>
+<span class="co">#&gt; 7800            NA 0.010250315</span>
+<span class="co">#&gt; 9285            NA 0.012271859</span></code></pre></div>
 </div>
 <div id="example-3" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example-3" class="anchor"></a>Example 3</h2>
 <p>The data from the RootPhAir platform have not been corrected for spatial trends but individually outlying observations have been removed (see <a href="OutlierSingleObs_HTP.html"><strong>statgenHTP tutorial: 2. Outlier detection for single observations</strong></a>).</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">subGenoRoot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span> <span class="st">"2"</span>, <span class="st">"6"</span>, <span class="st">"8"</span>, <span class="st">"9"</span>, <span class="st">"10"</span>, <span class="st">"520"</span>, <span class="st">"522"</span><span class="op">)</span>
 <span class="va">fit.splineRoot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fitSpline.html">fitSpline</a></span><span class="op">(</span>inDat <span class="op">=</span> <span class="va">noCorrectedRoot</span>,
                             trait <span class="op">=</span> <span class="st">"tipPos_y"</span>,
@@ -520,11 +532,11 @@ The numerical time can also be provided by the user using the option <code>useTi
 <span class="va">predDatRoot</span> <span class="op">&lt;-</span> <span class="va">fit.splineRoot</span><span class="op">$</span><span class="va">predDat</span>
 <span class="va">coefDatRoot</span> <span class="op">&lt;-</span> <span class="va">fit.splineRoot</span><span class="op">$</span><span class="va">coefDat</span>
 <span class="fu"><a href="https://rdrr.io/r/base/row.names.html">row.names</a></span><span class="op">(</span><span class="va">coefDatRoot</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">coefDatRoot</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">fit.splineRoot</span>,
      genotypes <span class="op">=</span> <span class="st">"2"</span><span class="op">)</span></code></pre></div>
 <p><img src="OutlierSerieObs_HTP_files/figure-html/plotRoot-1.png" width="672"></p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">outRoot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/detectSerieOut.html">detectSerieOut</a></span><span class="op">(</span>corrDat <span class="op">=</span> <span class="va">noCorrectedRoot</span>,
                           predDat <span class="op">=</span> <span class="va">predDatRoot</span>,
                           coefDat <span class="op">=</span> <span class="va">coefDatRoot</span>,
@@ -532,11 +544,11 @@ The numerical time can also be provided by the user using the option <code>useTi
                           genotypes <span class="op">=</span> <span class="va">subGenoRoot</span>,
                           thrCor <span class="op">=</span> <span class="fl">0.9</span>,
                           thrPca <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">outRoot</span>,
      genotypes <span class="op">=</span> <span class="st">"10"</span><span class="op">)</span></code></pre></div>
 <p><img src="OutlierSerieObs_HTP_files/figure-html/plotRootOut-1.png" width="672"></p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">noCorrectedRootOut</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/removeSerieOut.html">removeSerieOut</a></span><span class="op">(</span>dat <span class="op">=</span> <span class="va">noCorrectedRoot</span>,
                                      serieOut <span class="op">=</span> <span class="va">outRoot</span><span class="op">)</span>
 <span class="co"># Check one value annotated as outlier in the original corrected data.frame</span>
@@ -572,19 +584,22 @@ Schematic representation of a multi-trait approach for detection of outlier plan
 <h2 class="hasAnchor">
 <a href="#implementation-in-statgenhtp" class="anchor"></a>Implementation in statgenHTP</h2>
 <p>Mixed models are fitted with the R-package SpATS through the use of the <code>detectSingleOutMaize</code> function, which was developed specifically for the maize data, as described above. This function fits a mixed model for each parameter, and tests whether the residual deviations are lower (for the criteria considered for small plants) or higher (for the criteria considered for big plants) than a specified threshold.</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">phenoTParch</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/createTimePoints.html">createTimePoints</a></span><span class="op">(</span>dat <span class="op">=</span> <span class="va">PhenoarchDat1</span>,
                                 experimentName <span class="op">=</span> <span class="st">"Phenoarch"</span>,
-                                genotype <span class="op">=</span> <span class="st">"geno"</span>,
-                                timePoint <span class="op">=</span> <span class="st">"Time"</span>,
+                                genotype <span class="op">=</span> <span class="st">"Genotype"</span>,
+                                timePoint <span class="op">=</span> <span class="st">"Date"</span>,
                                 plotId <span class="op">=</span> <span class="st">"pos"</span>,
                                 rowNum <span class="op">=</span> <span class="st">"Row"</span>,
                                 colNum <span class="op">=</span> <span class="st">"Col"</span><span class="op">)</span>
+<span class="co">#&gt; Warning: More than 5 plotIds have observations for less than 50% of the time points. The first 5 are printed, to see them all run</span>
+<span class="co">#&gt;               attr(..., 'plotLimObs') on the output</span>
+<span class="co">#&gt; c10r36, c11r54, c12r47, c15r30, c18r9</span>
 
 <span class="va">test2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/detectSingleOutMaize.html">detectSingleOutMaize</a></span><span class="op">(</span><span class="va">phenoTParch</span>, 
                               timeBeforeTrt <span class="op">=</span> <span class="st">"2017-04-27"</span>,
-                              trait1 <span class="op">=</span> <span class="st">"Biomass_Estimated"</span>,
-                              trait2 <span class="op">=</span> <span class="st">"Height_Estimated"</span>,
+                              trait1 <span class="op">=</span> <span class="st">"Biomass"</span>,
+                              trait2 <span class="op">=</span> <span class="st">"PlantHeight"</span>,
                               trait3 <span class="op">=</span> <span class="st">"phyllocron"</span><span class="op">)</span></code></pre></div>
 <p>The <code>detectSingleOutMaize</code> returns a list of 3 elements :</p>
 <ul>
@@ -595,7 +610,7 @@ Schematic representation of a multi-trait approach for detection of outlier plan
 <table class="table">
 <thead><tr class="header">
 <th align="left"></th>
-<th align="center">Date</th>
+<th align="center">timePoint</th>
 <th align="center">plotId</th>
 <th align="center">genotype</th>
 <th align="center">Scenario</th>
@@ -603,50 +618,50 @@ Schematic representation of a multi-trait approach for detection of outlier plan
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">19874</td>
+<td align="left">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+</tr>
+<tr class="even">
+<td align="left">5811</td>
 <td align="center">2017-04-27</td>
 <td align="center">c5r3</td>
 <td align="center">GenoA06</td>
 <td align="center">WW</td>
 <td align="center">Panel1</td>
 </tr>
-<tr class="even">
-<td align="left">19988</td>
+<tr class="odd">
+<td align="left">8476</td>
 <td align="center">2017-04-27</td>
 <td align="center">c6r57</td>
 <td align="center">GenoA57</td>
 <td align="center">WW</td>
 <td align="center">Panel1</td>
 </tr>
-<tr class="odd">
-<td align="left">19993</td>
+<tr class="even">
+<td align="left">8594</td>
 <td align="center">2017-04-27</td>
 <td align="center">c7r2</td>
 <td align="center">GenoB07</td>
 <td align="center">WD</td>
 <td align="center">Panel2</td>
 </tr>
-<tr class="even">
-<td align="left">20009</td>
+<tr class="odd">
+<td align="left">8986</td>
 <td align="center">2017-04-27</td>
 <td align="center">c7r18</td>
 <td align="center">GenoB11</td>
 <td align="center">WD</td>
 <td align="center">Panel2</td>
 </tr>
-<tr class="odd">
-<td align="left">20338</td>
+<tr class="even">
+<td align="left">17134</td>
 <td align="center">2017-04-27</td>
 <td align="center">c12r50</td>
 <td align="center">GenoA30</td>
-<td align="center">WD</td>
-<td align="center">Panel1</td>
-</tr>
-<tr class="even">
-<td align="left">20376</td>
-<td align="center">2017-04-27</td>
-<td align="center">c13r28</td>
-<td align="center">GenoA27</td>
 <td align="center">WD</td>
 <td align="center">Panel1</td>
 </tr>
