@@ -578,7 +578,7 @@ plot.serieOut <- function(x,
       ggplot2::geom_tile(data = slopemats[[genotype]],
                          ggplot2::aes_string("Var1", "Var2", fill = "value"),
                          color = "white") +
-      ggplot2::scale_fill_gradientn(colors = c("yellow", "white", "green"),
+      ggplot2::scale_fill_gradientn(colors = c("cyan", "white", "darkgreen"),
                                      values = scales::rescale(c(minSlope,
                                                                 thrSlopeGeno, 1)),
                                      limits = c(minSlope, 1),
