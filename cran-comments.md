@@ -1,15 +1,15 @@
 ## Update to fix additional issues in checks
 
-Fixed test issues with noLD, OpenBLAS and MKL
+Release adding functionality to existing functions by extending the values some parameters can take and by adding new parameters. In addition so minor bug fixes and additional tests.
 
 ----
 
 ## Test environments
 
-* local Windows 10 install, R 4.0.4
-* local Debian, R 3.6.3
+* local Windows 10 install, R 4.1
+* Ubuntu (on github actions, devel and release)
+* macOS (on github actions, release)
 * R-hub (devel and release)
-* winbuilder (devel and release)
 
 ----
 
@@ -20,11 +20,7 @@ There were no ERRORs or WARNINGs.
 There were 2 NOTES:
 
   * checking CRAN incoming feasibility ... NOTE    
-  
-       Days since last update: 3
-       
-    - In the initial version of the package one test didn't pass the noLD, OpenBLAS and MKL checks after being accepted. This is fixed now.
-   
+
    Suggests or Enhances not in mainstream repositories:
      asreml
 
