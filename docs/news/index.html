@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">statgenHTP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.2</span>
       </span>
     </div>
 
@@ -155,6 +155,8 @@
 <li>The ```detectSerieOut```` function now uses an extra criterion for checking if time courses our outlying. See the function documentation and vignettes for a full explanation of this new criterion.</li>
 <li>The parameter <code>trait</code> in the <code>removeSerieOut</code> function is renamed to <code>traits</code> and now accepts a vector of traits that for which outlier values can be replaced by <code>NA</code>.</li>
 <li>Plotting the output of <code>detectSerieOut</code> now has an extra parameter <code>geno.decomp</code> to restrict the output to selected levels of the geno.decomp variable in the data.</li>
+<li>Computing the area under the curve in <code>estimateSplineParameters</code> now allows the specification of the time unit used on the x-axis.</li>
+<li>Fitting models using SpATS is now done using the option <code>centered = TRUE</code> by default.</li>
 </ul>
 </div>
     <div id="statgenhtp-101" class="section level1">
