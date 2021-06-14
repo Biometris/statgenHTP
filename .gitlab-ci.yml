@@ -18,6 +18,8 @@ before_script:
 
 r-release:
   stage: test
+  tags:
+    - Docker
   image: rocker/r-ver:latest
   script:
     - r -e 'devtools::check(check_dir = ".")'
@@ -29,6 +31,8 @@ r-release:
 
 r-devel:
   stage: test
+  tags:
+    - Docker
   image: rocker/r-ver:devel
   script:
     - r -e 'devtools::check(check_dir = ".")'
@@ -40,6 +44,8 @@ r-devel:
 
 coverage:
   stage: deploy
+  tags:
+    - Docker
   image: rocker/r-ver:latest
   when: on_success
   script:
