@@ -48,7 +48,7 @@ expect_equal(colnames(singleOut),
                "lwr", "upr", "outlier"))
 
 ## Check that full output content is correct.
-expect_equal_to_reference(singleOut, file = "singleOut")
+expect_equal_to_reference(singleOut, file = "singleOut", tolerance = 1e-5)
 
 ## Check that parameter confIntSize functions correctly.
 
