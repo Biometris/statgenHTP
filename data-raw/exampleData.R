@@ -84,6 +84,8 @@ PhenoarchDatExtra <- read.csv("./data-raw/Phenoarch_ZA17_extraVariables.csv",
 
 ## Remove data for DAS > 39.
 PhenoarchDat1 <- PhenoarchDat1[PhenoarchDat1[["DAS"]] < 40, ]
+## Remove data with Genotype NA
+PhenoarchDat1 <- PhenoarchDat1[!is.na(PhenoarchDat1[["Genotype"]]), ]
 
 ## Rename columns.
 colnames(PhenoarchDat1)[colnames(PhenoarchDat1) == "Position"] <- "Row"
@@ -146,23 +148,23 @@ usethis::use_data(PhenoarchDat1, overwrite = TRUE)
 # write.table(spatPredArch,
 #             file = "./data-raw/PhenoArchDat1_pred_OutPoint_LA.csv",
 #             sep = ",", row.names = FALSE)
-
-# Read raw data.
-spatCorrectedArch <- read.csv("./data-raw/PhenoArchDat1_corr_OutPoint_LA.csv",
-                              stringsAsFactors = TRUE)
-# Format the timepoint
-spatCorrectedArch$timePoint <- lubridate::as_datetime(spatCorrectedArch$timePoint)
-# Export to package
-usethis::use_data(spatCorrectedArch, overwrite = TRUE)
-
-#### 2.3. Genotypic prediction data - outliers removed
-# Read raw data.
-spatPredArch <- read.csv("./data-raw/PhenoArchDat1_pred_OutPoint_LA.csv",
-                         stringsAsFactors = TRUE)
-# Format the timepoint
-spatPredArch$timePoint <- lubridate::as_datetime(spatPredArch$timePoint)
-# Export to package
-usethis::use_data(spatPredArch, overwrite = TRUE)
+#
+# # Read raw data.
+# spatCorrectedArch <- read.csv("./data-raw/PhenoArchDat1_corr_OutPoint_LA.csv",
+#                               stringsAsFactors = TRUE)
+# # Format the timepoint
+# spatCorrectedArch$timePoint <- lubridate::as_datetime(spatCorrectedArch$timePoint)
+# # Export to package
+# usethis::use_data(spatCorrectedArch, overwrite = TRUE)
+#
+# #### 2.3. Genotypic prediction data - outliers removed
+# # Read raw data.
+# spatPredArch <- read.csv("./data-raw/PhenoArchDat1_pred_OutPoint_LA.csv",
+#                          stringsAsFactors = TRUE)
+# # Format the timepoint
+# spatPredArch$timePoint <- lubridate::as_datetime(spatPredArch$timePoint)
+# # Export to package
+# usethis::use_data(spatPredArch, overwrite = TRUE)
 
 
 ####### 3. RootUCL data set
