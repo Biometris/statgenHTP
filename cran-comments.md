@@ -1,6 +1,6 @@
-## Update to fix additional issues in checks
+## Patch to fix additional issues in checks
 
-Release adding functionality to existing functions by extending the values some parameters can take and by adding new parameters. In addition so minor bug fixes and additional tests.
+Fixed issues in ATLAS, MKL
 
 ----
 
