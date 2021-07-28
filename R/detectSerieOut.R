@@ -273,6 +273,8 @@ detectSerieOut <- function(corrDat,
       ## Compute slope per pair of plots.
       slopemat[lower.tri(slopemat)] <-
         combn(x = colnames(plantDat), m = 2, FUN = function(plants) {
+          ## Wrap plants in ` to allow for irregular names in formula.
+          plants <- paste0("`", plants, "`")
           ## Fit linear model and extract slope.
           modForm <- formula(paste(plants, collapse = "~"))
           slope <- abs(coef(lm(modForm, data = plantDat))[2])
