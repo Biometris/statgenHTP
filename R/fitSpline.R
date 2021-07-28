@@ -71,8 +71,9 @@ fitSpline <- function(inDat,
   if (!inherits(inDat, "data.frame")) {
     stop("inDat should be a data.frame.\n")
   }
-  if (useTimeNumber && (is.null(timeNumber) || !is.character(timeNumber) ||
-                        length(timeNumber) > 1)) {
+  if (isTRUE(useTimeNumber) &&
+      (is.null(timeNumber) || !is.character(timeNumber) ||
+       length(timeNumber) > 1)) {
     stop("timeNumber should be a character string of length 1.\n")
   }
   fitLevel <- if (hasName(x = inDat, name = "plotId")) "plotId" else
@@ -82,6 +83,9 @@ fitSpline <- function(inDat,
   if (!all(hasName(x = inDat, name = corrCols))) {
     stop("inDat should at least contain the following columns: ",
          paste(corrCols, collapse = ", "))
+  }
+  if (!inherits(inDat[[fitLevel]], "factor")) {
+    stop(fitLevel, " should be a factor column in inDat.\n")
   }
   if (!is.null(genotypes) &&
       (!is.character(genotypes) ||
