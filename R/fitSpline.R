@@ -213,9 +213,9 @@ fitSpline <- function(inDat,
       coeff[["type"]] <- paste0("timeNumber", seq_len(nrow(coeff)))
       ## Restrict dense grid to points within observation range.
       timeRangePl <- timeRange[timeRange[["timeNumber"]] >=
-                                 min(dat[["timeNumber"]]) &
+                                 min(dat[!is.na(dat[[trait]]), "timeNumber"]) &
                                  timeRange[["timeNumber"]] <=
-                                 max(dat[["timeNumber"]]),
+                                 max(dat[!is.na(dat[[trait]]), "timeNumber"]),
                                , drop = FALSE]
       ## Predictions on a dense grid.
       yPred <- predict(obj, x = timeRangePl$timeNumber)
