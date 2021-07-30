@@ -547,13 +547,13 @@ plot.serieOut <- function(x,
     plotIds <- unique(genoPreds[[genotype]][["plotId"]])
     plotShapes <- setNames(rep(1, times = length(plotIds)), plotIds)
     ## Annotated plants get a closed circle.
-    plotShapes[names(plotShapes) %in% x[["plotId"]]] <- 19
+    plotShapes[names(plotShapes) %in% x[["plotId"]]] <- 21
     ## Plot of time course per genotype: corrected data + spline per plant.
     kinetic <- ggplot2::ggplot(genoDats[[genotype]],
                                ggplot2::aes_string(x = timeVar2, y = trait,
                                                    color = "plotId")) +
       ggplot2::geom_point(ggplot2::aes_string(shape = "plotId"), size = 2,
-                          na.rm = TRUE) +
+                          na.rm = TRUE, fill = "red") +
       ggplot2::geom_line(data = genoPreds[[genotype]],
                          ggplot2::aes_string(x = timeVar,
                                              y = "pred.value"),
