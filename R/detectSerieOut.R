@@ -266,18 +266,19 @@ detectSerieOut <- function(corrDat,
     if (!is.null(dim(plantDat))) {
       ## if there are plants, estimate the slopes.
       ## Convert matrix to data.frame for lm.
-      plantDat <- as.data.frame(plantDat)
+      plantDatLm <- as.data.frame(plantDat)
       ## Construct empty matrix for storing results.
-      slopemat <- matrix(nrow = ncol(plantDat), ncol = ncol(plantDat),
-                       dimnames = list(colnames(plantDat), colnames(plantDat)))
+      slopemat <- matrix(nrow = ncol(plantDatLm), ncol = ncol(plantDatLm),
+                         dimnames = list(colnames(plantDatLm),
+                                         colnames(plantDatLm)))
       ## Compute slope per pair of plots.
       slopemat[lower.tri(slopemat)] <-
-        combn(x = colnames(plantDat), m = 2, FUN = function(plants) {
+        combn(x = colnames(plantDatLm), m = 2, FUN = function(plants) {
           ## Wrap plants in ` to allow for irregular names in formula.
           plants <- paste0("`", plants, "`")
           ## Fit linear model and extract slope.
           modForm <- formula(paste(plants, collapse = "~"))
-          slope <- abs(coef(lm(modForm, data = plantDat))[2])
+          slope <- abs(coef(lm(modForm, data = plantDatLm))[2])
           if (slope > 1) slope <- 1 / slope
           return(slope)
         }, simplify = TRUE)
