@@ -106,6 +106,9 @@ fitSpline <- function(inDat,
     stop("minNoTP should be a numerical value.\n")
   }
   if (!useTimeNumber) {
+    if (!inherits(inDat[["timePoint"]], "POSIXct")) {
+      stop("Column timePoint should be of class POSIXct.\n")
+    }
     ## Convert time point to time number with the first time point as 0.
     minTime <- min(inDat[["timePoint"]], na.rm = TRUE)
     inDat[["timeNumber"]] <- as.numeric(inDat[["timePoint"]] - minTime)
@@ -212,11 +215,18 @@ fitSpline <- function(inDat,
       coeff <- data.frame(obj.coefficients = obj$splineCoeffs, plotId = plant)
       coeff[["type"]] <- paste0("timeNumber", seq_len(nrow(coeff)))
       ## Restrict dense grid to points within observation range.
+      # timeRangePl <- timeRange[timeRange[["timeNumber"]] >=
+      #                            min(dat[!is.na(dat[[trait]]), "timeNumber"]) &
+      #                            timeRange[["timeNumber"]] <=
+      #                            max(dat[!is.na(dat[[trait]]), "timeNumber"]),
+      #                          , drop = FALSE]
+
       timeRangePl <- timeRange[timeRange[["timeNumber"]] >=
-                                 min(dat[!is.na(dat[[trait]]), "timeNumber"]) &
+                                 min(dat[["timeNumber"]]) &
                                  timeRange[["timeNumber"]] <=
-                                 max(dat[!is.na(dat[[trait]]), "timeNumber"]),
+                                 max(dat[["timeNumber"]]),
                                , drop = FALSE]
+
       ## Predictions on a dense grid.
       yPred <- predict(obj, x = timeRangePl$timeNumber)
       yDeriv <- predict(obj, x = timeRangePl$timeNumber, deriv = TRUE)
