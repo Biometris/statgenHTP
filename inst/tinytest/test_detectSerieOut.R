@@ -165,12 +165,12 @@ serieOut3 <- detectSerieOut(trait = "t1_corr", corrDat = corr,
                             thrSlope = 0)
 expect_equivalent(serieOut3, data.frame())
 
-## Check that detecting outliers functions correctly for models with geno.deco
+## Check that detecting outliers functions correctly for models with geno.decomp
 expect_silent(serieOutGD <-
                 detectSerieOut(trait = "t1_corr", corrDat = corrGD,
                                predDat = predDatGD, coefDat = coefDatGD,
                                genotypes = "check1", geno.decomp = "geno.decomp"))
-expect_equal(dim(serieOutGD), c(6, 5))
+expect_equal(dim(serieOutGD), c(7, 5))
 
 ### Check plotting of detectSerieOut results.
 
