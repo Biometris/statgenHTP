@@ -203,8 +203,8 @@ fitSpline <- function(inDat,
     ## Manually select minimum number of time points.
     if (length(unique(dat[!is.na(dat[[trait]]), "timeNumber"])) >= minTP) {
       ## Manually set the number of knots.
-      xmin <- min(dat[["timeNumber"]]) - 1e-10
-      xmax <- max(dat[["timeNumber"]]) + 1e-10
+      xmin <- min(dat[!is.na(dat[[trait]]), "timeNumber"]) - 1e-10
+      xmax <- max(dat[!is.na(dat[[trait]]), "timeNumber"]) + 1e-10
       ## Construct vector of knots.
       knotsVec <- PsplinesKnots(xmin = xmin, xmax = xmax, degree = 3,
                                 nseg = knots)
@@ -215,18 +215,11 @@ fitSpline <- function(inDat,
       coeff <- data.frame(obj.coefficients = obj$splineCoeffs, plotId = plant)
       coeff[["type"]] <- paste0("timeNumber", seq_len(nrow(coeff)))
       ## Restrict dense grid to points within observation range.
-      # timeRangePl <- timeRange[timeRange[["timeNumber"]] >=
-      #                            min(dat[!is.na(dat[[trait]]), "timeNumber"]) &
-      #                            timeRange[["timeNumber"]] <=
-      #                            max(dat[!is.na(dat[[trait]]), "timeNumber"]),
-      #                          , drop = FALSE]
-
       timeRangePl <- timeRange[timeRange[["timeNumber"]] >=
-                                 min(dat[["timeNumber"]]) &
+                                 min(dat[!is.na(dat[[trait]]), "timeNumber"]) &
                                  timeRange[["timeNumber"]] <=
-                                 max(dat[["timeNumber"]]),
+                                 max(dat[!is.na(dat[[trait]]), "timeNumber"]),
                                , drop = FALSE]
-
       ## Predictions on a dense grid.
       yPred <- predict(obj, x = timeRangePl$timeNumber)
       yDeriv <- predict(obj, x = timeRangePl$timeNumber, deriv = TRUE)
