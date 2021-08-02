@@ -21,7 +21,7 @@ splineRes <- fitSpline(inDat = corr, trait = "t1_corr")
 
 ## Fit a spline with plotId absent.
 corr2 <- corr[, !colnames(corr) == "plotId"]
-splineRes2 <- fitSpline(inDat = corr, trait = "t1_corr")
+splineRes2 <- fitSpline(inDat = corr2, trait = "t1_corr")
 
 ### Check extracting parameters from fitted splines.
 
