@@ -195,6 +195,12 @@ expect_error(plot(serieOutGD, genotypes = "check1", geno.decomp = "2"),
              "All selected geno.decomp levels should be in the data")
 expect_silent(plot(serieOutGD, genotypes = "check1", geno.decomp = "1"))
 
+## Check that option reason functions correctly.
+expect_error(plot(serieOut1, reason = "tst"),
+             'one of "mean corr", "angle", "slope"')
+expect_silent(plot(serieOut1, reason = "slope"))
+expect_silent(plot(serieOut1, reason = c("slope", "angle")))
+
 ### Check removal of outliers detected by detectSerieOut
 
 ## Check that general checks in plot function correctly.

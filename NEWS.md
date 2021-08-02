@@ -1,6 +1,7 @@
 # statgenHTP 1.0.3
 
 * The `removeSerieOut` function now has an extra argument reason allowing for restricting removal of outliers to one or more reason the outliers where tagged.
+* The `plot` function for `serieOut` objects now has an extra argument reason allowing for restricting the plotting of outliers to one or more reason the outliers where tagged.
 
 # statgenHTP 1.0.3
 

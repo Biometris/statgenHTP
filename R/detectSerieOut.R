@@ -436,6 +436,8 @@ detectSerieOut <- function(corrDat,
 #'
 #' @param x An object of class \code{serieOut}.
 #' @param ... Ignored.
+#' @param reason A character vector indicating which types of outliers should
+#' be plotted.
 #' @param genotypes A character vector indicating which genotypes should be
 #' plotted. If \code{NULL} all genotypes are plotted.
 #' @param geno.decomp A character vector indicating which levels of
@@ -476,6 +478,9 @@ detectSerieOut <- function(corrDat,
 #'
 #' ## The `outVator` can be visualized for selected genotypes.
 #' plot(outVator, genotypes = "G151")
+#'
+#' ## Only visualize outliers tagged because of slope correlation.
+#' plot(outVator, genotypes = "G151", reason = "slope")
 #' }
 #'
 #' @family functions for detecting outliers for series of observations
@@ -483,6 +488,7 @@ detectSerieOut <- function(corrDat,
 #' @export
 plot.serieOut <- function(x,
                           ...,
+                          reason = c("mean corr", "angle", "slope"),
                           genotypes = NULL,
                           geno.decomp = NULL,
                           useTimeNumber = FALSE,
@@ -498,6 +504,9 @@ plot.serieOut <- function(x,
   trait <- attr(x = x, which = "trait")
   geno.decompVar <- attr(x = x, which = "geno.decomp")
   plotInfo <- attr(x = x, which = "plotInfo")
+  ## Restrict x to selected reasons.
+  reason <- match.arg(reason, several.ok = TRUE)
+  x <- x[x[["reason"]] %in% reason, ]
   ## Restrict to selected levels of geno.decomp.
   if (!is.null(geno.decomp) && !is.null(geno.decompVar)) {
     if (!all(geno.decomp %in% plotInfo[[geno.decompVar]])) {
@@ -570,45 +579,59 @@ plot.serieOut <- function(x,
                                   labels = scales::date_format("%B %d"))
     }
     ## Correlation plot.
-    thrCorGeno <- attr(cormats[[genotype]], which = "thrCor")
-    thrSlopeGeno <- attr(cormats[[genotype]], which = "thrSlope")
-    correl <- ggplot2::ggplot(data = cormats[[genotype]],
-                              ggplot2::aes_string("Var2", "Var1",
-                                                  fill = "value")) +
-      ggplot2::geom_tile(color = "white") +
-      ggplot2::scale_fill_gradientn(colors = c("red", "white", "blue"),
-                                    values = scales::rescale(c(minCor,
-                                                               thrCorGeno, 1)),
-                                    limits = c(minCor, 1),
-                                    name = "Pearson\nCorrelation") +
-      ggnewscale::new_scale_fill() +
-      ## Add slope to upper left.
-      ggplot2::geom_tile(data = slopemats[[genotype]],
-                         ggplot2::aes_string("Var1", "Var2", fill = "value"),
-                         color = "white") +
-      ggplot2::scale_fill_gradientn(colors = c("cyan", "white", "darkgreen"),
-                                    values = scales::rescale(c(minSlope,
-                                                               thrSlopeGeno, 1)),
-                                    limits = c(minSlope, 1),
-                                    name = "Slope\nCorrelation") +
-      ## Move y-axis to the right.
-      ggplot2::scale_y_discrete(position = "right") +
-      ## Use coord fixed to create a square shaped output.
-      ggplot2::coord_fixed() +
-      ggplot2::theme(panel.background = ggplot2::element_rect(fill = "white"),
-                     panel.border = ggplot2::element_blank(),
-                     panel.grid = ggplot2::element_line(color = "grey92"),
-                     plot.title = ggplot2::element_text(hjust = 0.5),
-                     axis.ticks = ggplot2::element_blank(),
-                     panel.grid.major = ggplot2::element_blank(),
-                     panel.grid.minor = ggplot2::element_blank(),
-                     axis.text.x = ggplot2::element_text(angle = 45, vjust = 1,
-                                                         hjust = 1),
-                     legend.position = "left",
-                     legend.box = "horizontal") +
-      ggplot2::labs(title = "Correlations", x = NULL, y = NULL)
+    if (any(c("mean corr", "slope") %in% reason)) {
+      thrCorGeno <- attr(cormats[[genotype]], which = "thrCor")
+      thrSlopeGeno <- attr(cormats[[genotype]], which = "thrSlope")
+      correl <- ggplot2::ggplot(data = cormats[[genotype]],
+                                ggplot2::aes_string("Var2", "Var1",
+                                                    fill = "value")) +
+        ## Move y-axis to the right.
+        ggplot2::scale_y_discrete(position = "right") +
+        ## Use coord fixed to create a square shaped output.
+        ggplot2::coord_fixed() +
+        ggplot2::theme(panel.background = ggplot2::element_rect(fill = "white"),
+                       panel.border = ggplot2::element_blank(),
+                       panel.grid = ggplot2::element_line(color = "grey92"),
+                       plot.title = ggplot2::element_text(hjust = 0.5),
+                       axis.ticks = ggplot2::element_blank(),
+                       panel.grid.major = ggplot2::element_blank(),
+                       panel.grid.minor = ggplot2::element_blank(),
+                       axis.text.x = ggplot2::element_text(angle = 45, vjust = 1,
+                                                           hjust = 1),
+                       legend.position = "left",
+                       legend.box = "horizontal") +
+        ggplot2::labs(title = "Correlations", x = NULL, y = NULL)
+      if ("mean corr" %in% reason) {
+        correl <- correl +
+          ggplot2::geom_tile(color = "white") +
+          ggplot2::scale_fill_gradientn(colors = c("red", "white", "blue"),
+                                        values = scales::rescale(c(minCor,
+                                                                   thrCorGeno, 1)),
+                                        limits = c(minCor, 1),
+                                        name = "Pearson\nCorrelation")
+      }
+      if ("slope" %in% reason) {
+        correl <- correl +
+          ggnewscale::new_scale_fill() +
+          ## Add slope to upper left.
+          ggplot2::geom_tile(data = slopemats[[genotype]],
+                             ggplot2::aes_string("Var1", "Var2", fill = "value"),
+                             color = "white") +
+          ggplot2::scale_fill_gradientn(colors = c("cyan", "white", "darkgreen"),
+                                        values = scales::rescale(c(minSlope,
+                                                                   thrSlopeGeno, 1)),
+                                        limits = c(minSlope, 1),
+                                        name = "Slope\nCorrelation")
+        }
+    } else {
+      correl <- grid::nullGrob()
+    }
     ## PCA biplot.
-    pcaplot <- factoextra::fviz_pca_var(plantPcas[[genotype]])
+    if ("angle" %in% reason) {
+      pcaplot <- factoextra::fviz_pca_var(plantPcas[[genotype]])
+    } else {
+      pcaplot <- grid::nullGrob()
+    }
     ## Arrange plots.
     lay <- rbind(c(1, 1), c(1, 1), c(1, 1), c(2, 3), c(2, 3))
     ## grid arrange always plots results.
@@ -704,7 +727,7 @@ removeSerieOut <- function(dat = NULL,
                            reason = c("mean corr", "angle", "slope"),
                            traits = attr(x = serieOut,
                                          which = "trait")) {
-  reason <- match.arg(reason)
+  reason <- match.arg(reason, several.ok = TRUE)
   ## Check that one of dat and fitSpline are specified.
   if ((is.null(dat) && is.null(fitSpline)) || (
     !is.null(dat) && !is.null(fitSpline))) {
