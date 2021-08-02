@@ -20,9 +20,9 @@
 
 \item{...}{Ignored.}
 
-\item{plotType}{A character string indicating which spline component
-should be plotted, either predictions, derivatives or second derivatives
-("derivatives2").}
+\item{plotType}{A character string indicating the type of plot to be made.}
+
+\item{what}{The types of estimate that should be extracted.}
 
 \item{title}{A character string used as title for the plot. If \code{NULL} a
 default title is added to the plot depending on \code{plotType}.}

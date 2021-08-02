@@ -188,9 +188,8 @@ estimateSplineParameters <- function(HTPSpline,
 #'
 #' @param x An object of class \code{HTPSpline}.
 #' @param ... Ignored.
-#' @param plotType A character string indicating which spline component
-#' should be plotted, either predictions, derivatives or second derivatives
-#' ("derivatives2").
+#' @param plotType A character string indicating the type of plot to be made.
+#' @param what The types of estimate that should be extracted.
 #'
 #' @return A list of object of class ggplot is invisibly returned.
 #'
