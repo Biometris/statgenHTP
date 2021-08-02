@@ -1,7 +1,5 @@
 ### Test detectSingleOut.
 
-### Test fitSpline
-
 Sys.setlocale("LC_COLLATE", "C")
 
 ## Read test data from .csv
@@ -235,3 +233,14 @@ expect_true(all(is.na(predOut3[predOut3[["plotId"]] == "c12r1",
                                c("pred.value", "deriv", "deriv2")])))
 expect_true(all(is.na(modOut3[modOut3[["plotId"]] == "c12r1", "t1_corr"])))
 
+## Check the option reason works correctly.
+expect_error(removeSerieOut(dat = corr, serieOut = serieOut1, reason = "tst"),
+             'one of "mean corr", "angle", "slope"')
+expect_error(removeSerieOut(dat = corr,
+                            serieOut = serieOut1[, colnames(serieOut1) != "reason"],
+                            reason = "slope"),
+             "serieOut should contain a column reason")
+corrOut4 <- removeSerieOut(dat = corr, serieOut = serieOut1,
+                           reason = "slope")
+expect_true(all(is.na(corrOut4[corrOut4[["plotId"]] == "c12r1", "t1_corr"])))
+expect_false(all(is.na(corrOut4[corrOut4[["plotId"]] == "c12r2", "t1_corr"])))

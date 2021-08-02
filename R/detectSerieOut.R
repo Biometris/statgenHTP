@@ -587,10 +587,10 @@ plot.serieOut <- function(x,
                          ggplot2::aes_string("Var1", "Var2", fill = "value"),
                          color = "white") +
       ggplot2::scale_fill_gradientn(colors = c("cyan", "white", "darkgreen"),
-                                     values = scales::rescale(c(minSlope,
-                                                                thrSlopeGeno, 1)),
-                                     limits = c(minSlope, 1),
-                                     name = "Slope\nCorrelation") +
+                                    values = scales::rescale(c(minSlope,
+                                                               thrSlopeGeno, 1)),
+                                    limits = c(minSlope, 1),
+                                    name = "Slope\nCorrelation") +
       ## Move y-axis to the right.
       ggplot2::scale_y_discrete(position = "right") +
       ## Use coord fixed to create a square shaped output.
@@ -647,6 +647,8 @@ plot.serieOut <- function(x,
 #' \code{\link{fitSpline}} function.
 #' @param serieOut A data.frame with at least the column plotId with
 #' values corresponding to those in dat/fitSpline.
+#' @param reason A character vector indicating which types of outliers should
+#' be replaced by NA.
 #' @param traits The traits that should be replaced by NA. When using the
 #' output of \code{detectSerieOut} as input for \code{serieOut} this defaults
 #' to the trait used for when detecting the outliers.
@@ -681,9 +683,14 @@ plot.serieOut <- function(x,
 #' spatCorrectedVatorOut <- removeSerieOut(dat = spatCorrectedVator,
 #'                                         serieOut = outVator)
 #'
+#' ## Only replace the slope outliers by NA in the corrected data.
+#' spatCorrectedVatorOut2 <- removeSerieOut(dat = spatCorrectedVator,
+#'                                         serieOut = outVator,
+#'                                         reason = "slope")
+#'
 #' ## Replace the outliers by NA in the corrected data.
 #' ## Replace both the corrected value and the raw trait value by NA.
-#' spatCorrectedVatorOut2 <-
+#' spatCorrectedVatorOut3 <-
 #'   removeSerieOut(dat = spatCorrectedVator,
 #'                  serieOut = outVator,
 #'                  traits = c("EffpsII", "EffpsII_corr"))
@@ -694,8 +701,10 @@ plot.serieOut <- function(x,
 removeSerieOut <- function(dat = NULL,
                            fitSpline = NULL,
                            serieOut,
+                           reason = c("mean corr", "angle", "slope"),
                            traits = attr(x = serieOut,
-                                        which = "trait")) {
+                                         which = "trait")) {
+  reason <- match.arg(reason)
   ## Check that one of dat and fitSpline are specified.
   if ((is.null(dat) && is.null(fitSpline)) || (
     !is.null(dat) && !is.null(fitSpline))) {
@@ -721,6 +730,12 @@ removeSerieOut <- function(dat = NULL,
     if (!hasName(serieOut, "plotId")) {
       stop("serieOut should at least contain the column plotId.\n")
     }
+    if (length(reason) < 3)
+      if (!hasName(serieOut, "reason")) {
+        stop("serieOut should contain a column reason.\n")
+      } else {
+        serieOut <- serieOut[serieOut[["reason"]] %in% reason, ]
+      }
     if (!is.null(dat)) {
       ## Remove plots that are in serieOut.
       for (trait in traits) {

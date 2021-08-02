@@ -8,6 +8,7 @@ removeSerieOut(
   dat = NULL,
   fitSpline = NULL,
   serieOut,
+  reason = c("mean corr", "angle", "slope"),
   traits = attr(x = serieOut, which = "trait")
 )
 }
@@ -19,6 +20,9 @@ removeSerieOut(
 
 \item{serieOut}{A data.frame with at least the column plotId with
 values corresponding to those in dat/fitSpline.}
+
+\item{reason}{A character vector indicating which types of outliers should
+be replaced by NA.}
 
 \item{traits}{The traits that should be replaced by NA. When using the
 output of \code{detectSerieOut} as input for \code{serieOut} this defaults
@@ -61,9 +65,14 @@ outVator <- detectSerieOut(corrDat = spatCorrectedVator,
 spatCorrectedVatorOut <- removeSerieOut(dat = spatCorrectedVator,
                                         serieOut = outVator)
 
+## Only replace the slope outliers by NA in the corrected data.
+spatCorrectedVatorOut2 <- removeSerieOut(dat = spatCorrectedVator,
+                                        serieOut = outVator,
+                                        reason = "slope")
+
 ## Replace the outliers by NA in the corrected data.
 ## Replace both the corrected value and the raw trait value by NA.
-spatCorrectedVatorOut2 <-
+spatCorrectedVatorOut3 <-
   removeSerieOut(dat = spatCorrectedVator,
                  serieOut = outVator,
                  traits = c("EffpsII", "EffpsII_corr"))
