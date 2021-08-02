@@ -69,7 +69,10 @@ reference:
 - contents:
   - fitSpline
   - plot.HTPSpline
+- title: Estimate parameters
+- contents:
   - estimateSplineParameters
+  - plot.HTPSplineEst
 - title: Detect outliers for series of observations
 - contents:
   - detectSerieOut

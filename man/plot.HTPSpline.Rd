@@ -71,7 +71,6 @@ plot(fit.spline, plotIds = "c10r29", plotType =  "derivatives2")
 }
 \seealso{
 Other functions for fitting splines: 
-\code{\link{estimateSplineParameters}()},
 \code{\link{fitSpline}()}
 }
 \concept{functions for fitting splines}
