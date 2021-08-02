@@ -23,10 +23,10 @@ estimateSplineParameters(
 extracted, the predictions, the first derivatives or the second derivatives
 ("derivatives2")}
 
-\item{what}{The type of estimate that should be extracted. Either minimum
+\item{what}{The types of estimate that should be extracted. Either minimum
 ("min"), maximum ("max"), mean, area under the curve ("AUC") or a percentile.
 Percentiles should be given as p + percentile. E.g. for the 10th percentile
-specify what = "p10"}
+specify what = "p10". Multiple types of estimate can be extracted at once.}
 
 \item{AUCScale}{The area under the curve is dependent on the scale used on
 the x-axis. By default the area is computed assuming a scale in minutes. This
@@ -71,6 +71,13 @@ paramVator <- estimateSplineParameters(HTPSpline = fit.spline,
                                        timeMax = 1528500000,
                                        genotypes = subGeno)
 head(paramVator)
+
+## Estimate the minimum and maximum value of the predictions.
+paramVator2 <- estimateSplineParameters(HTPSpline = fit.spline,
+                                        estimate = "predictions",
+                                        what = c("min", "max"),
+                                        genotypes = subGeno)
+head(paramVator2)
 
 }
 \seealso{

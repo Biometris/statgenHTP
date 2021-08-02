@@ -173,6 +173,8 @@ expect_error(estimateSplineParameters(splineRes, what = "min",
 
 expect_silent(est1 <- estimateSplineParameters(splineRes, what = "min"))
 
+expect_inherits(est1, "HTPSplineEst")
+
 expect_equal_to_reference(est1, "splineEst", tolerance = 1e-6)
 
 ## Check that options timeMin and timeMax function correctly.
@@ -202,7 +204,8 @@ expect_equal(ncol(est3), 4)
 ## Check that estimates are made correctly when spline where fitted on timeNumber.
 expect_silent(estimateSplineParameters(splineRes2, what = "min"))
 
+## Check that estimates for multiple parameters are made correctly.
+expect_silent(est4 <- estimateSplineParameters(splineRes,
+                                               what = c("min", "max")))
 
-
-
-
+expect_equal(est4[["min_predictions"]], est1[["min_predictions"]])

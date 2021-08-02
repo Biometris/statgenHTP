@@ -1,7 +1,11 @@
-# statgenHTP 1.0.3
+# statgenHTP 1.0.4
 
 * The `removeSerieOut` function now has an extra argument reason allowing for restricting removal of outliers to one or more reason the outliers where tagged.
 * The `plot` function for `serieOut` objects now has an extra argument reason allowing for restricting the plotting of outliers to one or more reason the outliers where tagged.
+* The `detectSerieOut` function is now able to handle plotIds with irregular naming, i.e. plotIds starting with a number.
+* In the `estimateSplineParameters` function multiple parameters can now be estimated at once.
+* A bug in `detectSerieOut` that caused slope outliers to be never detected is fixed.
+* A bug causing predictions to be made in `fitSpline` for missing values at the beginning or end of a time course is fixed.
 
 # statgenHTP 1.0.3
 
