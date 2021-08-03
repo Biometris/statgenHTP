@@ -68,6 +68,7 @@ estimateSplineParameters <- function(HTPSpline,
                                      genotypes = NULL,
                                      plotIds = NULL) {
   estimate <- match.arg(estimate)
+  AUCScale <- match.arg(AUCScale)
   estVar <- if (estimate == "predictions") "pred.value" else if
   (estimate == "derivatives") "deriv" else "deriv2"
   useTimeNumber <- attr(HTPSpline, which = "useTimeNumber")
@@ -135,8 +136,7 @@ estimateSplineParameters <- function(HTPSpline,
       intWidth <- diff(predDat[1:2, timeVar])
       if (timeVar == "timePoint") {
         ## x-axis scale for time variables as computed by diff is in minutes.
-        ## For conversino to hours/days divide by appropriate factor.
-        AUCScale <- match.arg(AUCScale)
+        ## For converting to hours/days divide by appropriate factor.
         if (AUCScale == "hour") {
           intWidth <- intWidth / 60
         } else if (AUCScale == "day") {
