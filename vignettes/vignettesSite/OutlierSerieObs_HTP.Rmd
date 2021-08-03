@@ -135,7 +135,15 @@ The figure above contains:
 -   (bottom left) A matrix with in the bottom right the correlations of the plant scores as a heatmap. The scale is centered on 0.9 (the correlation threshold) to see at a glance the outlying plants with low correlations (usually correlation is high between plants). The top left of the matrix shows the average slopes as a heatmap. The scale is centered on 0.7 (the slope threshold) to see at a glance the outlying plants with low average slope (usually average slopes are high between plants).
 -   (bottom right) A PCA plot of the plant scores. Usually, all plants are grouped and the first axis explains most of the variation. When a plant is outlying, it will be located apart from the other plants on the second axis.
 
-When numerical time was used to fit the splines, it can be used also to plot the outliers using the same options `useTimeNumber = TRUE` and providing the column name in `timeNumber`.
+It is possible to visualize only the plants tagged for one or two reasons instead of all three. This can be done by specifying e.g. `reason = slope` for only visualizing plants tagged because of a low average slope. When doing so only the relevant plots will be shown. So in this case only the upper left part of the correlation plot and no PCA plot. 
+
+```{r plotOutVatorSlope,  fig.height=6, fig.width=8, echo=TRUE, message=FALSE, warning=FALSE}
+plot(outVator, 
+     genotypes = "G151", 
+     reason = "slope")
+```
+
+When numerical time was used to fit the splines, it can be used also to plot the outliers using the option `useTimeNumber = TRUE` and providing the column name in `timeNumber`.
 
 ```{r plotOutVatorNum, echo=TRUE, eval=FALSE}
 plot(outVator, 
@@ -165,6 +173,14 @@ fit.splineOut <- removeSerieOut(fitSpline = fit.spline,
                                 serieOut = outVator)
 fit.splineNumOut <- removeSerieOut(fitSpline = fit.splineNum,
                                    serieOut = outVator)
+```
+
+It is possible to remove only the plants tagged for one or two reasons instead of all three. This can be done by specifying e.g. `reason = slope` for only removing plants tagged because of a low average slope. 
+
+```{r rmOutVatorSlope}
+spatCorrectedVatorOut <- removeSerieOut(dat = spatCorrectedVator,
+                                        serieOut = outVator,
+                                        reason = "slope")
 ```
 
 ### Impact of the number of knots on the smoothing
