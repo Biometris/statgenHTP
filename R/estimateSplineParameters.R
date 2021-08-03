@@ -222,7 +222,13 @@ plot.HTPSplineEst <- function(x,
       pWhat <- ggplot2::ggplot(x,
                                ggplot2::aes_string(x = "genotype", y = estVar)) +
         ggplot2::geom_boxplot(na.rm = TRUE) +
-        ggplot2::labs(title = title, y = (paste(w, "of", trait)))
+        ggplot2::labs(title = title, y = (paste(w, "of", trait))) +
+        ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90,
+                                                           vjust = 0.5))
+      if (useGenoDecomp) {
+        pWhat <- pWhat + ggplot2::facet_grid(. ~ geno.decomp, scales = "free_x",
+                                             space = "free_x")
+      }
       if (output) {
         plot(pWhat)
       }
@@ -234,9 +240,8 @@ plot.HTPSplineEst <- function(x,
         ggplot2::geom_histogram(na.rm = TRUE, bins = 10) +
         ggplot2::labs(title = title, y = (paste(w, "of", trait)))
       if (useGenoDecomp) {
-        pWhat <- pWhat +
-          ggplot2::facet_grid(. ~ geno.decomp, scales = "free_x",
-                              space = "free_x")
+        pWhat <- pWhat + ggplot2::facet_grid(. ~ geno.decomp, scales = "free_x",
+                                             space = "free_x")
       }
       if (output) {
         plot(pWhat)
