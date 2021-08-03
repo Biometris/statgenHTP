@@ -775,7 +775,7 @@ plot.TP <- function(x,
                        panel.grid.minor = ggplot2::element_blank()) +
         ## No axis and legend titles.
         ggplot2::labs(title = plotTitle, x = "", y = "", color = "") +
-        ggplot2::guides(size = FALSE) +
+        ggplot2::guides(size = "none") +
         ## Fix coordinates to get a square sized plot.
         ggplot2::coord_fixed()
       p[[trait]] <- pTp
