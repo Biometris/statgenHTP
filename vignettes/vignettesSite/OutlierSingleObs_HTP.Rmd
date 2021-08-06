@@ -7,6 +7,7 @@ output:
     number_sections: yes
     toc: no
 bibliography: bibliography.bib
+link-citations: yes
 ---
 
 ```{r setup, include = FALSE}
