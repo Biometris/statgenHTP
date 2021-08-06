@@ -326,6 +326,11 @@ detectSerieOut <- function(corrDat,
     cormat[lower.tri(cormat)] <- NA
     ## Melt to format used by ggplot.
     meltedCormat <- reshape2::melt(cormat, na.rm = TRUE)
+    ## Convert Var1 and Var2 to factor needed for plotting.
+    if (!is.factor(meltedCormat[["Var1"]])) {
+      meltedCormat[["Var1"]] <- as.factor(meltedCormat[["Var1"]])
+      meltedCormat[["Var2"]] <- as.factor(meltedCormat[["Var2"]])
+    }
     attr(meltedCormat, which = "thrCor") <- attr(cormat, which = "thrCor")
     return(meltedCormat)
   })
@@ -387,7 +392,13 @@ detectSerieOut <- function(corrDat,
     slopemat[lower.tri(slopemat)] <- NA
     ## Melt to format used by ggplot.
     meltedSlopemat <- reshape2::melt(slopemat, na.rm = TRUE)
-    attr(meltedSlopemat, which = "thrCor") <- attr(slopemat, which = "thrCor")
+    ## Convert Var1 and Var2 to factor needed for plotting.
+    if (!is.factor(meltedSlopemat[["Var1"]])) {
+      meltedSlopemat[["Var1"]] <- as.factor(meltedSlopemat[["Var1"]])
+      meltedSlopemat[["Var2"]] <- as.factor(meltedSlopemat[["Var2"]])
+    }
+    attr(meltedSlopemat, which = "thrSlope") <-
+      attr(slopemat, which = "thrSlope")
     return(meltedSlopemat)
   })
   ## Create full data.frame with annotated plants.
@@ -581,7 +592,7 @@ plot.serieOut <- function(x,
     ## Correlation plot.
     if (any(c("mean corr", "slope") %in% reason)) {
       thrCorGeno <- attr(cormats[[genotype]], which = "thrCor")
-      thrSlopeGeno <- attr(cormats[[genotype]], which = "thrSlope")
+      thrSlopeGeno <- attr(slopemats[[genotype]], which = "thrSlope")
       correl <- ggplot2::ggplot(data = cormats[[genotype]],
                                 ggplot2::aes_string("Var2", "Var1",
                                                     fill = "value")) +
@@ -615,7 +626,8 @@ plot.serieOut <- function(x,
           ggnewscale::new_scale_fill() +
           ## Add slope to upper left.
           ggplot2::geom_tile(data = slopemats[[genotype]],
-                             ggplot2::aes_string("Var1", "Var2", fill = "value"),
+                             ggplot2::aes_string("Var1", "Var2",
+                                                 fill = "value"),
                              color = "white") +
           ggplot2::scale_fill_gradientn(colors = c("cyan", "white", "darkgreen"),
                                         values = scales::rescale(c(minSlope,
