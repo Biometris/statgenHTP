@@ -95,7 +95,7 @@ detectSingleOut <- function(TP,
   plotPreds <- lapply(X = TPPlot, FUN = function(plotDat) {
     ## Only makes sense for at least 6 time points.
     if (nrow(plotDat) <= 6) {
-      warning("Not enough data points (<= 6) to fit a model for: ",
+      warning("Not enough data points (at least 7) to fit a model for: ",
               plotDat[1, "plotId"], ".\n", call. = FALSE)
       return(NULL)
     }
