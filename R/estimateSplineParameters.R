@@ -209,6 +209,9 @@ plot.HTPSplineEst <- function(x,
   trait <- attr(x, which = "trait")
   estimate <- attr(x, which = "estimate")
   useGenoDecomp <- attr(x, which = "useGenoDecomp")
+  if (!is.factor(x[["genotype"]])) {
+    x[["genotype"]] <- as.factor(x[["genotype"]])
+  }
   if (!is.null(outFile)) {
     chkFile(outFile, fileType = "pdf")
     output <- TRUE

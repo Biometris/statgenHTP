@@ -50,8 +50,8 @@
 #' plot(fit.spline, genotypes = "G160")
 #'
 #' ## Visualize the P-Spline predictions and first derivatives for one plant.
-#' plot(fit.spline, plotIds = "c10r29", plotType =  "predictions")
-#' plot(fit.spline, plotIds = "c10r29", plotType =  "derivatives")
+#' plot(fit.spline, plotIds = "c10r29", plotType = "predictions")
+#' plot(fit.spline, plotIds = "c10r29", plotType = "derivatives")
 #'
 #' @family functions for fitting splines
 #'

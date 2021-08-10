@@ -78,10 +78,7 @@ paramVator1 <-
                            timeMax = 432,
                            genotypes = subGenoVator)
 
-ggplot(paramVator1, aes(x = genotype, y = AUC_predictions)) + 
-  geom_boxplot(na.rm = TRUE) +
-  ylab("AUC of EffPsII") +
-  theme_classic()
+plot(paramVator1, plotType = "box")
 ```
 
 For this subset of genotypes, there is a variability in AUC of the psII efficiency. This could be used in genetic analysis and maybe to perform a GWAS.
@@ -97,10 +94,7 @@ paramVator2 <-
                            timeMax = 312,
                            genotypes = subGenoVator)
 
-ggplot(paramVator2, aes(x = genotype, y = max_derivatives)) + 
-  geom_boxplot(na.rm = TRUE) +
-  ylab("Max recovery slope") +
-  theme_classic()
+plot(paramVator2, plotType = "box")
 ```
 
 > Note: when "min" or "max" is selected, the output also contains the parameter occurence time point, as numerical `timeNumber` and date `timePoint`. See in the table below:
@@ -108,8 +102,6 @@ ggplot(paramVator2, aes(x = genotype, y = max_derivatives)) +
 ```{r headParam2, echo=FALSE, message=FALSE, eval=TRUE}
 knitr::kable(head(paramVator2), align=c('c','c'), booktabs = TRUE)
 ```
-
-
 
 ## Example 2
 
@@ -137,13 +129,8 @@ paramArch1 <-
 
 
 ```{r paramArch1fig, fig.height=2, fig.width=6, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
-ggplot(paramArch1, aes(max_predictions)) + 
-  geom_histogram(binwidth = 0.015) +
-  theme_classic() +
-  facet_grid(. ~ geno.decomp, scales="free_x",space = "free_x")
+plot(paramArch1, plotType = "hist")
 ```
-
-
 ## Example 3
 
 For this example, we will use the raw data from the RootPhAir, corrected for individually outlying observations (see [**statgenHTP tutorial: 2. Outlier detection for single observations**](OutlierSingleObs_HTP.html)) and time course outliers (see [**statgenHTP tutorial: 4. Outlier detection Time course**](OutlierSerieObs_HTP.html)). We will fit P-splines at the plant level on a subset of genotypes.
@@ -194,11 +181,7 @@ paramRoot1 <-
                            estimate = "derivatives",
                            what = "mean")
 
-ggplot(paramRoot1, aes(x = as.factor(genotype), y = mean_derivatives)) + 
-  geom_boxplot(na.rm = TRUE) +
-  ylab("Max root tip growth rate") +
-  xlab("genotype") +
-  theme_classic()
+plot(paramRoot1, plotType = "box")
 ```
 
 ------------------------------------------------------------------------
