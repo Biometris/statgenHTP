@@ -428,8 +428,12 @@ chkRowCol <- function(dat) {
 #' @noRd
 #' @keywords internal
 dfBind <- function(dfList) {
-  ## Filter empty data.frames from dfList
-  dfList <- Filter(f = function(x) nrow(x) > 0, x = dfList)
+  ## Remove empty data.frames from dfList
+  for (i in rev(seq_along(dfList))) {
+    if (nrow(dfList[[i]]) == 0) {
+      dfList[[i]] <- NULL
+    }
+  }
   if (length(dfList) == 0) {
     return(data.frame())
   }
