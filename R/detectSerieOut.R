@@ -128,19 +128,6 @@ detectSerieOut <- function(corrDat,
   if (!is.numeric(thrSlope) || any(thrSlope < 0) || any(thrSlope > 1)) {
     stop("thrSlope should be a numerical vector with values between 0 and 1.\n")
   }
-  genoPlotId <- sapply(X = genotypes, FUN = function(genotype) {
-    length(unique(corrDat[corrDat[["genotype"]] == genotype, "plotId"]))
-  })
-  genoPlotIdLim <- names(genoPlotId[genoPlotId < 3])
-  if (length(genoPlotIdLim) > 0) {
-    warning("The following genotypes have less than 3 plotIds and are skipped ",
-            "in the outlier detection:\n",
-            paste(genoPlotIdLim, collapse = ", "), "\n", call. = FALSE)
-    genotypes <- genotypes[!genotypes %in% genoPlotIdLim]
-    if (length(genotypes) == 0) {
-      stop("No genotypes left for performing outlier detection.\n")
-    }
-  }
   ## Restrict corrDat to genotypes.
   corrDat <- corrDat[corrDat[["genotype"]] %in% genotypes, ]
   ## Get number of values for geno.decomp.
@@ -229,6 +216,17 @@ detectSerieOut <- function(corrDat,
                         }
                         return(plantDat)
                       })
+  genoPlotId <- sapply(X = plantDats, FUN = ncol)
+  genoPlotIdLim <- names(genoPlotId[genoPlotId < 3])
+  if (length(genoPlotIdLim) > 0) {
+    warning("The following genotypes have less than 3 plotIds and are skipped ",
+            "in the outlier detection:\n",
+            paste(genoPlotIdLim, collapse = ", "), "\n", call. = FALSE)
+    plantDats[genoPlotIdLim] <- NULL
+    if (length(plantDats) == 0) {
+      stop("No genotypes left for performing outlier detection.\n")
+    }
+  }
   ## Compute correlation matrices.
   cormats <- lapply(X = plantDats, FUN = function(plantDat) {
     if (!is.null(dim(plantDat))) {
