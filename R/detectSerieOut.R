@@ -488,7 +488,8 @@ detectSerieOut <- function(corrDat,
 #' ## The `outVator` can be visualized for selected genotypes.
 #' plot(outVator, genotypes = "G151")
 #'
-#' ## Only visualize outliers tagged because of slope correlation.
+#' ## Only visualize outliers tagged because of low correlation
+#' ## between slopes of the regression.
 #' plot(outVator, genotypes = "G151", reason = "slope")
 #' }
 #'
