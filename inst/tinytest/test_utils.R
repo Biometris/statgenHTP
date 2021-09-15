@@ -90,14 +90,15 @@ expect_equal(dfOut4[["treat"]], c("W", "D", "W" , "D"))
 
 ## Different splits for n = 1, 2 and 3.
 ## Use 40 day time difference for ease of checking.
-times <- strptime(c("1sep2019 12:00", "11oct2019 12:00"), "%d%b%Y %H:%M")
+times <- strptime(c("1sep2019 12:00", "11oct2019 12:00"), "%d%b%Y %H:%M", "GMT")
 expect_equal(statgenHTP:::prettier(n = 1)(times),
-             strptime("21sep2019 12:00", "%d%b%Y %H:%M"))
+             strptime("21sep2019 12:00", "%d%b%Y %H:%M", "GMT"))
 expect_equal(statgenHTP:::prettier(n = 2)(times),
-             strptime(c("9sep2019 12:00", "3oct2019 12:00"), "%d%b%Y %H:%M"))
+             strptime(c("9sep2019 12:00", "3oct2019 12:00"),
+                      "%d%b%Y %H:%M", "GMT"))
 expect_equal(statgenHTP:::prettier(n = 3)(times),
              strptime(c("6sep2019 12:00", "21sep2019 12:00", "6oct2019 12:00"),
-                      "%d%b%Y %H:%M"))
+                      "%d%b%Y %H:%M", "GMT"))
 
 ### Test chkFile
 

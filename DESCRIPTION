@@ -1,7 +1,7 @@
 Package: statgenHTP
 Title: High Throughput Phenotyping (HTP) Data Analysis
-Version: 1.0.4
-Date: 2021-08-20
+Version: 1.0.5
+Date: 2021-09-15
 Authors@R: 
     c(person(given = "Emilie J",
              family = "Millet",
@@ -65,9 +65,8 @@ Suggests:
    knitr, 
    rmarkdown, 
    tinytest (>= 1.2.4)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr
 URL: https://biometris.github.io/statgenHTP/index.html, https://github.com/Biometris/statgenHTP/
 BugReports: https://github.com/Biometris/statgenHTP/issues
-

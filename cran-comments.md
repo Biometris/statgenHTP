@@ -1,12 +1,12 @@
-## Patch to fix additional issues in checks
+## Patch release for r-release-macos-arm64 check error
 
-Fixed issues in ATLAS, MKL
+- Fixed check error on r-release-macos-arm64
 
 ----
 
 ## Test environments
 
-* local Windows 10 install, R 4.1
+* local Windows 10 install, R 4.1.1
 * Ubuntu (on github actions, devel and release)
 * macOS (on github actions, release)
 * R-hub (devel and release)

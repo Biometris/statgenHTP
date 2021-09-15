@@ -1,3 +1,7 @@
+# statgenHTP 1.0.5
+
+* No user visible changes
+
 # statgenHTP 1.0.4
 
 * The `removeSerieOut` function now has an extra argument reason allowing for restricting removal of outliers to one or more reason the outliers where tagged.
