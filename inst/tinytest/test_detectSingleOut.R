@@ -84,12 +84,14 @@ singleOut5 <- detectSingleOut(phenoTP2, trait = "EffpsII",
 singleOut6 <- detectSingleOut(phenoTP2, trait = "EffpsII",
                               plotIds = "c14r32",
                               checkEdges = FALSE)
-expect_equal(setdiff(singleOut5[singleOut5[["outlier"]] == 1, "timePoint"],
-                     singleOut6[singleOut6[["outlier"]] == 1, "timePoint"]),
-             1528448820)
-expect_equal(setdiff(singleOut6[singleOut6[["outlier"]] == 1, "timePoint"],
-                     singleOut5[singleOut5[["outlier"]] == 1, "timePoint"]),
-             1527871020)
+expect_equal(
+  as.numeric(setdiff(singleOut5[singleOut5[["outlier"]] == 1, "timePoint"],
+                     singleOut6[singleOut6[["outlier"]] == 1, "timePoint"])),
+  1528448820)
+expect_equal(
+  as.numeric(setdiff(singleOut6[singleOut6[["outlier"]] == 1, "timePoint"],
+                     singleOut5[singleOut5[["outlier"]] == 1, "timePoint"])),
+  1527871020)
 
 ### Check plotting of detectSingleOut results.
 
