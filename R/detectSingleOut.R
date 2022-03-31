@@ -230,10 +230,6 @@ plot.singleOut <- function(x,
   }
   plotDat <- droplevels(plotDat)
   trait <- attr(x = x, which = "trait")
-  ## Compute the number of breaks for the time scale.
-  ## If there are less than 3 time points use the number of time points.
-  ## Otherwise use 3.
-  nBr <- min(length(unique(plotDat[["timePoint"]])), 3)
   p <- ggplot2::ggplot(plotDat,
                        ggplot2::aes_string(x = "timePoint", y = trait)) +
     ggplot2::geom_point(na.rm = TRUE)  +
@@ -244,10 +240,16 @@ plot.singleOut <- function(x,
     ggplot2::geom_line(mapping = ggplot2::aes_string(y = "yPred"),
                        col = "red", size = .8) +
     ggplot2::geom_point(data = outliers, col = "blue", size = 2) +
-    ggplot2::theme(legend.position = "none") +
+    ggplot2::theme(legend.position = "none")
+  nTp <- length(unique(plotDat[["timePoint"]]))
+  if (nTp < 5) {
+    p <- p + ggplot2::scale_x_datetime(breaks = unique(plotDat[["timePoint"]]),
+                                       labels = scales::date_format("%B %d"))
+  } else {
     ## Format the time scale to Month + day.
-    ggplot2::scale_x_datetime(breaks = prettier(n = nBr),
-                              labels = scales::date_format("%B %d"))
+    p <- p + ggplot2::scale_x_datetime(breaks = prettier(n = 3),
+                                       labels = scales::date_format("%B %d"))
+  }
   ## Calculate the total number of plots.
   nPlots <- length(unique(plotDat[["plotId"]]))
   ## 25 Plots per page.

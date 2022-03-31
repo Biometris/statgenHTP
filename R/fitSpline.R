@@ -211,6 +211,14 @@ fitSpline <- function(inDat,
       ## Fit the P-spline using PsplinesREML.
       obj <- PsplinesREML(x = dat[["timeNumber"]], y = dat[[trait]],
                           knots = knotsVec)
+
+      # obj2 <- LMMsolver::LMMsolve(fixed = formula(paste(trait, "~ 1")),
+      #                            data = dat,
+      #                            spline = ~spl1D(x = timeNumber,
+      #                                            nseg = knots, pord = 2, degree = 3,
+      #                                            xlim = c(xmin, xmax)))
+
+
       ## Extract the spline coefficients.
       coeff <- data.frame(obj.coefficients = obj$splineCoeffs, plotId = plant)
       coeff[["type"]] <- paste0("timeNumber", seq_len(nrow(coeff)))
@@ -389,12 +397,17 @@ plot.HTPSpline <- function(x,
   }
   if (!useTimeNumber) {
     ## Compute the number of breaks for the time scale.
-    ## If there are less than 3 time points use the number of time points.
+    ## If there are less than 4 time points use positions of the time points.
     ## Otherwise use 3.
-    nBr <- min(length(unique(modDat[["timePoint"]])), 3)
-    ## Format the time scale to Month + day.
-    p <- p + ggplot2::scale_x_datetime(breaks = prettier(n = nBr),
-                                       labels = scales::date_format("%B %d"))
+    nTp <- length(unique(modDat[["timePoint"]]))
+    if (nTp < 5) {
+      p <- p + ggplot2::scale_x_datetime(breaks = unique(modDat[["timePoint"]]),
+                                         labels = scales::date_format("%B %d"))
+    } else {
+      ## Format the time scale to Month + day.
+      p <- p + ggplot2::scale_x_datetime(breaks = prettier(n = 3),
+                                         labels = scales::date_format("%B %d"))
+    }
   }
   ## Calculate the total number of plots.
   nPlots <- length(unique(modDat[[fitLevel]]))

@@ -411,20 +411,29 @@ plot.fitMod <- function(x,
     ## Manually modify limit of y-axis.
     yLim <- c(min(dotArgs$yLim[1], herit[["h2"]]),
               max(dotArgs$yLim[2], herit[["h2"]]))
-    nBr <- min(length(unique(herit[["timePoint"]])), 3)
     p <- ggplot2::ggplot(herit,
                          ggplot2::aes_string(x = "timePoint", y = "h2",
                                              group = "herit",
                                              color = "herit")) +
       ggplot2::geom_point(size = 3, na.rm = TRUE) +
-      ggplot2::scale_x_datetime(breaks = prettier(nBr),
-                                labels = scales::date_format("%B %d")) +
       plotTheme() +
       ggplot2::theme(axis.title.y = ggplot2::element_text(angle = 0,
                                                           vjust = 0.5)) +
       ggplot2::ylim(yLim) +
       ggplot2::labs(title = title)
-    if (length(unique(herit[["timePoint"]])) > 1) {
+    ## Compute the number of breaks for the time scale.
+    ## If there are less than 4 time points use positions of the time points.
+    ## Otherwise use 3.
+    nTp <- length(unique(herit[["timePoint"]]))
+    if (nTp < 5) {
+      p <- p + ggplot2::scale_x_datetime(breaks = unique(herit[["timePoint"]]),
+                                         labels = scales::date_format("%B %d"))
+    } else {
+      ## Format the time scale to Month + day.
+      p <- p + ggplot2::scale_x_datetime(breaks = prettier(n = 3),
+                                         labels = scales::date_format("%B %d"))
+    }
+    if (nTp > 1) {
       p <- p + ggplot2::geom_line(size = 0.5, na.rm = TRUE)
     }
     if (output) {
@@ -452,20 +461,29 @@ plot.fitMod <- function(x,
     ## Manually modify limit of y-axis.
     yLim <- c(min(dotArgs$yLim[1], effDim[["ED"]]),
               max(dotArgs$yLim[2], effDim[["ED"]]))
-    nBr <- min(length(unique(effDim[["timePoint"]])), 3)
     p <- ggplot2::ggplot(effDim,
                          ggplot2::aes_string(x = "timePoint", y = "ED",
                                              group = "effDim",
                                              color = "effDim")) +
       ggplot2::geom_point(size = 3, na.rm = TRUE) +
-      ggplot2::scale_x_datetime(breaks = prettier(nBr),
-                                labels = scales::date_format("%B %d")) +
       plotTheme() +
       ggplot2::theme(axis.title.y = ggplot2::element_text(angle = 0,
                                                           vjust = 0.5)) +
       ggplot2::ylim(yLim) +
       ggplot2::labs(title = title, color = "Effective dimension")
-    if (length(unique(effDim[["timePoint"]])) > 1) {
+    ## Compute the number of breaks for the time scale.
+    ## If there are less than 4 time points use positions of the time points.
+    ## Otherwise use 3.
+    nTp <- length(unique(effDim[["timePoint"]]))
+    if (nTp < 5) {
+      p <- p + ggplot2::scale_x_datetime(breaks = unique(effDim[["timePoint"]]),
+                                         labels = scales::date_format("%B %d"))
+    } else {
+      ## Format the time scale to Month + day.
+      p <- p + ggplot2::scale_x_datetime(breaks = prettier(n = 3),
+                                         labels = scales::date_format("%B %d"))
+    }
+    if (nTp > 1) {
       p <- p + ggplot2::geom_line(size = 0.5, na.rm = TRUE)
     }
     if (output) {
@@ -488,21 +506,30 @@ plot.fitMod <- function(x,
     ## Manually modify limit of y-axis.
     yLim <- c(min(dotArgs$yLim[1], variance[["value"]]),
               max(dotArgs$yLim[2], variance[["value"]]))
-    nBr <- min(length(unique(variance[["timePoint"]])), 3)
     p <- ggplot2::ggplot(variance,
                          ggplot2::aes_string(x = "timePoint", y = "value",
                                              group = "var", color = "var")) +
       ggplot2::geom_point(size = 3, na.rm = TRUE) +
       ggplot2::scale_color_discrete(labels = varLabs) +
-      ggplot2::scale_x_datetime(breaks = prettier(nBr),
-                                labels = scales::date_format("%B %d")) +
       plotTheme() +
       ggplot2::theme(axis.title.y = ggplot2::element_text(angle = 0,
                                                           vjust = 0.5)) +
       ggplot2::ylim(yLim) +
       ggplot2::labs(title = title, color = "variance",
                     y = expression(sigma ^ 2))
-    if (length(unique(variance[["timePoint"]])) > 1) {
+    ## Compute the number of breaks for the time scale.
+    ## If there are less than 4 time points use positions of the time points.
+    ## Otherwise use 3.
+    nTp <- length(unique(variance[["timePoint"]]))
+    if (nTp < 5) {
+      p <- p + ggplot2::scale_x_datetime(breaks = unique(variance[["timePoint"]]),
+                                         labels = scales::date_format("%B %d"))
+    } else {
+      ## Format the time scale to Month + day.
+      p <- p + ggplot2::scale_x_datetime(breaks = prettier(n = 3),
+                                         labels = scales::date_format("%B %d"))
+    }
+    if (nTp > 1) {
       p <- p + ggplot2::geom_line(size = 0.5, na.rm = TRUE)
     }
     if (output) {
