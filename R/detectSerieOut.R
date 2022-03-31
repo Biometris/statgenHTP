@@ -420,7 +420,7 @@ detectSerieOut <- function(corrDat,
     annotatePlants <- data.frame()
   }
   plotInfo <- unique(corrDatPred[c("genotype", geno.decomp)])
-  plotInfo <- plotInfo[!interaction(plotInfo) %in% genoPlotIdLim, ]
+  plotInfo <- plotInfo[!interaction(plotInfo) %in% genoPlotIdLim, , drop = FALSE]
   class(annotatePlants) <- c("serieOut", class(annotatePlants))
   attr(x = annotatePlants, which = "thrCor") <- thrCor
   attr(x = annotatePlants, which = "thrPca") <- thrPca
