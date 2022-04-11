@@ -55,6 +55,7 @@
 #'
 #' @family functions for fitting splines
 #'
+#' @importFrom LMMsolver spl1D
 #' @export
 fitSpline <- function(inDat,
                       trait,
@@ -111,7 +112,7 @@ fitSpline <- function(inDat,
     }
     ## Convert time point to time number with the first time point as 0.
     minTime <- min(inDat[["timePoint"]], na.rm = TRUE)
-    inDat[["timeNumber"]] <- as.numeric(inDat[["timePoint"]] - minTime)
+    inDat[["timeNumber"]] <- as.numeric(inDat[["timePoint"]] - minTime) / 1000
   } else {
     if (!is.numeric(inDat[[timeNumber]])) {
       stop("timeNumber should be a numerical column.\n")
@@ -199,28 +200,18 @@ fitSpline <- function(inDat,
   ## Fit splines.
   fitSp <- lapply(X = levels(plantGeno[["plotId"]]), FUN = function(plant) {
     ## Restrict data to current plant.
-    dat <- inDat[inDat[["plotId"]] == plant, c("timeNumber", trait)]
+    dat <- inDat[inDat[["plotId"]] == plant & !is.na(inDat[[trait]]),
+                 c("timeNumber", trait)]
     ## Manually select minimum number of time points.
     if (length(unique(dat[!is.na(dat[[trait]]), "timeNumber"])) >= minTP) {
-      ## Manually set the number of knots.
-      xmin <- min(dat[!is.na(dat[[trait]]), "timeNumber"]) - 1e-10
-      xmax <- max(dat[!is.na(dat[[trait]]), "timeNumber"]) + 1e-10
-      ## Construct vector of knots.
-      knotsVec <- PsplinesKnots(xmin = xmin, xmax = xmax, degree = 3,
-                                nseg = knots)
-      ## Fit the P-spline using PsplinesREML.
-      obj <- PsplinesREML(x = dat[["timeNumber"]], y = dat[[trait]],
-                          knots = knotsVec)
-
-      # obj2 <- LMMsolver::LMMsolve(fixed = formula(paste(trait, "~ 1")),
-      #                            data = dat,
-      #                            spline = ~spl1D(x = timeNumber,
-      #                                            nseg = knots, pord = 2, degree = 3,
-      #                                            xlim = c(xmin, xmax)))
-
-
+      ## Fit the P-spline using LMMsolver.
+      obj <- LMMsolver::LMMsolve(fixed = formula(paste(trait, "~ 1")),
+                                 spline = ~spl1D(x = timeNumber, nseg = knots,
+                                                 pord = 2, degree = 3),
+                                 data = dat)
       ## Extract the spline coefficients.
-      coeff <- data.frame(obj.coefficients = obj$splineCoeffs, plotId = plant)
+      coeff <- data.frame(obj.coefficients = coef(obj)$`s(timeNumber)`,
+                          plotId = plant)
       coeff[["type"]] <- paste0("timeNumber", seq_len(nrow(coeff)))
       ## Restrict dense grid to points within observation range.
       timeRangePl <- timeRange[timeRange[["timeNumber"]] >=
@@ -229,12 +220,19 @@ fitSpline <- function(inDat,
                                  max(dat[!is.na(dat[[trait]]), "timeNumber"]),
                                , drop = FALSE]
       ## Predictions on a dense grid.
-      yPred <- predict(obj, x = timeRangePl$timeNumber)
-      yDeriv <- predict(obj, x = timeRangePl$timeNumber, deriv = TRUE)
-      yDeriv2 <-  predict(obj, x = timeRangePl$timeNumber, deriv2 = TRUE)
+      yPred <- LMMsolver::obtainSmoothTrend(obj, deriv = 0,
+                                            newdata = timeRangePl,
+                                            includeIntercept = TRUE)$ypred
+      yDeriv <- LMMsolver::obtainSmoothTrend(obj, deriv = 1,
+                                             newdata = timeRangePl)$ypred
+      yDeriv2 <- LMMsolver::obtainSmoothTrend(obj, deriv = 2,
+                                              newdata = timeRangePl)$ypred
       ## Merge time, predictions and plotId.
       predDat <- data.frame(timeRangePl, pred.value = yPred,
                             deriv = yDeriv, deriv2 = yDeriv2, plotId = plant)
+      if (!useTimeNumber) {
+        predDat[["timeNumber"]] <- 1000 * predDat[["timeNumber"]]
+      }
       return(list(coeff = coeff, predDat = predDat))
     } else {
       return(list(coeff = NULL, predDat = NULL))
@@ -447,120 +445,3 @@ plot.HTPSpline <- function(x,
   }
   invisible(pPag)
 }
-
-#### Helper function for fitting splines.
-
-#' Spectral decomposition of D'D
-#'
-#' Spectral decomposition of D'D, returns a q x (q - ord) matrix.
-#' @noRd
-#' @keywords internal
-calcUsc <- function(q,
-                    ord) {
-  D <- diff(diag(q), diff = ord)
-  DtD <- crossprod(D)
-  decomp <- eigen(DtD, symmetric = TRUE)
-  U <- decomp$vectors[, 1:(q - ord)]
-  d <- decomp$values[1:(q - ord)]
-  return(U %*% diag(1 / sqrt(d)))
-}
-
-#' Equally placed knots.
-#'
-#' @noRd
-#' @keywords internal
-PsplinesKnots <- function(xmin,
-                          xmax,
-                          degree,
-                          nseg) {
-  dx <- (xmax - xmin) / nseg
-  knots <- seq(xmin - degree * dx, xmax + degree * dx, by = dx)
-  attr(knots, "degree") <- degree
-  return(knots)
-}
-
-#' Fit P-Spline
-#'
-#' @noRd
-#' @keywords internal
-PsplinesREML <- function(x,
-                         y,
-                         knots,
-                         lambda = 1,
-                         optimize = TRUE) {
-  ## Remove missing values in y from x and y.
-  x <- x[!is.na(y)]
-  y <- y[!is.na(y)]
-  ## Set defaults.
-  pord <- 2
-  degree <- 3
-  ## Construct B-Spline base.
-  B <- splines::splineDesign(knots = knots, x = x, derivs = rep(0, length(x)),
-                             ord = degree + 1)
-  q <- ncol(B)
-  Usc <- calcUsc(q = q, ord = pord)
-  ## Calculate the linear/fixed parts.
-  UX1 <- cbind(1, scale(1:q))
-  UX1[, 2] <- UX1[, 2] / norm(UX1[, 2], type = "2")
-  X <- B %*% UX1
-  Z <- B %*% Usc
-  U <- cbind(X, Z)
-  UtU <- crossprod(U)
-  ## max ED for random part.
-  maxED <- length(unique(x)) - pord
-  UtY <- t(U) %*% y
-  P <- diag(c(0, 0, rep(1, q - 2)))
-  phi <- 1
-  psi <- lambda
-  n <- length(x)
-  p <- 2
-  for (it in 1:100) {
-    C <- phi * UtU + psi * P
-    ## calculate effective dimensions.
-    Cinv <- solve(C)
-    EDfSpline <- p
-    EDrSpline <- ncol(Z) - psi * sum(diag(Cinv %*% P))
-    EDRes <- n - p - EDrSpline
-    ## calculate coefficients and residuals.
-    coeffs <- phi * Cinv %*% UtY
-    resid <- y - U %*% coeffs
-    if (optimize) {
-      ## Optimization steps.
-      ## Compute new values for psi and phi
-      psiNew <- EDrSpline / (sum(coeffs * (P %*% coeffs)) + 1.0e-20)
-      phiNew <- EDRes / (sum(resid ^ 2) + 1.0e-20)
-      pOld <- log(c(phi, psi))
-      pNew <- log(c(phiNew, psiNew))
-      diff <- max(abs(pOld - pNew))
-      phi <- phiNew
-      psi <- psiNew
-      if (diff < 1.0e-12) break
-    }
-  }
-  ## Calculate spline coefficients.
-  U <- cbind(UX1, Usc)
-  splineCoeffs <- U %*% coeffs
-  ## Construct output.
-  res <- structure(
-    list(maxED = maxED, ED = EDrSpline + p, coeffs = coeffs,
-         splineCoeffs = splineCoeffs, knots = knots, nObs = n,
-         x = x, y = y, optimize = optimize, UX1 = UX1, Usc = Usc),
-    class = c("PsplinesREML", "list"))
-  return(res)
-}
-
-#' Prediction from P-Spline.
-#'
-#' @noRd
-#' @keywords internal
-predict.PsplinesREML <- function(obj,
-                                 x,
-                                 deriv = FALSE,
-                                 deriv2 = FALSE) {
-  d <- if (deriv) 1 else if (deriv2) 2 else 0
-  Bgrid = splines::splineDesign(obj$knots, x, derivs = d, ord = 4)
-  U <- cbind(obj$UX1, obj$Usc)
-  pred <- as.vector(Bgrid %*% U %*% obj$coeffs)
-  return(pred)
-}
-
