@@ -207,11 +207,14 @@ fitSpline <- function(inDat,
       ## Fit the P-spline using LMMsolver.
       obj <- LMMsolver::LMMsolve(fixed = formula(paste(trait, "~ 1")),
                                  spline = ~spl1D(x = timeNumber, nseg = knots,
-                                                 pord = 2, degree = 3),
+                                                 pord = 2, degree = 3,
+                                                 scaleX = FALSE),
                                  data = dat)
       ## Extract the spline coefficients.
-      coeff <- data.frame(obj.coefficients = coef(obj)$`s(timeNumber)`,
-                          plotId = plant)
+      coefObj <- coef(obj)
+      coeff <- data.frame(obj.coefficients = coefObj$`s(timeNumber)` +
+                            coefObj$`(Intercept)` + coefObj$`lin(timeNumber)`,
+                          plotId = plant, row.names = NULL)
       coeff[["type"]] <- paste0("timeNumber", seq_len(nrow(coeff)))
       ## Restrict dense grid to points within observation range.
       timeRangePl <- timeRange[timeRange[["timeNumber"]] >=
