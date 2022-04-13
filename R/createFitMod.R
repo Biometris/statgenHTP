@@ -611,7 +611,7 @@ spatPlot <- function(fitMod,
   ## Get limits for row and columns.
   yMin <- min(plotDat[["rowNum"]])
   yMax <- max(plotDat[["rowNum"]])
-  xMin <- min(plotDat[["rowNum"]])
+  xMin <- min(plotDat[["colNum"]])
   xMax <- max(plotDat[["colNum"]])
   ## Execute this part first since it needs plotData without missings
   ## removed.
