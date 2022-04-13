@@ -234,7 +234,9 @@ fitSpline <- function(inDat,
       predDat <- data.frame(timeRangePl, pred.value = yPred,
                             deriv = yDeriv, deriv2 = yDeriv2, plotId = plant)
       if (!useTimeNumber) {
+        ## Restore original values of timeNumber.
         predDat[["timeNumber"]] <- 1000 * predDat[["timeNumber"]]
+        inDat[["timeNumber"]] <- 1000 * inDat[["timeNumber"]]
       }
       return(list(coeff = coeff, predDat = predDat))
     } else {

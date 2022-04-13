@@ -202,7 +202,7 @@ detectSerieOut <- function(corrDat,
                                                     formula = type ~ plotId,
                                                     value.var = "obj.coefficients")
                         ## Remove intercept.
-                        plantDat <- plantDat[-1, , drop = FALSE]
+                        #plantDat <- plantDat[-1, , drop = FALSE]
                         ## Remove plants with only NA.
                         NAplants <- apply(X = plantDat, MARGIN = 2,
                                           FUN = function(plant) {
@@ -569,6 +569,9 @@ plot.serieOut <- function(x,
     plotShapes <- setNames(rep(1, times = length(plotIds)), plotIds)
     ## Annotated plants get a closed circle.
     plotShapes[names(plotShapes) %in% x[["plotId"]]] <- 21
+    ## Reorder according to levels in genoDats.
+    ## This prevents a duplicate legend in specific cases.
+    plotShapes <- na.omit(plotShapes[levels(genoDats[[genotype]]$plotId)])
     ## Plot of time course per genotype: corrected data + spline per plant.
     kinetic <- ggplot2::ggplot(genoDats[[genotype]],
                                ggplot2::aes_string(x = timeVar2, y = trait,
