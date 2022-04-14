@@ -131,6 +131,7 @@ paramArch1 <-
 ```{r paramArch1fig, fig.height=2, fig.width=6, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 plot(paramArch1, plotType = "hist")
 ```
+
 ## Example 3
 
 For this example, we will use the raw data from the RootPhAir, corrected for individually outlying observations (see [**statgenHTP tutorial: 2. Outlier detection for single observations**](OutlierSingleObs_HTP.html)) and time course outliers (see [**statgenHTP tutorial: 4. Outlier detection Time course**](OutlierSerieObs_HTP.html)). We will fit P-splines at the plant level on a subset of genotypes.
