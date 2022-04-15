@@ -6,7 +6,7 @@
 \alias{statgenHTP-package}
 \title{statgenHTP: High Throughput Phenotyping (HTP) Data Analysis}
 \description{
-Phenotypic analysis of data coming from high throughput phenotyping (HTP) platforms, including different types of outlier detection, spatial analysis, and parameter estimation. The package is being developed within the EPPN2020 project (\url{https://eppn2020.plant-phenotyping.eu/}). Some functions have been created to be used in conjunction with the R package 'asreml' for the 'ASReml' software, which can be obtained upon purchase from 'VSN' international (\url{https://www.vsni.co.uk/software/asreml}).
+Phenotypic analysis of data coming from high throughput phenotyping (HTP) platforms, including different types of outlier detection, spatial analysis, and parameter estimation. The package is being developed within the EPPN2020 project (<https://eppn2020.plant-phenotyping.eu/>). Some functions have been created to be used in conjunction with the R package 'asreml' for the 'ASReml' software, which can be obtained upon purchase from 'VSN' international (<https://www.vsni.co.uk/software/asreml>).
 }
 \seealso{
 Useful links:
