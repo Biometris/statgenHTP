@@ -1,574 +1,371 @@
-#' Predict the P-Splines Hierarchical Curve Data Model
-#'
-#' Function that predicts the P-spline Hierarchical Curve Data Model (see
-#' \code{\link{fitSplineHDM}}) on a dense grid. It provides standard errors
-#' for curves at each level of the hierarchy. User has to be aware that
-#' standard errors at the plot level demand large memory. We suggest set
-#' that option at the \code{FALSE} level
-#'
-#' @param object An object of class "psHDM" as obtained after fitting
-#' (\code{\link{fitSplineHDM}}) the P-spline Hierarchical Curve Data Model
-#' @param newtimes A numeric vector with timepoints at which predictions are
-#' desired
-#' @param pred A list that controls the hierarchical levels at which
-#' predictions are desired (population/genotypes/plots).  The default is
-#' \code{TRUE}.
-#' @param se A list that controls the hierarchical levels at which standard
-#' errors are desired (population/genotypes/plots).  The default is
-#' \code{TRUE} except at the plot level.
-#' @param ... Not used.
-#' @param trace An optional value that controls the function trace.
-#' The default is \code{TRUE}.
-#'
-#' @return An object of class \code{psHDM}, a list with the following outputs:
+# Function to PREDICT the P-spline Hierarchical Curve Data Model ----------
+# Input Arguments ---------------------------------------------------------
+# object:     a model object of class "psHDM" as obtained using function psHDM().
+# newtimes:   a numeric vector with timepints at which predictions are required
+# pred:       a list that controls the hierarchical levels at which predictions are required (Population, genotypes and plants).  The default is TRUE.
+# se:         a list that controls the hierarchical levels at which standard errors are required (Population, genotypes and plants).  The default is TRUE except at the plant level.
+
+# Output Arguments --------------------------------------------------------
+# newtimes:        a numeric vector with the timepoint at which predictions and standard errors have been obtained.
+# raw.time:        a numeric vector with the original timepoints.
+# y:               a list with the original response for plants in each genotype.
+# l.geno:          a vector with the names of the genotypes/varieties.
+# l.pop:           a vector with the names of the populations.
+# l.plant:         a vector with the names of the plants/plots/individuals.
+# n.plants_p_pop:  a numeric vector with the number of plants/plots/individuals per population.
+# n.geno_p_pop:    a numeric vector with the number of genotypes/varieties per population.
+# n.plants_p_geno: a numeric vector with the number of plants/plots/individuals per genotype/variety.
+# f_pop:           a list with the estimated population trajectories (fp_pop), and first (fp_pop_deriv1) and second (fp_pop_deriv2) order derivatives. Each element of the list is a numeric matrix where each column corresponds to one population.
+# f_geno:          a list with the estimated genotype/variety trajectories (fp_geno), and first (fp_geno_deriv1) and second (fp_geno_deriv2) order derivatives. Each element of the list is a list that corresponds to one population and is a matrix with as many columns as genotypes/varieties per population.
+# f_geno_dev:      a list with the estimated genotype/variety deviations (fp_geno_dev), and first (fp_geno_dev_deriv1) and second (fp_geno_dev_deriv2) order derivatives. Each element of the list is a list that corresponds to one population and is a matrix with as many columns as genotypes/varieties per population.
+# f_plant:         a list with the estimated plant/plot/individual trajectories (fp_plant), and first (fp_plant_deriv1) and second (fp_plant_deriv2) order derivatives. Each element of the list is a list that corresponds to one genotype/variety and is a matrix with as many columns as plants per genotype.
+# f_plant_dev:     a list with the estimated plant/plot/individual deviations (fp_plant_dev), and first (fp_plant_dev_deriv1) and second (fp_plant_dev_deriv2) order derivatives. Each element of the list is a list that corresponds to one genotype/variety and is a matrix with as many columns as plants per genotype.
+# se_f_pop:        a list with the estimated population trajectories (se.fp_pop), and first (se.fp_pop_deriv1) and second (se.fp_pop_deriv2) order derivatives. Each element of the list is a numeric matrix where each column corresponds to one population.
+# se_f_geno:       a list with the estimated genotype/variety trajectories (se.fp_geno), and first (se.fp_geno_deriv1) and second (se.fp_geno_deriv2) order derivatives. Each element of the list is a list that corresponds to one population and is a matrix with as many columns as genotypes/varieties per population.
+# se_f_geno_dev:   a list with the estimated genotype/variety deviations (se.fp_geno_dev), and first (se.fp_geno_dev_deriv1) and second (se.fp_geno_dev_deriv2) order derivatives. Each element of the list is a list that corresponds to one population and is a matrix with as many columns as genotypes/varieties per population.
+# se_f_plant:      a list with the estimated plant/plot/individual trajectories (se.fp_plant), and first (se.fp_plant_deriv1) and second (se.fp_plant_deriv2) order derivatives. Each element of the list is a list that corresponds to one genotype/variety and is a matrix with as many columns as plants per genotype.
+# se_f_plant_dev:  a list with the estimated plant/plot/individual deviations (se.fp_plant_dev), and first (se.fp_plant_dev_deriv1) and second (se.fp_plant_dev_deriv2) order derivatives. Each element of the list is a list that corresponds to one genotype/variety and is a matrix with as many columns as plants per genotype.
+
+# Function ----------------------------------------------------------------
+
+
 #' predict.psHDM
-#' \code{newtimes} A numeric vector with the timepoints at which predictions
-#' and/or standard errors have been obtained.
-#' \code{popLevel} A data.frame with the estimated population trajectories
-#' and first and second order derivatives, and if required their respective
-#' standard errors, at the \code{newtimes}.
-#' \code{genoLevel} A data.frame with the estimated genotype-specific
-#' deviations and trajectories and their respective first and second order
-#' derivatives, and if required their respective standard errors,
-#' at the \code{newtimes}.
-#' \code{plotLevel} A data.frame with the estimated plot-specific
-#' deviations and trajectories and their respective first and second order
-#' derivatives, and if required their respective standard errors,
-#' at the \code{newtimes}.
-#' \code{plotObs} A data.frame with the raw data at the original timepoints.
 #'
-#' @examples
-#' ## The data from the Phenovator platform have been corrected for spatial
-#' ## trends and outliers for single observations have been removed.
-#'
-#' ## We need to specify the genotype-by-treatment interaction.
-#' ## Treatment: water regime (WW, WD).
-#' spatCorrectedArch[["treat"]] <- substr(spatCorrectedArch[["geno.decomp"]],
-#'                                       start = 1, stop = 2)
-#' spatCorrectedArch[["genoTreat"]] <-
-#'   interaction(spatCorrectedArch[["genotype"]],
-#'              spatCorrectedArch[["treat"]], sep = "_")
-#'
-#' ## Fit P-Splines Hierarchical Curve Data Model for selection of genotypes.
-#' fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
-#'                           trait = "LeafArea_corr",
-#'                           genotypes = c("GenoA14_WD", "GenoA51_WD",
-#'                                        "GenoB11_WW", "GenoB02_WD",
-#'                                        "GenoB02_WW"),
-#'                           time = "timeNumber",
-#'                           pop = "geno.decomp",
-#'                           genotype = "genoTreat",
-#'                           plotId = "plotId",
-#'                           difVar = list(geno = FALSE, plant = FALSE),
-#'                           smoothPop = list(nseg = 4, bdeg = 3, pord = 2),
-#'                           smoothGeno = list(nseg = 4, bdeg = 3, pord = 2),
-#'                           smoothPlot = list(nseg = 4, bdeg = 3, pord = 2),
-#'                           weights = "wt",
-#'                           trace = FALSE)
-#'
-#' ## Predict the P-Splines Hierarchical Curve Data Model on a dense grid
-#' ## with standard errors at the population and genotype levels
-#' pred.psHDM <- predict(object = fit.psHDM,
-#'                      newtimes = seq(min(fit.psHDM$time[["timeNumber"]]),
-#'                                    max(fit.psHDM$time[["timeNumber"]]),
-#'                                    length.out = 100),
-#'                      pred = list(pop = TRUE, geno = TRUE, plot = TRUE),
-#'                      se = list(pop = TRUE, geno = TRUE, plot = FALSE))
-#'
-#' ## Plot the P-Spline predictions at the three levels of the hierarchy
-#'
-#' ## Plots at population level.
-#' plot(pred.psHDM,
-#'     plotType = "popTra")
-#'
-#' ## Plots at genotype level.
-#' plot(pred.psHDM,
-#'     plotType = "popGenoTra")
-#'
-#' ## Plots of derivatives at genotype level.
-#' plot(pred.psHDM,
-#'     plotType = "popGenoDeriv")
-#'
-#' ## Plots of deviations at genotype level.
-#' plot(pred.psHDM,
-#'     plotType = "genoDev")
-#'
-#' ## Plots at plot level.
-#' plot(pred.psHDM,
-#'     plotType = "genoPlotTra")
-#'
-#' @references Pérez-Valencia, D.M., Rodríguez-Álvarez, M.X., Boer, M.P. et al.
-#' A two-stage approach for the spatio-temporal analysis of high-throughput
-#' phenotyping data. Sci Rep 12, 3177 (2022). \doi{10.1038/s41598-022-06935-9}
-#'
-#' @family functions for fitting hierarchical curve data models
+#' predict.psHDM
 #'
 #' @export
 predict.psHDM <- function(object,
                           newtimes,
-                          pred = list(pop = TRUE, geno = TRUE, plot = TRUE),
-                          se = list(pop = TRUE, geno = TRUE, plot = FALSE),
-                          trace = TRUE,
+                          pred = list(pop = TRUE, geno = TRUE, plant = TRUE),
+                          se = list(pop = TRUE, geno = TRUE, plant = FALSE),
                           ...) {
-  ## Checks.
-  if (!inherits(object, "psHDM")) {
-    stop("object should be of class psHDM.\n")
+
+  if(!inherits(object, "psHDM")) {
+    stop("The object class is not correct")
   }
-  if (missing(newtimes)) {
-    xp <- object$time[["timeNumber"]]
+
+  if(missing(newtimes)) {
+    xp <- object$time
   } else {
-    if (!is.vector(newtimes) || !is.numeric(newtimes)) {
-      stop("newtimes should be a vector.\n")
+    if(!is.vector(newtimes) | !is.numeric(newtimes)) {
+      stop("newtimes should be a vector")
     }
     xp <- newtimes
   }
-  if (!is.list(pred) || length(pred) != 3 ||
-      !(setequal(names(pred), c("pop", "geno", "plot")))) {
-        stop("pred should be a named list of length 3.\n")
+
+  # Output data
+  res             <- list()
+  res$newtimes     <- xp
+
+  # Normalize time
+  xp <- xp - min(object$time) + 1
+
+  # Number of parameters: fixed and random (for each component)
+  np        <- object$dim
+  np.comp   <- c(np[1]+np[2], np[3]+np[4], np[5]+np[6])
+  names(np.comp) <- c("pop", "geno", "plant")
+  np.e      <- cumsum(np.comp)
+  np.s      <- np.e - np.comp + 1
+
+  # Predictions
+  # Functions at population level
+  if(isTRUE(pred$pop)) {
+    # Transformation matrix, theta and B
+    n.pop  <- length(object$l.pop)
+    T_pop <- Matrix::Matrix(cbind(kronecker(diag(n.pop), object$MM$MM.pop$U.X),
+                          kronecker(diag(n.pop), object$MM$MM.pop$U.Z)))
+    theta_pop <- Matrix::crossprod(Matrix::t(T_pop), Matrix::Matrix(object$coeff[np.s[1]:np.e[1]], ncol = 1))
+    Bp_pop <- Matrix::Matrix(kronecker(diag(n.pop), spline.bbase(knots = object$MM$MM.pop$knots, X. = xp, BDEG. = object$smooth$smooth.pop$bdeg)))
+    fp_pop <- matrix(Matrix::crossprod(Matrix::t(Bp_pop), theta_pop), ncol = n.pop) # Note that f_pop == eta_pop
+    colnames(fp_pop) <- object$l.pop
+
+    # First derivative
+    Bp_pop_deriv1 <- Matrix::Matrix(kronecker(diag(n.pop), spline.bbase(knots = object$MM$MM.pop$knots, X. = xp, BDEG. = object$smooth$smooth.pop$bdeg, deriv = 1)))
+    fp_pop_deriv1 <- matrix(Matrix::crossprod(Matrix::t(Bp_pop_deriv1), theta_pop), ncol = n.pop)
+    colnames(fp_pop_deriv1) <- object$l.pop
+
+    # Second derivative
+    Bp_pop_deriv2 <- kronecker(diag(n.pop), spline.bbase(knots = object$MM$MM.pop$knots, X. = xp, BDEG. = object$smooth$smooth.pop$bdeg, deriv = 2))
+    fp_pop_deriv2 <- matrix(Matrix::crossprod(Matrix::t(Bp_pop_deriv2), theta_pop), ncol = n.pop)
+    colnames(fp_pop_deriv2) <- object$l.pop
+
+    print("Population-specific growth curves OK")
+
+    res$f_pop <- list(fp_pop = fp_pop, fp_pop_deriv1 = fp_pop_deriv1, fp_pop_deriv2 = fp_pop_deriv2)
   }
-  if (!is.list(se) || length(se) != 3 ||
-      !(setequal(names(se), c("pop", "geno", "plot")))) {
-    stop("se should be a named list of length 3.\n")
-  }
-  if (isTRUE(pred$plot) && !(isTRUE(pred$geno) && isTRUE(pred$pop))) {
-    stop("Predictions at plot level can only be made if predictions are ",
-         "also made at geno and pop level.\n")
-  }
-  if (isTRUE(pred$geno) && !isTRUE(pred$pop)) {
-    stop("Predictions at geno level can only be made if predictions are ",
-         "also made at pop level.\n")
-  }
-  if (isTRUE(se$plot) && !(isTRUE(se$geno) && isTRUE(se$pop))) {
-    stop("Standard errors at plot level can only be computed if standard ",
-         "errors are also computed at geno and pop level.\n")
-  }
-  if (isTRUE(se$geno) && !isTRUE(se$pop)) {
-    stop("Standard errors at geno level can only be computed if standard ",
-         "errors are also computed at pop level.\n")
-  }
-  if (isTRUE(se$pop) && !isTRUE(pred$pop)) {
-    stop("Standard errors at population level can only be computed ",
-         "if predictions are also made at population level.\n")
-  }
-  if (isTRUE(se$geno) && !isTRUE(pred$geno)) {
-    stop("Standard errors at genotype level can only be computed ",
-         "if predictions are also made at genotype level.\n")
-  }
-  if (isTRUE(se$plot) && !isTRUE(pred$plot)) {
-    stop("Standard errors at plot level can only be computed ",
-         "if predictions are also made at plot level.\n")
-  }
-  ## Output data.
-  res <- list(newtimes = xp)
-  ## Normalize time
-  xp <- xp - min(xp) + 1
-  ## Number of parameters: fixed and random (for each component)
-  np <- object$dim
-  npComp <- c(np[1] + np[2], np[3] + np[4], np[5] + np[6])
-  names(npComp) <- c("pop", "geno", "plot")
-  npE <- cumsum(npComp)
-  npS <- npE - npComp + 1
-  ## Predictions.
-  ## Functions at population level.
-  if (isTRUE(pred$pop)) {
-    popLevel <- mixmodToBsplinePred(what = "pop", object = object,
-                                    npS, npE, xp, dev = FALSE)
-    if (trace) {
-      print("Population-specific growth curves OK")
-    }
-    if (isTRUE(se$pop)) {
-      popLevel$pred <-
-        append(popLevel$pred,
-               standardErrors(Tm = popLevel$Tm, B = popLevel$B,
-                              Bd1 = popLevel$Bd1, Bd2 = popLevel$Bd2,
-                              what = "pop", dev = FALSE, object = object,
-                              npS, npE))
-      if (trace) {
-        print("Standard errors for population-specific growth curves OK")
-      }
-    }
-    ## Data frame with all the information at population level
-    res <- append(res, listToDf(object1 = popLevel$pred, object2 = object,
-                                what = "pop", xp = res$newtimes))
-  }
-  ## Functions at genotype level.
-  if (isTRUE(pred$geno)) {
-    ## Genotype-specific deviations and first- and second-order derivatives
-    genoDev <- mixmodToBsplinePred(what = "geno", object = object,
-                                   npS, npE, xp, dev = TRUE)
-    genoLevel <- list(genoDev = genoDev$pred)
-    if (trace) {
-      print("Genotype-specific deviations OK")
-    }
-    ## Genotype-specific growth curves and first- and second-order derivatives
-    ## Contrast matrix: Assign genotypes to populations
-    if(length(object$popLevs) == 1) {
-      mmGenoPop <- matrix(1, ncol = 1, nrow = length(object$genoLevs))
+
+  # Functions at genotype level
+  if(isTRUE(pred$geno)) {
+    # Genotype-specific deviations
+    n.geno     <- length(object$l.geno)
+    T_geno_dev <- Matrix::Matrix(cbind(kronecker(Matrix::Matrix(diag(n.geno)), object$MM$MM.geno$U.X),
+                               kronecker(diag(n.geno), object$MM$MM.geno$U.Z)))
+    theta_geno_dev <- Matrix::crossprod(Matrix::t(T_geno_dev), matrix(object$coeff[np.s[2]:np.e[2]], ncol = 1))
+    Bp_geno_dev    <- Matrix::Matrix(kronecker(Matrix::Matrix(diag(n.geno)), spline.bbase(knots = object$MM$MM.geno$knots, X. = xp, BDEG. = object$smooth$smooth.geno$bdeg)))
+    fp_geno_dev    <- matrix(Matrix::crossprod(Matrix::t(Bp_geno_dev), theta_geno_dev), ncol = n.geno) # Note that f_geno_dev == eta_geno_dev
+    # List, with as many elements as populations. Each element of the list is a matrix, with as many columns as genotypes per threatment
+    ind.geno.pop   <- rep(1:n.pop, object$n.geno_p_pop)
+    fp_geno_dev    <- lapply(split(fp_geno_dev, rep(ind.geno.pop, each = nrow(fp_geno_dev))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(xp))
+    names(fp_geno_dev) <- object$l.pop
+
+    # First derivative
+    Bp_geno_dev_deriv1 <- Matrix::Matrix(kronecker(Matrix::Matrix(diag(n.geno)), spline.bbase(knots = object$MM$MM.geno$knots, X. = xp, BDEG. = object$smooth$smooth.geno$bdeg, deriv = 1)))
+    fp_geno_dev_deriv1 <- matrix(Matrix::crossprod(Matrix::t(Bp_geno_dev_deriv1), theta_geno_dev), ncol = n.geno)
+    fp_geno_dev_deriv1 <- lapply(split(fp_geno_dev_deriv1, rep(ind.geno.pop, each = nrow(fp_geno_dev_deriv1))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(xp))
+    names(fp_geno_dev_deriv1) <- object$l.pop
+
+    # Second derivative
+    Bp_geno_dev_deriv2 <- Matrix::Matrix(kronecker(Matrix::Matrix(diag(n.geno)), spline.bbase(knots = object$MM$MM.geno$knots, X. = xp, BDEG. = object$smooth$smooth.geno$bdeg, deriv = 2)))
+    fp_geno_dev_deriv2 <- matrix(Matrix::crossprod(Matrix::t(Bp_geno_dev_deriv2), theta_geno_dev), ncol = n.geno)
+    fp_geno_dev_deriv2 <- lapply(split(fp_geno_dev_deriv2, rep(ind.geno.pop, each = nrow(fp_geno_dev_deriv2))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(xp))
+    names(fp_geno_dev_deriv2) <- object$l.pop
+
+    print("Genotype-specific deviations OK")
+
+    # Genotype-specific growth curves
+    if(n.pop == 1) {
+      mm.ind.pop <- matrix(1, ncol = 1, nrow = n.geno)
     } else {
-      genoPop <- rep(as.factor(1:length(object$popLevs)), object$nGenoPop)
-      mmGenoPop <- Matrix::sparse.model.matrix(~ 0 + genoPop) # The contrast matrix changes here!!!!!!
+      ind.pop    <- rep(as.factor(1:n.pop), object$n.geno_p_pop)
+      mm.ind.pop <- model.matrix(~ 0 + ind.pop) # The contrast matrix changes here!!!!!!
     }
-    TGeno <- Matrix::bdiag(popLevel$Tm, genoDev$Tm)
-    genoTra <- mixmodToBsplinePred(what = "geno", object = object, npS,
-                                   npE, xp, Tmat = TGeno,
-                                   modMat = mmGenoPop, dev = FALSE,
-                                   Bbasis = list(B = genoDev$B,
-                                                 Bd1 = genoDev$Bd1,
-                                                 Bd2 = genoDev$Bd2))
-    genoLevel$genoTra <- genoTra$pred
-    if (trace) {
-      print ("Genotype-specific growth curves OK")
+    T_geno     <- Matrix::bdiag(T_pop, T_geno_dev)
+    theta_geno <- Matrix::crossprod(Matrix::t(T_geno), matrix(object$coeff[np.s[1]:np.e[2]], ncol = 1))
+    Bp_geno    <- cbind(kronecker(Matrix::Matrix(mm.ind.pop), spline.bbase(knots = object$MM$MM.geno$knots, X. = xp, BDEG. = object$smooth$smooth.geno$bdeg)), Bp_geno_dev)
+    fp_geno    <- matrix(Matrix::crossprod(Matrix::t(Bp_geno), theta_geno), ncol = n.geno) # Note that f_geno == eta_geno
+    # List, with as many elements as populations. Each element of the list is a matrix, with as many columns as genotypes per threatment
+    fp_geno    <- lapply(split(fp_geno, rep(ind.geno.pop, each = nrow(fp_geno))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(xp))
+    names(fp_geno) <- object$l.pop
+
+    # First derivative
+    Bp_geno_deriv1 <- cbind(kronecker(Matrix::Matrix(mm.ind.pop), spline.bbase(knots = object$MM$MM.geno$knots, X. = xp, BDEG. = object$smooth$smooth.geno$bdeg, deriv = 1)), Bp_geno_dev_deriv1)
+    fp_geno_deriv1 <- matrix(Matrix::crossprod(Matrix::t(Bp_geno_deriv1), theta_geno), ncol = n.geno)
+    fp_geno_deriv1 <- lapply(split(fp_geno_deriv1, rep(ind.geno.pop, each = nrow(fp_geno_deriv1))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(xp))
+    names(fp_geno_deriv1) <- object$l.pop
+
+    # Second derivative
+    Bp_geno_deriv2 <- cbind(kronecker(Matrix::Matrix(mm.ind.pop), spline.bbase(knots = object$MM$MM.geno$knots, X. = xp, BDEG. = object$smooth$smooth.geno$bdeg, deriv = 2)), Bp_geno_dev_deriv2)
+    fp_geno_deriv2 <- matrix(Matrix::crossprod(Matrix::t(Bp_geno_deriv2), theta_geno), ncol = n.geno)
+    fp_geno_deriv2 <- lapply(split(fp_geno_deriv2, rep(ind.geno.pop, each = nrow(fp_geno_deriv2))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(xp))
+    names(fp_geno_deriv2) <- object$l.pop
+
+    print("Genotype-specific growth curves OK")
+
+    # Give the name of the genotypes
+    e <- cumsum(object$n.geno_p_pop)
+    s <- e - object$n.geno_p_pop + 1
+    for(i in 1:n.pop) {
+      colnames(fp_geno_dev[[i]])        <- object$l.geno[s[i]:e[i]]
+      colnames(fp_geno_dev_deriv1[[i]]) <- object$l.geno[s[i]:e[i]]
+      colnames(fp_geno_dev_deriv2[[i]]) <- object$l.geno[s[i]:e[i]]
+      colnames(fp_geno[[i]])            <- object$l.geno[s[i]:e[i]]
+      colnames(fp_geno_deriv1[[i]])     <- object$l.geno[s[i]:e[i]]
+      colnames(fp_geno_deriv2[[i]])     <- object$l.geno[s[i]:e[i]]
     }
-    if (isTRUE(se$geno)) {
-      ## Genotype-specific deviations
-      genoLevel$genoDev <-
-        append(genoLevel$genoDev,
-               standardErrors(Tm = genoDev$Tm, B = genoDev$B,
-                              Bd1 = genoDev$Bd1, Bd2 = genoDev$Bd2,
-                              what = "geno", dev = TRUE, object = object,
-                              npS, npE))
-      if (trace) {
-        print("Standard errors for genotype-specific deviations OK")
-      }
-      ## Genotype-specific growth curves
-      genoLevel$genoTra <-
-        append(genoLevel$genoTra,
-               standardErrors(Tm = TGeno, B = genoTra$B,
-                              Bd1 = genoTra$Bd1, Bd2 = genoTra$Bd2,
-                              what = "geno", dev = FALSE, object = object,
-                              npS, npE))
-      if (trace) {
-        print("Standard errors for genotype-specific growth curves OK")
-      }
-    }
-    ## Data frame with all the information at genotype level.
-    res <- append(res, listToDf(object1 = genoLevel, object2 = object,
-                                what = "geno", xp = res$newtimes))
+    res$f_geno      <- list(fp_geno = fp_geno, fp_geno_deriv1 = fp_geno_deriv1, fp_geno_deriv2 = fp_geno_deriv2)
+    res$f_geno_dev  <- list(fp_geno_dev = fp_geno_dev, fp_geno_dev_deriv1 = fp_geno_dev_deriv1, fp_geno_dev_deriv2 = fp_geno_dev_deriv2)
   }
-  ## Functions at plot level.
-  if (isTRUE(pred$plot)) {
-    # Plot-specific deviations and first- and second-order derivatives
-    plotDev <- mixmodToBsplinePred(what = "plot", object = object, npS,
-                                   npE, xp, dev = TRUE)
-    plotLevel <- list(plotDev = plotDev$pred)
-    if (trace) {
-      print("Plot-specific deviations OK")
-    }
-    ## Plot-specific growth curves.
-    ## Contrast matrix: Assign plots to populations.
-    if (length(object$popLevs) == 1) {
-      mmPlotPop <- matrix(1, ncol = 1, nrow = object$nPlotPop)
+
+  # Functions at plant level
+  if(isTRUE(pred$plant)) {
+    # Plant-specific deviations
+    # Transformation matrix, theta and B
+    n.tot        <- sum(object$n.plants_p_geno)
+    T_plant_dev  <- cbind(kronecker(Matrix::Matrix(diag(n.tot)), object$MM$MM.ind$U.X),
+                          kronecker(Matrix::Matrix(diag(n.tot)), object$MM$MM.ind$U.Z))
+    theta_plant_dev     <- Matrix::Matrix(T_plant_dev%*%object$coeff[np.s[3]:np.e[3]]) #crossprod(t(T_plant_dev), matrix(object$coeff[np.s[3]:np.e[3]], ncol = 1))
+    ind.ind.geno        <- rep(1:n.geno, object$n.plants_p_geno)
+    Bp_plant_dev        <- Matrix::Matrix(kronecker(Matrix::Matrix(diag(n.tot)), spline.bbase(knots = object$MM$MM.ind$knots, X. = xp, BDEG. = object$smooth$smooth.plant$bdeg)))
+    fp_plant_dev        <- matrix(Matrix::crossprod(Matrix::t(Bp_plant_dev), theta_plant_dev), ncol = n.tot) # Note that f_plant_dev == eta_plant_dev
+    # List, with as many elements as genotypes. Each element of the list is a matrix, with as many columns as plants per genotype
+    fp_plant_dev        <- lapply(split(fp_plant_dev, rep(ind.ind.geno, each = nrow(fp_plant_dev))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(xp))
+    names(fp_plant_dev) <- object$l.geno
+
+    # First derivative
+    Bp_plant_dev_deriv1 <- kronecker(Matrix::Matrix(diag(n.tot)), spline.bbase(knots = object$MM$MM.ind$knots, X. = xp, BDEG. = object$smooth$smooth.plant$bdeg, deriv = 1))
+    fp_plant_dev_deriv1 <- matrix(Matrix::crossprod(Matrix::t(Bp_plant_dev_deriv1), theta_plant_dev), ncol = n.tot)
+    fp_plant_dev_deriv1 <- lapply(split(fp_plant_dev_deriv1, rep(ind.ind.geno, each = nrow(fp_plant_dev_deriv1))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(xp))
+    names(fp_plant_dev_deriv1) <- object$l.geno
+
+    # Second derivative
+    Bp_plant_dev_deriv2 <- kronecker(Matrix::Matrix(diag(n.tot)), spline.bbase(knots = object$MM$MM.ind$knots, X. = xp, BDEG. = object$smooth$smooth.plant$bdeg, deriv = 2))
+    fp_plant_dev_deriv2 <- matrix(Matrix::crossprod(Matrix::t(Bp_plant_dev_deriv2), theta_plant_dev), ncol = n.tot)
+    fp_plant_dev_deriv2 <- lapply(split(fp_plant_dev_deriv2, rep(ind.ind.geno, each = nrow(fp_plant_dev_deriv2))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(xp))
+    names(fp_plant_dev_deriv2) <- object$l.geno
+
+    print("Plant-specific deviations OK")
+
+    # Plant-specific growth curves
+    if(n.pop == 1) {
+      mm.ind.pop <- matrix(1, ncol = 1, nrow = object$n.plants_p_pop)
     } else {
-      plotPop <- rep(as.factor(1:length(object$popLevs)), object$nPlotPop)
-      mmPlotPop <- Matrix::sparse.model.matrix(~ 0 + plotPop) # The contrast matrix changes here!!!!!!
+      ind.pop    <- rep(as.factor(1:n.pop), object$n.plants_p_pop)
+      mm.ind.pop <- model.matrix(~ 0 + ind.pop) # The contrast matrix changes here!!!!!!
     }
-    ## Contrast matrix: Assign plots to genotypes.
-    if (length(object$genoLevs) == 1) {
-      mmPlotGeno <- matrix(1, ncol = 1, nrow = length(object$genoLevs))
+    if(n.geno == 1) {
+      mm.ind.geno <- matrix(1, ncol = 1, nrow = n.geno)
     } else {
-      plotGeno <- rep(as.factor(1:length(object$genoLevs)), object$nPlotGeno)
-      mmPlotGeno <- Matrix::sparse.model.matrix(~ 0 + plotGeno) # The contrast matrix changes here!!!!!!
+      ind.geno    <- rep(as.factor(1:n.geno), object$n.plants_p_geno)
+      mm.ind.geno <- model.matrix(~ 0 + ind.geno) # The contrast matrix changes here!!!!!!
     }
-    TPlot <- Matrix::bdiag(popLevel$Tm, genoDev$Tm, plotDev$Tm)
-    plotTra <- mixmodToBsplinePred(what = "plot", object = object, npS,
-                                   npE, xp, Tmat = TPlot,
-                                   modMat = list(mmPlotPop, mmPlotGeno),
-                                   dev = FALSE,
-                                   Bbasis = list(B = plotDev$B,
-                                                 Bd1 = plotDev$Bd1,
-                                                 Bd2 = plotDev$Bd2))
-    plotLevel$plotTra <- plotTra$pred
-    if (trace) {
-      print("Plot-specific growth curves OK")
-    }
-    if (isTRUE(se$plot)) {
-      ## Plot-specific deviations.
-      plotLevel$plotDev <-
-        append(plotLevel$plotDev,
-               standardErrors(Tm = plotDev$Tm, B = plotDev$B,
-                              Bd1 = plotDev$Bd1, Bd2 = plotDev$Bd2,
-                              what = "plot", dev = TRUE, object = object,
-                              npS, npE))
-      if (trace) {
-        print("Standard errors for plot-specific deviations OK")
-      }
-      ## Standard errors for plot deviations + geno deviations + population effects.
-      plotLevel$plotTra <-
-        append(plotLevel$plotTra,
-               standardErrors(Tm = TPlot, B = plotTra$B,
-                              Bd1 = plotTra$Bd1, Bd2 = plotTra$Bd2,
-                              what = "plot", dev = FALSE, object = object,
-                              npS, npE))
-      if (trace) {
-        print("Standard errors for plot-specific growth curves OK")
-      }
-    }
-    ## Data frame with all the information at genotype level.
-    res <- append(res,
-                  listToDf(object1 = plotLevel, object2 = object,
-                           what = "plot", xp = res$newtimes))
+    T_plant     <- Matrix::bdiag(T_pop, T_geno_dev, T_plant_dev)
+    theta_plant <- Matrix::crossprod(Matrix::t(T_plant), matrix(object$coeff[np.s[1]:np.e[3]], ncol = 1))
+    Bp_plant    <- cbind(kronecker(Matrix::Matrix(mm.ind.pop), spline.bbase(knots = object$MM$MM.pop$knots, X. = xp, BDEG. = object$smooth$smooth.pop$bdeg)),
+                         kronecker(Matrix::Matrix(mm.ind.geno), spline.bbase(knots = object$MM$MM.geno$knots, X. = xp, BDEG. = object$smooth$smooth.geno$bdeg)),
+                         Bp_plant_dev)
+    fp_plant <- matrix(Matrix::crossprod(Matrix::t(Bp_plant), theta_plant), ncol = n.tot) # Note that f_plant == eta_plant
+    # List, with as many elements as populations. Each element of the list is a matrix, with as many columns as genotypes per population
+    fp_plant <- lapply(split(fp_plant, rep(ind.ind.geno, each = nrow(fp_plant))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(xp))
+    names(fp_plant) <- object$l.geno
+
+    # First derivative
+    Bp_plant_deriv1 <- cbind(kronecker(Matrix::Matrix(mm.ind.pop), spline.bbase(knots = object$MM$MM.pop$knots, X. = xp, BDEG. = object$smooth$smooth.pop$bdeg, deriv = 1)),
+                             kronecker(Matrix::Matrix(mm.ind.geno), spline.bbase(knots = object$MM$MM.geno$knots, X. = xp, BDEG. = object$smooth$smooth.geno$bdeg, deriv = 1)),
+                             Bp_plant_dev_deriv1)
+    fp_plant_deriv1 <- matrix(Matrix::crossprod(Matrix::t(Bp_plant_deriv1), theta_plant), ncol = n.tot)
+    fp_plant_deriv1 <- lapply(split(fp_plant_deriv1, rep(ind.ind.geno, each = nrow(fp_plant_deriv1))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(xp))
+    names(fp_plant_deriv1) <- object$l.geno
+
+    # Second derivative
+    Bp_plant_deriv2 <- cbind(kronecker(Matrix::Matrix(mm.ind.pop), spline.bbase(knots = object$MM$MM.pop$knots, X. = xp, BDEG. = object$smooth$smooth.pop$bdeg, deriv = 2)),
+                             kronecker(Matrix::Matrix(mm.ind.geno), spline.bbase(knots = object$MM$MM.geno$knots, X. = xp, BDEG. = object$smooth$smooth.geno$bdeg, deriv = 2)),
+                             Bp_plant_dev_deriv2)
+    fp_plant_deriv2 <- matrix(Matrix::crossprod(Matrix::t(Bp_plant_deriv2), theta_plant), ncol = n.tot)
+    fp_plant_deriv2 <- lapply(split(fp_plant_deriv2, rep(ind.ind.geno, each = nrow(fp_plant_deriv2))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(xp))
+    names(fp_plant_deriv2) <- object$l.geno
+
+    print("Plant-specific growth curves OK")
+
+    res$f_plant     <- list(fp_plant = fp_plant, fp_plant_deriv1 = fp_plant_deriv1, fp_plant_deriv2 = fp_plant_deriv2)
+    res$f_plant_dev <- list(fp_plant_dev = fp_plant_dev, fp_plant_dev_deriv1 = fp_plant_dev_deriv1, fp_plant_dev_deriv2 = fp_plant_dev_deriv2)
   }
-  class(res) <- c("psHDM", "list")
-  attr(res, which = "trait") <- object$trait
+
+  # Stardard errors to construct confidence intervals
+  if(isTRUE(se$pop)) {
+    # Population-specific growth curves
+    se.theta_pop <- Matrix::crossprod(Matrix::t(T_pop), Matrix::tcrossprod(object$Vp[np.s[1]:np.e[1], np.s[1]:np.e[1]], T_pop))
+    se.fp_pop    <- matrix(sqrt(Matrix::colSums(Matrix::t(Bp_pop) * Matrix::tcrossprod(se.theta_pop, Bp_pop))), ncol = n.pop)
+    colnames(se.fp_pop) <- object$l.pop
+
+    # Standard errors first derivative
+    se.fp_pop_deriv1 <- matrix(sqrt(Matrix::colSums(Matrix::t(Bp_pop_deriv1) * Matrix::tcrossprod(se.theta_pop, Bp_pop_deriv1))), ncol = n.pop)
+    colnames(se.fp_pop_deriv1) <- object$l.pop
+
+    # Standard errors second derivative
+    se.fp_pop_deriv2 <- matrix(sqrt(Matrix::colSums(Matrix::t(Bp_pop_deriv2) * Matrix::tcrossprod(se.theta_pop, Bp_pop_deriv2))), ncol = n.pop)
+    colnames(se.fp_pop_deriv2) <- object$l.pop
+
+    print("Standard errors for population-specific growth curves OK")
+
+    res$se.f_pop  <- list(se.fp_pop = se.fp_pop, se.fp_pop_deriv1 = se.fp_pop_deriv1, se.fp_pop_deriv2 = se.fp_pop_deriv2)
+  }
+
+  if(isTRUE(se$geno)) {
+    # Genotype-specific deviations
+    se.theta_geno_dev <- Matrix::crossprod(Matrix::t(T_geno_dev), Matrix::tcrossprod(object$Vp[np.s[2]:np.e[2], np.s[2]:np.e[2]], T_geno_dev))
+    se.fp_geno_dev    <- matrix(sqrt(Matrix::colSums(Matrix::t(Bp_geno_dev) * Matrix::tcrossprod(se.theta_geno_dev, Bp_geno_dev))), ncol = n.geno)
+    se.fp_geno_dev    <- lapply(split(se.fp_geno_dev, rep(ind.geno.pop, each = nrow(se.fp_geno_dev))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(xp))
+    names(se.fp_geno_dev) <- object$l.pop
+
+    # Standard errors first derivative
+    se.fp_geno_dev_deriv1 <- matrix(sqrt(Matrix::colSums(Matrix::t(Bp_geno_dev_deriv1) * Matrix::tcrossprod(se.theta_geno_dev, Bp_geno_dev_deriv1))), ncol = n.geno)
+    se.fp_geno_dev_deriv1 <- lapply(split(se.fp_geno_dev_deriv1, rep(ind.geno.pop, each = nrow(se.fp_geno_dev_deriv1))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(xp))
+    names(se.fp_geno_dev_deriv1) <- object$l.pop
+
+    # Standard errors second derivative
+    se.fp_geno_dev_deriv2 <- matrix(sqrt(Matrix::colSums(Matrix::t(Bp_geno_dev_deriv2) * Matrix::tcrossprod(se.theta_geno_dev, Bp_geno_dev_deriv2))), ncol = n.geno)
+    se.fp_geno_dev_deriv2 <- lapply(split(se.fp_geno_dev_deriv2, rep(ind.geno.pop, each = nrow(se.fp_geno_dev_deriv2))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(xp))
+    names(se.fp_geno_dev_deriv2) <- object$l.pop
+
+    print("Standard errors for genotyp-specific deviations OK")
+
+    # Genotype-specific growth curves
+    se.theta_geno     <- Matrix::crossprod(Matrix::t(T_geno), Matrix::tcrossprod(object$Vp[np.s[1]:np.e[2], np.s[1]:np.e[2]], T_geno))
+    se.fp_geno        <- matrix(sqrt(Matrix::colSums(Matrix::t(Bp_geno) * Matrix::tcrossprod(se.theta_geno, Bp_geno))), ncol = n.geno)
+    se.fp_geno        <- lapply(split(se.fp_geno, rep(ind.geno.pop, each = nrow(se.fp_geno))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(xp))
+    names(se.fp_geno) <- object$l.pop
+
+    # Standard errors first derivative
+    se.fp_geno_deriv1  <- matrix(sqrt(Matrix::colSums(Matrix::t(Bp_geno_deriv1) * Matrix::tcrossprod(se.theta_geno, Bp_geno_deriv1))), ncol = n.geno)
+    se.fp_geno_deriv1  <- lapply(split(se.fp_geno_deriv1, rep(ind.geno.pop, each = nrow(se.fp_geno_deriv1))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(xp))
+    names(se.fp_geno_deriv1) <- object$l.pop
+
+    # Standard errors second derivative
+    se.fp_geno_deriv2  <- matrix(sqrt(Matrix::colSums(Matrix::t(Bp_geno_deriv2) * Matrix::tcrossprod(se.theta_geno, Bp_geno_deriv2))), ncol = n.geno)
+    se.fp_geno_deriv2  <- lapply(split(se.fp_geno_deriv2, rep(ind.geno.pop, each = nrow(se.fp_geno_deriv2))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(xp))
+    names(se.fp_geno_deriv2) <- object$l.pop
+
+    print("Standard errors for genotype-specific growth curves OK")
+
+    # Give the name of the genotypes
+    e <- cumsum(object$n.geno_p_pop)
+    s <- e - object$n.geno_p_pop + 1
+    for(i in 1:n.pop) {
+      colnames(se.fp_geno_dev[[i]])        <- object$l.geno[s[i]:e[i]]
+      colnames(se.fp_geno_dev_deriv1[[i]]) <- object$l.geno[s[i]:e[i]]
+      colnames(se.fp_geno_dev_deriv2[[i]]) <- object$l.geno[s[i]:e[i]]
+      colnames(se.fp_geno[[i]])            <- object$l.geno[s[i]:e[i]]
+      colnames(se.fp_geno_deriv1[[i]])     <- object$l.geno[s[i]:e[i]]
+      colnames(se.fp_geno_deriv2[[i]])     <- object$l.geno[s[i]:e[i]]
+    }
+
+    res$se.f_geno      <- list(se.fp_geno = se.fp_geno, se.fp_geno_deriv1 = se.fp_geno_deriv1, se.fp_geno_deriv2 = se.fp_geno_deriv2)
+    res$se.f_geno_dev  <- list(se.fp_geno_dev = se.fp_geno_dev, se.fp_geno_dev_deriv1 = se.fp_geno_dev_deriv1, se.fp_geno_dev_deriv2 = se.fp_geno_dev_deriv2)
+  }
+
+  if(isTRUE(se$plant)) {
+    # Plant-specific deviations
+    se.theta_plant_dev     <- Matrix::crossprod(Matrix::t(T_plant_dev), Matrix::tcrossprod(object$Vp[np.s[3]:np.e[3], np.s[3]:np.e[3]], T_plant_dev))
+    se.fp_plant_dev        <- matrix(sqrt(Matrix::colSums(t(Bp_plant_dev) * Matrix::tcrossprod(se.theta_plant_dev, Bp_plant_dev))), ncol = n.tot)
+    se.fp_plant_dev        <- lapply(split(se.fp_plant_dev, rep(ind.ind.geno, each = nrow(se.fp_plant_dev))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(xp))
+    names(se.fp_plant_dev) <- object$l.geno
+
+    # Standard errors first derivative
+    se.fp_plant_dev_deriv1  <- matrix(sqrt(Matrix::colSums(Matrix::t(Bp_plant_dev_deriv1) * Matrix::tcrossprod(se.theta_plant_dev, Bp_plant_dev_deriv1))), ncol = n.tot)
+    se.fp_plant_dev_deriv1  <- lapply(split(se.fp_plant_dev_deriv1, rep(ind.ind.geno, each = nrow(se.fp_plant_dev_deriv1))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(xp))
+    names(se.fp_plant_dev_deriv1) <- object$l.geno
+
+    # Standard errors second derivative
+    se.fp_plant_dev_deriv2  <- matrix(sqrt(Matrix::colSums(Matrix::t(Bp_plant_dev_deriv2) * Matrix::tcrossprod(se.theta_plant_dev, Bp_plant_dev_deriv2))), ncol = n.tot)
+    se.fp_plant_dev_deriv2  <- lapply(split(se.fp_plant_dev_deriv2, rep(ind.ind.geno, each = nrow(se.fp_plant_dev_deriv2))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(xp))
+    names(se.fp_plant_dev_deriv2) <- object$l.geno
+
+    print("Standard errors for plant-specific deviations OK")
+
+    # Standard errors for plant deviations + geno deviations + population effects
+    se.theta_plant     <- Matrix::crossprod(Matrix::t(T_plant), Matrix::tcrossprod(object$Vp[np.s[1]:np.e[3], np.s[1]:np.e[3]], T_plant))
+    se.fp_plant        <- matrix(sqrt(colSums(Matrix::t(Bp_plant) * Matrix::tcrossprod(se.theta_plant, Bp_plant))), ncol = n.tot)
+    se.fp_plant        <- lapply(split(se.fp_plant, rep(ind.ind.geno, each = nrow(se.fp_plant))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(xp))
+    names(se.fp_plant) <- object$l.geno
+
+    # Standard errors first derivative
+    se.fp_plant_deriv1  <- matrix(sqrt(colSums(t(Bp_plant_deriv1) * Matrix::tcrossprod(se.theta_plant, Bp_plant_deriv1))), ncol = n.tot)
+    se.fp_plant_deriv1  <- lapply(split(se.fp_plant_deriv1, rep(ind.ind.geno, each = nrow(se.fp_plant_deriv1))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(xp))
+    names(se.fp_plant_deriv1) <- object$l.geno
+
+    # Standard errors second derivative
+    se.fp_plant_deriv2  <- matrix(sqrt(colSums(Matrix::t(Bp_plant_deriv2) * Matrix::tcrossprod(se.theta_plant, Bp_plant_deriv2))), ncol = n.tot)
+    se.fp_plant_deriv2  <- lapply(split(se.fp_plant_deriv2, rep(ind.ind.geno, each = nrow(se.fp_plant_deriv2))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(xp))
+    names(se.fp_plant_deriv2) <- object$l.geno
+
+    print("Standard errors for plant-specific growth curves OK")
+
+    res$se.f_plant     <- list(se.fp_plant = se.fp_plant, se.fp_plant_deriv1 = se.fp_plant_deriv1, se.fp_plant_deriv2 = se.fp_plant_deriv2)
+    res$se.f_plant_dev <- list(se.fp_plant_dev = se.fp_plant_dev, se.fp_plant_dev_deriv1 = se.fp_plant_dev_deriv1, se.fp_plant_dev_deriv2 = se.fp_plant_dev_deriv2)
+  }
+
+  res$l.pop            <- object$l.pop
+  res$l.geno           <- object$l.geno
+  res$l.plant          <- object$l.plant
+  res$n.plants_p_pop   <- object$n.plants_p_pop
+  res$n.geno_p_pop     <- object$n.geno_p_pop
+  res$n.plants_p_geno  <- object$n.plants_p_geno
+  res$y                <- object$y
+  res$raw.time         <- object$time
+  class(res)           <- "pred.psHDM"
   return(res)
 }
 
 
-### Help functions
 
-#' mixmodToBsplinePred
-#'
-#' @noRd
-#' @keywords internal
-mixmodToBsplinePred <- function(what = c("pop", "geno", "plot"),
-                                object,
-                                npS,
-                                npE,
-                                xp,
-                                Tmat = NULL,
-                                modMat = NULL,
-                                dev = TRUE,
-                                Bbasis = NULL){
-  ## Predictions.
-  ## Transformation matrix Tm, Mixed model coefficients MMCoeff,
-  ## theta and B, and fitted/predicted values f.
-  whatS <- whatE <- what
-  if (isFALSE(dev) && what != "pop") {
-    if (what == "geno") {
-      whatS <- "pop"
-      whatE <- "geno"
-    } else {
-      whatS <- "pop"
-      whatE <- "plot"
-    }
-  }
-  lW <- length(object[[paste0(what, "Levs")]])
-  MMW <- paste0("MM", tools::toTitleCase(what))
-  if (is.null(Tmat)) {
-    Tm <- cbind(Matrix::kronecker(Matrix::Diagonal(lW), object$MM[[MMW]]$U.X),
-                Matrix::kronecker(Matrix::Diagonal(lW), object$MM[[MMW]]$U.Z))
-  } else{
-    Tm <- Tmat
-  }
-  if (is.null(modMat)) {
-    mmat <- Matrix::Diagonal(lW)
-  } else if (is.list(modMat)) {
-    mmat <- list(mmat1 = modMat[[1]], mmat2 = modMat[[2]])
-  } else{
-    mmat <- modMat
-  }
-  MMCoeff <- Matrix::Matrix(object$coeff[npS[whatS]:npE[whatE]],
-                            ncol = 1)
-  theta <- Tm %*% MMCoeff
-  BFull <- function(mmat, what, deriv) {
-    Matrix::kronecker(mmat,
-                      spline.bbase(knots = object$MM[[MMW]]$knots,
-                                   X. = xp, BDEG. = object$smooth[[paste0("smooth",
-                                                                          tools::toTitleCase(what))]]$bdeg,
-                                   deriv = deriv))
-  }
-  if (is.null(Bbasis)) {
-    B <- BFull(mmat, what, deriv = 0)
-    Bd1 <- BFull(mmat, what, deriv = 1)
-    Bd2 <- BFull(mmat, what, deriv = 2)
-  } else {
-    if (what == "geno"){
-      B <- cbind(BFull(mmat, what = "pop", deriv = 0), Bbasis$B)
-      Bd1 <- cbind(BFull(mmat, what = "pop", deriv = 1), Bbasis$Bd1)
-      Bd2 <- cbind(BFull(mmat, what = "pop", deriv = 2), Bbasis$Bd2)
-    } else if(what == "plot") {
-      B <- cbind(BFull(mmat$mmat1, what = "pop", deriv = 0),
-                 BFull(mmat$mmat2, what = "geno", deriv = 0),
-                 Bbasis$B)
-      Bd1 <- cbind(BFull(mmat$mmat1, what = "pop", deriv = 1),
-                   BFull(mmat$mmat2, what = "geno", deriv = 1),
-                   Bbasis$Bd1)
-      Bd2 <- cbind(BFull(mmat$mmat1, what = "pop", deriv = 2),
-                   BFull(mmat$mmat2, what = "geno", deriv = 2),
-                   Bbasis$Bd2)
-    }
-  }
-  f <- matrix(B %*% theta, ncol = lW) # Note that f == eta_what
-  fd1 <- matrix(Bd1 %*% theta, ncol = lW)
-  fd2 <- matrix(Bd2 %*% theta, ncol = lW)
-  aux <- lapply(list(f = f, fd1 = fd1, fd2 = fd2), function(x) {
-    colnames(x) <- object[[paste0(what, "Levs")]]
-    return(x)
-  })
-  ## Object to be returned.
-  res <- list(level = what,
-              Tm = Tm,
-              B = B,
-              Bd1 = Bd1,
-              Bd2 = Bd2,
-              pred = aux)
-  return(res)
-}
-
-#' standardErrors
-#'
-#' @noRd
-#' @keywords internal
-standardErrors <- function(Tm,
-                           B,
-                           Bd1,
-                           Bd2,
-                           what = c("pop", "geno", "plot"),
-                           dev = TRUE,
-                           object,
-                           npS,
-                           npE) {
-  whatS <- whatE <- what
-  if (isFALSE(dev) && what != "pop"){
-    if (what == "geno") {
-      whatS <- "pop"
-      whatE <- "geno"
-    } else {
-      whatS <- "pop"
-      whatE <- "plot"
-    }
-  }
-  lW <- length(object[[paste0(what, "Levs")]])
-  seTheta <- Matrix::Matrix(Tm) %*%
-    Matrix::Matrix(object$Vp[npS[whatS]:npE[whatE],
-                             npS[whatS]:npE[whatE]]) %*% Matrix::t(Tm)
-  sef <- matrix(sqrt(Matrix::colSums(
-    Matrix::t(B) * Matrix::tcrossprod(seTheta, B))), ncol = lW)
-  sefd1 <- matrix(sqrt(Matrix::colSums(
-    Matrix::t(Bd1) * Matrix::tcrossprod(seTheta, Bd1))), ncol = lW)
-  sefd2 <- matrix(sqrt(Matrix::colSums(
-    Matrix::t(Bd2) * Matrix::tcrossprod(seTheta, Bd2))), ncol = lW)
-  res <- list(sef = sef,
-              sefd1 = sefd1,
-              sefd2 = sefd2)
-  res <- lapply(res, function(x){
-    colnames(x) <- object[[paste0(what, "Levs")]]
-    return(x)
-  })
-  return(res)
-}
-
-#' listToDf
-#'
-#' @noRd
-#' @keywords internal
-listToDf <- function(object1,
-                     object2,
-                     what,
-                     xp) {
-  if(!inherits(object2, "psHDM")) {
-    stop("The object class is not correct")
-  }
-  res <- list()
-  if (hasName(x = object2$time, name = "timePoint")) {
-    ## Create time point range.
-    ## Has to take into account irregular grids for xp.
-    timePointRange <- min(object2$time[["timePoint"]]) +
-      (xp - min(object2$time[["timeNumber"]])) /
-      (diff(range(object2$time[["timeNumber"]]))) *
-      diff(range(object2$time[["timePoint"]]))
-  }
-  ## Population-specific growth curves.
-  if (what == "pop") {
-    dfPopTra <- data.frame(timeNumber = rep(xp, length(object2$popLevs)),
-                           pop = rep(object2$popLevs, each = length(xp)),
-                           fPop = c(object1$f),
-                           fPopDeriv1 = c(object1$fd1),
-                           fPopDeriv2 = c(object1$fd2))
-    if (!is.null(object1$sef)) {
-      dfPopTra$sePop <- c(object1$sef)
-      dfPopTra$sePopDeriv1 <- c(object1$sefd1)
-      dfPopTra$sePopDeriv2 <- c(object1$sefd2)
-    }
-    if (hasName(x = object2$time, name = "timePoint")) {
-      dfPopTra[["timePoint"]] <- rep(timePointRange, length(object2$popLevs))
-      dfPopTra <- dfPopTra[c("timeNumber", "timePoint",
-                             setdiff(colnames(dfPopTra),
-                                     c("timeNumber", "timePoint")))]
-    }
-    res$popLevel <- dfPopTra
-  }
-  ## Genotypic-specific growth curves and deviations
-  if (what == "geno") {
-    dfGenoTra <- data.frame(timeNumber = rep(xp, length(object2$genoLevs)),
-                            pop = rep(object2$popLevs,
-                                      object2$nGenoPop * length(xp)),
-                            genotype = rep(object2$genoLevs, each = length(xp)),
-                            fGeno = as.vector(object1$genoTra$f),
-                            fGenoDeriv1 = as.vector(object1$genoTra$fd1),
-                            fGenoDeriv2 = as.vector(object1$genoTra$fd2),
-                            fGenoDev = as.vector(object1$genoDev$f),
-                            fGenoDevDeriv1 = as.vector(object1$genoDev$fd1),
-                            fGenoDevDeriv2 = as.vector(object1$genoDev$fd2))
-    if (!is.null(object1$genoDev$sef)) {
-      dfGenoTra$seGeno <- as.vector(object1$genoTra$sef)
-      dfGenoTra$seGenoDeriv1 <- as.vector(object1$genoTra$sefd1)
-      dfGenoTra$seGenoDeriv2 <- as.vector(object1$genoTra$sefd2)
-      dfGenoTra$seGenoDev <- as.vector(object1$genoDev$sef)
-      dfGenoTra$seGenoDevDeriv1 <- as.vector(object1$genoDev$sefd1)
-      dfGenoTra$seGenoDevDeriv2 <- as.vector(object1$genoDev$sefd2)
-    }
-    if (hasName(x = object2$time, name = "timePoint")) {
-      dfGenoTra[["timePoint"]] <- rep(timePointRange, length(object2$genoLevs))
-      dfGenoTra <- dfGenoTra[c("timeNumber", "timePoint",
-                               setdiff(colnames(dfGenoTra),
-                                       c("timeNumber", "timePoint")))]
-    }
-    res$genoLevel <- dfGenoTra
-  }
-  ## Plot-specific growth curves and deviations
-  if (what == "plot") {
-    dfPlotTra <- data.frame(timeNumber = rep(xp, sum(object2$nPlotGeno)),
-                            pop = rep(object2$popLevs,
-                                      object2$nPlotPop * length(xp)),
-                            genotype = rep(object2$genoLevs,
-                                           object2$nPlotGeno * length(xp)),
-                            plotId = rep(object2$plotLevs, each = length(xp)),
-                            fPlot = as.vector(object1$plotTra$f),
-                            fPlotDeriv1 = as.vector(object1$plotTra$fd1),
-                            fPlotDeriv2 = as.vector(object1$plotTra$fd2),
-                            fPlotDev = as.vector(object1$plotDev$f),
-                            fPlotDevDeriv1 = as.vector(object1$plotDev$fd1),
-                            fPlotDevDeriv2 = as.vector(object1$plotDev$fd2))
-    if (!is.null(object1$plotDev$sef)){
-      dfPlotTra$sePlot <- as.vector(object1$plotTra$sef)
-      dfPlotTra$sePlotDeriv1 <- as.vector(object1$plotTra$sefd1)
-      dfPlotTra$sePlotDeriv2 <- as.vector(object1$plotTra$sefd2)
-      dfPlotTra$sePlotDev <- as.vector(object1$plotDev$sef)
-      dfPlotTra$sePlotDevDeriv1 <- as.vector(object1$plotDev$sefd1)
-      dfPlotTra$sePlotDevDeriv2 <- as.vector(object1$plotDev$sefd2)
-    }
-    if (hasName(x = object2$time, name = "timePoint")) {
-      dfPlotTra[["timePoint"]] <- rep(timePointRange, sum(object2$nPlotGeno))
-      dfPlotTra <- dfPlotTra[c("timeNumber", "timePoint",
-                               setdiff(colnames(dfPlotTra),
-                                       c("timeNumber", "timePoint")))]
-    }
-    res$plotLevel <- dfPlotTra
-    if (isTRUE(setequal(xp, object2$time[["timeNumber"]]))) {
-      res$plotLevel$obsPlot <- c(do.call("cbind", object2$y))
-    } else {
-      ## Raw plot growth curves.
-      ## (Observed data: in the raw time not in newtimes (xp)).
-      dfPlotObs <-
-        data.frame(timeNumber = rep(object2$time[["timeNumber"]],
-                                    sum(object2$nPlotGeno)),
-                   pop = rep(object2$popLevs,
-                             object2$nPlotPop * nrow(object2$time)),
-                   genotype = rep(object2$genoLevs,
-                                  object2$nPlotGeno * nrow(object2$time)),
-                   plotId = rep(object2$plotLevs, each = nrow(object2$time)),
-                   obsPlot = c(do.call("cbind", object2$y)))
-      if (hasName(x = object2$time, name = "timePoint")) {
-        dfPlotObs[["timePoint"]] <- rep(object2$time[["timePoint"]],
-                                        sum(object2$nPlotGeno))
-        dfPlotObs <- dfPlotObs[c("timeNumber", "timePoint",
-                                 setdiff(colnames(dfPlotObs),
-                                         c("timeNumber", "timePoint")))]
-      }
-      res$plotObs <- dfPlotObs
-    }
-  }
-  return(res)
-}
 
