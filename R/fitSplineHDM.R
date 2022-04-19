@@ -476,7 +476,7 @@ fitSplineHDM <- function(response,
     ind.pop    <- rep(as.factor(1:n.pop), n.geno_p_pop)
     mm.ind.pop <- model.matrix(~ 0 + ind.pop) # The contrast matrix changes here!!!!!!
   }
-  T_geno     <- bdiag(T_pop, T_geno_dev)
+  T_geno     <- Matrix::bdiag(T_pop, T_geno_dev)
   theta_geno <- T_geno%*%coeff[np.s[1]:np.e[2]]
 
   # First derivative
@@ -532,7 +532,7 @@ fitSplineHDM <- function(response,
     ind.geno    <- rep(as.factor(1:n.geno), n.plants_p_geno)
     mm.ind.geno <- model.matrix(~ 0 + ind.geno) # The contrast matrix changes here!!!!!!
   }
-  T_plant     <- bdiag(T_pop, T_geno_dev, T_plant_dev)
+  T_plant     <- Matrix::bdiag(T_pop, T_geno_dev, T_plant_dev)
   theta_plant <- T_plant%*%coeff[np.s[1]:np.e[3]]
 
   # First derivative
