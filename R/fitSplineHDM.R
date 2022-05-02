@@ -83,6 +83,16 @@ fitSplineHDM <- function(response,
                          trace = TRUE,
                          thr = 1e-03) {
 
+
+
+  # # There are missing data (all plants might be measured at the same timepoints)??: fill in the "gaps" with NAs
+  # crtGrid        <- expand(Pheno.cor.ran, colId, rowId, timePoint)
+  # crtGrid$plotId <- paste0("c", crtGrid$colId, "r", crtGrid$rowId, sep = "")
+  # # Genotype and geno.decomp information by plotId
+  # plotId.info    <- expand(Pheno.cor.ran, nesting(plotId, genotype, geno.decomp))
+  # finalGrid      <- right_join(crtGrid, plotId.info)
+  # Pheno.cor.ran  <- right_join(Pheno.cor.ran, finalGrid)
+
   # Order the data
   data <- data[order(data[,pop], data[,geno], data[,plant], data[,time]),]
 
@@ -340,216 +350,216 @@ fitSplineHDM <- function(response,
   }
   coeff <- c(b.fixed, b.random)
 
-  # Create the objects to be returned
-
-  # Growth curves and deviations at population, genotype and plant level
-
-  # Calculate the estimated population functions
-  # First the model matrices
-  if(n.pop == 1) {
-    mm.ind.pop <- matrix(1, ncol = 1, nrow = 1)
-  } else {
-    mfpt       <- model.frame(mtt, data.frame(ind.pop = as.factor(1:n.pop)), xlev = attr(mtt, "xlev"))
-    mm.ind.pop <- model.matrix(mtt, data = mfpt, contrasts.arg = attr(mtt, "contrast"))
-  }
-  dm.pop <- cbind(mm.ind.pop%x%X.pop, mm.ind.pop%x%Z.pop)
-
-  # The first coefficients are for the populations. Matrix with as many columns as populations
-  # Population-specific growth curves
-  eta_pop           <- matrix(dm.pop%*%coeff[1:ncol(dm.pop)], ncol = n.pop)
-  colnames(eta_pop) <- l.pop
-
-  # Calculate the estimated genotype functions
-  # First the model matrices
-  if(n.geno == 1) {
-    mm.ind.geno <- matrix(1, ncol = 1, nrow = 1)
-  } else {
-    mfpg        <- model.frame(mtg, data.frame(ind.pop = as.factor(1:n.geno)), xlev = attr(mtg, "xlev"))
-    mm.ind.geno <- model.matrix(mtg, data = mfpg, contrasts.arg = attr(mtg, "contrast"))
-  }
-
-  # Genotype-specific deviations
-  ind.geno.pop <- rep(1:n.pop, n.geno_p_pop)
-  dm.geno      <- cbind(kronecker(Matrix::Matrix(mm.ind.geno), X.geno), kronecker(Matrix::Matrix(mm.ind.geno), Z.geno))
-  aux          <- matrix(dm.geno%*%coeff[(sum(np[1:2]) + 1):(sum(np[1:2]) + ncol(dm.geno))], ncol = n.geno)
-  # List, with as many elements as populations. Each element of the list is a matrix, with as many columns as genotypes per population.
-  eta_geno_dev <- lapply(split(aux, rep(ind.geno.pop, each = nrow(aux))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(x))
-  names(eta_geno_dev) <- l.pop
-
-  # Genotype-specific growth curves
-  if(n.pop == 1) {
-    mm.ind.pop <- matrix(1, ncol = 1, nrow = n.geno)
-  } else {
-    mfpt       <- model.frame(mtt, data.frame(ind.pop = rep(as.factor(1:n.pop), n.geno_p_pop)), xlev = attr(mtt, "xlev"))
-    mm.ind.pop <- model.matrix(mtt, data = mfpt, contrasts.arg = attr(mtt, "contrast"))
-  }
-  dm.pop.geno     <- cbind(mm.ind.pop%x%X.pop, mm.ind.pop%x%Z.pop)
-  dm.geno         <- cbind(dm.pop.geno, kronecker(Matrix::Matrix(mm.ind.geno), Matrix::Matrix(X.geno)), kronecker(Matrix::Matrix(mm.ind.geno), Matrix::Matrix(Z.geno)))
-  aux             <- matrix(dm.geno%*%coeff[1:ncol(dm.geno)], ncol = n.geno)
-  # List, with as many elements as populations. Each element of the list is a matrix, with as many columns as genotypes per threatment
-  eta_geno        <- lapply(split(aux, rep(ind.geno.pop, each = nrow(aux))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(x))
-  names(eta_geno) <- l.pop
-
-  # Give the name of the genotypes
-  e <- cumsum(n.geno_p_pop)
-  s <- e - n.geno_p_pop + 1
-  for(i in 1:n.pop) {
-    colnames(eta_geno[[i]])     <- l.geno[s[i]:e[i]]
-    colnames(eta_geno_dev[[i]]) <- l.geno[s[i]:e[i]]
-  }
-
-  # Calculate the estimated plant functions
-  # Agregated at the genotype level (list, with as many elements as genotypes. Each element of the list is a matrix, with as many columns as plants per genotype)
-  # Plant-specific deviations
-  aux            <- matrix(eta, ncol = n.tot)
-  eta_ind        <- lapply(split(aux, rep(ind.ind.geno, each = nrow(aux))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(x))
-  names(eta_ind) <- l.geno
-
-  # Plant raw data
-  aux            <- matrix(data[,response], ncol = n.tot)
-  obs_ind        <- lapply(split(aux, rep(ind.ind.geno, each = nrow(aux))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(x))
-  names(obs_ind) <- l.geno
-
-  # Plant-specific growth curves
-  MM           <- cbind(kronecker(Matrix::Matrix(diag(n.tot)), X.ind), kronecker(Matrix::Matrix(diag(n.tot)), Z.ind))
-  aux          <- matrix(MM%*%coeff[(sum(np[1:4]) + 1):(sum(np[1:4]) + ncol(MM))], ncol = n.tot)
-  eta_ind_dev  <- lapply(split(aux, rep(ind.ind.geno, each = nrow(aux))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(x))
-  names(eta_ind_dev) <- l.geno
-
-  # Obtain 1st and 2nd order derivatives: at population, genotype and plant level
-
-  # Needed:
-  # knots 	  knots used in the fit
-  # x 		    covariate values where to obtain the derivative
-  # bdeg      order of the B-spline basis (used in the fit)
-  # deriv     desired derivative
-  # theta     estimated coefficients for the fit (for the B-spline model, not for the reformulation). f(x) = B*theta -> theta = U.X*b.fixed + U.Z*b.random
-
-  # Functions at popopulation level
-  # Transformation matrix, theta and B
-  if(n.pop == 1) {
-    mm.ind.pop <- matrix(1, ncol = 1, nrow = 1)
-  } else {
-    mfpt       <- model.frame(mtt, data.frame(ind.pop = as.factor(1:n.pop)), xlev = attr(mtt, "xlev"))
-    mm.ind.pop <- model.matrix(mtt, data = mfpt, contrasts.arg = attr(mtt, "contrast"))
-  }
-  T_pop     <- cbind(kronecker(Matrix::Matrix(mm.ind.pop), MM.pop$U.X), kronecker(Matrix::Matrix(mm.ind.pop), MM.pop$U.Z))
-  theta_pop <- T_pop%*%coeff[np.s[1]:np.e[1]]
-
-  # First derivative
-  B_pop_deriv1 <- kronecker(Matrix::Matrix(diag(n.pop)), spline.bbase(knots = MM.pop$knots, X. = x, BDEG. = smooth.pop$bdeg, deriv = 1))
-  f_pop_deriv1 <- matrix(B_pop_deriv1%*%theta_pop, ncol = n.pop)
-  colnames(f_pop_deriv1) <- l.pop
-
-  # Second derivative
-  B_pop_deriv2 <- kronecker(Matrix::Matrix(diag(n.pop)), spline.bbase(knots = MM.pop$knots, X. = x, BDEG. = smooth.pop$bdeg, deriv = 2))
-  f_pop_deriv2 <- matrix(B_pop_deriv2%*%theta_pop, ncol = n.pop)
-  colnames(f_pop_deriv2) <- l.pop
-
-  # Functions at genotype level
-  # Genotype-specific deviations
-  if(n.geno == 1) {
-    mm.ind.geno <- matrix(1, ncol = 1, nrow = 1)
-  } else {
-    mfpg        <- model.frame(mtg, data.frame(ind.pop = as.factor(1:n.geno)), xlev = attr(mtg, "xlev"))
-    mm.ind.geno <- model.matrix(mtg, data = mfpg, contrasts.arg = attr(mtg, "contrast"))
-  }
-  T_geno_dev     <- cbind(kronecker(Matrix::Matrix(diag(n.geno)), MM.geno$U.X), kronecker(Matrix::Matrix(diag(n.geno)), MM.geno$U.Z))
-  theta_geno_dev <- T_geno_dev%*%coeff[np.s[2]:np.e[2]]
-
-  # First derivative
-  B_geno_dev_deriv1 <- kronecker(Matrix::Matrix(diag(n.geno)), spline.bbase(knots = MM.geno$knots, X. = x, BDEG. = smooth.geno$bdeg, deriv = 1))
-  f_geno_dev_deriv1 <- matrix(B_geno_dev_deriv1%*%theta_geno_dev, ncol = n.geno)
-  f_geno_dev_deriv1 <- lapply(split(f_geno_dev_deriv1, rep(ind.geno.pop, each = nrow(f_geno_dev_deriv1))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(x))
-  names(f_geno_dev_deriv1) <- l.pop
-
-  # Second derivative
-  B_geno_dev_deriv2 <- kronecker(Matrix::Matrix(diag(n.geno)), spline.bbase(knots = MM.geno$knots, X. = x, BDEG. = smooth.geno$bdeg, deriv = 2))
-  f_geno_dev_deriv2 <- matrix(B_geno_dev_deriv2%*%theta_geno_dev, ncol = n.geno)
-  f_geno_dev_deriv2 <- lapply(split(f_geno_dev_deriv2, rep(ind.geno.pop, each = nrow(f_geno_dev_deriv2))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(x))
-  names(f_geno_dev_deriv2) <- l.pop
-
-  # Genotype-specific growth curves
-  if(n.pop == 1) {
-    mm.ind.pop <- matrix(1, ncol = 1, nrow = n.geno)
-  } else {
-    ind.pop    <- rep(as.factor(1:n.pop), n.geno_p_pop)
-    mm.ind.pop <- model.matrix(~ 0 + ind.pop) # The contrast matrix changes here!!!!!!
-  }
-  T_geno     <- Matrix::bdiag(T_pop, T_geno_dev)
-  theta_geno <- T_geno%*%coeff[np.s[1]:np.e[2]]
-
-  # First derivative
-  B_geno_deriv1 <- cbind(kronecker(Matrix::Matrix(mm.ind.pop), spline.bbase(knots = MM.pop$knots, X. = x, BDEG. = smooth.pop$bdeg, deriv = 1)), B_geno_dev_deriv1)
-  f_geno_deriv1 <- matrix(B_geno_deriv1%*%theta_geno, ncol = n.geno)
-  f_geno_deriv1 <- lapply(split(f_geno_deriv1, rep(ind.geno.pop, each = nrow(f_geno_deriv1))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(x))
-  names(f_geno_deriv1) <- l.pop
-
-  # Second derivative
-  B_geno_deriv2 <- cbind(kronecker(Matrix::Matrix(mm.ind.pop), spline.bbase(knots = MM.pop$knots, X. = x, BDEG. = smooth.pop$bdeg, deriv = 2)), B_geno_dev_deriv2)
-  f_geno_deriv2 <- matrix(B_geno_deriv2%*%theta_geno, ncol = n.geno)
-  f_geno_deriv2 <- lapply(split(f_geno_deriv2, rep(ind.geno.pop, each = nrow(f_geno_deriv2))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(x))
-  names(f_geno_deriv2) <- l.pop
-
-  # Give the name of the genotypes
-  e <- cumsum(n.geno_p_pop)
-  s <- e - n.geno_p_pop + 1
-  for(i in 1:n.pop) {
-    colnames(f_geno_dev_deriv1[[i]]) <- l.geno[s[i]:e[i]]
-    colnames(f_geno_dev_deriv2[[i]]) <- l.geno[s[i]:e[i]]
-    colnames(f_geno_deriv1[[i]])     <- l.geno[s[i]:e[i]]
-    colnames(f_geno_deriv2[[i]])     <- l.geno[s[i]:e[i]]
-  }
-
-  # Functions at plant level
-  # Plant-specific deviations
-  # Transformation matrix, theta and B
-  T_plant_dev     <- cbind(kronecker(Matrix::Matrix(diag(n.tot)), Matrix::Matrix(MM.ind$U.X)), kronecker(Matrix::Matrix(diag(n.tot)), Matrix::Matrix(MM.ind$U.Z)))
-  theta_plant_dev <- Matrix::Matrix(T_plant_dev%*%coeff[np.s[3]:np.e[3]])
-
-  # First derivative
-  B_plant_dev_deriv1 <- kronecker(Matrix::Matrix(diag(n.tot)), spline.bbase(knots = MM.ind$knots, X. = x, BDEG. = smooth.plant$bdeg, deriv = 1))
-  f_plant_dev_deriv1 <- matrix(B_plant_dev_deriv1%*%theta_plant_dev, ncol = n.tot)
-  f_plant_dev_deriv1 <- lapply(split(f_plant_dev_deriv1, rep(ind.ind.geno, each = nrow(f_plant_dev_deriv1))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(x))
-  names(f_plant_dev_deriv1) <- l.geno
-
-  # Second derivative
-  B_plant_dev_deriv2 <- kronecker(Matrix::Matrix(diag(n.tot)), spline.bbase(knots = MM.ind$knots, X. = x, BDEG. = smooth.plant$bdeg, deriv = 2))
-  f_plant_dev_deriv2 <- matrix(B_plant_dev_deriv2%*%theta_plant_dev, ncol = n.tot)
-  f_plant_dev_deriv2 <- lapply(split(f_plant_dev_deriv2, rep(ind.ind.geno, each = nrow(f_plant_dev_deriv2))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(x))
-  names(f_plant_dev_deriv2) <- l.geno
-
-  # Plant-specific growth curves
-  if(n.pop == 1) {
-    mm.ind.pop <- matrix(1, ncol = 1, nrow = n.plants_p_pop)
-  } else {
-    ind.pop    <- rep(as.factor(1:n.pop), n.plants_p_pop)
-    mm.ind.pop <- model.matrix(~ 0 + ind.pop) # The contrast matrix changes here!!!!!!
-  }
-  if(n.geno == 1) {
-    mm.ind.geno <- matrix(1, ncol = 1, nrow = n.geno)
-  } else {
-    ind.geno    <- rep(as.factor(1:n.geno), n.plants_p_geno)
-    mm.ind.geno <- model.matrix(~ 0 + ind.geno) # The contrast matrix changes here!!!!!!
-  }
-  T_plant     <- Matrix::bdiag(T_pop, T_geno_dev, T_plant_dev)
-  theta_plant <- T_plant%*%coeff[np.s[1]:np.e[3]]
-
-  # First derivative
-  B_plant_deriv1  <- cbind(kronecker(Matrix::Matrix(mm.ind.pop), spline.bbase(knots = MM.pop$knots, X. = x, BDEG. = smooth.pop$bdeg, deriv = 1)),
-                           kronecker(Matrix::Matrix(mm.ind.geno), spline.bbase(knots = MM.geno$knots, X. = x, BDEG. = smooth.pop$bdeg, deriv = 1)),
-                           B_plant_dev_deriv1)
-  f_plant_deriv1  <- matrix(B_plant_deriv1%*%theta_plant, ncol = n.tot)
-  f_plant_deriv1  <- lapply(split(f_plant_deriv1, rep(ind.ind.geno, each = nrow(f_plant_deriv1))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(x))
-  names(f_plant_deriv1) <- l.geno
-
-  # Second derivative
-  B_plant_deriv2 <- cbind(kronecker(Matrix::Matrix(mm.ind.pop), spline.bbase(knots = MM.pop$knots, X. = x, BDEG. = smooth.pop$bdeg, deriv = 2)),
-                          kronecker(Matrix::Matrix(mm.ind.geno), spline.bbase(knots = MM.geno$knots, X. = x, BDEG. = smooth.pop$bdeg, deriv = 2)),
-                          B_plant_dev_deriv2)
-  f_plant_deriv2 <- matrix(B_plant_deriv2%*%theta_plant, ncol = n.tot)
-  f_plant_deriv2 <- lapply(split(f_plant_deriv2, rep(ind.ind.geno, each = nrow(f_plant_deriv2))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(x))
-  names(f_plant_deriv2) <- l.geno
+  # # Create the objects to be returned
+  #
+  # # Growth curves and deviations at population, genotype and plant level
+  #
+  # # Calculate the estimated population functions
+  # # First the model matrices
+  # if(n.pop == 1) {
+  #   mm.ind.pop <- matrix(1, ncol = 1, nrow = 1)
+  # } else {
+  #   mfpt       <- model.frame(mtt, data.frame(ind.pop = as.factor(1:n.pop)), xlev = attr(mtt, "xlev"))
+  #   mm.ind.pop <- model.matrix(mtt, data = mfpt, contrasts.arg = attr(mtt, "contrast"))
+  # }
+  # dm.pop <- cbind(mm.ind.pop%x%X.pop, mm.ind.pop%x%Z.pop)
+  #
+  # # The first coefficients are for the populations. Matrix with as many columns as populations
+  # # Population-specific growth curves
+  # eta_pop           <- matrix(dm.pop%*%coeff[1:ncol(dm.pop)], ncol = n.pop)
+  # colnames(eta_pop) <- l.pop
+  #
+  # # Calculate the estimated genotype functions
+  # # First the model matrices
+  # if(n.geno == 1) {
+  #   mm.ind.geno <- matrix(1, ncol = 1, nrow = 1)
+  # } else {
+  #   mfpg        <- model.frame(mtg, data.frame(ind.pop = as.factor(1:n.geno)), xlev = attr(mtg, "xlev"))
+  #   mm.ind.geno <- model.matrix(mtg, data = mfpg, contrasts.arg = attr(mtg, "contrast"))
+  # }
+  #
+  # # Genotype-specific deviations
+  # ind.geno.pop <- rep(1:n.pop, n.geno_p_pop)
+  # dm.geno      <- cbind(kronecker(Matrix::Matrix(mm.ind.geno), X.geno), kronecker(Matrix::Matrix(mm.ind.geno), Z.geno))
+  # aux          <- matrix(dm.geno%*%coeff[(sum(np[1:2]) + 1):(sum(np[1:2]) + ncol(dm.geno))], ncol = n.geno)
+  # # List, with as many elements as populations. Each element of the list is a matrix, with as many columns as genotypes per population.
+  # eta_geno_dev <- lapply(split(aux, rep(ind.geno.pop, each = nrow(aux))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(x))
+  # names(eta_geno_dev) <- l.pop
+  #
+  # # Genotype-specific growth curves
+  # if(n.pop == 1) {
+  #   mm.ind.pop <- matrix(1, ncol = 1, nrow = n.geno)
+  # } else {
+  #   mfpt       <- model.frame(mtt, data.frame(ind.pop = rep(as.factor(1:n.pop), n.geno_p_pop)), xlev = attr(mtt, "xlev"))
+  #   mm.ind.pop <- model.matrix(mtt, data = mfpt, contrasts.arg = attr(mtt, "contrast"))
+  # }
+  # dm.pop.geno     <- cbind(mm.ind.pop%x%X.pop, mm.ind.pop%x%Z.pop)
+  # dm.geno         <- cbind(dm.pop.geno, kronecker(Matrix::Matrix(mm.ind.geno), Matrix::Matrix(X.geno)), kronecker(Matrix::Matrix(mm.ind.geno), Matrix::Matrix(Z.geno)))
+  # aux             <- matrix(dm.geno%*%coeff[1:ncol(dm.geno)], ncol = n.geno)
+  # # List, with as many elements as populations. Each element of the list is a matrix, with as many columns as genotypes per threatment
+  # eta_geno        <- lapply(split(aux, rep(ind.geno.pop, each = nrow(aux))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(x))
+  # names(eta_geno) <- l.pop
+  #
+  # # Give the name of the genotypes
+  # e <- cumsum(n.geno_p_pop)
+  # s <- e - n.geno_p_pop + 1
+  # for(i in 1:n.pop) {
+  #   colnames(eta_geno[[i]])     <- l.geno[s[i]:e[i]]
+  #   colnames(eta_geno_dev[[i]]) <- l.geno[s[i]:e[i]]
+  # }
+  #
+  # # Calculate the estimated plant functions
+  # # Agregated at the genotype level (list, with as many elements as genotypes. Each element of the list is a matrix, with as many columns as plants per genotype)
+  # # Plant-specific deviations
+  # aux            <- matrix(eta, ncol = n.tot)
+  # eta_ind        <- lapply(split(aux, rep(ind.ind.geno, each = nrow(aux))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(x))
+  # names(eta_ind) <- l.geno
+  #
+  # # Plant raw data
+  # aux            <- matrix(data[,response], ncol = n.tot)
+  # obs_ind        <- lapply(split(aux, rep(ind.ind.geno, each = nrow(aux))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(x))
+  # names(obs_ind) <- l.geno
+  #
+  # # Plant-specific growth curves
+  # MM           <- cbind(kronecker(Matrix::Matrix(diag(n.tot)), X.ind), kronecker(Matrix::Matrix(diag(n.tot)), Z.ind))
+  # aux          <- matrix(MM%*%coeff[(sum(np[1:4]) + 1):(sum(np[1:4]) + ncol(MM))], ncol = n.tot)
+  # eta_ind_dev  <- lapply(split(aux, rep(ind.ind.geno, each = nrow(aux))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(x))
+  # names(eta_ind_dev) <- l.geno
+  #
+  # # Obtain 1st and 2nd order derivatives: at population, genotype and plant level
+  #
+  # # Needed:
+  # # knots 	  knots used in the fit
+  # # x 		    covariate values where to obtain the derivative
+  # # bdeg      order of the B-spline basis (used in the fit)
+  # # deriv     desired derivative
+  # # theta     estimated coefficients for the fit (for the B-spline model, not for the reformulation). f(x) = B*theta -> theta = U.X*b.fixed + U.Z*b.random
+  #
+  # # Functions at popopulation level
+  # # Transformation matrix, theta and B
+  # if(n.pop == 1) {
+  #   mm.ind.pop <- matrix(1, ncol = 1, nrow = 1)
+  # } else {
+  #   mfpt       <- model.frame(mtt, data.frame(ind.pop = as.factor(1:n.pop)), xlev = attr(mtt, "xlev"))
+  #   mm.ind.pop <- model.matrix(mtt, data = mfpt, contrasts.arg = attr(mtt, "contrast"))
+  # }
+  # T_pop     <- cbind(kronecker(Matrix::Matrix(mm.ind.pop), MM.pop$U.X), kronecker(Matrix::Matrix(mm.ind.pop), MM.pop$U.Z))
+  # theta_pop <- T_pop%*%coeff[np.s[1]:np.e[1]]
+  #
+  # # First derivative
+  # B_pop_deriv1 <- kronecker(Matrix::Matrix(diag(n.pop)), spline.bbase(knots = MM.pop$knots, X. = x, BDEG. = smooth.pop$bdeg, deriv = 1))
+  # f_pop_deriv1 <- matrix(B_pop_deriv1%*%theta_pop, ncol = n.pop)
+  # colnames(f_pop_deriv1) <- l.pop
+  #
+  # # Second derivative
+  # B_pop_deriv2 <- kronecker(Matrix::Matrix(diag(n.pop)), spline.bbase(knots = MM.pop$knots, X. = x, BDEG. = smooth.pop$bdeg, deriv = 2))
+  # f_pop_deriv2 <- matrix(B_pop_deriv2%*%theta_pop, ncol = n.pop)
+  # colnames(f_pop_deriv2) <- l.pop
+  #
+  # # Functions at genotype level
+  # # Genotype-specific deviations
+  # if(n.geno == 1) {
+  #   mm.ind.geno <- matrix(1, ncol = 1, nrow = 1)
+  # } else {
+  #   mfpg        <- model.frame(mtg, data.frame(ind.pop = as.factor(1:n.geno)), xlev = attr(mtg, "xlev"))
+  #   mm.ind.geno <- model.matrix(mtg, data = mfpg, contrasts.arg = attr(mtg, "contrast"))
+  # }
+  # T_geno_dev     <- cbind(kronecker(Matrix::Matrix(diag(n.geno)), MM.geno$U.X), kronecker(Matrix::Matrix(diag(n.geno)), MM.geno$U.Z))
+  # theta_geno_dev <- T_geno_dev%*%coeff[np.s[2]:np.e[2]]
+  #
+  # # First derivative
+  # B_geno_dev_deriv1 <- kronecker(Matrix::Matrix(diag(n.geno)), spline.bbase(knots = MM.geno$knots, X. = x, BDEG. = smooth.geno$bdeg, deriv = 1))
+  # f_geno_dev_deriv1 <- matrix(B_geno_dev_deriv1%*%theta_geno_dev, ncol = n.geno)
+  # f_geno_dev_deriv1 <- lapply(split(f_geno_dev_deriv1, rep(ind.geno.pop, each = nrow(f_geno_dev_deriv1))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(x))
+  # names(f_geno_dev_deriv1) <- l.pop
+  #
+  # # Second derivative
+  # B_geno_dev_deriv2 <- kronecker(Matrix::Matrix(diag(n.geno)), spline.bbase(knots = MM.geno$knots, X. = x, BDEG. = smooth.geno$bdeg, deriv = 2))
+  # f_geno_dev_deriv2 <- matrix(B_geno_dev_deriv2%*%theta_geno_dev, ncol = n.geno)
+  # f_geno_dev_deriv2 <- lapply(split(f_geno_dev_deriv2, rep(ind.geno.pop, each = nrow(f_geno_dev_deriv2))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(x))
+  # names(f_geno_dev_deriv2) <- l.pop
+  #
+  # # Genotype-specific growth curves
+  # if(n.pop == 1) {
+  #   mm.ind.pop <- matrix(1, ncol = 1, nrow = n.geno)
+  # } else {
+  #   ind.pop    <- rep(as.factor(1:n.pop), n.geno_p_pop)
+  #   mm.ind.pop <- model.matrix(~ 0 + ind.pop) # The contrast matrix changes here!!!!!!
+  # }
+  # T_geno     <- Matrix::bdiag(T_pop, T_geno_dev)
+  # theta_geno <- T_geno%*%coeff[np.s[1]:np.e[2]]
+  #
+  # # First derivative
+  # B_geno_deriv1 <- cbind(kronecker(Matrix::Matrix(mm.ind.pop), spline.bbase(knots = MM.pop$knots, X. = x, BDEG. = smooth.pop$bdeg, deriv = 1)), B_geno_dev_deriv1)
+  # f_geno_deriv1 <- matrix(B_geno_deriv1%*%theta_geno, ncol = n.geno)
+  # f_geno_deriv1 <- lapply(split(f_geno_deriv1, rep(ind.geno.pop, each = nrow(f_geno_deriv1))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(x))
+  # names(f_geno_deriv1) <- l.pop
+  #
+  # # Second derivative
+  # B_geno_deriv2 <- cbind(kronecker(Matrix::Matrix(mm.ind.pop), spline.bbase(knots = MM.pop$knots, X. = x, BDEG. = smooth.pop$bdeg, deriv = 2)), B_geno_dev_deriv2)
+  # f_geno_deriv2 <- matrix(B_geno_deriv2%*%theta_geno, ncol = n.geno)
+  # f_geno_deriv2 <- lapply(split(f_geno_deriv2, rep(ind.geno.pop, each = nrow(f_geno_deriv2))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(x))
+  # names(f_geno_deriv2) <- l.pop
+  #
+  # # Give the name of the genotypes
+  # e <- cumsum(n.geno_p_pop)
+  # s <- e - n.geno_p_pop + 1
+  # for(i in 1:n.pop) {
+  #   colnames(f_geno_dev_deriv1[[i]]) <- l.geno[s[i]:e[i]]
+  #   colnames(f_geno_dev_deriv2[[i]]) <- l.geno[s[i]:e[i]]
+  #   colnames(f_geno_deriv1[[i]])     <- l.geno[s[i]:e[i]]
+  #   colnames(f_geno_deriv2[[i]])     <- l.geno[s[i]:e[i]]
+  # }
+  #
+  # # Functions at plant level
+  # # Plant-specific deviations
+  # # Transformation matrix, theta and B
+  # T_plant_dev     <- cbind(kronecker(Matrix::Matrix(diag(n.tot)), Matrix::Matrix(MM.ind$U.X)), kronecker(Matrix::Matrix(diag(n.tot)), Matrix::Matrix(MM.ind$U.Z)))
+  # theta_plant_dev <- Matrix::Matrix(T_plant_dev%*%coeff[np.s[3]:np.e[3]])
+  #
+  # # First derivative
+  # B_plant_dev_deriv1 <- kronecker(Matrix::Matrix(diag(n.tot)), spline.bbase(knots = MM.ind$knots, X. = x, BDEG. = smooth.plant$bdeg, deriv = 1))
+  # f_plant_dev_deriv1 <- matrix(B_plant_dev_deriv1%*%theta_plant_dev, ncol = n.tot)
+  # f_plant_dev_deriv1 <- lapply(split(f_plant_dev_deriv1, rep(ind.ind.geno, each = nrow(f_plant_dev_deriv1))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(x))
+  # names(f_plant_dev_deriv1) <- l.geno
+  #
+  # # Second derivative
+  # B_plant_dev_deriv2 <- kronecker(Matrix::Matrix(diag(n.tot)), spline.bbase(knots = MM.ind$knots, X. = x, BDEG. = smooth.plant$bdeg, deriv = 2))
+  # f_plant_dev_deriv2 <- matrix(B_plant_dev_deriv2%*%theta_plant_dev, ncol = n.tot)
+  # f_plant_dev_deriv2 <- lapply(split(f_plant_dev_deriv2, rep(ind.ind.geno, each = nrow(f_plant_dev_deriv2))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(x))
+  # names(f_plant_dev_deriv2) <- l.geno
+  #
+  # # Plant-specific growth curves
+  # if(n.pop == 1) {
+  #   mm.ind.pop <- matrix(1, ncol = 1, nrow = n.plants_p_pop)
+  # } else {
+  #   ind.pop    <- rep(as.factor(1:n.pop), n.plants_p_pop)
+  #   mm.ind.pop <- model.matrix(~ 0 + ind.pop) # The contrast matrix changes here!!!!!!
+  # }
+  # if(n.geno == 1) {
+  #   mm.ind.geno <- matrix(1, ncol = 1, nrow = n.geno)
+  # } else {
+  #   ind.geno    <- rep(as.factor(1:n.geno), n.plants_p_geno)
+  #   mm.ind.geno <- model.matrix(~ 0 + ind.geno) # The contrast matrix changes here!!!!!!
+  # }
+  # T_plant     <- Matrix::bdiag(T_pop, T_geno_dev, T_plant_dev)
+  # theta_plant <- T_plant%*%coeff[np.s[1]:np.e[3]]
+  #
+  # # First derivative
+  # B_plant_deriv1  <- cbind(kronecker(Matrix::Matrix(mm.ind.pop), spline.bbase(knots = MM.pop$knots, X. = x, BDEG. = smooth.pop$bdeg, deriv = 1)),
+  #                          kronecker(Matrix::Matrix(mm.ind.geno), spline.bbase(knots = MM.geno$knots, X. = x, BDEG. = smooth.pop$bdeg, deriv = 1)),
+  #                          B_plant_dev_deriv1)
+  # f_plant_deriv1  <- matrix(B_plant_deriv1%*%theta_plant, ncol = n.tot)
+  # f_plant_deriv1  <- lapply(split(f_plant_deriv1, rep(ind.ind.geno, each = nrow(f_plant_deriv1))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(x))
+  # names(f_plant_deriv1) <- l.geno
+  #
+  # # Second derivative
+  # B_plant_deriv2 <- cbind(kronecker(Matrix::Matrix(mm.ind.pop), spline.bbase(knots = MM.pop$knots, X. = x, BDEG. = smooth.pop$bdeg, deriv = 2)),
+  #                         kronecker(Matrix::Matrix(mm.ind.geno), spline.bbase(knots = MM.geno$knots, X. = x, BDEG. = smooth.pop$bdeg, deriv = 2)),
+  #                         B_plant_dev_deriv2)
+  # f_plant_deriv2 <- matrix(B_plant_deriv2%*%theta_plant, ncol = n.tot)
+  # f_plant_deriv2 <- lapply(split(f_plant_deriv2, rep(ind.ind.geno, each = nrow(f_plant_deriv2))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(x))
+  # names(f_plant_deriv2) <- l.geno
 
   # Object to be returned
   res                 <- list()
@@ -567,16 +577,16 @@ fitSplineHDM <- function(response,
   res$vc              <- unlist(tau)
   res$phi             <- phi
   res$coeff           <- coeff
-  res$eta_pop         <- list(eta_pop = eta_pop, eta_pop_deriv1 = f_pop_deriv1, eta_pop_deriv2 = f_pop_deriv2)
-  res$eta_geno        <- list(eta_geno = eta_geno, eta_geno_deriv1 = f_geno_deriv1, eta_geno_deriv2 = f_geno_deriv2)
-  res$eta_geno_dev    <- list(eta_geno_dev = eta_geno_dev, eta_geno_dev_deriv1 = f_geno_dev_deriv1, eta_geno_dev_deriv2 = f_geno_dev_deriv2)
-  res$eta_plant       <- list(eta_plant = eta_ind, eta_plant_deriv1 = f_plant_deriv1, eta_plant_deriv2 = f_plant_deriv2)
-  res$eta_plant_dev   <- list(eta_plant_dev = eta_ind_dev, eta_plant_dev_deriv1 = f_plant_dev_deriv1, eta_plant_dev_deriv2 = f_plant_dev_deriv2)
+  # res$eta_pop         <- list(eta_pop = eta_pop, eta_pop_deriv1 = f_pop_deriv1, eta_pop_deriv2 = f_pop_deriv2)
+  # res$eta_geno        <- list(eta_geno = eta_geno, eta_geno_deriv1 = f_geno_deriv1, eta_geno_deriv2 = f_geno_deriv2)
+  # res$eta_geno_dev    <- list(eta_geno_dev = eta_geno_dev, eta_geno_dev_deriv1 = f_geno_dev_deriv1, eta_geno_dev_deriv2 = f_geno_dev_deriv2)
+  # res$eta_plant       <- list(eta_plant = eta_ind, eta_plant_deriv1 = f_plant_deriv1, eta_plant_deriv2 = f_plant_deriv2)
+  # res$eta_plant_dev   <- list(eta_plant_dev = eta_ind_dev, eta_plant_dev_deriv1 = f_plant_dev_deriv1, eta_plant_dev_deriv2 = f_plant_dev_deriv2)
   res$deviance        <- dev
   res$convergence     <- ifelse(it < maxit, TRUE, FALSE)
   res$dim             <- np
   res$family          <- family
-  res$time.proc       <- end - start
+  # res$time.proc       <- end - start
   res$Vp              <- spam::chol2inv(cholHn) #Hinv
   res$smooth          <- list(smooth.pop = smooth.pop, smooth.geno = smooth.geno, smooth.plant = smooth.plant)
   class(res)          <- "psHDM"
