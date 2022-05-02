@@ -82,7 +82,8 @@ fitSplineHDM <- function(response,
                          maxit = 200,
                          trace = TRUE,
                          thr = 1e-03) {
-
+  ## Unused levels might cause strange behaviour.
+  data <- droplevels(data)
   ## Create a full data set of observations for all combinations of
   ## timepoints, row and column.
   timeDat <- data.frame(time = sort(unique(data[[time]])))
@@ -94,38 +95,40 @@ fitSplineHDM <- function(response,
   # Order the data - no longer needed, merging in previous step does this.
   # data <- data[order(data[, pop], data[, geno], data[, plant], data[, time]), ]
 
-  # Normalize time
-  raw.time    <- sort(unique(data[,time]))
-  data[,time] <- data[,time] - min(data[,time]) + 1
-
-  if(is.null(offset)) {
-    data$offset <- rep(0, length(data[,response]))
+  ## Normalize time.
+  raw.time    <- timeDat[[time]]
+  data[[time]] <- data[[time]] - min(data[[time]]) + 1
+  ## Define offset.
+  if (is.null(offset)) {
+    data$offset <- 0
   }
-
+  ## Specify weights.
   if(is.null(weights)) {
-    weights <- rep(1, length(data[,response]))
+    weights <- rep(1, nrow(data))
   } else{
-    weights <- (data[,weights])^2
+    weights <- data[[weights]] ^ 2
   }
-
-  # Define factors
-  data[,pop] <- as.factor(data[,pop])
-  data[,geno] <- as.factor(data[,geno])
-  data[,plant] <- as.factor(data[,plant])
-
-  # Elements and number of elements by level of the hierarchy
-  l.pop           <- unique(data[,pop])
-  l.geno          <- unique(data[,geno])
-  l.plant         <- unique(data[,plant])
-  n.pop           <- length(l.pop)
-  n.plants_p_pop  <- apply(table(data[,pop], data[,plant]), 1, function(x) {sum(x!=0)})
-  n.geno_p_pop    <- apply(table(data[,pop], data[,geno]), 1, function(x) {sum(x!=0)})
-  n.geno          <- length(l.geno)
-  n.plants_p_geno <- apply(table(data[,geno], data[,plant]), 1, function(x) {sum(x!=0)})[l.geno]
-  n.tot           <- sum(n.plants_p_geno)
-
+  ## Convert to factors - only if not already factors.
+  for (facVar in c(pop, geno, plant)) {
+    if (!is.factor(data[[facVar]])) {
+      data[[facVar]] <- factor(data[[facVar]])
+    }
+  }
+  ## Elements and number of elements by level of the hierarchy.
+  l.pop           <- levels(data[[pop]])
+  l.geno          <- levels(data[[geno]])
+  l.plant         <- levels(data[[plant]])
+  n.pop           <- nlevels(data[[pop]])
+  n.plants_p_pop  <- apply(X = table(data[[pop]], data[[plant]]),
+                           MARGIN = 1, FUN = function(x) { sum(x!=0) })
+  n.geno_p_pop    <- apply(X = table(data[[pop]], data[[geno]]),
+                           MARGIN = 1, FUN = function(x) { sum(x!=0) })
+  n.geno          <- nlevels(data[[geno]])
+  n.plants_p_geno <- apply(table(data[[geno]], data[[plant]]),
+                           MARGIN = 1, FUN = function(x) { sum(x!=0) })[l.geno]
+  n.tot           <- nlevels(data[[plant]])
   # Time interval
-  x <- sort(unique(data[,time]))
+  x <- sort(unique(data[[time]]))
 
   # Construct matrices: data in an array
   # Design matrices for the population curves
