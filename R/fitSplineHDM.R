@@ -83,27 +83,20 @@ fitSplineHDM <- function(response,
                          trace = TRUE,
                          thr = 1e-03) {
 
+  ## Create a full data set of observations for all combinations of
+  ## timepoints, row and column.
+  timeDat <- data.frame(time = sort(unique(data[[time]])))
+  colnames(timeDat) <- time
+  fullGrid <- merge(unique(data[c(pop, geno, plant, "colId", "rowId")]),
+                    timeDat)
+  data <- merge(fullGrid, data, all.x = TRUE)
 
-
-  # # There are missing data (all plants might be measured at the same timepoints)??: fill in the "gaps" with NAs
-  # crtGrid        <- expand(Pheno.cor.ran, colId, rowId, timePoint)
-  # crtGrid$plotId <- paste0("c", crtGrid$colId, "r", crtGrid$rowId, sep = "")
-  # # Genotype and geno.decomp information by plotId
-  # plotId.info    <- expand(Pheno.cor.ran, nesting(plotId, genotype, geno.decomp))
-  # finalGrid      <- right_join(crtGrid, plotId.info)
-  # Pheno.cor.ran  <- right_join(Pheno.cor.ran, finalGrid)
-
-  # Order the data
-  data <- data[order(data[,pop], data[,geno], data[,plant], data[,time]),]
+  # Order the data - no longer needed, merging in previous step does this.
+  # data <- data[order(data[, pop], data[, geno], data[, plant], data[, time]), ]
 
   # Normalize time
   raw.time    <- sort(unique(data[,time]))
   data[,time] <- data[,time] - min(data[,time]) + 1
-
-  # Defining trace, offset and weights
-  if(trace) {
-    start <- proc.time()[3]
-  }
 
   if(is.null(offset)) {
     data$offset <- rep(0, length(data[,response]))
@@ -344,10 +337,7 @@ fitSplineHDM <- function(response,
     if (tol < 1e-6 | family$family == "gaussian") break
 
   }
-  if (trace) {
-    end <- proc.time()[3]
-    cat("All process", end - start, "seconds\n")
-  }
+
   coeff <- c(b.fixed, b.random)
 
   # # Create the objects to be returned
@@ -416,9 +406,9 @@ fitSplineHDM <- function(response,
   # names(eta_ind) <- l.geno
   #
   # # Plant raw data
-  # aux            <- matrix(data[,response], ncol = n.tot)
-  # obs_ind        <- lapply(split(aux, rep(ind.ind.geno, each = nrow(aux))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(x))
-  # names(obs_ind) <- l.geno
+  aux            <- matrix(data[,response], ncol = n.tot)
+  obs_ind        <- lapply(split(aux, rep(ind.ind.geno, each = nrow(aux))), function(x, nobs) matrix(x, nrow = nobs), nobs = length(x))
+  names(obs_ind) <- l.geno
   #
   # # Plant-specific growth curves
   # MM           <- cbind(kronecker(Matrix::Matrix(diag(n.tot)), X.ind), kronecker(Matrix::Matrix(diag(n.tot)), Z.ind))
@@ -586,7 +576,6 @@ fitSplineHDM <- function(response,
   res$convergence     <- ifelse(it < maxit, TRUE, FALSE)
   res$dim             <- np
   res$family          <- family
-  # res$time.proc       <- end - start
   res$Vp              <- spam::chol2inv(cholHn) #Hinv
   res$smooth          <- list(smooth.pop = smooth.pop, smooth.geno = smooth.geno, smooth.plant = smooth.plant)
   class(res)          <- "psHDM"
