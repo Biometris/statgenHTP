@@ -10,13 +10,16 @@ fit.psHDM  <- fitSplineHDM(response = "LeafArea_corr",
                            geno = "genotype",
                            plant = "plotId",
                            weights = "wt",
-                           data = testDat,
+                           #data = testDat,
+                           data = Pheno.cor.ran.sub3,
                            dif.var = list(geno = FALSE, plant = FALSE),
                            smooth.pop = list(nseg = 10, bdeg = 3, pord = 2),
                            smooth.geno = list(nseg = 10, bdeg = 3, pord = 2),
                            smooth.plant = list(nseg = 10, bdeg = 3, pord = 2),
                            offset = NULL, family = gaussian(), maxit = 200,
                            trace = TRUE, thr = 1e-03)
+
+
 
 pred.psHDM <- predict(object = fit.psHDM,
                       newtimes = fit.psHDM$time,
