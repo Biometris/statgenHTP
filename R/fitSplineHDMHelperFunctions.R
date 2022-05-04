@@ -1,18 +1,18 @@
-#' Helper function for prediction. It returns the design matrix for the B-splines
-#' defined by the same knots that are used in the fitting stage.
+#' Helper function for ....
 #'
 #' @noRd
 #' @keywords internal
 spline.bbase <- function(knots,
                          X.,
                          BDEG.,
-                         deriv = 0) {
+                         deriv = 0,
+                         eps = 1e-15) {
   B <- splines::spline.des(knots = knots, x = X., derivs = deriv,
                            ord = BDEG. + 1, outer.ok = TRUE)$design
   return(B)
 }
 
-#' Helper function to compute a B-spline basis matrix using evenly spaced knots.
+#' Helper function for ....
 #'
 #' @noRd
 #' @keywords internal
@@ -20,7 +20,8 @@ bbase <- function(x,
                   xl = min(x),
                   xr = max(x),
                   ndx = 10,
-                  bdeg = 3) {
+                  bdeg = 3,
+                  eps = 1e-15) {
   dx <- (xr - xl) / ndx
   knots <- seq(xl - bdeg * dx, xr + bdeg * dx, by = dx)
   B <- splines::spline.des(knots = knots, x = x, ord = bdeg + 1,
@@ -29,8 +30,7 @@ bbase <- function(x,
   return(res)
 }
 
-#' Helper function to calculate the singular value decomposition of the B-spline
-#' basis matrix to obtain the mixed model design matrices.
+#' Helper function for ....
 #'
 #' @noRd
 #' @keywords internal
@@ -49,22 +49,27 @@ MM.basis <- function (x,
   P.svd <- svd(crossprod(D))
   d <- (P.svd$d)[1:(m - pord)]
   U.Z <- (P.svd$u)[, 1:(m - pord)]
-  Z <- Matrix::Matrix(B %*% U.Z)
-  X <- Matrix::Matrix(outer(X = x, Y = 0:(pord-1), FUN = "^"))
-  U.X <- outer(X = knots[-c((1:(bdeg - 1)),
-                            (length(knots) - bdeg + 2):length(knots))],
-               Y = 0:(pord-1), FUN = "^")
+  Z <- B %*% U.Z
+  X <- NULL
+  for (i in 0:(pord - 1)){
+    X <- cbind(X, x ^ i)
+  }
+  U.X <- NULL
+  for (i in 0:(pord - 1)) {
+    U.X <- cbind(U.X,
+                 knots[-c((1:(bdeg - 1)),
+                          (length(knots) - (bdeg - 1) + 1):length(knots))] ^ i)
+  }
   res <- list(X = X, Z = Z, d = d, B = B, m = m, D = D, knots = knots,
               U.X = U.X, U.Z = U.Z)
   return(res)
 }
 
-#' Helper function to construct the components of the precision matrix
-#' (as needed by the algorithm).
+#' Helper function for ....
 #'
 #' @noRd
 #' @keywords internal
-constructCapitalLambda <- function(g) {
+construct.capital.lambda <- function(g) {
   length.eq <- all(sapply(X = g, FUN = function(x) {
     diff(range(unlist(lapply(X = x, FUN = length)))) < .Machine$double.eps ^ 0.5
   }))
@@ -103,12 +108,12 @@ constructCapitalLambda <- function(g) {
                                  }, g = g, init = init, end = end, dim = dim))
     }
   } else {
-    stop("Error in constructCapitalLambda")
+    stop("Error in construct.capital.lambda")
   }
   return(res)
 }
 
-#' Helper function to construct the Henderson's equations.
+#' Helper function for ....
 #'
 #' @noRd
 #' @keywords internal
@@ -120,8 +125,7 @@ construct.block <- function(A1,
   return(block)
 }
 
-#' Helper function to compute the row-wise Kronecker product of one matrix as
-#' indicated in GLAM (Eilers et al., 2006).
+#' Helper function for ....
 #'
 #' @noRd
 #' @keywords internal
@@ -130,8 +134,7 @@ Rten <- function(X) {
   kronecker(X, one) * kronecker(one, X)
 }
 
-#' Helper function to compute the row-wise Kronecker product of two matrices as
-#' indicated in GLAM (Eilers et al., 2006).
+#' Helper function for ....
 #'
 #' @noRd
 #' @keywords internal
@@ -142,21 +145,38 @@ Rten2 <- function(X1,
   kronecker(X1, one.2) * kronecker(one.1, X2)
 }
 
-#' Helper function for array dimension rotation as indicated in GLAM
-#' (Eilers et al., 2006).
+#' Helper function for ....
+#'
+#' @noRd
+#' @keywords internal
+H <- function(X,
+              A) {
+  d <- dim(A)
+  M <- Matrix::Matrix(A, nrow = d[1])
+  XM <- X %*% M
+  slam::as.simple_sparse_array(array(XM, dim = c(nrow(XM), d[-1])))
+}
+
+#' Helper function for ....
+#'
+#' @noRd
+#' @keywords internal
+Rotate <- function(A) {
+  d <- 1:length(dim(A))
+  d1 <- c(d[-1], d[1])
+  slam::as.simple_sparse_array(aperm(A, d1))
+}
+
+#' Helper function for ....
 #'
 #' @noRd
 #' @keywords internal
 RH <- function(X,
                A) {
-  Matrix::t(X %*% A)
+  Rotate(H(X, A))
 }
 
-#' Helper function for fast computation of the elements of the
-#' principal diagonal of the Henderson system of equations using GLAM
-#' (Eilers et al., 2006)
-#'
-#' @importFrom methods as new
+#' Helper function for ....
 #'
 #' @noRd
 #' @keywords internal
@@ -164,29 +184,28 @@ A1.form <- function(l,
                     w = NULL) {
   d <- length(l)
   n <- rev(sapply(X = l, FUN = nrow))
-  c1 <- rev(sapply(X = l, FUN = ncol))
+  c <- rev(sapply(X = l, FUN = ncol))
   if (is.null(w)) {
-    W <- Matrix::Matrix(1, nrow = n[1], ncol = n[2])
+    W <- slam::as.simple_sparse_array(array(1, dim = n))
   } else {
-    dim(w) <- n
-    W <- as(w, "dgeMatrix")
+    W <- slam::as.simple_sparse_array(array(w, dim = n))
   }
-  lRTen <- lapply(X = rev(l), FUN = Rten)
-  tmp <- Reduce(Matrix::crossprod, x = lRTen, init = W)
-  tmp <- array(tmp, dim = rep(c1, rep(2, d)))
-  Fast <- if (prod(c1)) {
-    bdiag_m(lapply(X = seq_len(dim(tmp)[3]), FUN = function(i) {
-      tmp[, , i, i]
-    }))
+  tmp <- RH(Matrix::t(Rten(l[[d]])), W)
+  for (i in (d-1):1) {
+    tmp <- RH(Matrix::t(Rten(l[[i]])), tmp)
+  }
+  dim(tmp)<- rep(c, rep(2,d))
+  Fast1 <- slam::as.simple_sparse_array(aperm(tmp, as.vector(
+    matrix(1:(d * 2), byrow = TRUE, ncol = 2))))
+  Fast <- if (prod(c)) {
+    Matrix::Matrix(Fast1, nrow = prod(c))
   } else {
-    aperm(tmp, c(2 * (1:d) - 1, 2 * (1:d)))
+    Fast1
   }
   return(Fast)
 }
 
-#' Helper function for for fast computation of the elements of the
-#' secondary diagonal of the Henderson system of equations using GLAM
-#' (Eilers et al., 2006)
+#' Helper function for ....
 #'
 #' @noRd
 #' @keywords internal
@@ -195,32 +214,33 @@ A2.form <- function(l1,
                     w = NULL) {
   d1 <- length(l1)
   d2 <- length(l2)
-  if (d1 != d2) {
+  if (!(d1 == d2)) {
     stop("l1 and l2 should have the same dimension")
   }
   n <- rev(sapply(X = l1, FUN = nrow))
   d <- rev(sapply(X = l1, FUN = ncol))
-  c1 <- rev(sapply(X = l2, FUN = ncol))
+  c <- rev(sapply(X = l2, FUN = ncol))
   if (is.null(w)) {
-    W <- Matrix::Matrix(1, nrow = n[1], ncol = n[2])
+    W <- slam::as.simple_sparse_array(array(1, dim = n))
   } else {
-    dim(w) <- n
-    W <- as(w, "dgeMatrix")
+    W <- slam::as.simple_sparse_array(array(w, dim = n))
   }
-  lRTen2 <- mapply(FUN = Rten2, rev(l2), rev(l1))
-  tmp <- Reduce(Matrix::crossprod, x = lRTen2, init = W)
-  tmp <- array(tmp, dim = as.vector(rbind(d, c1)))
-  Fast1 <- aperm(tmp, c(2 * (1:d1) - 1, 2 * (1:d1)))
+  tmp <- RH(Matrix::t(Rten2(l2[[d1]], l1[[d1]])), W)
+  for (i in (d1-1):1) {
+    tmp <- RH(Matrix::t(Rten2(l2[[i]], l1[[i]])), tmp)
+  }
+  dim(tmp)<- as.vector(rbind(d, c))
+  Fast1 <- slam::as.simple_sparse_array(aperm(tmp, as.vector(
+    matrix(1:(d1 * 2), byrow = TRUE, ncol = 2))))
   Fast <- if (prod(d)) {
-    Matrix::Matrix(Fast1, nrow = prod(d), sparse = TRUE)
+    Matrix::Matrix(Fast1, nrow = prod(d))
   } else {
-    aperm(tmp, c(2 * (1:d1) - 1, 2 * (1:d1)))
+    Fast1
   }
   return(Fast)
 }
 
-#' Helper function for fast computation of the XtX element
-#' of the Henderson system of equations using GLAM (Eilers et al., 2006)
+#' Helper function for ....
 #'
 #' @noRd
 #' @keywords internal
@@ -229,8 +249,7 @@ XtX <- function(X,
   A1.form(X, w)
 }
 
-#' Helper function for fast computation of the XtZ element
-#' of the Henderson system of equations using GLAM (Eilers et al., 2006)
+#' Helper function for ....
 #'
 #' @noRd
 #' @keywords internal
@@ -245,17 +264,16 @@ XtZ <- function(X,
   res
 }
 
-#' Helper function for fast computation of the ZtZ element
-#' of the Henderson system of equations using GLAM (Eilers et al., 2006)
+#' Helper function for ....
 #'
 #' @noRd
 #' @keywords internal
 ZtZ <- function(Z,
                 w = NULL) {
   d <- length(Z)
-  upper <- vector(mode = "list", length = d)
+  upper <- list()
   for (i in 1:d) {
-    upper[[i]] <- vector(mode = "list", length = d)
+    upper[[i]] <- list()
     upper[[i]][[i]] <- A1.form(Z[[i]], w)
   }
   ## Obtain the elements of the matrix.
@@ -267,61 +285,73 @@ ZtZ <- function(Z,
     }
   }
   ## Create the matrix.
-  res <- Reduce(cbind, x = upper[[1]])
-  for (i in 2:d) {
-    tmp <- Reduce(cbind, x = upper[[i]])
-    for (j in (i - 1):1) {
-      if (length(upper[[j]][[i]])) {
-        tmp <- cbind(Matrix::t(upper[[j]][[i]]), tmp)
+  res <- NULL
+  for (i in 1:d) {
+    if (i == 1) {
+      res <- do.call("cbind", upper[[1]])
+    } else {
+      tmp <- do.call("cbind", upper[[i]])
+      for (j in (i - 1):1) {
+        if (length(upper[[j]][[i]])) {
+          tmp <- cbind(Matrix::t(upper[[j]][[i]]), tmp)
+        }
       }
-    }
-    if (nrow(tmp)) {
-      res <- rbind(res, tmp)
+      if (nrow(tmp)) {
+        res <- rbind(res, tmp)
+      }
     }
   }
   return(res)
 }
 
-#' Helper function for fast computation of the Xty element
-#' of the Henderson system of equations using GLAM (Eilers et al., 2006)
+#' Helper function for ....
 #'
 #' @noRd
 #' @keywords internal
 Xty <- function(X,
                 y,
                 w = NULL) {
-  nRow <- nrow(utils::tail(X, n = 1)[[1]])
+  d <- length(X)
+  n <- rev(sapply(X = X, FUN = nrow))
   if (is.null(w)) {
-    Y <- Matrix::Matrix(y, nrow = nRow)
+    Y <- array(y, n)
   } else {
-    Y <- Matrix::Matrix(w * y, nrow = nRow)
+    Y <- array(w * y, n)
   }
-  tmp <- Reduce(Matrix::crossprod, x = rev(X), init = Y)
+  tmp <- RH(Matrix::t(X[[d]]), Y)
+  for (i in (d - 1):1) {
+    tmp <- RH(Matrix::t(X[[i]]), tmp)
+  }
   as.vector(tmp)
 }
 
-#' Helper function for fast computation of the Zty element
-#' of the Henderson system of equations using GLAM (Eilers et al., 2006)
+#' Helper function for ....
 #'
 #' @noRd
 #' @keywords internal
 Zty <- function(Z,
                 y,
                 w = NULL) {
-  nRow <- nrow(utils::tail(Z[[1]], n = 1)[[1]])
+  d <- length(Z)
+  n <- rev(sapply(X = Z[[1]], FUN = nrow))
   if (is.null(w)) {
-    Y <- Matrix::Matrix(y, nrow = nRow)
+    Y <- array(y, n)
   } else {
-    Y <- Matrix::Matrix(w * y, nrow = nRow)
+    Y <- array(w * y, n)
   }
-  res <- unlist(lapply(X = Z, FUN = function(z) {
-    as.vector(Reduce(Matrix::crossprod, x = rev(z), init = Y))
-  }), use.names = FALSE)
+  res <- NULL
+  for (i in 1:d) {
+    k <- length(Z[[i]])
+    tmp <- RH(Matrix::t(Z[[i]][[k]]), Y)
+    for (j in (k - 1):1) {
+      tmp <- RH(Matrix::t(Z[[i]][[j]]), tmp)
+    }
+    res <- c(res, as.vector(tmp))
+  }
   return(res)
 }
 
-#' Helper function to compute the estimated values for the fixed effects using
-#' GLAM (Eilers et al., 2006).
+#' Helper function for ....
 #'
 #' @noRd
 #' @keywords internal
@@ -329,7 +359,7 @@ Xtheta <- function(X,
                    theta) {
   d <- length(X)
   n <- rev(sapply(X = X, FUN = ncol))
-  Theta <- Matrix::Matrix(theta, nrow = n[1])
+  Theta <- array(theta, dim = n)
   tmp <- RH(X[[d]], Theta)
   for (i in (d - 1):1) {
     tmp <- RH(X[[i]], tmp)
@@ -337,8 +367,7 @@ Xtheta <- function(X,
   as.vector(tmp)
 }
 
-#' Helper function to compute the estimated values for the random effects
-#' using GLAM (Eilers et al., 2006).
+#' Helper function for ....
 #'
 #' @noRd
 #' @keywords internal
@@ -360,8 +389,7 @@ Ztheta <- function(Z,
   res
 }
 
-#' Helper function to construct the Henderson system of equations using GLAM
-#' (Eilers et al., 2006), or traditional matrix arithmetic.
+#' Helper function for ....
 #'
 #' @noRd
 #' @keywords internal
@@ -398,7 +426,45 @@ construct.matrices <- function(X,
   return(res)
 }
 
-#' Helper function to compute the REML deviance.
+#' Helper function for ....
+#'
+#' @noRd
+#' @keywords internal
+construct.G.matrix <- function(g,
+                               la) {
+  la.g <- la[-1]
+  g.comp <- length(g)
+  g.tot.comp <- unlist(lapply(X = g, FUN = length))
+  np.e.g <- cumsum(g.tot.comp)
+  np.s.g <- np.e.g - g.tot.comp + 1
+  Gl <- list(length = g.comp)
+  for (i in 1:g.comp) {
+    Gl[[i]] <- Reduce('+', mapply(FUN = "*", g[[i]], la.g[np.s.g[i]:np.e.g[i]]))
+  }
+  G <- spam::bdiag.spam(Matrix:::bdiag(Gl))
+  return(G)
+}
+
+#' Helper function for ....
+#'
+#' @noRd
+#' @keywords internal
+construct.Ginv.matrix <- function(g,
+                                  la) {
+  la.g <- la[-1]
+  g.comp <- length(g)
+  g.tot.comp <- unlist(lapply(X = g, FUN = length))
+  np.e.g <- cumsum(g.tot.comp)
+  np.s.g <- np.e.g - g.tot.comp + 1
+  Gl <- list(length = g.comp)
+  for (i in 1:g.comp) {
+    Gl[[i]] <- solve(Reduce('+', mapply(FUN = "*", g[[i]], la.g[np.s.g[i]:np.e.g[i]])))
+  }
+  Ginv <- spam::bdiag.spam(Matrix:::bdiag(Gl))
+  return(Ginv)
+}
+
+#' Helper function for ....
 #'
 #' @noRd
 #' @keywords internal
