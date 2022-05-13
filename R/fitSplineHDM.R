@@ -86,6 +86,24 @@ fitSplineHDM <- function(inDat,
                          maxit = 200,
                          trace = TRUE,
                          thr = 1e-03) {
+  ## Checks.
+  if (!is.character(trait) || length(trait) > 1) {
+    stop("trait should be a character string of length 1.\n")
+  }
+  if (!inherits(inDat, "data.frame")) {
+    stop("inDat should be a data.frame.\n")
+  }
+  corrCols <- c(geno, trait, time, pop, plant)
+  if (!all(hasName(x = inDat, name = corrCols))) {
+    stop("inDat should at least contain the following columns: ",
+         paste(corrCols, collapse = ", "))
+  }
+  if (!is.numeric(maxit) || length(maxit) > 1 || maxit < 0) {
+    stop("maxit should be a positive numerical value.\n")
+  }
+  if (!is.numeric(thr) || length(thr) > 1 || thr < 0) {
+    stop("thr should be a positive numerical value.\n")
+  }
   ## Unused levels might cause strange behaviour.
   inDat <- droplevels(inDat)
   ## Create a full data set of observations for all combinations of
@@ -96,7 +114,7 @@ fitSplineHDM <- function(inDat,
                     timeDat)
   inDat <- merge(fullGrid, inDat, all.x = TRUE)
   ## Normalize time.
-  raw.time    <- timeDat[[time]]
+  raw.time <- timeDat[[time]]
   inDat[[time]] <- inDat[[time]] - min(inDat[[time]]) + 1
   ## Define offset.
   if (is.null(offset)) {
@@ -115,18 +133,18 @@ fitSplineHDM <- function(inDat,
     }
   }
   ## Elements and number of elements by level of the hierarchy.
-  l.pop           <- levels(inDat[[pop]])
-  l.geno          <- levels(inDat[[geno]])
-  l.plant         <- levels(inDat[[plant]])
-  n.pop           <- nlevels(inDat[[pop]])
-  n.plants_p_pop  <- apply(X = table(inDat[[pop]], inDat[[plant]]),
-                           MARGIN = 1, FUN = function(x) { sum(x!=0) })
-  n.geno_p_pop    <- apply(X = table(inDat[[pop]], inDat[[geno]]),
-                           MARGIN = 1, FUN = function(x) { sum(x!=0) })
-  n.geno          <- nlevels(inDat[[geno]])
+  l.pop <- levels(inDat[[pop]])
+  l.geno <- levels(inDat[[geno]])
+  l.plant <- levels(inDat[[plant]])
+  n.pop <- nlevels(inDat[[pop]])
+  n.plants_p_pop <- apply(X = table(inDat[[pop]], inDat[[plant]]),
+                          MARGIN = 1, FUN = function(x) { sum(x!=0) })
+  n.geno_p_pop <- apply(X = table(inDat[[pop]], inDat[[geno]]),
+                        MARGIN = 1, FUN = function(x) { sum(x!=0) })
+  n.geno <- nlevels(inDat[[geno]])
   n.plants_p_geno <- apply(table(inDat[[geno]], inDat[[plant]]),
                            MARGIN = 1, FUN = function(x) { sum(x!=0) })[l.geno]
-  n.tot           <- nlevels(inDat[[plant]])
+  n.tot <- nlevels(inDat[[plant]])
   # Time interval
   x <- sort(unique(inDat[[time]]))
   ## Construct design matrices: data in an array
