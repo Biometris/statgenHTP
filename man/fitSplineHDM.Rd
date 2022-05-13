@@ -5,12 +5,12 @@
 \title{fitSplineHDM}
 \usage{
 fitSplineHDM(
-  response,
+  inDat,
+  trait,
   time,
   pop,
   geno,
   plant,
-  data,
   dif.var = list(geno = FALSE, plant = FALSE),
   smooth.pop = list(nseg = 10, bdeg = 3, pord = 2),
   smooth.geno = list(nseg = 10, bdeg = 3, pord = 2),
@@ -22,6 +22,12 @@ fitSplineHDM(
   trace = TRUE,
   thr = 0.001
 )
+}
+\arguments{
+\item{inDat}{A data.frame with corrected spatial data.}
+
+\item{trait}{A character string indicating the trait for which the spline
+should be fitted.}
 }
 \description{
 fitSplineHDM

@@ -65,13 +65,17 @@
 #'
 #' fitSplineHDM
 #'
+#' @param inDat A data.frame with corrected spatial data.
+#' @param trait A character string indicating the trait for which the spline
+#' should be fitted.
+#'
 #' @export
-fitSplineHDM <- function(response,
+fitSplineHDM <- function(inDat,
+                         trait,
                          time,
                          pop,
                          geno,
                          plant,
-                         data,
                          dif.var = list(geno = FALSE, plant = FALSE),
                          smooth.pop = list(nseg = 10, bdeg = 3, pord = 2),
                          smooth.geno = list(nseg = 10, bdeg = 3, pord = 2),
@@ -83,52 +87,48 @@ fitSplineHDM <- function(response,
                          trace = TRUE,
                          thr = 1e-03) {
   ## Unused levels might cause strange behaviour.
-  data <- droplevels(data)
+  inDat <- droplevels(inDat)
   ## Create a full data set of observations for all combinations of
   ## timepoints, row and column.
-  timeDat <- data.frame(time = sort(unique(data[[time]])))
+  timeDat <- data.frame(time = sort(unique(inDat[[time]])))
   colnames(timeDat) <- time
-  fullGrid <- merge(unique(data[c(pop, geno, plant, "colId", "rowId")]),
+  fullGrid <- merge(unique(inDat[c(pop, geno, plant, "colId", "rowId")]),
                     timeDat)
-  data <- merge(fullGrid, data, all.x = TRUE)
-
-  # Order the data - no longer needed, merging in previous step does this.
-  # data <- data[order(data[, pop], data[, geno], data[, plant], data[, time]), ]
-
+  inDat <- merge(fullGrid, inDat, all.x = TRUE)
   ## Normalize time.
   raw.time    <- timeDat[[time]]
-  data[[time]] <- data[[time]] - min(data[[time]]) + 1
+  inDat[[time]] <- inDat[[time]] - min(inDat[[time]]) + 1
   ## Define offset.
   if (is.null(offset)) {
-    data$offset <- 0
+    inDat$offset <- 0
   }
   ## Specify weights.
   if (is.null(weights)) {
-    weights <- rep(1, nrow(data))
+    weights <- rep(1, nrow(inDat))
   } else{
-    weights <- data[[weights]] ^ 2
+    weights <- inDat[[weights]] ^ 2
   }
   ## Convert to factors - only if not already factors.
   for (facVar in c(pop, geno, plant)) {
-    if (!is.factor(data[[facVar]])) {
-      data[[facVar]] <- factor(data[[facVar]])
+    if (!is.factor(inDat[[facVar]])) {
+      inDat[[facVar]] <- factor(inDat[[facVar]])
     }
   }
   ## Elements and number of elements by level of the hierarchy.
-  l.pop           <- levels(data[[pop]])
-  l.geno          <- levels(data[[geno]])
-  l.plant         <- levels(data[[plant]])
-  n.pop           <- nlevels(data[[pop]])
-  n.plants_p_pop  <- apply(X = table(data[[pop]], data[[plant]]),
+  l.pop           <- levels(inDat[[pop]])
+  l.geno          <- levels(inDat[[geno]])
+  l.plant         <- levels(inDat[[plant]])
+  n.pop           <- nlevels(inDat[[pop]])
+  n.plants_p_pop  <- apply(X = table(inDat[[pop]], inDat[[plant]]),
                            MARGIN = 1, FUN = function(x) { sum(x!=0) })
-  n.geno_p_pop    <- apply(X = table(data[[pop]], data[[geno]]),
+  n.geno_p_pop    <- apply(X = table(inDat[[pop]], inDat[[geno]]),
                            MARGIN = 1, FUN = function(x) { sum(x!=0) })
-  n.geno          <- nlevels(data[[geno]])
-  n.plants_p_geno <- apply(table(data[[geno]], data[[plant]]),
+  n.geno          <- nlevels(inDat[[geno]])
+  n.plants_p_geno <- apply(table(inDat[[geno]], inDat[[plant]]),
                            MARGIN = 1, FUN = function(x) { sum(x!=0) })[l.geno]
-  n.tot           <- nlevels(data[[plant]])
+  n.tot           <- nlevels(inDat[[plant]])
   # Time interval
-  x <- sort(unique(data[[time]]))
+  x <- sort(unique(inDat[[time]]))
   ## Construct design matrices: data in an array
   ## Design matrices for the population curves.
   MM.pop <- MM.basis(x = x, ndx = smooth.pop$nseg, bdeg = smooth.pop$bdeg,
@@ -146,8 +146,8 @@ fitSplineHDM <- function(response,
   X.ind  <- MM.ind$X
   Z.ind <- MM.ind$Z
   ## Response, offset and weights
-  y         <- data[[response]]
-  offset.f  <- data[["offset"]]
+  y         <- inDat[[trait]]
+  offset.f  <- inDat[["offset"]]
   weights.f <- weights
   ## Set missing values and corresponding weights to 0.
   nas            <- is.na(y)
@@ -373,11 +373,11 @@ fitSplineHDM <- function(response,
   }
   coeff <- c(b.fixed, b.random)
   ## Plant raw data.
-  aux <- matrix(data[,response], ncol = n.tot)
+  aux <- matrix(inDat[, trait], ncol = n.tot)
   obs_ind <- lapply(X = split(aux, rep(ind.ind.geno, each = nrow(aux))),
                     FUN = function(x, nobs) {
-                      matrix(x, nrow = length(x))
-                    })
+                      matrix(x, nrow = nobs)
+                    }, nobs = length(x))
   names(obs_ind) <- l.geno
   ## Object to be returned
   res <- structure(
