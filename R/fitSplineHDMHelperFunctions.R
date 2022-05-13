@@ -5,8 +5,7 @@
 spline.bbase <- function(knots,
                          X.,
                          BDEG.,
-                         deriv = 0,
-                         eps = 1e-15) {
+                         deriv = 0) {
   B <- splines::spline.des(knots = knots, x = X., derivs = deriv,
                            ord = BDEG. + 1, outer.ok = TRUE)$design
   return(B)
@@ -20,8 +19,7 @@ bbase <- function(x,
                   xl = min(x),
                   xr = max(x),
                   ndx = 10,
-                  bdeg = 3,
-                  eps = 1e-15) {
+                  bdeg = 3) {
   dx <- (xr - xl) / ndx
   knots <- seq(xl - bdeg * dx, xr + bdeg * dx, by = dx)
   B <- splines::spline.des(knots = knots, x = x, ord = bdeg + 1,
