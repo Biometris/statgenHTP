@@ -29,7 +29,7 @@
 
 # Help functions ----------------------------------------------------------
   mixmod_to_bspline_pred <- function(what = c("pop", "geno", "plant"), 
-                                     object, np.s, np.e, 
+                                     object, np.s, np.e, xp,
                                      Tmat = NULL, mod.mat = NULL, dev = TRUE, 
                                      Bbasis = NULL){
     # Predictions
@@ -46,23 +46,22 @@
       }
     }
     if(is.null(Tmat)) {
-      Tm    <- cbind(kronecker(Matrix::Matrix(diag(length(object[[paste0("l.",what)]]))), object$MM[[paste0("MM.",what)]]$U.X),
-                     kronecker(Matrix::Matrix(diag(length(object[[paste0("l.",what)]]))), object$MM[[paste0("MM.",what)]]$U.Z))
+      Tm    <- cbind(Matrix::kronecker(Matrix::Diagonal(length(object[[paste0("l.",what)]])), object$MM[[paste0("MM.",what)]]$U.X),
+                     Matrix::kronecker(Matrix::Diagonal(length(object[[paste0("l.",what)]])), object$MM[[paste0("MM.",what)]]$U.Z))
     } else{
       Tm <- Tmat
     }
     if(is.null(mod.mat)) {
-      mmat <- diag(length(object[[paste0("l.",what)]]))
+      mmat <- Matrix::Diagonal(length(object[[paste0("l.",what)]]))
     }else if(is.list(mod.mat)){
       mmat <- list(mmat1 = mod.mat[[1]], mmat2 = mod.mat[[2]])
     }else{
-      mmat <- mod.mat 
+      mmat <- mod.mat
     }
     MM.coeff <- matrix(object$coeff[np.s[what.s]:np.e[what.e]], ncol = 1)
-    theta <- Matrix::Matrix(Tm%*%MM.coeff)
+    theta <- Matrix::Matrix(Tm %*% MM.coeff)
     B.full <- function(mmat, what, deriv){
-      kronecker(Matrix::Matrix(mmat), 
-                spline.bbase(knots = object$MM[[paste0("MM.",what)]]$knots, X. = xp, BDEG. = object$smooth[[paste0("smooth.",what)]]$bdeg, deriv = deriv))
+      Matrix::kronecker(mmat, spline.bbase(knots = object$MM[[paste0("MM.",what)]]$knots, X. = xp, BDEG. = object$smooth[[paste0("smooth.",what)]]$bdeg, deriv = deriv))
     }
     if(is.null(Bbasis)) {
       B     <- B.full(mmat, what, deriv = 0)
@@ -190,7 +189,7 @@ predict.psHDM <- function(object,
   # Predictions
   # Functions at population level
   if(isTRUE(pred$pop)) {
-    pop_level <- mixmod_to_bspline_pred(what = "pop", object = object, np.s, np.e, dev = FALSE)
+    pop_level <- mixmod_to_bspline_pred(what = "pop", object = object, np.s, np.e, xp, dev = FALSE)
     print("Population-specific growth curves OK")
     res$f_pop <- pop_level$pred
   }
@@ -198,7 +197,7 @@ predict.psHDM <- function(object,
   # Functions at genotype level
   if(isTRUE(pred$geno)) {
     # Genotype-specific deviations and first- and second-order derivatives
-      geno_level <- mixmod_to_bspline_pred(what = "geno", object = object, np.s, np.e, dev = TRUE)
+      geno_level <- mixmod_to_bspline_pred(what = "geno", object = object, np.s, np.e, xp, dev = TRUE)
       # List, with as many elements as populations. Each element of the list is a matrix, with as many columns as genotypes per population
       res$f_geno_dev <- lapply(geno_level$pred, format_pred, what = "geno", object = object, xp = xp)
       print("Genotype-specific deviations OK")
@@ -209,10 +208,10 @@ predict.psHDM <- function(object,
         mm.geno.pop <- matrix(1, ncol = 1, nrow = length(object$l.geno))
       } else {
         geno.pop    <- rep(as.factor(1:length(object$l.pop)), object$n.geno_p_pop)
-        mm.geno.pop <- model.matrix(~ 0 + geno.pop) # The contrast matrix changes here!!!!!!
+        mm.geno.pop <- Matrix::sparse.model.matrix(~ 0 + geno.pop) # The contrast matrix changes here!!!!!!
       }
       T_geno     <- Matrix::bdiag(pop_level$Tm, geno_level$Tm)
-      geno_tra_level <- mixmod_to_bspline_pred(what = "geno", object = object, np.s, np.e, Tmat = T_geno, mod.mat = mm.geno.pop, dev = FALSE, 
+      geno_tra_level <- mixmod_to_bspline_pred(what = "geno", object = object, np.s, np.e, xp, Tmat = T_geno, mod.mat = mm.geno.pop, dev = FALSE, 
                                                Bbasis = list(B = geno_level$B, B.d1 = geno_level$B.d1, B.d2 = geno_level$B.d2))
       # List, with as many elements as populations. Each element of the list is a matrix, with as many columns as genotypes per population
       res$f_geno <- lapply(geno_tra_level$pred, format_pred, what = "geno", object = object, xp = xp)
@@ -222,7 +221,7 @@ predict.psHDM <- function(object,
   # Functions at plant level
   if(isTRUE(pred$plant)) {
     # Plant-specific deviations and first- and second-order derivatives
-      plant_level <- mixmod_to_bspline_pred(what = "plant", object = object, np.s, np.e, dev = TRUE)
+      plant_level <- mixmod_to_bspline_pred(what = "plant", object = object, np.s, np.e, xp, dev = TRUE)
       # List, with as many elements as genotypes. Each element of the list is a matrix, with as many columns as plants per genotype
       res$f_plant_dev <- lapply(plant_level$pred, format_pred, what = "plant", object = object, xp = xp)
       print("Plant-specific deviations OK")
@@ -233,17 +232,17 @@ predict.psHDM <- function(object,
         mm.ind.pop <- matrix(1, ncol = 1, nrow = object$n.plants_p_pop)
       } else {
         ind.pop    <- rep(as.factor(1:length(object$l.pop)), object$n.plants_p_pop)
-        mm.ind.pop <- model.matrix(~ 0 + ind.pop) # The contrast matrix changes here!!!!!!
+        mm.ind.pop <- Matrix::sparse.model.matrix(~ 0 + ind.pop) # The contrast matrix changes here!!!!!!
       }
       # Contrast matrix: Assign plants to genotypes
       if(length(object$l.geno) == 1) {
         mm.ind.geno <- matrix(1, ncol = 1, nrow = length(object$l.geno))
       } else {
         ind.geno    <- rep(as.factor(1:length(object$l.geno)), object$n.plants_p_geno)
-        mm.ind.geno <- model.matrix(~ 0 + ind.geno) # The contrast matrix changes here!!!!!!
+        mm.ind.geno <- Matrix::sparse.model.matrix(~ 0 + ind.geno) # The contrast matrix changes here!!!!!!
       }
       T_plant     <- Matrix::bdiag(pop_level$Tm, geno_level$Tm, plant_level$Tm)
-      plant_tra_level <- mixmod_to_bspline_pred(what = "plant", object = object, np.s, np.e, Tmat = T_plant, mod.mat = list(mm.ind.pop, mm.ind.geno), dev = FALSE, 
+      plant_tra_level <- mixmod_to_bspline_pred(what = "plant", object = object, np.s, np.e, xp, Tmat = T_plant, mod.mat = list(mm.ind.pop, mm.ind.geno), dev = FALSE, 
                                                Bbasis = list(B = plant_level$B, B.d1 = plant_level$B.d1, B.d2 = plant_level$B.d2))
       # List, with as many elements as populations. Each element of the list is a matrix, with as many columns as genotypes per population
       res$f_plant <- lapply(plant_tra_level$pred, format_pred, what = "plant", object = object, xp = xp)
