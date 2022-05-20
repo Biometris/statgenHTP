@@ -47,17 +47,11 @@ MM.basis <- function (x,
   P.svd <- svd(crossprod(D))
   d <- (P.svd$d)[1:(m - pord)]
   U.Z <- (P.svd$u)[, 1:(m - pord)]
-  Z <- B %*% U.Z
-  X <- NULL
-  for (i in 0:(pord - 1)){
-    X <- cbind(X, x ^ i)
-  }
-  U.X <- NULL
-  for (i in 0:(pord - 1)) {
-    U.X <- cbind(U.X,
-                 knots[-c((1:(bdeg - 1)),
-                          (length(knots) - (bdeg - 1) + 1):length(knots))] ^ i)
-  }
+  Z <- Matrix::Matrix(B %*% U.Z)
+  X <- Matrix::Matrix(outer(X = x, Y = 0:(pord-1), FUN = "^"))
+  U.X <- outer(X = knots[-c((1:(bdeg - 1)),
+                        (length(knots) - bdeg + 2):length(knots))],
+               Y = 0:(pord-1), FUN = "^")
   res <- list(X = X, Z = Z, d = d, B = B, m = m, D = D, knots = knots,
               U.X = U.X, U.Z = U.Z)
   return(res)
