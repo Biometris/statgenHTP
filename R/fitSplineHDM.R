@@ -161,11 +161,11 @@ fitSplineHDM <- function(inDat,
   ## Design matrices for the individual curves.
   MM.ind <- MM.basis(x = x, ndx = smooth.plant$nseg, bdeg = smooth.plant$bdeg,
                      pord = smooth.plant$pord)
-  X.ind  <- MM.ind$X
+  X.ind <- MM.ind$X
   Z.ind <- MM.ind$Z
   ## Response, offset and weights
-  y         <- inDat[[trait]]
-  offset.f  <- inDat[["offset"]]
+  y <- inDat[[trait]]
+  offset.f <- inDat[["offset"]]
   weights.f <- weights
   ## Set missing values and corresponding weights to 0.
   nas            <- is.na(y)
@@ -175,49 +175,49 @@ fitSplineHDM <- function(inDat,
   ## Matrix to assign plants to populations
   ind.ind.pop <- rep(1:n.pop, n.plants_p_pop)
   if (n.pop == 1) {
-    C.pop <- matrix(data = 1, nrow = n.tot)
+    C.pop <- Matrix::Diagonal(n = n.tot)
   } else {
     xxt <- data.frame(ind.pop = as.factor(ind.ind.pop))
     mft <- model.frame(~ ind.pop - 1, data = xxt, drop.unused.levels = TRUE)
     mtt <- terms(mft)
     f.termst <- attr(mtt, "term.labels")[attr(mtt,"dataClasses") == "factor"]
-    C.pop <- model.matrix(mtt, data = mft,
-                          contrasts.arg = lapply(X = mft[, f.termst, drop = FALSE],
-                                                 FUN = contrasts,
-                                                 contrasts = FALSE))
+    C.pop <- Matrix::sparse.model.matrix(mtt, data = mft,
+                                         contrasts.arg = lapply(X = mft[, f.termst, drop = FALSE],
+                                                                FUN = contrasts,
+                                                                contrasts = FALSE))
     attr(mtt, "xlev") <- .getXlevels(mtt, mft)
-    attr(mtt, "contrast") <- attr(C.pop,"contrast")
+    attr(mtt, "contrast") <- attr(C.pop, "contrast")
   }
   ## Matrix to assign plants to genotypes.
   ind.ind.geno <- rep(1:n.geno, n.plants_p_geno)
   if (n.geno == 1) {
-    C.geno <- matrix(data = 1, nrow = n.tot)
+    C.geno <- Matrix::Diagonal(n = n.tot)
   } else {
     xxg <- data.frame(ind.pop = as.factor(ind.ind.geno))
     mfg <- model.frame(~ ind.pop - 1, xxg, drop.unused.levels = TRUE)
     mtg <- terms(mfg)
     f.termsg <- attr(mtg, "term.labels")[attr(mtg,"dataClasses") == "factor"]
-    C.geno <- model.matrix(mtg, data = mfg,
-                           contrasts.arg = lapply(X = mfg[,f.termsg, drop = FALSE],
-                                                  FUN = contrasts,
-                                                  contrasts = FALSE))
+    C.geno <- Matrix::sparse.model.matrix(mtg, data = mfg,
+                                          contrasts.arg = lapply(X = mfg[,f.termsg, drop = FALSE],
+                                                                 FUN = contrasts,
+                                                                 contrasts = FALSE))
     attr(mtg, "xlev") <- .getXlevels(mtg, mfg)
     attr(mtg, "contrast") <- attr(C.geno,"contrast")
   }
   ## GLAM matrices
   GLAM <- TRUE
-  X <- list(X1 = Matrix::Matrix(C.pop),
-            X2 = Matrix::Matrix(X.pop)) # Parametric population effect
-  Z <- list(Z1 = list(Z11 = Matrix::Matrix(C.pop),
-                      Z12 = Matrix::Matrix(Z.pop)),
-            Z2 = list(Z21 = Matrix::Matrix(C.geno),
-                      Z22 = Matrix::Matrix(X.geno)), # Random intercept and slope
-            Z3 = list(Z31 = Matrix::Matrix(C.geno),
-                      Z32 = Matrix::Matrix(Z.geno)), # Genotype specific curves
-            Z4 = list(Z41 = Matrix::Matrix(diag(n.tot)),
-                      Z42 = Matrix::Matrix(X.ind)), # Random intercept and slopes (individual)
-            Z5 = list(Z51 = Matrix::Matrix(diag(n.tot)),
-                      Z52 = Matrix::Matrix(Z.ind))) # Genotype specific curves (individual)
+  X <- list(X1 = C.pop,
+            X2 = X.pop) # Parametric population effect
+  Z <- list(Z1 = list(Z11 = C.pop,
+                      Z12 = Z.pop),
+            Z2 = list(Z21 = C.geno,
+                      Z22 = X.geno), # Random intercept and slope
+            Z3 = list(Z31 = C.geno,
+                      Z32 = Z.geno), # Genotype specific curves
+            Z4 = list(Z41 = Matrix::Diagonal(n = n.tot),
+                      Z42 = X.ind), # Random intercept and slopes (individual)
+            Z5 = list(Z51 = Matrix::Diagonal(n = n.tot),
+                      Z52 = Z.ind)) # Genotype specific curves (individual)
   ## Number of parameters: fixed and random (for each component)
   np <- c(ncol(X.pop) * n.pop, ncol(Z.pop) * n.pop,
           ncol(X.geno) * n.geno, ncol(Z.geno) * n.geno,

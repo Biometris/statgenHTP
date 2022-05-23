@@ -183,14 +183,14 @@ A1.form <- function(l,
     W <- slam::as.simple_sparse_array(array(w, dim = n))
   }
   tmp <- RH(Matrix::t(Rten(l[[d]])), W)
-  for (i in (d-1):1) {
+  for (i in (d - 1):1) {
     tmp <- RH(Matrix::t(Rten(l[[i]])), tmp)
   }
-  dim(tmp)<- rep(c, rep(2,d))
-  Fast1 <- slam::as.simple_sparse_array(aperm(tmp, as.vector(
-    matrix(1:(d * 2), byrow = TRUE, ncol = 2))))
+  dim(tmp) <- rep(c, rep(2, d))
+  #Fast1 <- aperm(tmp, as.vector(matrix(1:(d * 2), byrow = TRUE, ncol = 2)))
+  Fast1 <- aperm(tmp, c(2 * (1:d) - 1, 2 * (1:d)))
   Fast <- if (prod(c)) {
-    Matrix::Matrix(Fast1, nrow = prod(c))
+    Matrix::Matrix(Fast1, nrow = prod(c), sparse = TRUE)
   } else {
     Fast1
   }
@@ -218,12 +218,12 @@ A2.form <- function(l1,
     W <- slam::as.simple_sparse_array(array(w, dim = n))
   }
   tmp <- RH(Matrix::t(Rten2(l2[[d1]], l1[[d1]])), W)
-  for (i in (d1-1):1) {
+  for (i in (d1 - 1):1) {
     tmp <- RH(Matrix::t(Rten2(l2[[i]], l1[[i]])), tmp)
   }
   dim(tmp)<- as.vector(rbind(d, c))
-  Fast1 <- slam::as.simple_sparse_array(aperm(tmp, as.vector(
-    matrix(1:(d1 * 2), byrow = TRUE, ncol = 2))))
+  #Fast1 <- aperm(tmp, as.vector(matrix(1:(d1 * 2), byrow = TRUE, ncol = 2)))
+  Fast1 <- aperm(tmp, c(2 * (1:d1) - 1, 2 * (1:d1)))
   Fast <- if (prod(d)) {
     Matrix::Matrix(Fast1, nrow = prod(d))
   } else {
