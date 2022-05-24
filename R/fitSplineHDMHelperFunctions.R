@@ -202,7 +202,7 @@ A2.form <- function(l1,
   } else {
     W <- Matrix::Matrix(w, nrow = n[1])
   }
-  lRTen2 <- mapply( FUN = Rten2, rev(l2), rev(l1))
+  lRTen2 <- mapply(FUN = Rten2, rev(l2), rev(l1))
   tmp <- Reduce(Matrix::crossprod, x = lRTen2, init = W)
   tmp <- array(tmp, dim = as.vector(rbind(d, c1)))
   Fast1 <- aperm(tmp, c(2 * (1:d1) - 1, 2 * (1:d1)))
@@ -289,12 +289,11 @@ ZtZ <- function(Z,
 Xty <- function(X,
                 y,
                 w = NULL) {
-  d <- length(X)
-  n <- rev(sapply(X = X, FUN = nrow))
+  nRow <- nrow(tail(X, n = 1)[[1]])
   if (is.null(w)) {
-    Y <- Matrix::Matrix(y, nrow = n[1])
+    Y <- Matrix::Matrix(y, nrow = nRow)
   } else {
-    Y <- Matrix::Matrix(w * y, nrow = n[1])
+    Y <- Matrix::Matrix(w * y, nrow = nRow)
   }
   tmp <- Reduce(Matrix::crossprod, x = rev(X), init = Y)
   as.vector(tmp)
@@ -308,19 +307,15 @@ Xty <- function(X,
 Zty <- function(Z,
                 y,
                 w = NULL) {
-  d <- length(Z)
-  n <- rev(sapply(X = Z[[1]], FUN = nrow))
+  nRow <- nrow(tail(Z[[1]], n = 1)[[1]])
   if (is.null(w)) {
-    Y <- Matrix::Matrix(y, nrow = n[1])
+    Y <- Matrix::Matrix(y, nrow = nRow)
   } else {
-    Y <- Matrix::Matrix(w * y, nrow = n[1])
+    Y <- Matrix::Matrix(w * y, nrow = nRow)
   }
-  res <- NULL
-  for (i in 1:d) {
-    k <- length(Z[[i]])
-    tmp <- Reduce(Matrix::crossprod, x = rev(Z[[i]]), init = Y)
-    res <- c(res, as.vector(tmp))
-  }
+  res <- unlist(lapply(X = Z, FUN = function(z) {
+    as.vector(Reduce(Matrix::crossprod, x = rev(z), init = Y))
+  }), use.names = FALSE)
   return(res)
 }
 
