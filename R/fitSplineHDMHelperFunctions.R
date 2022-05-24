@@ -168,10 +168,8 @@ A1.form <- function(l,
   } else {
     W <- Matrix::Matrix(w, nrow = n[1])
   }
-  tmp <- RH(Matrix::t(Rten(l[[d]])), W)
-  for (i in (d - 1):1) {
-    tmp <- RH(Matrix::t(Rten(l[[i]])), tmp)
-  }
+  lRTen <- lapply(X = rev(l), FUN = Rten)
+  tmp <- Reduce(Matrix::crossprod, x = lRTen, init = W)
   tmp <- array(tmp, dim = rep(c, rep(2, d)))
   Fast1 <- aperm(tmp, c(2 * (1:d) - 1, 2 * (1:d)))
   Fast <- if (prod(c)) {
@@ -198,17 +196,15 @@ A2.form <- function(l1,
   }
   n <- rev(sapply(X = l1, FUN = nrow))
   d <- rev(sapply(X = l1, FUN = ncol))
-  c <- rev(sapply(X = l2, FUN = ncol))
+  c1 <- rev(sapply(X = l2, FUN = ncol))
   if (is.null(w)) {
     W <- Matrix::Matrix(1, nrow = n[1], ncol = n[2])
   } else {
     W <- Matrix::Matrix(w, nrow = n[1])
   }
-  tmp <- RH(Matrix::t(Rten2(l2[[d1]], l1[[d1]])), W)
-  for (i in (d1 - 1):1) {
-    tmp <- RH(Matrix::t(Rten2(l2[[i]], l1[[i]])), tmp)
-  }
-  tmp <- array(tmp, dim = as.vector(rbind(d, c)))
+  lRTen2 <- mapply( FUN = Rten2, rev(l2), rev(l1))
+  tmp <- Reduce(Matrix::crossprod, x = lRTen2, init = W)
+  tmp <- array(tmp, dim = as.vector(rbind(d, c1)))
   Fast1 <- aperm(tmp, c(2 * (1:d1) - 1, 2 * (1:d1)))
   Fast <- if (prod(d)) {
     Matrix::Matrix(Fast1, nrow = prod(d), sparse = TRUE)
@@ -300,10 +296,7 @@ Xty <- function(X,
   } else {
     Y <- Matrix::Matrix(w * y, nrow = n[1])
   }
-  tmp <- RH(Matrix::t(X[[d]]), Y)
-  for (i in (d - 1):1) {
-    tmp <- RH(Matrix::t(X[[i]]), tmp)
-  }
+  tmp <- Reduce(Matrix::crossprod, x = rev(X), init = Y)
   as.vector(tmp)
 }
 
@@ -325,10 +318,7 @@ Zty <- function(Z,
   res <- NULL
   for (i in 1:d) {
     k <- length(Z[[i]])
-    tmp <- RH(Matrix::t(Z[[i]][[k]]), Y)
-    for (j in (k - 1):1) {
-      tmp <- RH(Matrix::t(Z[[i]][[j]]), tmp)
-    }
+    tmp <- Reduce(Matrix::crossprod, x = rev(Z[[i]]), init = Y)
     res <- c(res, as.vector(tmp))
   }
   return(res)
