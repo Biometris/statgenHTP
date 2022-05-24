@@ -168,8 +168,8 @@ fitSplineHDM <- function(inDat,
   offset.f <- inDat[["offset"]]
   weights.f <- weights
   ## Set missing values and corresponding weights to 0.
-  nas            <- is.na(y)
-  y[nas]         <- 0
+  nas <- is.na(y)
+  y[nas] <- 0
   weights.f[nas] <- 0
   ## Construct matrices assigning plants to populations and genotypes
   ## Matrix to assign plants to populations
@@ -230,7 +230,7 @@ fitSplineHDM <- function(inDat,
   np.s <- np.e - np.comp + 1
   ## Construct precision matrix
   ## Smooth main effect: one per population
-  g <- lapply(X = 1:n.pop, FUN = function(x) MM.pop$d)
+  g <- rep(x = list(MM.pop$d), times = n.pop)
   if (isTRUE(dif.var$geno)) {
     ## Random intercepts and slopes (genotype).
     for (i in 1:n.pop) {
@@ -322,15 +322,19 @@ fitSplineHDM <- function(inDat,
     V <- construct.block(mat$XtX., mat$XtZ., mat$ZtX., mat$ZtZ.) # Does not change from iteration to iteration
     ## V is an object of class Matrix, transform it to spam.
     V <- spam::as.spam.dgCMatrix(V)
+    # number of coef for each random component.
+    g_ext <- lapply(X = g, FUN = function(x) { c(rep(0, np[1]), x) })
+    lG_ext <- lapply(X = g_ext, FUN = spam::diag.spam)
+    lP <- append(list(V), lG_ext)
+    ADcholC <- LMMsolver:::ADchol(lP)
+    EDmax <- sapply(g, function(x) sum(abs(x) > 1.0e-10))
     ## First iteration (cholesky decomposition).
     Ginv <- vector(length = length(g[[1]]))
     for (i in 1:length(g)) {
       Ginv <- Ginv + g[[i]]
     }
     G <- 1 / Ginv
-    D <- spam::bdiag.spam(spam::diag.spam(rep(x = 0L, times = np[1]),
-                                          nrow = np[1], ncol = np[1]),
-                          spam::diag.spam(Ginv))
+    D <- spam::diag.spam(c(rep(x = 0, times = np[1]), Ginv))
     cholHn <- chol(V + D) # The sparsness structure does not change (Ginv is diagonal)
     for (it in 1:maxit) {
       Ginv <- vector(length = length(g[[1]]))
@@ -338,24 +342,21 @@ fitSplineHDM <- function(inDat,
         Ginv <- Ginv + (1 / la[i + 1]) * g[[i]]
       }
       G <- 1 / Ginv
-      D <- spam::bdiag.spam(spam::diag.spam(rep(x = 0L, times = np[1]),
-                                            nrow = np[1], ncol = np[1]),
-                            spam::diag.spam(Ginv))
+      D <- spam::diag.spam(c(rep(x = 0, times = np[1]), Ginv))
       Hn <- (1 / la[1]) * V + D
       cholHn <- update(cholHn, Hn)
       b <- spam::backsolve(cholHn,
                            spam::forwardsolve(cholHn, (1 / la[1]) * mat$u))
-      cholHn.inv <- spam::forwardsolve.spam(cholHn,
-                                            spam::diag.spam(rep(1L, nrow(cholHn))))
-      Hninv.diag <- colSums(cholHn.inv * cholHn.inv)
-      aux <- G - Hninv.diag[-(1:np[1])]
+      theta <- 1 / la
+      EDc <- theta * LMMsolver:::dlogdet(ADcholC, theta)
+      ED <- EDmax - EDc[-1]
       ## Fixed and random coefficients.
       b.fixed  <- b[1:np[1]]
       b.random <- b[-(1:np[1])]
       ## Variance components as in SOP.
       ssv <- ed <- tau <- vector(mode = "list", length = length(g))
       for (i in 1:length(g)) {
-        ed[[i]] <- (1 / la[i + 1]) * sum(aux * g[[i]])
+        ed[[i]] = ED[i]
         ed[[i]] <- ifelse(ed[[i]] <= 1e-10, 1e-10, ed[[i]])
         ssv[[i]] <- sum(b.random ^ 2 * g[[i]])
         tau[[i]] <- ssv[[i]] / ed[[i]]
