@@ -162,7 +162,7 @@ A1.form <- function(l,
                     w = NULL) {
   d <- length(l)
   n <- rev(sapply(X = l, FUN = nrow))
-  c <- rev(sapply(X = l, FUN = ncol))
+  c1 <- rev(sapply(X = l, FUN = ncol))
   if (is.null(w)) {
     W <- Matrix::Matrix(1, nrow = n[1], ncol = n[2])
   } else {
@@ -170,10 +170,10 @@ A1.form <- function(l,
   }
   lRTen <- lapply(X = rev(l), FUN = Rten)
   tmp <- Reduce(Matrix::crossprod, x = lRTen, init = W)
-  tmp <- array(tmp, dim = rep(c, rep(2, d)))
+  tmp <- array(tmp, dim = rep(c1, rep(2, d)))
   Fast1 <- aperm(tmp, c(2 * (1:d) - 1, 2 * (1:d)))
-  Fast <- if (prod(c)) {
-    Matrix::Matrix(Fast1, nrow = prod(c), sparse = TRUE)
+  Fast <- if (prod(c1)) {
+    Matrix::Matrix(Fast1, nrow = prod(c1), sparse = TRUE)
   } else {
     Fast1
   }
@@ -191,7 +191,7 @@ A2.form <- function(l1,
                     w = NULL) {
   d1 <- length(l1)
   d2 <- length(l2)
-  if (!(d1 == d2)) {
+  if (d1 != d2) {
     stop("l1 and l2 should have the same dimension")
   }
   n <- rev(sapply(X = l1, FUN = nrow))
@@ -248,9 +248,9 @@ XtZ <- function(X,
 ZtZ <- function(Z,
                 w = NULL) {
   d <- length(Z)
-  upper <- list()
+  upper <- vector(mode = "list", length = d)
   for (i in 1:d) {
-    upper[[i]] <- list()
+    upper[[i]] <- vector(mode = "list", length = d)
     upper[[i]][[i]] <- A1.form(Z[[i]], w)
   }
   ## Obtain the elements of the matrix.
@@ -262,20 +262,16 @@ ZtZ <- function(Z,
     }
   }
   ## Create the matrix.
-  res <- NULL
-  for (i in 1:d) {
-    if (i == 1) {
-      res <- do.call("cbind", upper[[1]])
-    } else {
-      tmp <- do.call("cbind", upper[[i]])
-      for (j in (i - 1):1) {
-        if (length(upper[[j]][[i]])) {
-          tmp <- cbind(Matrix::t(upper[[j]][[i]]), tmp)
-        }
+  res <- Reduce(cbind, x = upper[[1]])
+  for (i in 2:d) {
+    tmp <- Reduce(cbind, x = upper[[i]])
+    for (j in (i - 1):1) {
+      if (length(upper[[j]][[i]])) {
+        tmp <- cbind(Matrix::t(upper[[j]][[i]]), tmp)
       }
-      if (nrow(tmp)) {
-        res <- rbind(res, tmp)
-      }
+    }
+    if (nrow(tmp)) {
+      res <- rbind(res, tmp)
     }
   }
   return(res)
