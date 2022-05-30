@@ -166,16 +166,18 @@ A1.form <- function(l,
   if (is.null(w)) {
     W <- Matrix::Matrix(1, nrow = n[1], ncol = n[2])
   } else {
-    W <- Matrix::Matrix(w, nrow = n[1])
+    dim(w) <- n
+    W <- as(w, "dgeMatrix")
   }
   lRTen <- lapply(X = rev(l), FUN = Rten)
   tmp <- Reduce(Matrix::crossprod, x = lRTen, init = W)
   tmp <- array(tmp, dim = rep(c1, rep(2, d)))
-  Fast1 <- aperm(tmp, c(2 * (1:d) - 1, 2 * (1:d)))
   Fast <- if (prod(c1)) {
-    Matrix::Matrix(Fast1, nrow = prod(c1), sparse = TRUE)
+    bdiag_m(lapply(X = seq_len(dim(tmp)[3]), FUN = function(i) {
+      tmp[, , i, i]
+    }))
   } else {
-    Fast1
+    aperm(tmp, c(2 * (1:d) - 1, 2 * (1:d)))
   }
   return(Fast)
 }
@@ -200,7 +202,8 @@ A2.form <- function(l1,
   if (is.null(w)) {
     W <- Matrix::Matrix(1, nrow = n[1], ncol = n[2])
   } else {
-    W <- Matrix::Matrix(w, nrow = n[1])
+    dim(w) <- n
+    W <- as(w, "dgeMatrix")
   }
   lRTen2 <- mapply(FUN = Rten2, rev(l2), rev(l1))
   tmp <- Reduce(Matrix::crossprod, x = lRTen2, init = W)
@@ -209,7 +212,7 @@ A2.form <- function(l1,
   Fast <- if (prod(d)) {
     Matrix::Matrix(Fast1, nrow = prod(d), sparse = TRUE)
   } else {
-    Fast1
+    aperm(tmp, c(2 * (1:d1) - 1, 2 * (1:d1)))
   }
   return(Fast)
 }
