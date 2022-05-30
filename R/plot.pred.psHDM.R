@@ -1,5 +1,4 @@
 # Function to PLOT the P-spline Hierarchical Curve Data Model -------------
-# Aim: xxxx
 # Aim ---------------------------------------------------------------------
 # This plot function provides six plots:
 # Population-specific growth curves
@@ -183,15 +182,18 @@ list.to.df <- function(object) {
   if(!inherits(object, "pred.psHDM")) {
     stop("The object class is not correct")
   }
+  
+  list.to.vec <- function(x) {c(do.call("cbind", lapply(x, function(i) as.matrix(i))))}
+  
   res <- list()
   # Population-specific growth curves
   if(!is.null(object$f_pop)) {
-    df.pop.tra <- data.frame(eta_pop = c(object$f_pop$fp_pop),
-                             eta_pop_deriv1 = c(object$f_pop$fp_pop_deriv1),
-                             eta_pop_deriv2 = c(object$f_pop$fp_pop_deriv2),
-                             se_pop = c(object$se.f_pop$se.fp_pop),
-                             se_pop_deriv1 = c(object$se.f_pop$se.fp_pop_deriv1),
-                             se_pop_deriv2 = c(object$se.f_pop$se.fp_pop_deriv2),
+    df.pop.tra <- data.frame(eta_pop = c(object$f_pop$f),
+                             eta_pop_deriv1 = c(object$f_pop$f.d1),
+                             eta_pop_deriv2 = c(object$f_pop$f.d2),
+                             se_pop = c(object$se.f_pop$se.f),
+                             se_pop_deriv1 = c(object$se.f_pop$se.f.d1),
+                             se_pop_deriv2 = c(object$se.f_pop$se.f.d2),
                              pop = rep(object$l.pop, each = length(object$newtimes)),
                              timepoint = rep(object$newtimes, length(object$l.pop)))
     res$pop.tra   <- df.pop.tra
@@ -199,18 +201,18 @@ list.to.df <- function(object) {
 
   # Genotypic-specific growth curves and deviations
   if(!is.null(object$f_geno)) {
-    df.geno.tra <- data.frame(eta_geno = c(do.call("cbind", object$f_geno$fp_geno)),
-                              eta_geno_deriv1 = c(do.call("cbind", object$f_geno$fp_geno_deriv1)),
-                              eta_geno_deriv2 = c(do.call("cbind", object$f_geno$fp_geno_deriv2)),
-                              se_geno = c(do.call("cbind", object$se.f_geno$se.fp_geno)),
-                              se_geno_deriv1 = c(do.call("cbind", object$se.f_geno$se.fp_geno_deriv1)),
-                              se_geno_deriv2 = c(do.call("cbind", object$se.f_geno$se.fp_geno_deriv2)),
-                              eta_geno_dev = c(do.call("cbind", object$f_geno_dev$fp_geno_dev)),
-                              eta_geno_dev_deriv1 = c(do.call("cbind", object$f_geno_dev$fp_geno_dev_deriv1)),
-                              eta_geno_deriv2 = c(do.call("cbind", object$f_geno_dev$fp_geno_dev_deriv2)),
-                              se_geno_dev = c(do.call("cbind", object$se.f_geno_dev$se.fp_geno_dev)),
-                              se_geno_dev_deriv1 = c(do.call("cbind", object$se.f_geno_dev$se.fp_geno_dev_deriv1)),
-                              se_geno_deriv2 = c(do.call("cbind", object$se.f_geno_dev$se.fp_geno_dev_deriv2)),
+    df.geno.tra <- data.frame(eta_geno = list.to.vec(object$f_geno$f),
+                              eta_geno_deriv1 = list.to.vec(object$f_geno$f.d1),
+                              eta_geno_deriv2 = list.to.vec(object$f_geno$f.d2),
+                              se_geno = list.to.vec(object$se.f_geno$se.f),
+                              se_geno_deriv1 = list.to.vec(object$se.f_geno$se.f.d1),
+                              se_geno_deriv2 = list.to.vec(object$se.f_geno$se.f.d2),
+                              eta_geno_dev = list.to.vec(object$f_geno_dev$f),
+                              eta_geno_dev_deriv1 = list.to.vec(object$f_geno_dev$f.d1),
+                              eta_geno_dev_deriv2 = list.to.vec(object$f_geno_dev$f.d2),
+                              se_geno_dev = list.to.vec(object$se.f_geno_dev$se.f),
+                              se_geno_dev_deriv1 = list.to.vec(object$se.f_geno_dev$se.f.d1),
+                              se_geno_dev_deriv2 = list.to.vec(object$se.f_geno_dev$se.f.d2),
                               pop = rep(object$l.pop, object$n.geno_p_pop*length(object$newtimes)),
                               geno = rep(object$l.geno, each = length(object$newtimes)),
                               timepoint = rep(object$newtimes, length(object$l.geno)))
@@ -219,12 +221,12 @@ list.to.df <- function(object) {
 
   # Plant-specific growth curves and deviations
   if(!is.null(object$f_plant)) {
-    df.plant.tra <- data.frame(eta_plant = c(do.call("cbind", object$f_plant$fp_plant)),
-                               eta_plant_deriv1 = c(do.call("cbind", object$f_plant$fp_plant_deriv1)),
-                               eta_plant_deriv2 = c(do.call("cbind", object$f_plant$fp_plant_deriv2)),
-                               eta_plant_dev = c(do.call("cbind", object$f_plant_dev$fp_plant_dev)),
-                               eta_plant_dev_deriv1 = c(do.call("cbind", object$f_plant_dev$fp_plant_dev_deriv1)),
-                               eta_plant_dev_deriv2 = c(do.call("cbind", object$f_plant_dev$fp_plant_dev_deriv2)),
+    df.plant.tra <- data.frame(eta_plant = list.to.vec(object$f_plant$f),
+                               eta_plant_deriv1 = list.to.vec(object$f_plant$f.d1),
+                               eta_plant_deriv2 = list.to.vec(object$f_plant$f.d2),
+                               eta_plant_dev = list.to.vec(object$f_plant_dev$f),
+                               eta_plant_dev_deriv1 = list.to.vec(object$f_plant_dev$f.d1),
+                               eta_plant_dev_deriv2 = list.to.vec(object$f_plant_dev$f.d2),
                                pop = rep(object$l.pop, object$n.plants_p_pop*length(object$newtimes)),
                                geno = rep(object$l.geno, object$n.plants_p_geno*length(object$newtimes)),
                                plant = rep(object$l.plant, each = length(object$newtimes)),
