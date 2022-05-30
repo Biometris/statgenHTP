@@ -570,3 +570,17 @@ countValidPlot <- function(TP,
   })
 }
 
+#' @noRd
+#' @keywords internal
+bdiag_m <- function(lmat) {
+  ## Copyright (C) 2016 Martin Maechler, ETH Zurich
+  N <- length(lmat)
+  k <- dim(lmat[[1]])[1]
+  M <- as.integer(N * k)
+  ## result: an   M x M  matrix
+  new("dgCMatrix", Dim = c(M, M),
+      ## 'i :' maybe there's a faster way (w/o matrix indexing), but elegant?
+      i = as.vector(matrix(0L:(M - 1L), nrow = k)[, rep(seq_len(N), each = k)]),
+      p = k * 0L:M,
+      x = as.double(unlist(lmat, recursive = FALSE, use.names = FALSE)))
+}
