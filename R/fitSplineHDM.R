@@ -1,73 +1,146 @@
-##..........................................................
-## R-functions required to fit, predict and plot the P-spline Hierarchical Curve Data Model
-## used in the second stage of the two-stage approach described in the paper
-##
-## "A two-stage approach for the spatio-temporal analysis of high-throughput phenotyping data"
-##
-## Authors: Diana M. Pérez-Valencia, María Xosé Rodríguez-Álvarez, Martin P. Boer, Lukas Kronenberg,
-##          Llorenç Cabrera-Bosquet, Andreas Hund, Emilie J. Millet and Fred A. van Eeuwijk
-##
-## Contact: Diana M. Pérez-Valencia - dperez@bcamath.org
-##..........................................................
-
-## To navigate more easily through the code when using RStudio, we recommend to collapse it: Alt+o (Cmd+Alt+o on the Mac)
-
-# Function to FIT the P-spline Hierarchical Curve Data Model --------------
-# Input Arguments ---------------------------------------------------------
-# response:     a character string with the name of the variable that contains the response variable of interest.
-# time:         a character string with the name of the variable that contains the timepoints at which the response is measured for each plant/plot/individual.
-# pop:          a character string with the name of the variable that contains the populations to which each genotype/variety belongs. This variable must be a factor in the data frame.
-# geno:         a character string with the name of the variable that contains the genotypes/varieties to which each plant/plot/individual belongs. This variable must be a factor in the data frame.
-# plant:        a character string with the name of the variable that contains the plants/plots/individuals. This variable must be a factor in the data frame.
-# weights:      a character string with the name of the variable that contains the weights to be used in the fitting process. By default, the weights are considered to be one. The default is NULL.
-# data:         a data frame containing all needed variables. The data must be complete. That is, all plants must be measured at all timepoints considered. If not, missing data should be included.
-# dif.var:      a list that controls the variances for intercepts/slopes and smooth effect for genotypes (separately for each population) and plants (separately for each genotype).  The default is FALSE.
-# smooth.pop:   a list specifying the P-Spline at the population level (nseg: number of segments; bdeg: degree of the B-spline basis; pord: penalty order).
-# smooth.geno:  a list specifying the P-Spline model at the genotype/variety level.
-# smooth.plant: a list specifying the P-Spline model at the plant/plot/individual belongs.
-# offset:       an optional numerical vector containing an a priori known component to be included in the linear predictor during fitting. The default is NULL.
-# family:       an object of class family specifying the distribution and link function.  The default is gaussian().
-# maxit:        an optional value that controls the maximum number of iterations of the algorithm.  The default is 200.
-# trace:        an optional value that controls the function trace.  The default is TRUE.
-# thr:          an optional value that controls the convergence threshold of the algorithm. The default is 1.e-03.
-
-# Output Arguments --------------------------------------------------------
-# y:               a list with the original response for plants in each genotype.
-# time:            a numeric vector with the timepoint.
-# l.geno:          a vector with the names of the genotypes/varieties.
-# l.pop:           a vector with the names of the populations.
-# l.plant:         a vector with the names of the plants/plots/individuals.
-# n.plants_p_pop:  a numeric vector with the number of plants/plots/individuals per population.
-# n.geno_p_pop:    a numeric vector with the number of genotypes/varieties per population.
-# n.plants_p_geno: a numeric vector with the number of plants/plots/individuals per genotype/variety.
-# MM:              a list with the design matrices at plant, genotype and population levels.
-# ed:              a numeric vector with the estimated effective dimension (or effective degrees of freedom) for each random component of the model (intercept, slope and non-linear trend) at each level of the hierarchy (population, genotype and plant)
-# tot_ed:          a numeric value with the sum of the effective dimensions for all components of the model.
-# vc:              a numeric vector with the (REML) variance component estimates for each random component of the model (intercept, slope and non-linear trend) at each level of the hierarchy (population, genotype and plant)
-# phi:             a numeric value with the error variance estimate.
-# coeff:           a numeric vector with the estimated fixed and random effect coefficients.
-# eta_pop:         a list with the estimated population trajectories (eta_pop), and first (eta_pop_deriv1) and second (eta_pop_deriv2) order derivatives. Each element of the list is a numeric matrix where each column corresponds to one population.
-# eta_geno:        a list with the estimated genotype/variety trajectories (eta_geno), and first (eta_geno_deriv1) and second (eta_geno_deriv2) order derivatives. Each element of the list is a list that corresponds to one population and is a matrix with as many columns as genotypes/varieties per population.
-# eta_geno_dev:    a list with the estimated genotype/variety deviations (eta_geno_dev), and first (eta_geno_dev_deriv1) and second (eta_geno_dev_deriv2) order derivatives. Each element of the list is a list that corresponds to one population and is a matrix with as many columns as genotypes/varieties per population.
-# eta_plant:       a list with the estimated plant/plot/individual trajectories (eta_plant), and first (eta_plant_deriv1) and second (eta_plant_deriv2) order derivatives. Each element of the list is a list that corresponds to one genotype/variety and is a matrix with as many columns as plants per genotype.
-# eta_plant_dev:   a list with the estimated plant/plot/individual deviations (eta_plant_dev), and first (eta_plant_dev_deriv1) and second (eta_plant_dev_deriv2) order derivatives. Each element of the list is a list that corresponds to one genotype/variety and is a matrix with as many columns as plants per genotype.
-# deviance:        the (REML) deviance at convergence.
-# convergence:     a logical value indicating whether the algorithm managed to converge before the given number of iterations.
-# dim:             a numeric vector with the (model) dimension of each model component (fixed and/or random) at each level of the hierarchy (population, genotype, and plant). These values correspond to the number of parameters to be estimated.
-# family:          an object of class family specifying the distribution and link function.
-# time_proc:       the function trace (in seconds)
-# Vp:              the variance-covariance matrix for the coefficients.
-# smooth:          a list with the information about number of segments (nseg), degree of the B-spline basis (bdeg) and penalty order (pord) for the three levels of the hierarchy.
-
 # Function ----------------------------------------------------------------
 
 #' fitSplineHDM
 #'
-#' fitSplineHDM
+#' Fit the P-spline Hierarchical Curve Data Model used in the second stage of
+#' the two-stage approach proposed by Pérez-Valencia et al. (2022). This model
+#' assumes a three-level hierarchical structure in the data, with plants nested
+#' in genotypes, genotypes nested in populations. The input for this function
+#' is the spatially corrected data, as obtained from the first stage of the
+#' approach (see \code{\link{fitModels} and #' \code{\link{getCorrected}}).
+#' The number of segments is chosen by the user, as well as the B-spline degree,
+#' and the penalty order for the three-levels of the hierarchy. The user can
+#' also decide if different variances for random effects at genotype (separately
+#' for each population) and plant (separately for each genotype) levels are
+#' desired. The function outputs are fitted values (time series of trajectories
+#' and deviations) and their first and second derivatives for the three-levels
+#' of the hierarchy. The outputs can then be used to estimate relevant parameters
+#' from the curves for further analysis (see \code{\link{estimateSplineParameters}}).
 #'
 #' @param inDat A data.frame with corrected spatial data.
 #' @param trait A character string indicating the trait for which the spline
 #' should be fitted.
+#' @param time A character string indicating the timepoints at which the trait
+#' is measured for each plant.
+#' @param pop A character string indicating the the populations to which each
+#' genotype/variety belongs. This variable must be a factor in the data frame.
+#' @param geno A character string indicating the populations to which each
+#' genotype/variety belongs. This variable must be a factor in the data frame.
+#' @param plant A character string indicating the genotypes/varieties to which
+#' each plant/plot/individual belongs. This variable must be a factor in the
+#' data frame.
+#' @param dif.var Should different variances for random effects at genotype
+#' (separately for each population) and plant level (separately for each
+#' genotype) be considered?.
+#' @param smooth.pop A list specifying the P-Spline model at the population
+#' level (nseg: number of segments; bdeg: degree of the B-spline basis; pord:
+#' penalty order).
+#' @param smooth.geno A list specifying the P-Spline model at the genotype
+#' level.
+#' @param smooth.plant A list specifying the P-Spline model at the plant level.
+#' @param offset An optional numerical vector containing an a priori known
+#' component to be included in the linear predictor during fitting. The default
+#' is \code{NULL}.
+#' @param weights A character string indicating the weights to be used in the
+#' fitting process (for error propagation from first stage to second stage).
+#' By default, the weights are considered to be one. The default is \code{NULL}.
+#' @param family An object of class \code{family} specifying the distribution
+#' and link function.  The default is \code{gaussian()}.
+#' @param maxit An optional value that controls the maximum number of iterations
+#' of the algorithm.  The default is 200.
+#' @param trace An optional value that controls the function trace.
+#' The default is \code{TRUE}.
+#' @param thr An optional value that controls the convergence threshold of the
+#' algorithm. The default is 1.e-03.
+#'
+#' @return An object of class \code{psHDM}, a list with the following outputs:
+#' \code{time}, a numeric vector with the timepoints.
+#' \code{l.geno}, a vector with the names of the genotypes.
+#' \code{l.pop}, a vector with the names of the populations
+#' \code{l.plant}, a vector with the names of the plants
+#' \code{n.plants_p_pop}, a numeric vector with the number of plants per
+#' population.
+#' \code{n.geno_p_pop}, a numeric vector with the number of genotypes per
+#' population.
+#' \code{n.plants_p_geno}, a numeric vector with the number of plants per
+#' genotype.
+#' \code{MM}, a list with the design matrices at plant, genotype and
+#' population levels.
+#' \code{ed}, a numeric vector with the estimated effective dimension
+#' (or effective degrees of freedom) for each random component of the
+#' model (intercept, slope and non-linear trend) at each level of the
+#' hierarchy (population, genotype and plant)
+#' \code{tot_ed}, a numeric value with the sum of the effective
+#' dimensions for all components of the model.
+#' \code{vc}, a numeric vector with the (REML) variance component
+#' estimates for each random component of the model (intercept,
+#' slope and non-linear trend) at each level of the hierarchy
+#' (population, genotype and plant)
+#' \code{phi}, a numeric value with the error variance estimate.
+#' \code{coeff}, a numeric vector with the estimated fixed and random
+#' effect coefficients.
+#' \code{pop.level}, a data.frame with the estimated population trajectories
+#' and first and second order derivatives.
+#' \code{geno.level}, a data.frame with the estimated genotype-specific
+#' deviations and trajectories, and their respective first and second
+#' order derivatives.
+#' \code{plant.level}, a data.frame with the estimated plant-specific
+#' deviations and trajectories, and their respective first and second
+#' order derivatives.
+#' \code{deviance}, the (REML) deviance at convergence.
+#' \code{convergence}, a logical value indicating whether the algorithm
+#' managed to converge before the given number of iterations.
+#' \code{dim}, a numeric vector with the (model) dimension of each
+#' model component (fixed and/or random) at each level of the
+#' hierarchy (population, genotype, and plant).
+#' These values correspond to the number of parameters to be estimated.
+#' \code{family}, an object of class family specifying the distribution
+#' and link function.
+#' \code{Vp}, the variance-covariance matrix for the coefficients.
+#' \code{smooth}, a list with the information about number of segments
+#' (nseg), degree of the B-spline basis (bdeg) and penalty order (pord)
+#' used for the three levels of the hierarchy.
+#'
+#' @examples
+#' ## The data from the Phenovator platform have been corrected for spatial
+#' ## trends and outliers for single observations have been removed.
+#' head(spatCorrectedArch)
+#' ggplot(data = spatCorrectedArch, aes(x= timeNumber, y = LeafArea_corr, group = plotId))+
+#'  geom_line() + facet_grid(~geno.decomp)
+#'
+#' ## We need to specify the genotype-by-treatment interaction
+#' ## Treatment: water regime (WW, WD)
+#' spatCorrectedArch$treat <- factor(spatCorrectedArch$geno.decomp,
+#'                                   labels = substr(levels(spatCorrectedArch$geno.decomp), 1, 2))
+#' spatCorrectedArch$genobytreat <- paste0(spatCorrectedArch$genotype,"_",spatCorrectedArch$treat)
+#'
+#' ## Fit P-Splines Hierarchical Curve Data Model
+#' fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
+#'                           trait = "LeafArea_corr",
+#'                           time = "timeNumber",
+#'                           pop = "geno.decomp",
+#'                           geno = "genobytreat",
+#'                           plant = "plotId",
+#'                           dif.var = list(geno = FALSE, plant = FALSE),
+#'                           smooth.pop = list(nseg = 4, bdeg = 3, pord = 2),
+#'                           smooth.geno = list(nseg = 4, bdeg = 3, pord = 2),
+#'                           smooth.plant = list(nseg = 4, bdeg = 3, pord = 2),
+#'                           weights = "wt")
+#'
+#' ## Visualize the data.frames with predicted values at the three levels of the hierarchy.
+#' ## Population level
+#'   head(fit.psHDM$pop.level)
+#' ## Genotype level
+#'   head(fit.psHDM$geno.level)
+#' ## Plant level
+#'   head(fit.psHDM$plant.level)
+#'
+#' ## Plot the P-Spline predictions at the three levels of the hierarchy
+#' ## Plots at plant level for some genotypes (as illustration)
+#' plot(object = fit.psHDM,
+#'     geno.sub = c("GenoA14_WD","GenoA51_WD","GenoB11_WW","GenoB02_WD","GenoB02_WW"),
+#'     my.theme = my.theme())#'
+#'
 #'
 #' @export
 fitSplineHDM <- function(inDat,
@@ -427,8 +500,7 @@ fitSplineHDM <- function(inDat,
   preds <- predict.psHDM(res,
                          se = list(pop = FALSE, geno = FALSE, plant = FALSE))
   ## Add predictions to results.
-  res <- c(res, preds[c("f_pop", "f_geno_dev", "f_geno",
-                        "f_plant_dev", "f_plant")])
+  res <- c(res, preds[c("pop.level", "geno.level", "plant.level")])
   class(res) <- c("psHDM", "list")
   return(res)
 }
