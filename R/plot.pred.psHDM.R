@@ -59,22 +59,20 @@
 #'     geno.sub = c("GenoA14_WD","GenoA51_WD","GenoB11_WW","GenoB02_WD","GenoB02_WW"),
 #'     my.theme = my.theme())#'
 #'
-#' plot.pred.psHDM
-#'
 #' @export
-plot.pred.psHDM <- function(object,
-                            geno.sub,
-                            geno.sub.names = NULL,
-                            geno.sub.order = NULL,
-                            xlab = NULL,
-                            ylab = NULL,
-                            my.theme = my.theme(),
-                            ask = TRUE,
-                            global.main = list(pop.tra = NULL,
-                                               geno.tra = NULL,
-                                               geno.tra.deriv1 = NULL,
-                                               geno.dev = NULL,
-                                               plant.tra = NULL)){
+plot.psHDM <- function(object,
+                       geno.sub,
+                       geno.sub.names = NULL,
+                       geno.sub.order = NULL,
+                       xlab = NULL,
+                       ylab = NULL,
+                       my.theme = my.theme(),
+                       ask = TRUE,
+                       global.main = list(pop.tra = NULL,
+                                          geno.tra = NULL,
+                                          geno.tra.deriv1 = NULL,
+                                          geno.dev = NULL,
+                                          plant.tra = NULL)){
 
   if(!inherits(object, "psHDM")) {
     stop("The object class is not correct")
