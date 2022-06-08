@@ -12,6 +12,68 @@
   ...
 )
 }
-\description{
+\arguments{
+\item{object}{An object of class "psHDM" as obtained after fitting
+(\code{\link{fitSplineHDM}}) the P-spline Hierarchical Curve Data Model}
+
+\item{newtimes}{A numeric vector with timepoints at which predictions are
+desired}
+
+\item{pred}{A list that controls the hierarchical levels at which
+predictions are desired (population/genotypes/plants).  The default is
+\code{TRUE}.}
+
+\item{se}{A list that controls the hierarchical levels at which standard
+errors are desired (population/genotypes/plants).  The default is
+\code{TRUE} except at the plant level.}
+
+\item{...}{Not used.}
+}
+\value{
+An object of class \code{psHDM}, a list with the following outputs:
 predict.psHDM
+\code{newtimes} A numeric vector with the timepoints at which predictions
+and/or standard errors have been obtained.
+\code{pop.level} A data.frame with the estimated population trajectories
+and first and second order derivatives, and if required their respective
+standard errors, at the \code{newtimes}.
+\code{geno.level} A data.frame with the estimated genotype-specific
+deviations and trajectories and their respective first and second order
+derivatives, and if required their respective standard errors,
+at the \code{newtimes}.
+\code{plant.level} A data.frame with the estimated plant-specific
+deviations and trajectories and their respective first and second order
+derivatives, and if required their respective standard errors,
+at the \code{newtimes}.
+\code{plant.obs} A data.frame with the raw data at the original timepoints.
+
+#' @examples
+\subsection{Predict the P-Splines Hierarchical Curve Data Model in a dense grid}{
+}
+
+\subsection{with standard errors at the population and genotype levels}{
+
+pred.psHDM <- predict.psHDM(object = fit.psHDM,
+newtimes = seq(min(fit.psHDM$time),
+max(fit.psHDM$time), length = 100),
+pred = list(pop = TRUE, geno = TRUE, plant = TRUE),
+se = list(pop = TRUE, geno = TRUE, plant = FALSE))
+}
+
+\subsection{Plot the P-Spline predictions at the three levels of the hierarchy}{
+}
+
+\subsection{Plots at plant level for some genotypes (as illustration)}{
+
+plot(object = pred.psHDM,
+geno.sub = c("GenoA14_WD","GenoA51_WD","GenoB11_WW","GenoB02_WD","GenoB02_WW"),
+my.theme = my.theme())
+}
+}
+\description{
+Function that predicts the P-spline Hierarchical Curve Data Model (see
+\code{\link{fitSplineHDM}}) on a dense grid. It provides standard errors
+for curves at each level of the hierarchy. User has to be aware that
+standard errors at the plant level demand large memory. We suggest set
+that option at the \code{FALSE} level
 }
