@@ -57,7 +57,7 @@
 #' ## Plots at plant level for some genotypes (as illustration)
 #' plot(object = fit.psHDM,
 #'     geno.sub = c("GenoA14_WD","GenoA51_WD","GenoB11_WW","GenoB02_WD","GenoB02_WW"),
-#'     my.theme = my.theme())#'
+#'     my.theme = my.theme())
 #'
 #' @export
 plot.psHDM <- function(object,
