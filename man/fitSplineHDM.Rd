@@ -28,7 +28,156 @@ fitSplineHDM(
 
 \item{trait}{A character string indicating the trait for which the spline
 should be fitted.}
+
+\item{time}{A character string indicating the timepoints at which the trait
+is measured for each plant.}
+
+\item{pop}{A character string indicating the the populations to which each
+genotype/variety belongs. This variable must be a factor in the data frame.}
+
+\item{geno}{A character string indicating the populations to which each
+genotype/variety belongs. This variable must be a factor in the data frame.}
+
+\item{plant}{A character string indicating the genotypes/varieties to which
+each plant/plot/individual belongs. This variable must be a factor in the
+data frame.}
+
+\item{dif.var}{Should different variances for random effects at genotype
+(separately for each population) and plant level (separately for each
+genotype) be considered?.}
+
+\item{smooth.pop}{A list specifying the P-Spline model at the population
+level (nseg: number of segments; bdeg: degree of the B-spline basis; pord:
+penalty order).}
+
+\item{smooth.geno}{A list specifying the P-Spline model at the genotype
+level.}
+
+\item{smooth.plant}{A list specifying the P-Spline model at the plant level.}
+
+\item{offset}{An optional numerical vector containing an a priori known
+component to be included in the linear predictor during fitting. The default
+is \code{NULL}.}
+
+\item{weights}{A character string indicating the weights to be used in the
+fitting process (for error propagation from first stage to second stage).
+By default, the weights are considered to be one. The default is \code{NULL}.}
+
+\item{family}{An object of class \code{family} specifying the distribution
+and link function.  The default is \code{gaussian()}.}
+
+\item{maxit}{An optional value that controls the maximum number of iterations
+of the algorithm.  The default is 200.}
+
+\item{trace}{An optional value that controls the function trace.
+The default is \code{TRUE}.}
+
+\item{thr}{An optional value that controls the convergence threshold of the
+algorithm. The default is 1.e-03.}
+}
+\value{
+An object of class \code{psHDM}, a list with the following outputs:
+\code{time}, a numeric vector with the timepoints.
+\code{l.geno}, a vector with the names of the genotypes.
+\code{l.pop}, a vector with the names of the populations
+\code{l.plant}, a vector with the names of the plants
+\code{n.plants_p_pop}, a numeric vector with the number of plants per
+population.
+\code{n.geno_p_pop}, a numeric vector with the number of genotypes per
+population.
+\code{n.plants_p_geno}, a numeric vector with the number of plants per
+genotype.
+\code{MM}, a list with the design matrices at plant, genotype and
+population levels.
+\code{ed}, a numeric vector with the estimated effective dimension
+(or effective degrees of freedom) for each random component of the
+model (intercept, slope and non-linear trend) at each level of the
+hierarchy (population, genotype and plant)
+\code{tot_ed}, a numeric value with the sum of the effective
+dimensions for all components of the model.
+\code{vc}, a numeric vector with the (REML) variance component
+estimates for each random component of the model (intercept,
+slope and non-linear trend) at each level of the hierarchy
+(population, genotype and plant)
+\code{phi}, a numeric value with the error variance estimate.
+\code{coeff}, a numeric vector with the estimated fixed and random
+effect coefficients.
+\code{pop.level}, a data.frame with the estimated population trajectories
+and first and second order derivatives.
+\code{geno.level}, a data.frame with the estimated genotype-specific
+deviations and trajectories, and their respective first and second
+order derivatives.
+\code{plant.level}, a data.frame with the estimated plant-specific
+deviations and trajectories, and their respective first and second
+order derivatives.
+\code{deviance}, the (REML) deviance at convergence.
+\code{convergence}, a logical value indicating whether the algorithm
+managed to converge before the given number of iterations.
+\code{dim}, a numeric vector with the (model) dimension of each
+model component (fixed and/or random) at each level of the
+hierarchy (population, genotype, and plant).
+These values correspond to the number of parameters to be estimated.
+\code{family}, an object of class family specifying the distribution
+and link function.
+\code{Vp}, the variance-covariance matrix for the coefficients.
+\code{smooth}, a list with the information about number of segments
+(nseg), degree of the B-spline basis (bdeg) and penalty order (pord)
+used for the three levels of the hierarchy.
 }
 \description{
-fitSplineHDM
+Fit the P-spline Hierarchical Curve Data Model used in the second stage of
+the two-stage approach proposed by Pérez-Valencia et al. (2022). This model
+assumes a three-level hierarchical structure in the data, with plants nested
+in genotypes, genotypes nested in populations. The input for this function
+is the spatially corrected data, as obtained from the first stage of the
+approach (see \code{\link{fitModels}} and \code{\link{getCorrected}}).
+The number of segments is chosen by the user, as well as the B-spline degree,
+and the penalty order for the three-levels of the hierarchy. The user can
+also decide if different variances for random effects at genotype (separately
+for each population) and plant (separately for each genotype) levels are
+desired. The function outputs are fitted values (time series of trajectories
+and deviations) and their first and second derivatives for the three-levels
+of the hierarchy. The outputs can then be used to estimate relevant parameters
+from the curves for further analysis (see \code{\link{estimateSplineParameters}}).
+}
+\examples{
+## The data from the Phenovator platform have been corrected for spatial
+## trends and outliers for single observations have been removed.
+head(spatCorrectedArch)
+ggplot(data = spatCorrectedArch, aes(x= timeNumber, y = LeafArea_corr, group = plotId))+
+ geom_line() + facet_grid(~geno.decomp)
+
+## We need to specify the genotype-by-treatment interaction
+## Treatment: water regime (WW, WD)
+spatCorrectedArch$treat <- factor(spatCorrectedArch$geno.decomp,
+                                  labels = substr(levels(spatCorrectedArch$geno.decomp), 1, 2))
+spatCorrectedArch$genobytreat <- paste0(spatCorrectedArch$genotype,"_",spatCorrectedArch$treat)
+
+## Fit P-Splines Hierarchical Curve Data Model
+fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
+                          trait = "LeafArea_corr",
+                          time = "timeNumber",
+                          pop = "geno.decomp",
+                          geno = "genobytreat",
+                          plant = "plotId",
+                          dif.var = list(geno = FALSE, plant = FALSE),
+                          smooth.pop = list(nseg = 4, bdeg = 3, pord = 2),
+                          smooth.geno = list(nseg = 4, bdeg = 3, pord = 2),
+                          smooth.plant = list(nseg = 4, bdeg = 3, pord = 2),
+                          weights = "wt")
+
+## Visualize the data.frames with predicted values at the three levels of the hierarchy.
+## Population level
+  head(fit.psHDM$pop.level)
+## Genotype level
+  head(fit.psHDM$geno.level)
+## Plant level
+  head(fit.psHDM$plant.level)
+
+## Plot the P-Spline predictions at the three levels of the hierarchy
+## Plots at plant level for some genotypes (as illustration)
+plot(object = fit.psHDM,
+    geno.sub = c("GenoA14_WD","GenoA51_WD","GenoB11_WW","GenoB02_WD","GenoB02_WW"),
+    my.theme = my.theme())
+
 }

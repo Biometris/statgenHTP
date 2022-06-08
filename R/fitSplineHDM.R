@@ -7,7 +7,7 @@
 #' assumes a three-level hierarchical structure in the data, with plants nested
 #' in genotypes, genotypes nested in populations. The input for this function
 #' is the spatially corrected data, as obtained from the first stage of the
-#' approach (see \code{\link{fitModels} and #' \code{\link{getCorrected}}).
+#' approach (see \code{\link{fitModels}} and \code{\link{getCorrected}}).
 #' The number of segments is chosen by the user, as well as the B-spline degree,
 #' and the penalty order for the three-levels of the hierarchy. The user can
 #' also decide if different variances for random effects at genotype (separately
@@ -139,8 +139,7 @@
 #' ## Plots at plant level for some genotypes (as illustration)
 #' plot(object = fit.psHDM,
 #'     geno.sub = c("GenoA14_WD","GenoA51_WD","GenoB11_WW","GenoB02_WD","GenoB02_WW"),
-#'     my.theme = my.theme())#'
-#'
+#'     my.theme = my.theme())
 #'
 #' @export
 fitSplineHDM <- function(inDat,

@@ -13,10 +13,76 @@
   ylab = NULL,
   my.theme = my.theme(),
   ask = TRUE,
-  global.main = list(pop.tra = NULL, pop.tra.deriv1 = NULL, geno.tra = NULL,
-    geno.tra.deriv1 = NULL, geno.dev = NULL, plant.tra = NULL)
+  global.main = list(pop.tra = NULL, geno.tra = NULL, geno.tra.deriv1 = NULL, geno.dev
+    = NULL, plant.tra = NULL)
 )
 }
+\arguments{
+\item{object}{An object of class "psHDM" as obtained after fitting
+(\code{\link{fitSplineHDM}}) or predicting (\code{\link{predict.psHDM}})}
+
+\item{geno.sub}{A character vector with the genotypes for which plots are
+desired.}
+
+\item{geno.sub.names}{A character vector with the names for the genotypes
+selected (geno.sub). The default is \code{NULL}}
+
+\item{geno.sub.order}{A vector with the order of the genotypes selected
+(geno.sub). The default is \code{NULL}}
+
+\item{xlab}{The x label of the plot. The default is \code{NULL}}
+
+\item{ylab}{The y label of the plot. The default is \code{NULL}}
+
+\item{my.theme}{Theme to be used for the ggplots. The default is \code{my.theme()}.}
+
+\item{ask}{Should the next figure be drawn?}
+
+\item{global.main}{A list with overall titles for plots at each level of the
+hierarchy. The default is \code{NULL} for all of them.}
+}
 \description{
+This plot function provides five plots for objects of the class \code{psHDM}
+after fitting (\code{\link{fitSplineHDM}}) or predicting
+(\code{\link{predict.psHDM}}): (1) Population-specific growth curves,
+(2) Genotype-specific growth curves (for all genotypes), (3) First-order
+derivative of the genotype-specific growth curves (for all genotypes),
+(4) Genotype-specific deviations (for all genotypes), and (5) Plant- and
+genotype-specific growth curves (for a selection of genotypes). If standard
+error are available, 95\% pointwise confidence intervals are depicted.
+}
+\examples{
+## The data from the Phenovator platform have been corrected for spatial
+## trends and outliers for single observations have been removed.
+head(spatCorrectedArch)
+ggplot(data = spatCorrectedArch, aes(x= timeNumber, y = LeafArea_corr, group = plotId))+
+ geom_line() + facet_grid(~geno.decomp)
+
+## We need to specify the genotype-by-treatment interaction
+## Treatment: water regime (WW, WD)
+spatCorrectedArch$treat <- factor(spatCorrectedArch$geno.decomp,
+                                  labels = substr(levels(spatCorrectedArch$geno.decomp), 1, 2))
+spatCorrectedArch$genobytreat <- paste0(spatCorrectedArch$genotype,"_",spatCorrectedArch$treat)
+
+## Fit P-Splines Hierarchical Curve Data Model
+fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
+                          trait = "LeafArea_corr",
+                          time = "timeNumber",
+                          pop = "geno.decomp",
+                          geno = "genobytreat",
+                          plant = "plotId",
+                          dif.var = list(geno = FALSE, plant = FALSE),
+                          smooth.pop = list(nseg = 4, bdeg = 3, pord = 2),
+                          smooth.geno = list(nseg = 4, bdeg = 3, pord = 2),
+                          smooth.plant = list(nseg = 4, bdeg = 3, pord = 2),
+                          weights = "wt")
+
+## Plot the P-Spline predictions at the three levels of the hierarchy
+## Plots at plant level for some genotypes (as illustration)
+plot(object = fit.psHDM,
+    geno.sub = c("GenoA14_WD","GenoA51_WD","GenoB11_WW","GenoB02_WD","GenoB02_WW"),
+    my.theme = my.theme())#'
+
 plot.pred.psHDM
+
 }
