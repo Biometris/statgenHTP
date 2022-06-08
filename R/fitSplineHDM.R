@@ -497,7 +497,8 @@ fitSplineHDM <- function(inDat,
   )
   ## Make predictions on original data points.
   preds <- predict.psHDM(res,
-                         se = list(pop = FALSE, geno = FALSE, plant = FALSE))
+                         se = list(pop = FALSE, geno = FALSE, plant = FALSE),
+                         trace = trace)
   ## Add predictions to results.
   res <- c(res, preds[c("pop.level", "geno.level", "plant.level")])
   class(res) <- c("psHDM", "list")

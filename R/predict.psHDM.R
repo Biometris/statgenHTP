@@ -278,6 +278,7 @@ predict.psHDM <- function(object,
                           newtimes,
                           pred = list(pop = TRUE, geno = TRUE, plant = TRUE),
                           se = list(pop = TRUE, geno = TRUE, plant = FALSE),
+                          trace = TRUE,
                           ...) {
 
   if (!inherits(object, "psHDM")) {
@@ -306,7 +307,9 @@ predict.psHDM <- function(object,
   if (isTRUE(pred$pop)) {
     pop_level <- mixmod_to_bspline_pred(what = "pop", object = object,
                                         np.s, np.e, xp, dev = FALSE)
-    print("Population-specific growth curves OK")
+    if (trace) {
+      print("Population-specific growth curves OK")
+    }
     if (isTRUE(se$pop)) {
       pop_level$pred <-
         append(pop_level$pred,
@@ -314,7 +317,9 @@ predict.psHDM <- function(object,
                                B.d1 = pop_level$B.d1, B.d2 = pop_level$B.d2,
                                what = "pop", dev = FALSE, object = object,
                                np.s, np.e))
-      print("Standard errors for population-specific growth curves OK")
+      if (trace) {
+        print("Standard errors for population-specific growth curves OK")
+      }
     }
     ## Data frame with all the information at population level
     res <- append(res, list.to.df(object1 = pop_level$pred, object2 = object,
@@ -326,7 +331,9 @@ predict.psHDM <- function(object,
     geno_dev <- mixmod_to_bspline_pred(what = "geno", object = object,
                                        np.s, np.e, xp, dev = TRUE)
     geno_level <- list(geno_dev = geno_dev$pred)
-    print("Genotype-specific deviations OK")
+    if (trace) {
+      print("Genotype-specific deviations OK")
+    }
     ## Genotype-specific growth curves and first- and second-order derivatives
     ## Contrast matrix: Assign genotypes to populations
     if(length(object$l.pop) == 1) {
@@ -343,7 +350,9 @@ predict.psHDM <- function(object,
                                                      B.d1 = geno_dev$B.d1,
                                                      B.d2 = geno_dev$B.d2))
     geno_level$geno_tra <- geno_tra$pred
-    print ("Genotype-specific growth curves OK")
+    if (trace) {
+      print ("Genotype-specific growth curves OK")
+    }
     if (isTRUE(se$geno)) {
       ## Genotype-specific deviations
       geno_level$geno_dev <-
@@ -352,7 +361,9 @@ predict.psHDM <- function(object,
                                B.d1 = geno_dev$B.d1, B.d2 = geno_dev$B.d2,
                                what = "geno", dev = TRUE, object = object,
                                np.s, np.e))
-      print("Standard errors for genotype-specific deviations OK")
+      if (trace) {
+        print("Standard errors for genotype-specific deviations OK")
+      }
       ## Genotype-specific growth curves
       geno_level$geno_tra <-
         append(geno_level$geno_tra,
@@ -360,7 +371,9 @@ predict.psHDM <- function(object,
                                B.d1 = geno_tra$B.d1, B.d2 = geno_tra$B.d2,
                                what = "geno", dev = FALSE, object = object,
                                np.s, np.e))
-      print("Standard errors for genotype-specific growth curves OK")
+      if (trace) {
+        print("Standard errors for genotype-specific growth curves OK")
+      }
     }
     ## Data frame with all the information at genotype level.
     res <- append(res, list.to.df(object1 = geno_level, object2 = object,
@@ -372,7 +385,9 @@ predict.psHDM <- function(object,
     plant_dev <- mixmod_to_bspline_pred(what = "plant", object = object, np.s,
                                         np.e, xp, dev = TRUE)
     plant_level <- list(plant_dev = plant_dev$pred)
-    print("Plant-specific deviations OK")
+    if (trace) {
+      print("Plant-specific deviations OK")
+    }
     ## Plant-specific growth curves.
     ## Contrast matrix: Assign plants to populations.
     if (length(object$l.pop) == 1) {
@@ -397,7 +412,9 @@ predict.psHDM <- function(object,
                                                       B.d1 = plant_dev$B.d1,
                                                       B.d2 = plant_dev$B.d2))
     plant_level$plant_tra <- plant_tra$pred
-    print("Plant-specific growth curves OK")
+    if (trace) {
+      print("Plant-specific growth curves OK")
+    }
     if (isTRUE(se$plant)) {
       ## Plant-specific deviations.
       plant_level$plant_dev <-
@@ -406,7 +423,9 @@ predict.psHDM <- function(object,
                                B.d1 = plant_dev$B.d1, B.d2 = plant_dev$B.d2,
                                what = "plant", dev = TRUE, object = object,
                                np.s, np.e))
-      print("Standard errors for plant-specific deviations OK")
+      if (trace) {
+        print("Standard errors for plant-specific deviations OK")
+      }
       ## Standard errors for plant deviations + geno deviations + population effects.
       plant_level$plant_tra <-
         append(plant_level$plant_tra,
@@ -414,7 +433,9 @@ predict.psHDM <- function(object,
                                B.d1 = plant_tra$B.d1, B.d2 = plant_tra$B.d2,
                                what = "plant", dev = FALSE, object = object,
                                np.s, np.e))
-      print("Standard errors for plant-specific growth curves OK")
+      if (trace) {
+        print("Standard errors for plant-specific growth curves OK")
+      }
     }
     ## Data frame with all the information at genotype level.
     res <- append(res,

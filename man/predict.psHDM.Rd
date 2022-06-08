@@ -9,6 +9,7 @@
   newtimes,
   pred = list(pop = TRUE, geno = TRUE, plant = TRUE),
   se = list(pop = TRUE, geno = TRUE, plant = FALSE),
+  trace = TRUE,
   ...
 )
 }
