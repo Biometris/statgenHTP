@@ -137,9 +137,9 @@ list.to.df <- function(object1,
   if(!inherits(object2, "psHDM")) {
     stop("The object class is not correct")
   }
-  list.to.vec <- function(x) {
-    c(do.call("cbind", lapply(X = x, FUN = function(i) as.matrix(i))))
-  }
+  # list.to.vec <- function(x) {
+  #   c(do.call("cbind", lapply(X = x, FUN = function(i) as.matrix(i))))
+  # }
   res <- list()
   ## Population-specific growth curves.
   if (what == "pop") {
@@ -161,19 +161,19 @@ list.to.df <- function(object1,
                               pop = rep(object2$l.pop,
                                         object2$n.geno_p_pop * length(xp)),
                               geno = rep(object2$l.geno, each = length(xp)),
-                              f_geno = list.to.vec(object1$geno_tra$f),
-                              f_geno_deriv1 = list.to.vec(object1$geno_tra$f.d1),
-                              f_geno_deriv2 = list.to.vec(object1$geno_tra$f.d2),
-                              f_geno_dev = list.to.vec(object1$geno_dev$f),
-                              f_geno_dev_deriv1 = list.to.vec(object1$geno_dev$f.d1),
-                              f_geno_dev_deriv2 = list.to.vec(object1$geno_dev$f.d2))
-    if(!is.null(object1$geno_dev$se.f)) {
-      df.geno.tra$se_geno <- list.to.vec(object1$geno_tra$se.f)
-      df.geno.tra$se_geno_deriv1 <- list.to.vec(object1$geno_tra$se.f.d1)
-      df.geno.tra$se_geno_deriv2 <- list.to.vec(object1$geno_tra$se.f.d2)
-      df.geno.tra$se_geno_dev <- list.to.vec(object1$geno_dev$se.f)
-      df.geno.tra$se_geno_dev_deriv1 <- list.to.vec(object1$geno_dev$se.f.d1)
-      df.geno.tra$se_geno_dev_deriv2 <- list.to.vec(object1$geno_dev$se.f.d2)
+                              f_geno = as.vector(object1$geno_tra$f),
+                              f_geno_deriv1 = as.vector(object1$geno_tra$f.d1),
+                              f_geno_deriv2 = as.vector(object1$geno_tra$f.d2),
+                              f_geno_dev = as.vector(object1$geno_dev$f),
+                              f_geno_dev_deriv1 = as.vector(object1$geno_dev$f.d1),
+                              f_geno_dev_deriv2 = as.vector(object1$geno_dev$f.d2))
+    if (!is.null(object1$geno_dev$se.f)) {
+      df.geno.tra$se_geno <- as.vector(object1$geno_tra$se.f)
+      df.geno.tra$se_geno_deriv1 <- as.vector(object1$geno_tra$se.f.d1)
+      df.geno.tra$se_geno_deriv2 <- as.vector(object1$geno_tra$se.f.d2)
+      df.geno.tra$se_geno_dev <- as.vector(object1$geno_dev$se.f)
+      df.geno.tra$se_geno_dev_deriv1 <- as.vector(object1$geno_dev$se.f.d1)
+      df.geno.tra$se_geno_dev_deriv2 <- as.vector(object1$geno_dev$se.f.d2)
     }
     res$geno.level  <- df.geno.tra
   }
@@ -185,19 +185,19 @@ list.to.df <- function(object1,
                                geno = rep(object2$l.geno,
                                           object2$n.plants_p_geno * length(xp)),
                                plant = rep(object2$l.plant, each = length(xp)),
-                               f_plant = list.to.vec(object1$plant_tra$f),
-                               f_plant_deriv1 = list.to.vec(object1$plant_tra$f.d1),
-                               f_plant_deriv2 = list.to.vec(object1$plant_tra$f.d2),
-                               f_plant_dev = list.to.vec(object1$plant_dev$f),
-                               f_plant_dev_deriv1 = list.to.vec(object1$plant_dev$f.d1),
-                               f_plant_dev_deriv2 = list.to.vec(object1$plant_dev$f.d2))
+                               f_plant = as.vector(object1$plant_tra$f),
+                               f_plant_deriv1 = as.vector(object1$plant_tra$f.d1),
+                               f_plant_deriv2 = as.vector(object1$plant_tra$f.d2),
+                               f_plant_dev = as.vector(object1$plant_dev$f),
+                               f_plant_dev_deriv1 = as.vector(object1$plant_dev$f.d1),
+                               f_plant_dev_deriv2 = as.vector(object1$plant_dev$f.d2))
     if(!is.null(object1$se.f_plant)){
-      df.plant.tra$se_plant <- list.to.vec(object1$plant_tra$se.f$se.f)
-      df.plant.tra$se_plant_deriv1 <- list.to.vec(object1$plant_tra$se.f.d1)
-      df.plant.tra$se_plant_deriv2 <- list.to.vec(object1$plant_tra$se.f.d2)
-      df.plant.tra$se_plant_dev <- list.to.vec(object1$plant_dev$se.f)
-      df.plant.tra$se_plant_dev_deriv1 <- list.to.vec(object1$plant_dev$se.f.d1)
-      df.plant.tra$se_plant_dev_deriv2 <- list.to.vec(object1$plant_dev$se.f.d2)
+      df.plant.tra$se_plant <- as.vector(object1$plant_tra$se.f$se.f)
+      df.plant.tra$se_plant_deriv1 <- as.vector(object1$plant_tra$se.f.d1)
+      df.plant.tra$se_plant_deriv2 <- as.vector(object1$plant_tra$se.f.d2)
+      df.plant.tra$se_plant_dev <- as.vector(object1$plant_dev$se.f)
+      df.plant.tra$se_plant_dev_deriv1 <- as.vector(object1$plant_dev$se.f.d1)
+      df.plant.tra$se_plant_dev_deriv2 <- as.vector(object1$plant_dev$se.f.d2)
     }
     res$plant.level <- df.plant.tra
 
