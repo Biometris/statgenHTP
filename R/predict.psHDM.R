@@ -21,16 +21,18 @@ mixmod_to_bspline_pred <- function(what = c("pop", "geno", "plant"),
       what.e <- "plant"
     }
   }
+  lW <- length(object[[paste0("l.", what)]])
+  MMW <- paste0("MM.", what)
   if (is.null(Tmat)) {
-    Tm <- cbind(Matrix::kronecker(Matrix::Diagonal(length(object[[paste0("l.", what)]])),
-                                  object$MM[[paste0("MM.", what)]]$U.X),
-                Matrix::kronecker(Matrix::Diagonal(length(object[[paste0("l.", what)]])),
-                                  object$MM[[paste0("MM.",what)]]$U.Z))
+    Tm <- cbind(Matrix::kronecker(Matrix::Diagonal(lW),
+                                  object$MM[[MMW]]$U.X),
+                Matrix::kronecker(Matrix::Diagonal(lW),
+                                  object$MM[[MMW]]$U.Z))
   } else{
     Tm <- Tmat
   }
   if (is.null(mod.mat)) {
-    mmat <- Matrix::Diagonal(length(object[[paste0("l.",what)]]))
+    mmat <- Matrix::Diagonal(lW)
   } else if (is.list(mod.mat)) {
     mmat <- list(mmat1 = mod.mat[[1]], mmat2 = mod.mat[[2]])
   } else{
@@ -40,7 +42,7 @@ mixmod_to_bspline_pred <- function(what = c("pop", "geno", "plant"),
   theta <- Matrix::Matrix(Tm %*% MM.coeff)
   B.full <- function(mmat, what, deriv) {
     Matrix::kronecker(mmat,
-                      spline.bbase(knots = object$MM[[paste0("MM.",what)]]$knots,
+                      spline.bbase(knots = object$MM[[MMW]]$knots,
                                    X. = xp,
                                    BDEG. = object$smooth[[paste0("smooth.", what)]]$bdeg,
                                    deriv = deriv))
@@ -66,19 +68,15 @@ mixmod_to_bspline_pred <- function(what = c("pop", "geno", "plant"),
                     Bbasis$B.d2)
     }
   }
-  f     <- matrix(Matrix::crossprod(Matrix::t(B), theta),
-                  ncol = length(object[[paste0("l.",what)]])) # Note that f == eta_what
-  f.d1  <- matrix(Matrix::crossprod(Matrix::t(B.d1), theta),
-                  ncol = length(object[[paste0("l.",what)]]))
-  f.d2  <- matrix(Matrix::crossprod(Matrix::t(B.d2), theta),
-                  ncol = length(object[[paste0("l.",what)]]))
+  f    <- matrix(B %*% theta, ncol = lW) # Note that f == eta_what
+  f.d1 <- matrix(B.d1 %*% theta, ncol = lW)
+  f.d2 <- matrix(B.d2 %*% theta, ncol = lW)
 
   aux <- lapply(list(f = f, f.d1 = f.d1, f.d2 = f.d2), function(x) {
     colnames(x) <- object[[paste0("l.", what)]]
     return(x)
   })
-
-  # Object to be returned
+  ## Object to be returned.
   res <- list(level = what,
               Tm = Tm,
               MM.coeff = MM.coeff,
@@ -124,7 +122,7 @@ standard_errors <- function(Tm,
               se.f.d1 = se.f.d1,
               se.f.d2 = se.f.d2)
   res <- lapply(res, function(x){
-    colnames(x) <- object[[paste0("l.", what)]]
+    colnames(x) <- object[[lW]]
     return(x)
   })
   return(res)
@@ -137,9 +135,6 @@ list.to.df <- function(object1,
   if(!inherits(object2, "psHDM")) {
     stop("The object class is not correct")
   }
-  # list.to.vec <- function(x) {
-  #   c(do.call("cbind", lapply(X = x, FUN = function(i) as.matrix(i))))
-  # }
   res <- list()
   ## Population-specific growth curves.
   if (what == "pop") {
@@ -200,11 +195,11 @@ list.to.df <- function(object1,
       df.plant.tra$se_plant_dev_deriv2 <- as.vector(object1$plant_dev$se.f.d2)
     }
     res$plant.level <- df.plant.tra
-
     if (isTRUE(setequal(xp, object2$time))) {
       res$plant.level$obs_plant <- c(do.call("cbind", object2$y))
     } else {
-      # Raw plant growth curves (Observed data: in the raw time not in newtimes (xp))
+      ## Raw plant growth curves.
+      ## (Observed data: in the raw time not in newtimes (xp)).
       df.plant.obs <-
         data.frame(timeNumber = rep(object2$time, sum(object2$n.plants_p_geno)),
                    pop = rep(object2$l.pop,
@@ -280,7 +275,7 @@ predict.psHDM <- function(object,
                           se = list(pop = TRUE, geno = TRUE, plant = FALSE),
                           trace = TRUE,
                           ...) {
-
+  ## Checks.
   if (!inherits(object, "psHDM")) {
     stop("The object class is not correct")
   }
@@ -297,13 +292,13 @@ predict.psHDM <- function(object,
   ## Normalize time
   xp <- xp - min(xp) + 1
   ## Number of parameters: fixed and random (for each component)
-  np        <- object$dim
-  np.comp   <- c(np[1] + np[2], np[3] + np[4], np[5] + np[6])
+  np      <- object$dim
+  np.comp <- c(np[1] + np[2], np[3] + np[4], np[5] + np[6])
   names(np.comp) <- c("pop", "geno", "plant")
   np.e      <- cumsum(np.comp)
   np.s      <- np.e - np.comp + 1
-  ## Predictions
-  ## Functions at population level
+  ## Predictions.
+  ## Functions at population level.
   if (isTRUE(pred$pop)) {
     pop_level <- mixmod_to_bspline_pred(what = "pop", object = object,
                                         np.s, np.e, xp, dev = FALSE)
