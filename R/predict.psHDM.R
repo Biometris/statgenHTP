@@ -1,4 +1,9 @@
 # Help functions ----------------------------------------------------------
+
+#' mixmod_to_bspline_pred
+#'
+#' @noRd
+#' @keywords internal
 mixmod_to_bspline_pred <- function(what = c("pop", "geno", "plant"),
                                    object,
                                    np.s,
@@ -87,6 +92,10 @@ mixmod_to_bspline_pred <- function(what = c("pop", "geno", "plant"),
   return(res)
 }
 
+#' standard_errors
+#'
+#' @noRd
+#' @keywords internal
 standard_errors <- function(Tm,
                             B,
                             B.d1,
@@ -126,6 +135,10 @@ standard_errors <- function(Tm,
   return(res)
 }
 
+#' list.to.df
+#'
+#' @noRd
+#' @keywords internal
 list.to.df <- function(object1,
                        object2,
                        what,
@@ -233,6 +246,8 @@ list.to.df <- function(object1,
 #' errors are desired (population/genotypes/plants).  The default is
 #' \code{TRUE} except at the plant level.
 #' @param ... Not used.
+#' @param trace An optional value that controls the function trace.
+#' The default is \code{TRUE}.
 #'
 #' @return An object of class \code{psHDM}, a list with the following outputs:
 #' predict.psHDM
@@ -251,7 +266,7 @@ list.to.df <- function(object1,
 #' at the \code{newtimes}.
 #' \code{plant.obs} A data.frame with the raw data at the original timepoints.
 #'
-#' #' @examples
+#' @examples
 #' ## Predict the P-Splines Hierarchical Curve Data Model in a dense grid
 #' ## with standard errors at the population and genotype levels
 #' pred.psHDM <- predict(object = fit.psHDM,

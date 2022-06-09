@@ -156,6 +156,8 @@ RH <- function(X,
 #' principal diagonal of the Henderson system of equations using GLAM
 #' (Eilers et al., 2006)
 #'
+#' @importFrom methods as new
+#'
 #' @noRd
 #' @keywords internal
 A1.form <- function(l,
@@ -288,7 +290,7 @@ ZtZ <- function(Z,
 Xty <- function(X,
                 y,
                 w = NULL) {
-  nRow <- nrow(tail(X, n = 1)[[1]])
+  nRow <- nrow(utils::tail(X, n = 1)[[1]])
   if (is.null(w)) {
     Y <- Matrix::Matrix(y, nrow = nRow)
   } else {
@@ -306,7 +308,7 @@ Xty <- function(X,
 Zty <- function(Z,
                 y,
                 w = NULL) {
-  nRow <- nrow(tail(Z[[1]], n = 1)[[1]])
+  nRow <- nrow(utils::tail(Z[[1]], n = 1)[[1]])
   if (is.null(w)) {
     Y <- Matrix::Matrix(y, nrow = nRow)
   } else {
