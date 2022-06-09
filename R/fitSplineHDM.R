@@ -45,9 +45,9 @@
 #' fitting process (for error propagation from first stage to second stage).
 #' By default, the weights are considered to be one. The default is \code{NULL}.
 #' @param family An object of class \code{family} specifying the distribution
-#' and link function.  The default is \code{gaussian()}.
+#' and link function. The default is \code{gaussian()}.
 #' @param maxit An optional value that controls the maximum number of iterations
-#' of the algorithm.  The default is 200.
+#' of the algorithm. The default is 200.
 #' @param trace An optional value that controls the function trace.
 #' The default is \code{TRUE}.
 #' @param thr An optional value that controls the convergence threshold of the
@@ -129,17 +129,22 @@
 #'
 #' ## Visualize the data.frames with predicted values at the three levels of the hierarchy.
 #' ## Population level
-#'   head(fit.psHDM$pop.level)
+#' head(fit.psHDM$pop.level)
 #' ## Genotype level
-#'   head(fit.psHDM$geno.level)
+#' head(fit.psHDM$geno.level)
 #' ## Plant level
-#'   head(fit.psHDM$plant.level)
+#' head(fit.psHDM$plant.level)
 #'
 #' ## Plot the P-Spline predictions at the three levels of the hierarchy
 #' ## Plots at plant level for some genotypes (as illustration)
 #' plot(object = fit.psHDM,
-#'     geno.sub = c("GenoA14_WD","GenoA51_WD","GenoB11_WW","GenoB02_WD","GenoB02_WW"),
+#'     geno.sub = c("GenoA14_WD", "GenoA51_WD", "GenoB11_WW",
+#'                  "GenoB02_WD","GenoB02_WW"),
 #'     my.theme = my.theme())
+#'
+#' @references Pérez-Valencia, D.M., Rodríguez-Álvarez, M.X., Boer, M.P. et al.
+#' A two-stage approach for the spatio-temporal analysis of high-throughput
+#' phenotyping data. Sci Rep 12, 3177 (2022). \doi{10.1038/s41598-022-06935-9}
 #'
 #' @export
 fitSplineHDM <- function(inDat,

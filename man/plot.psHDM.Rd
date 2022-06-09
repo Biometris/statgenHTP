@@ -84,3 +84,8 @@ plot(object = fit.psHDM,
     my.theme = my.theme())
 
 }
+\references{
+Pérez-Valencia, D.M., Rodríguez-Álvarez, M.X., Boer, M.P. et al.
+A two-stage approach for the spatio-temporal analysis of high-throughput
+phenotyping data. Sci Rep 12, 3177 (2022). \doi{10.1038/s41598-022-06935-9}
+}
