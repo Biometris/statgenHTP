@@ -106,23 +106,21 @@ standard_errors <- function(Tm,
       what.e <- "plant"
     }
   }
+  lW <- length(object[[paste0("l.", what)]])
   se.theta <- Matrix::Matrix(Tm) %*%
     Matrix::Matrix(object$Vp[np.s[what.s]:np.e[what.e],
                              np.s[what.s]:np.e[what.e]]) %*% Matrix::t(Tm)
-  se.f     <- matrix(sqrt(Matrix::colSums(Matrix::t(B) *
-                                            (se.theta %*% Matrix::t(B)))),
-                     ncol = length(object[[paste0("l.",what)]]))
-  se.f.d1  <- matrix(sqrt(Matrix::colSums(Matrix::t(B.d1) *
-                                            (se.theta %*% Matrix::t(B.d1)))),
-                     ncol = length(object[[paste0("l.",what)]]))
-  se.f.d2  <- matrix(sqrt(Matrix::colSums(Matrix::t(B.d2) *
-                                            (se.theta %*% Matrix::t(B.d2)))),
-                     ncol = length(object[[paste0("l.",what)]]))
+  se.f     <- matrix(sqrt(Matrix::colSums(
+    Matrix::t(B) * Matrix::tcrossprod(se.theta, B))), ncol = lW)
+  se.f.d1  <- matrix(sqrt(Matrix::colSums(
+    Matrix::t(B.d1) * Matrix::tcrossprod(se.theta, B.d1))), ncol = lW)
+  se.f.d2  <- matrix(sqrt(Matrix::colSums(
+    Matrix::t(B.d2) * Matrix::tcrossprod(se.theta, B.d2))), ncol = lW)
   res <- list(se.f = se.f,
               se.f.d1 = se.f.d1,
               se.f.d2 = se.f.d2)
   res <- lapply(res, function(x){
-    colnames(x) <- object[[lW]]
+    colnames(x) <- object[[paste0("l.", what)]]
     return(x)
   })
   return(res)
