@@ -316,7 +316,7 @@ predict.psHDM <- function(object,
     }
     ## Data frame with all the information at population level
     res <- append(res, list.to.df(object1 = pop_level$pred, object2 = object,
-                                  what = "pop", xp))
+                                  what = "pop", xp = res$newtimes))
   }
   ## Functions at genotype level.
   if (isTRUE(pred$geno)) {
@@ -370,7 +370,7 @@ predict.psHDM <- function(object,
     }
     ## Data frame with all the information at genotype level.
     res <- append(res, list.to.df(object1 = geno_level, object2 = object,
-                                  what = "geno", xp))
+                                  what = "geno", xp = res$newtimes))
   }
   ## Functions at plant level.
   if (isTRUE(pred$plant)) {
@@ -433,7 +433,7 @@ predict.psHDM <- function(object,
     ## Data frame with all the information at genotype level.
     res <- append(res,
                   list.to.df(object1 = plant_level, object2 = object,
-                             what = "plant", xp))
+                             what = "plant", xp = res$newtimes))
   }
   class(res) <- "psHDM"
   return(res)
