@@ -254,17 +254,21 @@ list.to.df <- function(object1,
 #' #' @examples
 #' ## Predict the P-Splines Hierarchical Curve Data Model in a dense grid
 #' ## with standard errors at the population and genotype levels
-#' pred.psHDM <- predict.psHDM(object = fit.psHDM,
-#'                             newtimes = seq(min(fit.psHDM$time),
-#'                                            max(fit.psHDM$time), length = 100),
-#'                             pred = list(pop = TRUE, geno = TRUE, plant = TRUE),
-#'                             se = list(pop = TRUE, geno = TRUE, plant = FALSE))
+#' pred.psHDM <- predict(object = fit.psHDM,
+#'                      newtimes = seq(min(fit.psHDM$time),
+#'                                    max(fit.psHDM$time), length.out = 100),
+#'                      pred = list(pop = TRUE, geno = TRUE, plant = TRUE),
+#'                      se = list(pop = TRUE, geno = TRUE, plant = FALSE))
 #'
 #' ## Plot the P-Spline predictions at the three levels of the hierarchy
 #' ## Plots at plant level for some genotypes (as illustration)
 #' plot(object = pred.psHDM,
 #'     geno.sub = c("GenoA14_WD","GenoA51_WD","GenoB11_WW","GenoB02_WD","GenoB02_WW"),
 #'     my.theme = my.theme())
+#'
+#' @references Pérez-Valencia, D.M., Rodríguez-Álvarez, M.X., Boer, M.P. et al.
+#' A two-stage approach for the spatio-temporal analysis of high-throughput
+#' phenotyping data. Sci Rep 12, 3177 (2022). \doi{10.1038/s41598-022-06935-9}
 #'
 #' @export
 predict.psHDM <- function(object,

@@ -54,9 +54,9 @@ at the \code{newtimes}.
 
 \subsection{with standard errors at the population and genotype levels}{
 
-pred.psHDM <- predict.psHDM(object = fit.psHDM,
+pred.psHDM <- predict(object = fit.psHDM,
 newtimes = seq(min(fit.psHDM$time),
-max(fit.psHDM$time), length = 100),
+max(fit.psHDM$time), length.out = 100),
 pred = list(pop = TRUE, geno = TRUE, plant = TRUE),
 se = list(pop = TRUE, geno = TRUE, plant = FALSE))
 }
@@ -77,4 +77,9 @@ Function that predicts the P-spline Hierarchical Curve Data Model (see
 for curves at each level of the hierarchy. User has to be aware that
 standard errors at the plant level demand large memory. We suggest set
 that option at the \code{FALSE} level
+}
+\references{
+Pérez-Valencia, D.M., Rodríguez-Álvarez, M.X., Boer, M.P. et al.
+A two-stage approach for the spatio-temporal analysis of high-throughput
+phenotyping data. Sci Rep 12, 3177 (2022). \doi{10.1038/s41598-022-06935-9}
 }
