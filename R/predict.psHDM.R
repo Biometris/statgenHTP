@@ -38,8 +38,9 @@ mixmod_to_bspline_pred <- function(what = c("pop", "geno", "plant"),
   } else{
     mmat <- mod.mat
   }
-  MM.coeff <- matrix(object$coeff[np.s[what.s]:np.e[what.e]], ncol = 1)
-  theta <- Matrix::Matrix(Tm %*% MM.coeff)
+  MM.coeff <- Matrix::Matrix(object$coeff[np.s[what.s]:np.e[what.e]],
+                             ncol = 1)
+  theta <- Tm %*% MM.coeff
   B.full <- function(mmat, what, deriv) {
     Matrix::kronecker(mmat,
                       spline.bbase(knots = object$MM[[MMW]]$knots,
@@ -51,7 +52,7 @@ mixmod_to_bspline_pred <- function(what = c("pop", "geno", "plant"),
     B     <- B.full(mmat, what, deriv = 0)
     B.d1  <- B.full(mmat, what, deriv = 1)
     B.d2  <- B.full(mmat, what, deriv = 2)
-  } else{
+  } else {
     if (what == "geno"){
       B    <- cbind(B.full(mmat, what = "pop", deriv = 0), Bbasis$B)
       B.d1 <- cbind(B.full(mmat, what = "pop", deriv = 1), Bbasis$B.d1)
@@ -79,7 +80,6 @@ mixmod_to_bspline_pred <- function(what = c("pop", "geno", "plant"),
   ## Object to be returned.
   res <- list(level = what,
               Tm = Tm,
-              MM.coeff = MM.coeff,
               B = B,
               B.d1 = B.d1,
               B.d2 = B.d2,
