@@ -54,11 +54,13 @@ Imports:
     ggnewscale,
     grid,
     gridExtra,
+    Matrix,
     LMMsolver,
     locfit,
     lubridate,
     reshape2,
     scales,
+    spam,
     SpATS (>= 1.0-13)
 Suggests: 
    asreml (>= 4.0), 
