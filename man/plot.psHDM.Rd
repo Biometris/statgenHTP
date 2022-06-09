@@ -5,7 +5,8 @@
 \title{plot.pred.psHDM}
 \usage{
 \method{plot}{psHDM}(
-  object,
+  x,
+  ...,
   geno.sub,
   geno.sub.names = NULL,
   geno.sub.order = NULL,
@@ -18,8 +19,10 @@
 )
 }
 \arguments{
-\item{object}{An object of class "psHDM" as obtained after fitting
-(\code{\link{fitSplineHDM}}) or predicting (\code{\link{predict.psHDM}})}
+\item{x}{An object of class "psHDM" as obtained after fitting
+(\code{\link{fitSplineHDM}}) or predicting (\code{\link{predict.psHDM}}),}
+
+\item{...}{Not used.}
 
 \item{geno.sub}{A character vector with the genotypes for which plots are
 desired.}
@@ -79,7 +82,7 @@ fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
 
 ## Plot the P-Spline predictions at the three levels of the hierarchy
 ## Plots at plant level for some genotypes (as illustration)
-plot(object = fit.psHDM,
+plot(fit.psHDM,
     geno.sub = c("GenoA14_WD","GenoA51_WD","GenoB11_WW","GenoB02_WD","GenoB02_WW"),
     my.theme = my.theme())
 

@@ -11,8 +11,9 @@
 #' genotype-specific growth curves (for a selection of genotypes). If standard
 #' error are available, 95% pointwise confidence intervals are depicted.
 #'
-#' @param object An object of class "psHDM" as obtained after fitting
-#' (\code{\link{fitSplineHDM}}) or predicting (\code{\link{predict.psHDM}})
+#' @param x An object of class "psHDM" as obtained after fitting
+#' (\code{\link{fitSplineHDM}}) or predicting (\code{\link{predict.psHDM}}),
+#' @param ... Not used.
 #' @param geno.sub A character vector with the genotypes for which plots are
 #' desired.
 #' @param geno.sub.names A character vector with the names for the genotypes
@@ -25,7 +26,6 @@
 #' @param global.main A list with overall titles for plots at each level of the
 #' hierarchy. The default is \code{NULL} for all of them.
 #' @param ask Should the next figure be drawn?
-#'
 #'
 #' @examples
 #' ## The data from the Phenovator platform have been corrected for spatial
@@ -55,7 +55,7 @@
 #'
 #' ## Plot the P-Spline predictions at the three levels of the hierarchy
 #' ## Plots at plant level for some genotypes (as illustration)
-#' plot(object = fit.psHDM,
+#' plot(fit.psHDM,
 #'     geno.sub = c("GenoA14_WD","GenoA51_WD","GenoB11_WW","GenoB02_WD","GenoB02_WW"),
 #'     my.theme = my.theme())
 #'
@@ -64,7 +64,8 @@
 #' phenotyping data. Sci Rep 12, 3177 (2022). \doi{10.1038/s41598-022-06935-9}
 #'
 #' @export
-plot.psHDM <- function(object,
+plot.psHDM <- function(x,
+                       ...,
                        geno.sub,
                        geno.sub.names = NULL,
                        geno.sub.order = NULL,
@@ -78,7 +79,7 @@ plot.psHDM <- function(object,
                                           geno.dev = NULL,
                                           plant.tra = NULL)){
 
-  if (!inherits(object, "psHDM")) {
+  if (!inherits(x, "psHDM")) {
     stop("The object class is not correct")
   }
   if (is.null(xlab)) {
@@ -87,19 +88,19 @@ plot.psHDM <- function(object,
   if (is.null(ylab)) {
     ylab <- expression(tilde(y)[pgi](t))
   }
-  if(is.null(object$plant.obs)){
-    object$plant.obs <- object$plant.level
+  if(is.null(x$plant.obs)){
+    x$plant.obs <- x$plant.level
   }
-  ntime <- length(unique(object$plant.obs$timeNumber))
-  min.t <- min(object$plant.obs$timeNumber)
-  max.t <- max(object$plant.obs$timeNumber)
-  if (!is.null(object$pop.level)) {
+  ntime <- length(unique(x$plant.obs$timeNumber))
+  min.t <- min(x$plant.obs$timeNumber)
+  max.t <- max(x$plant.obs$timeNumber)
+  if (!is.null(x$pop.level)) {
     ## Population-specific growth curves.
     my.cols <- c("1" = "gray", "2" = "blue")
-    aa1 <- ggplot2::ggplot(data = object$plant.obs) +
+    aa1 <- ggplot2::ggplot(data = x$plant.obs) +
       ggplot2::geom_line(ggplot2::aes(timeNumber, obs_plant, group = plant,
                                       colour = "1"), na.rm = TRUE) +
-      ggplot2::geom_line(data = object$pop.level,
+      ggplot2::geom_line(data = x$pop.level,
                          ggplot2::aes(timeNumber, f_pop, group = pop,
                                       colour = "2"), na.rm = TRUE) +
       ggplot2::geom_rug(ggplot2::aes(x = timeNumber, y = NULL), color = "gray",
@@ -111,9 +112,9 @@ plot.psHDM <- function(object,
       ggplot2::labs(x = xlab, y = ylab, title = global.main$pop.tra, color = "") +
       my.theme() +
       ggplot2::facet_grid( ~ pop)
-    if (!is.null(object$pop.level$se_pop)) {
+    if (!is.null(x$pop.level$se_pop)) {
       aa1 <- aa1 +
-        ggplot2::geom_ribbon(data = object$pop.level,
+        ggplot2::geom_ribbon(data = x$pop.level,
                              ggplot2::aes(x = timeNumber,
                                           ymin = f_pop - 1.96 * se_pop,
                                           ymax = f_pop + 1.96 * se_pop,
@@ -122,16 +123,16 @@ plot.psHDM <- function(object,
     }
     print(aa1)
   }
-  if (!is.null(object$geno.level)) {
+  if (!is.null(x$geno.level)) {
     ## Genotype-specific growth curves.
     my.cols <- c("1" = "blue", "2" = "orange")
-    bb1 <- ggplot2::ggplot(data = object$geno.level) +
+    bb1 <- ggplot2::ggplot(data = x$geno.level) +
       ggplot2::geom_line(ggplot2::aes(timeNumber, f_geno, group = geno,
                                       colour = "1"), na.rm = TRUE) +
-      ggplot2::geom_line(data = object$pop.level,
+      ggplot2::geom_line(data = x$pop.level,
                          ggplot2::aes(timeNumber, f_pop, group = pop,
                                       colour="2"), size = 0.8, na.rm = TRUE) +
-      ggplot2::geom_rug(data = object$plant.obs,
+      ggplot2::geom_rug(data = x$plant.obs,
                         ggplot2::aes(x = timeNumber, y = NULL), color = "gray",
                         length = ggplot2::unit(0.01, "npc")) +
       ggplot2::scale_x_continuous(breaks = round(seq(min.t, max.t, length.out = 5), 0)) +
@@ -142,9 +143,9 @@ plot.psHDM <- function(object,
                     title = global.main$geno.tra) +
       my.theme() +
       ggplot2::facet_grid( ~ pop)
-    if (!is.null(object$pop.level$se_pop)) {
+    if (!is.null(x$pop.level$se_pop)) {
       bb1 <- bb1 +
-        ggplot2::geom_ribbon(data = object$pop.level,
+        ggplot2::geom_ribbon(data = x$pop.level,
                              ggplot2::aes(x = timeNumber,
                                           ymin = f_pop - 1.96 * se_pop,
                                           ymax = f_pop + 1.96 * se_pop,
@@ -154,18 +155,18 @@ plot.psHDM <- function(object,
     if (ask) readline("Press return for next page....")
     print(bb1)
     ## First derivative of the genotype-specific growth curves.
-    bb2 <- ggplot2::ggplot(data = object$geno.level) +
+    bb2 <- ggplot2::ggplot(data = x$geno.level) +
       ggplot2::geom_line(ggplot2::aes(timeNumber, f_geno_deriv1, group = geno,
                                       colour = "1"), na.rm = TRUE) +
-      ggplot2::geom_line(data = object$pop.level,
+      ggplot2::geom_line(data = x$pop.level,
                          ggplot2::aes(timeNumber, f_pop_deriv1, group = pop,
                                       colour = "2"), na.rm = TRUE) +
-      ggplot2::geom_rug(data = object$plant.obs,
+      ggplot2::geom_rug(data = x$plant.obs,
                         ggplot2::aes(x = timeNumber, y = NULL), color = "gray",
                         length = ggplot2::unit(0.01, "npc")) +
       ggplot2::scale_x_continuous(breaks = round(seq(min.t, max.t, length.out = 5), 0)) +
-      ggplot2::ylim(min(object$geno.level$f_geno_deriv1),
-                    max(object$geno.level$f_geno_deriv1) * 1.2) +
+      ggplot2::ylim(min(x$geno.level$f_geno_deriv1),
+                    max(x$geno.level$f_geno_deriv1) * 1.2) +
       ggplot2::scale_color_manual(values = my.cols,
                                   labels = c(expression((hat(f)[p](t)+hat(f)[pg](t))*minute),
                                              expression((hat(f)[p](t))*minute))) +
@@ -173,9 +174,9 @@ plot.psHDM <- function(object,
                     title = global.main$geno.tra.deriv1) +
       my.theme() +
       ggplot2::facet_grid( ~ pop)
-    if (!is.null(object$pop.level$se_pop_deriv1)) {
+    if (!is.null(x$pop.level$se_pop_deriv1)) {
       bb2 <- bb2 +
-        ggplot2::geom_ribbon(data = object$pop.level,
+        ggplot2::geom_ribbon(data = x$pop.level,
                              ggplot2::aes(x = timeNumber,
                                           ymin = f_pop_deriv1 - 1.96 * se_pop_deriv1,
                                           ymax = f_pop_deriv1 + 1.96 * se_pop_deriv1,
@@ -186,10 +187,10 @@ plot.psHDM <- function(object,
     print(bb2)
     ## Estimated genotypic deviations.
     my.cols <- c("1" = "blue")
-    cc1 <- ggplot2::ggplot(data = object$geno.level) +
+    cc1 <- ggplot2::ggplot(data = x$geno.level) +
       ggplot2::geom_line(ggplot2::aes(timeNumber, f_geno_dev, group = geno,
                                       colour = "1"), na.rm = TRUE) +
-      ggplot2::geom_rug(data = object$plant.obs,
+      ggplot2::geom_rug(data = x$plant.obs,
                         ggplot2::aes(x = timeNumber, y = NULL), color = "gray",
                         length = ggplot2::unit(0.01, "npc")) +
       ggplot2::scale_x_continuous(breaks = round(seq(min.t, max.t, length.out = 5), 0)) +
@@ -203,10 +204,10 @@ plot.psHDM <- function(object,
     print(cc1)
   }
   ## Estimated plant trajectories.
-  if (!is.null(object$plant.level)) {
-    df.tra.HDM.sub <- droplevels(object$plant.level[object$plant.level$geno %in% geno.sub, ])
-    df.obs.HDM.sub <- droplevels(object$plant.obs[object$plant.obs$geno %in% geno.sub, ])
-    df.tra.HDM.geno.sub <- droplevels(object$geno.level[object$geno.level$geno %in% geno.sub, ])
+  if (!is.null(x$plant.level)) {
+    df.tra.HDM.sub <- droplevels(x$plant.level[x$plant.level$geno %in% geno.sub, ])
+    df.obs.HDM.sub <- droplevels(x$plant.obs[x$plant.obs$geno %in% geno.sub, ])
+    df.tra.HDM.geno.sub <- droplevels(x$geno.level[x$geno.level$geno %in% geno.sub, ])
     if (!is.null(geno.sub.names)) {
       df.tra.HDM.sub$geno      <- factor(df.tra.HDM.sub$geno[drop = TRUE],
                                          labels = geno.sub.names)
@@ -247,7 +248,7 @@ plot.psHDM <- function(object,
                     color = "") +
       my.theme() +
       ggplot2::facet_grid( ~ geno)
-    if (!is.null(object$geno.level$se_geno)) {
+    if (!is.null(x$geno.level$se_geno)) {
       dd1 <- dd1 +
         ggplot2::geom_ribbon(data = df.tra.HDM.geno.sub,
                              ggplot2::aes(x = timeNumber,

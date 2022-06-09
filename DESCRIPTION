@@ -55,6 +55,7 @@ Imports:
     grid,
     gridExtra,
     Matrix,
+    methods,
     LMMsolver,
     locfit,
     lubridate,
