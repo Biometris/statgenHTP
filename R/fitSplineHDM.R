@@ -453,6 +453,7 @@ fitSplineHDM <- function(inDat,
       dla <- abs(devold - dev)
       if (trace) {
         if(it == 1){
+          # header
           ed.names <- c("","Deviance", paste0("ed.p",1:n.pop),
                         "ed.g.int", "ed.g.slp", "ed.g.smooth",
                         "ed.i.int", "ed.i.slp", "ed.i.smooth")
