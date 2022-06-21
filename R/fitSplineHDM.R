@@ -452,6 +452,13 @@ fitSplineHDM <- function(inDat,
       lanew <- c(phi, unlist(tau))
       dla <- abs(devold - dev)
       if (trace) {
+        if(it == 1){
+          ed.names <- c("","Deviance", paste0("ed.p",1:n.pop),
+                        "ed.g.int", "ed.g.slp", "ed.g.smooth",
+                        "ed.i.int", "ed.i.slp", "ed.i.smooth")
+          cat(sprintf("%12.12s", ed.names), sep = "")
+          cat('\n')
+        }
         cat(sprintf("%1$3d %2$12.6f", it, dev), sep = "")
         cat(sprintf("%12.3f", unlist(ed)), sep = "")
         cat('\n')
