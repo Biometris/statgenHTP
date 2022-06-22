@@ -277,7 +277,7 @@ list.to.df <- function(object1,
 #'
 #' ## Plot the P-Spline predictions at the three levels of the hierarchy
 #' ## Plots at plant level for some genotypes (as illustration)
-#' plot(object = pred.psHDM,
+#' plot(x = pred.psHDM,
 #'     geno.sub = c("GenoA14_WD","GenoA51_WD","GenoB11_WW","GenoB02_WD","GenoB02_WW"),
 #'     my.theme = my.theme())
 #'
