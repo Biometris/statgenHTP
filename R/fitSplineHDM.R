@@ -105,8 +105,8 @@
 #' ## The data from the Phenovator platform have been corrected for spatial
 #' ## trends and outliers for single observations have been removed.
 #' head(spatCorrectedArch)
-#' ggplot(data = spatCorrectedArch, aes(x= timeNumber, y = LeafArea_corr, group = plotId))+
-#'  geom_line() + facet_grid(~geno.decomp)
+#' ggplot2::ggplot(data = spatCorrectedArch, ggplot2::aes(x= timeNumber, y = LeafArea_corr, group = plotId))+
+#'   ggplot2::geom_line() + ggplot2::facet_grid(~geno.decomp)
 #'
 #' ## We need to specify the genotype-by-treatment interaction
 #' ## Treatment: water regime (WW, WD)
@@ -137,7 +137,7 @@
 #'
 #' ## Plot the P-Spline predictions at the three levels of the hierarchy
 #' ## Plots at plant level for some genotypes (as illustration)
-#' plot(object = fit.psHDM,
+#' plot(x = fit.psHDM,
 #'     geno.sub = c("GenoA14_WD", "GenoA51_WD", "GenoB11_WW",
 #'                  "GenoB02_WD","GenoB02_WW"),
 #'     my.theme = my.theme())
@@ -252,7 +252,7 @@ fitSplineHDM <- function(inDat,
   ## Matrix to assign plants to populations
   ind.ind.pop <- rep(1:n.pop, n.plants_p_pop)
   if (n.pop == 1) {
-    C.pop <- Matrix::Diagonal(n = n.tot)
+    C.pop <- matrix(rep(1, n.tot), ncol = 1)
   } else {
     xxt <- data.frame(ind.pop = as.factor(ind.ind.pop))
     mft <- model.frame(~ ind.pop - 1, data = xxt, drop.unused.levels = TRUE)
@@ -268,7 +268,7 @@ fitSplineHDM <- function(inDat,
   ## Matrix to assign plants to genotypes.
   ind.ind.geno <- rep(1:n.geno, n.plants_p_geno)
   if (n.geno == 1) {
-    C.geno <- Matrix::Diagonal(n = n.tot)
+    C.geno <- matrix(rep(1, n.tot), ncol = 1)
   } else {
     xxg <- data.frame(ind.pop = as.factor(ind.ind.geno))
     mfg <- model.frame(~ ind.pop - 1, xxg, drop.unused.levels = TRUE)
