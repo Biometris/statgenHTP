@@ -190,6 +190,8 @@ fitSplineHDM <- function(inDat,
   fullGrid <- merge(unique(inDat[c(pop, geno, plant, "colId", "rowId")]),
                     timeDat)
   inDat <- merge(fullGrid, inDat, all.x = TRUE)
+  ## Order the data
+  inDat <- inDat[order(inDat[,pop], inDat[,geno], inDat[,plant], inDat[,time]),]
   ## Normalize time.
   raw.time <- timeDat[[time]]
   inDat[[time]] <- inDat[[time]] - min(inDat[[time]]) + 1
