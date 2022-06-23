@@ -163,6 +163,7 @@ fitSplineHDM <- function(inDat,
                          maxit = 200,
                          trace = TRUE,
                          thr = 1e-03) {
+  # browser()
   ## Checks.
   if (!is.character(trait) || length(trait) > 1) {
     stop("trait should be a character string of length 1.\n")
@@ -212,9 +213,9 @@ fitSplineHDM <- function(inDat,
     }
   }
   ## Elements and number of elements by level of the hierarchy.
-  l.pop <- levels(inDat[[pop]])
-  l.geno <- levels(inDat[[geno]])
-  l.plant <- levels(inDat[[plant]])
+  l.pop <- unique(inDat[[pop]])
+  l.geno <- unique(inDat[[geno]])
+  l.plant <- unique(inDat[[plant]])
   n.pop <- nlevels(inDat[[pop]])
   n.plants_p_pop <- apply(X = table(inDat[[pop]], inDat[[plant]]),
                           MARGIN = 1, FUN = function(x) { sum(x!=0) })
