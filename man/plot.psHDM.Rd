@@ -12,7 +12,7 @@
   geno.sub.order = NULL,
   xlab = NULL,
   ylab = NULL,
-  my.theme = my.theme(),
+  theme.HDM = theme.HDM(),
   ask = TRUE,
   global.main = list(pop.tra = NULL, geno.tra = NULL, geno.tra.deriv1 = NULL, geno.dev
     = NULL, plant.tra = NULL)
@@ -37,7 +37,7 @@ selected (geno.sub). The default is \code{NULL}}
 
 \item{ylab}{The y label of the plot. The default is \code{NULL}}
 
-\item{my.theme}{Theme to be used for the ggplots. The default is \code{my.theme()}.}
+\item{theme.HDM}{Theme to be used for the ggplots. The default is \code{theme.HDM()}.}
 
 \item{ask}{Should the next figure be drawn?}
 
@@ -84,7 +84,7 @@ fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
 ## Plots at plant level for some genotypes (as illustration)
 plot(fit.psHDM,
     geno.sub = c("GenoA14_WD","GenoA51_WD","GenoB11_WW","GenoB02_WD","GenoB02_WW"),
-    my.theme = my.theme())
+    theme.HDM = theme.HDM())
 
 }
 \references{

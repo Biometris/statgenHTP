@@ -140,7 +140,7 @@
 #' plot(x = fit.psHDM,
 #'     geno.sub = c("GenoA14_WD", "GenoA51_WD", "GenoB11_WW",
 #'                  "GenoB02_WD","GenoB02_WW"),
-#'     my.theme = my.theme())
+#'     theme.HDM = theme.HDM())
 #'
 #' @references Pérez-Valencia, D.M., Rodríguez-Álvarez, M.X., Boer, M.P. et al.
 #' A two-stage approach for the spatio-temporal analysis of high-throughput
