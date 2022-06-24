@@ -22,7 +22,7 @@
 #' (geno.sub). The default is \code{NULL}
 #' @param xlab The x label of the plot. The default is \code{NULL}
 #' @param ylab The y label of the plot. The default is \code{NULL}
-#' @param my.theme Theme to be used for the ggplots. The default is \code{my.theme()}.
+#' @param theme.HDM Theme to be used for the ggplots. The default is \code{theme.HDM()}.
 #' @param global.main A list with overall titles for plots at each level of the
 #' hierarchy. The default is \code{NULL} for all of them.
 #' @param ask Should the next figure be drawn?
@@ -57,7 +57,7 @@
 #' ## Plots at plant level for some genotypes (as illustration)
 #' plot(fit.psHDM,
 #'     geno.sub = c("GenoA14_WD","GenoA51_WD","GenoB11_WW","GenoB02_WD","GenoB02_WW"),
-#'     my.theme = my.theme())
+#'     theme.HDM = theme.HDM())
 #'
 #' @references Pérez-Valencia, D.M., Rodríguez-Álvarez, M.X., Boer, M.P. et al.
 #' A two-stage approach for the spatio-temporal analysis of high-throughput
@@ -71,7 +71,7 @@ plot.psHDM <- function(x,
                        geno.sub.order = NULL,
                        xlab = NULL,
                        ylab = NULL,
-                       my.theme = my.theme(),
+                       theme.HDM = theme.HDM(),
                        ask = TRUE,
                        global.main = list(pop.tra = NULL,
                                           geno.tra = NULL,
@@ -110,7 +110,7 @@ plot.psHDM <- function(x,
                                   labels = c(expression(tilde(y)[pgi](t)),
                                              expression(hat(f)[p](t)))) +
       ggplot2::labs(x = xlab, y = ylab, title = global.main$pop.tra, color = "") +
-      my.theme() +
+      theme.HDM() +
       ggplot2::facet_grid( ~ pop)
     if (!is.null(x$pop.level$se_pop)) {
       aa1 <- aa1 +
@@ -141,7 +141,7 @@ plot.psHDM <- function(x,
                                              expression(hat(f)[p](t)))) +
       ggplot2::labs(x = xlab, y = ylab, color = "",
                     title = global.main$geno.tra) +
-      my.theme() +
+      theme.HDM() +
       ggplot2::facet_grid( ~ pop)
     if (!is.null(x$pop.level$se_pop)) {
       bb1 <- bb1 +
@@ -172,7 +172,7 @@ plot.psHDM <- function(x,
                                              expression((hat(f)[p](t))*minute))) +
       ggplot2::labs(x = xlab, y = "First derivative", color = "",
                     title = global.main$geno.tra.deriv1) +
-      my.theme() +
+      theme.HDM() +
       ggplot2::facet_grid( ~ pop)
     if (!is.null(x$pop.level$se_pop_deriv1)) {
       bb2 <- bb2 +
@@ -198,7 +198,7 @@ plot.psHDM <- function(x,
                                   labels = c(expression(hat(f)[pg](t)))) +
       ggplot2::labs(x = xlab, y = ylab, title = global.main$geno.dev,
                     color = "") +
-      my.theme() +
+      theme.HDM() +
       ggplot2::facet_grid( ~ pop)
     if(ask) readline("Press return for next page....")
     print(cc1)
@@ -246,7 +246,7 @@ plot.psHDM <- function(x,
                                              expression(hat(f)[p](t)+hat(f)[pg](t)))) +
       ggplot2::labs(x = xlab, y = ylab, title = global.main$plant.tra,
                     color = "") +
-      my.theme() +
+      theme.HDM() +
       ggplot2::facet_grid( ~ geno)
     if (!is.null(x$geno.level$se_geno)) {
       dd1 <- dd1 +
@@ -265,12 +265,12 @@ plot.psHDM <- function(x,
 # Needed functions for plotting --------------------------------------------------------
 # Theme for the ggplot plots ----------------------------------------------
 
-#' my.theme
+#' theme.HDM
 #'
-#' my.theme
+#' theme.HDM
 #'
 #' @export
-my.theme <- function(my.size = 20) {
+theme.HDM <- function(my.size = 20) {
   ggplot2::theme(strip.text.x = ggplot2::element_text(size = my.size + 5),
                  strip.text.y = ggplot2::element_text(size = my.size + 5),
                  plot.title = ggplot2::element_text(hjust = 0.5,
