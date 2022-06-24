@@ -279,7 +279,7 @@ list.to.df <- function(object1,
 #' ## Plots at plant level for some genotypes (as illustration)
 #' plot(x = pred.psHDM,
 #'     geno.sub = c("GenoA14_WD","GenoA51_WD","GenoB11_WW","GenoB02_WD","GenoB02_WW"),
-#'     theme.HDM = theme.HDM())
+#'     my.theme = my.theme())
 #'
 #' @references Pérez-Valencia, D.M., Rodríguez-Álvarez, M.X., Boer, M.P. et al.
 #' A two-stage approach for the spatio-temporal analysis of high-throughput
