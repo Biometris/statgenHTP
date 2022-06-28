@@ -275,8 +275,8 @@ listToDf <- function(object1,
 #' ## Plot the P-Spline predictions at the three levels of the hierarchy
 #' ## Plots at plot level for some genotypes (as illustration)
 #' plot(x = pred.psHDM,
-#'     geno.sub = c("GenoA14_WD","GenoA51_WD","GenoB11_WW","GenoB02_WD","GenoB02_WW"),
-#'     theme.HDM = theme.HDM())
+#'     genotypes = c("GenoA14_WD","GenoA51_WD","GenoB11_WW","GenoB02_WD","GenoB02_WW"),
+#'     themeHDM = themeHDM())
 #'
 #' @references Pérez-Valencia, D.M., Rodríguez-Álvarez, M.X., Boer, M.P. et al.
 #' A two-stage approach for the spatio-temporal analysis of high-throughput

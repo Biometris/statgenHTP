@@ -58,8 +58,10 @@ error are available, 95\% pointwise confidence intervals are depicted.
 ## The data from the Phenovator platform have been corrected for spatial
 ## trends and outliers for single observations have been removed.
 head(spatCorrectedArch)
-ggplot(data = spatCorrectedArch, aes(x= timeNumber, y = LeafArea_corr, group = plotId))+
- geom_line() + facet_grid(~geno.decomp)
+ggplot2::ggplot(data = spatCorrectedArch,
+               ggplot2::aes(x= timeNumber, y = LeafArea_corr, group = plotId)) +
+  ggplot2::geom_line() +
+  ggplot2::facet_grid(~geno.decomp)
 
 ## We need to specify the genotype-by-treatment interaction
 ## Treatment: water regime (WW, WD)
