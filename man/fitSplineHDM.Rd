@@ -9,12 +9,12 @@ fitSplineHDM(
   trait,
   time,
   pop,
-  geno,
-  plant,
-  dif.var = list(geno = FALSE, plant = FALSE),
-  smooth.pop = list(nseg = 10, bdeg = 3, pord = 2),
-  smooth.geno = list(nseg = 10, bdeg = 3, pord = 2),
-  smooth.plant = list(nseg = 10, bdeg = 3, pord = 2),
+  genotype,
+  plotId,
+  difVar = list(geno = FALSE, plot = FALSE),
+  smoothPop = list(nseg = 10, bdeg = 3, pord = 2),
+  smoothGeno = list(nseg = 10, bdeg = 3, pord = 2),
+  smoothPlot = list(nseg = 10, bdeg = 3, pord = 2),
   offset = NULL,
   weights = NULL,
   family = gaussian(),
@@ -35,25 +35,14 @@ is measured for each plant.}
 \item{pop}{A character string indicating the the populations to which each
 genotype/variety belongs. This variable must be a factor in the data frame.}
 
-\item{geno}{A character string indicating the populations to which each
-genotype/variety belongs. This variable must be a factor in the data frame.}
-
-\item{plant}{A character string indicating the genotypes/varieties to which
-each plant/plot/individual belongs. This variable must be a factor in the
-data frame.}
-
-\item{dif.var}{Should different variances for random effects at genotype
+\item{difVar}{Should different variances for random effects at genotype
 (separately for each population) and plant level (separately for each
 genotype) be considered?.}
 
-\item{smooth.pop}{A list specifying the P-Spline model at the population
-level (nseg: number of segments; bdeg: degree of the B-spline basis; pord:
-penalty order).}
-
-\item{smooth.geno}{A list specifying the P-Spline model at the genotype
+\item{smoothGeno}{A list specifying the P-Spline model at the genotype
 level.}
 
-\item{smooth.plant}{A list specifying the P-Spline model at the plant level.}
+\item{smoothPlot}{A list specifying the P-Spline model at the plant level.}
 
 \item{offset}{An optional numerical vector containing an a priori known
 component to be included in the linear predictor during fitting. The default
@@ -74,18 +63,29 @@ The default is \code{TRUE}.}
 
 \item{thr}{An optional value that controls the convergence threshold of the
 algorithm. The default is 1.e-03.}
+
+\item{geno}{A character string indicating the populations to which each
+genotype/variety belongs. This variable must be a factor in the data frame.}
+
+\item{plant}{A character string indicating the genotypes/varieties to which
+each plant/plot/individual belongs. This variable must be a factor in the
+data frame.}
+
+\item{smooth.pop}{A list specifying the P-Spline model at the population
+level (nseg: number of segments; bdeg: degree of the B-spline basis; pord:
+penalty order).}
 }
 \value{
 An object of class \code{psHDM}, a list with the following outputs:
 \code{time}, a numeric vector with the timepoints.
-\code{l.geno}, a vector with the names of the genotypes.
-\code{l.pop}, a vector with the names of the populations
-\code{l.plant}, a vector with the names of the plants
-\code{n.plants_p_pop}, a numeric vector with the number of plants per
+\code{genoLevs}, a vector with the names of the genotypes.
+\code{popLevs}, a vector with the names of the populations
+\code{plotLevs}, a vector with the names of the plants
+\code{nPlotPop}, a numeric vector with the number of plants per
 population.
-\code{n.geno_p_pop}, a numeric vector with the number of genotypes per
+\code{nGenoPop}, a numeric vector with the number of genotypes per
 population.
-\code{n.plants_p_geno}, a numeric vector with the number of plants per
+\code{nPlotGeno}, a numeric vector with the number of plants per
 genotype.
 \code{MM}, a list with the design matrices at plant, genotype and
 population levels.
@@ -158,21 +158,21 @@ fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
                           trait = "LeafArea_corr",
                           time = "timeNumber",
                           pop = "geno.decomp",
-                          geno = "genobytreat",
-                          plant = "plotId",
-                          dif.var = list(geno = FALSE, plant = FALSE),
-                          smooth.pop = list(nseg = 4, bdeg = 3, pord = 2),
-                          smooth.geno = list(nseg = 4, bdeg = 3, pord = 2),
-                          smooth.plant = list(nseg = 4, bdeg = 3, pord = 2),
+                          genotype = "genobytreat",
+                          plotId = "plotId",
+                          difVar = list(geno = FALSE, plant = FALSE),
+                          smoothPop = list(nseg = 4, bdeg = 3, pord = 2),
+                          smoothGeno = list(nseg = 4, bdeg = 3, pord = 2),
+                          smoothPlot = list(nseg = 4, bdeg = 3, pord = 2),
                           weights = "wt")
 
 ## Visualize the data.frames with predicted values at the three levels of the hierarchy.
 ## Population level
-head(fit.psHDM$pop.level)
+head(fit.psHDM$popLevel)
 ## Genotype level
-head(fit.psHDM$geno.level)
-## Plant level
-head(fit.psHDM$plant.level)
+head(fit.psHDM$genoLevel)
+## Plot level
+head(fit.psHDM$plotLevel)
 
 ## Plot the P-Spline predictions at the three levels of the hierarchy
 ## Plots at plant level for some genotypes (as illustration)
