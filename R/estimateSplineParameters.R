@@ -3,9 +3,8 @@
 #' Function for extracting parameter estimates from fitted splines on a
 #' specified interval.
 #'
-#' @param x An object of class HTPSpline, the output of the
-#' \code{\link{fitSpline}} function, or class splineHDm, the output of the
-#' \code{\link{fitSplineHDM}} function
+#' @param HTPSpline An object of class HTPSpline, the output of the
+#' \code{\link{fitSpline}} function.
 #' @param estimate The P-Spline component for which the estimate should be
 #' extracted, the predictions, the first derivatives or the second derivatives
 #' ("derivatives2")
@@ -28,16 +27,11 @@
 #' @param plotIds A character vector indicating the plotIds for which
 #' estimates should be extracted. If \code{NULL}, estimates will be extracted
 #' for all plotIds for which splines where fitted.
-#' @param fitLevel A character string indicating at which level of the data
-#' the parameter estimates should be made. Only used for splines fitted using
-#' \code{\link{fitSplineHDM}}.
 #'
-#' @return An object of class splineEst, a data.frame containing the
+#' @return An object of class HTPSplineEst, a data.frame containing the
 #' estimated parameters.
 #'
 #' @examples
-#' ### Estimate parameters for fitted P-splines.
-#'
 #' ## Run the function to fit P-splines on a subset of genotypes.
 #' subGeno <- c("G160", "G151")
 #' fit.spline <- fitSpline(inDat = spatCorrectedVator,
@@ -46,7 +40,7 @@
 #'                         knots = 50)
 #'
 #' ## Estimate the maximum value of the predictions at the beginning of the time course.
-#' paramVator <- estimateSplineParameters(x = fit.spline,
+#' paramVator <- estimateSplineParameters(HTPSpline = fit.spline,
 #'                                        estimate = "predictions",
 #'                                        what = "max",
 #'                                        timeMin = 1527784620,
@@ -54,69 +48,17 @@
 #'                                        genotypes = subGeno)
 #' head(paramVator)
 #'
-#' ## Create a boxplot of the estimates.
-#' plot(paramVator, plotType = "box")
-#'
 #' ## Estimate the minimum and maximum value of the predictions.
-#' paramVator2 <- estimateSplineParameters(x = fit.spline,
+#' paramVator2 <- estimateSplineParameters(HTPSpline = fit.spline,
 #'                                         estimate = "predictions",
 #'                                         what = c("min", "max"),
 #'                                         genotypes = subGeno)
 #' head(paramVator2)
 #'
-#'
-#' ### Estimate parameters for fitted HDM-splines.
-#'
-#' ## The data from the Phenovator platform have been corrected for spatial
-#' ## trends and outliers for single observations have been removed.
-#'
-#' ## We need to specify the genotype-by-treatment interaction.
-#' ## Treatment: water regime (WW, WD).
-#' spatCorrectedArch[["treat"]] <- substr(spatCorrectedArch[["geno.decomp"]],
-#'                                       start = 1, stop = 2)
-#' spatCorrectedArch[["genoTreat"]] <-
-#'   interaction(spatCorrectedArch[["genotype"]],
-#'              spatCorrectedArch[["treat"]], sep = "_")
-#'
-#' ## Fit P-Splines Hierarchical Curve Data Model for selection of genotypes.
-#' fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
-#'                           trait = "LeafArea_corr",
-#'                           genotypes = c("GenoA14_WD", "GenoA51_WD",
-#'                                        "GenoB11_WW", "GenoB02_WD",
-#'                                        "GenoB02_WW"),
-#'                           time = "timeNumber",
-#'                           pop = "geno.decomp",
-#'                           genotype = "genoTreat",
-#'                           plotId = "plotId",
-#'                           difVar = list(geno = FALSE, plant = FALSE),
-#'                           smoothPop = list(nseg = 4, bdeg = 3, pord = 2),
-#'                           smoothGeno = list(nseg = 4, bdeg = 3, pord = 2),
-#'                           smoothPlot = list(nseg = 4, bdeg = 3, pord = 2),
-#'                           weights = "wt",
-#'                           trace = FALSE)
-#'
-#' ## Estimate minimum, maximum, and mean for predictions at the genotype level.
-#' paramArch <- estimateSplineParameters(x = fit.psHDM,
-#'                                      what = c("min", "max", "mean"),
-#'                                      fitLevel = "geno",
-#'                                      estimate = "predictions",
-#'                                      timeMax = 28)
-#' head(paramArch)
-#'
-#' ## Create a boxplot of the estimates.
-#' plot(paramArch, plotType = "box")
-#'
-#' ## Estimate area under the curve for predictions at the plot level.
-#' paramArch2 <- estimateSplineParameters(x = fit.psHDM,
-#'                                       what = "AUC",
-#'                                       fitLevel = "plot",
-#'                                       estimate = "predictions")
-#' head(paramArch2)
-#'
 #' @family functions for spline parameter estimation
 #'
 #' @export
-estimateSplineParameters <- function(x,
+estimateSplineParameters <- function(HTPSpline,
                                      estimate = c("predictions", "derivatives",
                                                   "derivatives2"),
                                      what = c("min", "max", "mean", "AUC", "p"),
@@ -125,44 +67,35 @@ estimateSplineParameters <- function(x,
                                      timeMax = NULL,
                                      genotypes = NULL,
                                      plotIds = NULL,
-                                     fitLevel = c("geno", "plot", "genoDev",
-                                                  "plotDev")) {
+                                     fitLevel = c("pop", "genotype", "plotId")) {
   ## General settings.
   estimate <- match.arg(estimate)
   AUCScale <- match.arg(AUCScale)
-  trait <- attr(x, which = "trait")
-  if (inherits(x, "HTPSpline")) {
+  trait <- attr(HTPSpline, which = "trait")
+  if (inherits(HTPSpline, "HTPSpline")) {
     ## HTP spline specific settings.
     estVar <- if (estimate == "predictions") "pred.value" else if
     (estimate == "derivatives") "deriv" else "deriv2"
-    useTimeNumber <- attr(x, which = "useTimeNumber")
-    useGenoDecomp <- attr(x, which = "useGenoDecomp")
-    fitLevel <- attr(x, which = "fitLevel")
-    predDat <- x$predDat
+    useTimeNumber <- attr(HTPSpline, which = "useTimeNumber")
+    useGenoDecomp <- attr(HTPSpline, which = "useGenoDecomp")
+    fitLevel <- attr(HTPSpline, which = "fitLevel")
+    predDat <- HTPSpline$predDat
     ## Construct levels for aggregating.
     aggLevs <- unique(c("genotype", if (useGenoDecomp) "geno.decomp",
                         fitLevel))
-  } else if (inherits(x, "psHDM")) {
+  } else if (inherits(HTPSpline, "psHDM")) {
     ## HDM spline specific settings.
     fitLevel <- match.arg(fitLevel)
-    ## To title case doesn't work for genoDev and plotDev.
-    ## It leaves them as is.
-    estVarBase <- paste0("f", toupper(substring(fitLevel, first = 1, last = 1)),
-                         substring(fitLevel, first = 2))
+    estVarBase <- paste0("f", tools::toTitleCase(substr(fitLevel, 1, 4)))
     estVar <- if (estimate == "predictions") estVarBase else if
     (estimate == "derivatives") paste0(estVarBase, "Deriv1") else
       paste0(estVarBase, "Deriv2")
     useTimeNumber <- TRUE
     useGenoDecomp <- FALSE
-    ## Check that predictions were made at the level estimates are computed.
-    fitLevelName <- paste0(substr(fitLevel, 1, 4), "Level")
-    if (is.null(x[[fitLevelName]])) {
-      stop("No predictions were made at ", substr(fitLevel, 1, 4), "level.\n")
-    }
-    predDat <- x[[fitLevelName]]
+    predDat <- HTPSpline[[paste0(substr(fitLevel, 1, 4), "Level")]]
     ## Construct levels for aggregating.
-    aggLevs <- unique(c("pop", "genotype",
-                        if (fitLevel %in% c("plot", "plotDev")) "plotId"))
+    aggLevs <- unique(c("pop", if (fitLevel != "pop") "genotype",
+                        fitLevel))
   }
   if (!is.null(genotypes) &&
       (!is.character(genotypes) ||
@@ -268,8 +201,7 @@ estimateSplineParameters <- function(x,
                    estimate = estimate,
                    trait = trait,
                    useGenoDecomp = useGenoDecomp,
-                   aggLevs = aggLevs,
-                   class = c("splineEst", "data.frame"))
+                   class = c("HTPSplineEst", "data.frame"))
   return(res)
 }
 
@@ -277,35 +209,31 @@ estimateSplineParameters <- function(x,
 #'
 #' @inheritParams plot.TP
 #'
-#' @param x An object of class \code{splineEst}
+#' @param x An object of class \code{HTPSpline}.
 #' @param ... Ignored.
 #' @param plotType A character string indicating the type of plot to be made.
-#' @param what The types of estimate that should be plotted.
+#' @param what The types of estimate that should be extracted.
 #'
-#' @return A list of objects of class ggplot is invisibly returned.
+#' @return A list of object of class ggplot is invisibly returned.
 #'
 #' @family functions for spline parameter estimation
 #'
 #' @export
-plot.splineEst <- function(x,
-                           ...,
-                           plotType = c("box", "hist"),
-                           what = attr(x, "what"),
-                           title = NULL,
-                           output = TRUE,
-                           outFile = NULL,
-                           outFileOpts = NULL) {
+plot.HTPSplineEst <- function(x,
+                              ...,
+                              plotType = c("box", "hist"),
+                              what = attr(x, "what"),
+                              title = NULL,
+                              output = TRUE,
+                              outFile = NULL,
+                              outFileOpts = NULL) {
   plotType <- match.arg(plotType)
-  what <- match.arg(what, several.ok = TRUE)
+  what <- match.arg(what)
   trait <- attr(x, which = "trait")
   estimate <- attr(x, which = "estimate")
   useGenoDecomp <- attr(x, which = "useGenoDecomp")
-  aggLevs <- attr(x, which = "aggLevs")
-  plotVar <- if (length(aggLevs) == 1) aggLevs else aggLevs[length(aggLevs) - 1]
-  for (aggLev in aggLevs) {
-    if (!is.factor(x[[aggLev]])) {
-      x[[aggLev]] <- as.factor(x[[aggLev]])
-    }
+  if (!is.factor(x[["genotype"]])) {
+    x[["genotype"]] <- as.factor(x[["genotype"]])
   }
   if (!is.null(outFile)) {
     chkFile(outFile, fileType = "pdf")
@@ -318,17 +246,18 @@ plot.splineEst <- function(x,
     pTot <- lapply(X = what, FUN = function(w) {
       estVar <- paste0(w, "_", estimate)
       pWhat <- ggplot2::ggplot(x,
-                               ggplot2::aes_string(x = plotVar, y = estVar)) +
+                               ggplot2::aes_string(x = "genotype", y = estVar)) +
         ggplot2::geom_boxplot(na.rm = TRUE) +
         ggplot2::labs(title = title, y = (paste(w, "of", trait))) +
         ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90,
                                                            vjust = 0.5))
       if (useGenoDecomp) {
-        pWhat <- pWhat +
-          ggplot2::facet_grid(. ~ geno.decomp, scales = "free_x",
-                              space = "free_x")
+        pWhat <- pWhat + ggplot2::facet_grid(. ~ geno.decomp, scales = "free_x",
+                                             space = "free_x")
       }
-      return(pWhat)
+      if (output) {
+        plot(pWhat)
+      }
     })
   } else if (plotType == "hist") {
     pTot <- lapply(X = what, FUN = function(w) {
@@ -337,17 +266,13 @@ plot.splineEst <- function(x,
         ggplot2::geom_histogram(na.rm = TRUE, bins = 10) +
         ggplot2::labs(title = title, y = (paste(w, "of", trait)))
       if (useGenoDecomp) {
-        pWhat <- pWhat +
-          ggplot2::facet_grid(. ~ geno.decomp, scales = "free_x",
-                              space = "free_x")
+        pWhat <- pWhat + ggplot2::facet_grid(. ~ geno.decomp, scales = "free_x",
+                                             space = "free_x")
       }
-      return(pWhat)
+      if (output) {
+        plot(pWhat)
+      }
     })
-  }
-  if (output) {
-    for (p in pTot) {
-      plot(p)
-    }
   }
   invisible(pTot)
 }
