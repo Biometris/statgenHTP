@@ -24,15 +24,15 @@
 #' is measured for each plant.
 #' @param pop A character string indicating the the populations to which each
 #' genotype/variety belongs. This variable must be a factor in the data frame.
-#' @param geno A character string indicating the populations to which each
+#' @param genotype A character string indicating the populations to which each
 #' genotype/variety belongs. This variable must be a factor in the data frame.
-#' @param plant A character string indicating the genotypes/varieties to which
+#' @param plotId A character string indicating the genotypes/varieties to which
 #' each plant/plot/individual belongs. This variable must be a factor in the
 #' data frame.
 #' @param difVar Should different variances for random effects at genotype
 #' (separately for each population) and plant level (separately for each
 #' genotype) be considered?.
-#' @param smooth.pop A list specifying the P-Spline model at the population
+#' @param smoothPop A list specifying the P-Spline model at the population
 #' level (nseg: number of segments; bdeg: degree of the B-spline basis; pord:
 #' penalty order).
 #' @param smoothGeno A list specifying the P-Spline model at the genotype
@@ -79,12 +79,12 @@
 #' \code{phi}, a numeric value with the error variance estimate.
 #' \code{coeff}, a numeric vector with the estimated fixed and random
 #' effect coefficients.
-#' \code{pop.level}, a data.frame with the estimated population trajectories
+#' \code{popLevel}, a data.frame with the estimated population trajectories
 #' and first and second order derivatives.
-#' \code{geno.level}, a data.frame with the estimated genotype-specific
+#' \code{genoLevel}, a data.frame with the estimated genotype-specific
 #' deviations and trajectories, and their respective first and second
 #' order derivatives.
-#' \code{plant.level}, a data.frame with the estimated plant-specific
+#' \code{plotLevel}, a data.frame with the estimated plant-specific
 #' deviations and trajectories, and their respective first and second
 #' order derivatives.
 #' \code{deviance}, the (REML) deviance at convergence.
@@ -105,8 +105,10 @@
 #' ## The data from the Phenovator platform have been corrected for spatial
 #' ## trends and outliers for single observations have been removed.
 #' head(spatCorrectedArch)
-#' ggplot2::ggplot(data = spatCorrectedArch, ggplot2::aes(x= timeNumber, y = LeafArea_corr, group = plotId))+
-#'   ggplot2::geom_line() + ggplot2::facet_grid(~geno.decomp)
+#' ggplot2::ggplot(data = spatCorrectedArch,
+#'                 ggplot2::aes(x= timeNumber, y = LeafArea_corr, group = plotId)) +
+#'   ggplot2::geom_line() +
+#'   ggplot2::facet_grid(~geno.decomp)
 #'
 #' ## We need to specify the genotype-by-treatment interaction
 #' ## Treatment: water regime (WW, WD)
@@ -138,9 +140,9 @@
 #' ## Plot the P-Spline predictions at the three levels of the hierarchy
 #' ## Plots at plant level for some genotypes (as illustration)
 #' plot(x = fit.psHDM,
-#'     geno.sub = c("GenoA14_WD", "GenoA51_WD", "GenoB11_WW",
+#'     genotypes = c("GenoA14_WD", "GenoA51_WD", "GenoB11_WW",
 #'                  "GenoB02_WD","GenoB02_WW"),
-#'     theme.HDM = theme.HDM())
+#'     themeHDM = themeHDM())
 #'
 #' @references Pérez-Valencia, D.M., Rodríguez-Álvarez, M.X., Boer, M.P. et al.
 #' A two-stage approach for the spatio-temporal analysis of high-throughput
@@ -503,7 +505,8 @@ fitSplineHDM <- function(inDat,
          Vp = spam::chol2inv(cholHn),
          smooth = list(smoothPop = smoothPop, smoothGeno = smoothGeno,
                        smoothPlot = smoothPlot)),
-    class = c("psHDM", "list")
+    class = c("psHDM", "list"),
+    trait = trait
   )
   ## Make predictions on original data points.
   preds <- predict.psHDM(res,
@@ -512,6 +515,7 @@ fitSplineHDM <- function(inDat,
   ## Add predictions to results.
   res <- c(res, preds[c("popLevel", "genoLevel", "plotLevel")])
   class(res) <- c("psHDM", "list")
+  attr(res, which = "trait") <- trait
   return(res)
 }
 

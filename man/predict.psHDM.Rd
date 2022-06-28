@@ -70,8 +70,8 @@ pred.psHDM <- predict(object = fit.psHDM,
 ## Plot the P-Spline predictions at the three levels of the hierarchy
 ## Plots at plot level for some genotypes (as illustration)
 plot(x = pred.psHDM,
-    geno.sub = c("GenoA14_WD","GenoA51_WD","GenoB11_WW","GenoB02_WD","GenoB02_WW"),
-    theme.HDM = theme.HDM())
+    genotypes = c("GenoA14_WD","GenoA51_WD","GenoB11_WW","GenoB02_WD","GenoB02_WW"),
+    themeHDM = themeHDM())
 
 }
 \references{

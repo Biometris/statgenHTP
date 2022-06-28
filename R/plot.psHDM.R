@@ -31,8 +31,10 @@
 #' ## The data from the Phenovator platform have been corrected for spatial
 #' ## trends and outliers for single observations have been removed.
 #' head(spatCorrectedArch)
-#' ggplot(data = spatCorrectedArch, aes(x= timeNumber, y = LeafArea_corr, group = plotId))+
-#'  geom_line() + facet_grid(~geno.decomp)
+#' ggplot2::ggplot(data = spatCorrectedArch,
+#'                ggplot2::aes(x= timeNumber, y = LeafArea_corr, group = plotId)) +
+#'   ggplot2::geom_line() +
+#'   ggplot2::facet_grid(~geno.decomp)
 #'
 #' ## We need to specify the genotype-by-treatment interaction
 #' ## Treatment: water regime (WW, WD)
@@ -88,83 +90,86 @@ plot.psHDM <- function(x,
   if (is.null(ylab)) {
     ylab <- expression(tilde(y)[pgi](t))
   }
-  if(is.null(x$plotObs)){
+  if (is.null(x$plotObs)){
     x$plotObs <- x$plotLevel
   }
-  ntime <- length(unique(x$plotObs$timeNumber))
-  minT <- min(x$plotObs$timeNumber)
-  maxT <- max(x$plotObs$timeNumber)
+  minT <- min(x$plotObs[["timeNumber"]])
+  maxT <- max(x$plotObs[["timeNumber"]])
   if (!is.null(x$popLevel)) {
     ## Population-specific growth curves.
     plotCols <- c("1" = "gray", "2" = "blue")
-    aa1 <- ggplot2::ggplot(data = x$plotObs) +
-      ggplot2::geom_line(ggplot2::aes(timeNumber, obsPlot, group = plotId,
-                                      color = "1"), na.rm = TRUE) +
+    p1 <- ggplot2::ggplot(data = x$plotObs,
+                          ggplot2::aes_string(x = "timeNumber")) +
+      ggplot2::geom_line(ggplot2::aes_string(y = "obsPlot", group = "plotId",
+                         color = "'1'"), na.rm = TRUE) +
       ggplot2::geom_line(data = x$popLevel,
-                         ggplot2::aes(timeNumber, fPop, group = pop,
-                                      color = "2"), na.rm = TRUE) +
-      ggplot2::geom_rug(ggplot2::aes(x = timeNumber, y = NULL), color = "gray",
+                         ggplot2::aes_string(y = "fPop", group = "pop",
+                                             color = "'2'"), na.rm = TRUE) +
+      ggplot2::geom_rug(ggplot2::aes(y = NULL), color = "gray",
                         length = ggplot2::unit(0.01, "npc")) +
-      ggplot2::scale_x_continuous(breaks = round(seq(minT, maxT, length.out = 5), 0)) +
+      ggplot2::scale_x_continuous(breaks = round(seq(minT, maxT,
+                                                     length.out = 5), 0)) +
       ggplot2::scale_color_manual(values = plotCols,
                                   labels = c(expression(tilde(y)[pgi](t)),
                                              expression(hat(f)[p](t)))) +
       ggplot2::labs(x = xlab, y = ylab, title = title$popTra, color = "") +
-      themeHDM() +
+      themeHDM +
       ggplot2::facet_grid(~ pop)
     if (!is.null(x$popLevel$sePop)) {
-      aa1 <- aa1 +
+      p1 <- p1 +
         ggplot2::geom_ribbon(data = x$popLevel,
-                             ggplot2::aes(x = timeNumber,
-                                          ymin = fPop - 1.96 * sePop,
-                                          ymax = fPop + 1.96 * sePop,
-                                          group = pop),
+                             ggplot2::aes_string(ymin = "fPop - 1.96 * sePop",
+                                                 ymax = "fPop + 1.96 * sePop",
+                                                 group = "pop"),
                              fill = ggplot2::alpha("blue", 0.3))
     }
-    print(aa1)
+    plot(p1)
   }
   if (!is.null(x$genoLevel)) {
     ## Genotype-specific growth curves.
     plotCols <- c("1" = "blue", "2" = "orange")
-    bb1 <- ggplot2::ggplot(data = x$genoLevel) +
-      ggplot2::geom_line(ggplot2::aes(timeNumber, fGeno, group = genotype,
-                                      color = "1"), na.rm = TRUE) +
+    p2 <- ggplot2::ggplot(data = x$genoLevel,
+                           ggplot2::aes_string(x = "timeNumber")) +
+      ggplot2::geom_line(ggplot2::aes_string(y = "fGeno", group = "genotype",
+                                             color = "'1'"), na.rm = TRUE) +
       ggplot2::geom_line(data = x$popLevel,
-                         ggplot2::aes(timeNumber, fPop, group = pop,
-                                      color="2"), size = 0.8, na.rm = TRUE) +
+                         ggplot2::aes_string(y = "fPop", group = "pop",
+                                             color = "'2'"),
+                         size = 0.8, na.rm = TRUE) +
       ggplot2::geom_rug(data = x$plotObs,
-                        ggplot2::aes(x = timeNumber, y = NULL), color = "gray",
+                        ggplot2::aes(y = NULL), color = "gray",
                         length = ggplot2::unit(0.01, "npc")) +
-      ggplot2::scale_x_continuous(breaks = round(seq(minT, maxT, length.out = 5), 0)) +
+      ggplot2::scale_x_continuous(breaks = round(seq(minT, maxT,
+                                                     length.out = 5), 0)) +
       ggplot2::scale_color_manual(values = plotCols,
                                   labels = c(expression(hat(f)[p](t)+hat(f)[pg](t)),
                                              expression(hat(f)[p](t)))) +
-      ggplot2::labs(x = xlab, y = ylab, color = "",
-                    title = title$genoTra) +
-      themeHDM() +
+      ggplot2::labs(x = xlab, y = ylab, color = "", title = title$genoTra) +
+      themeHDM +
       ggplot2::facet_grid(~ pop)
     if (!is.null(x$popLevel$sePop)) {
-      bb1 <- bb1 +
+      p2 <- p2 +
         ggplot2::geom_ribbon(data = x$popLevel,
-                             ggplot2::aes(x = timeNumber,
-                                          ymin = fPop - 1.96 * sePop,
-                                          ymax = fPop + 1.96 * sePop,
-                                          group = pop),
+                             ggplot2::aes_string(ymin = "fPop - 1.96 * sePop",
+                                                 ymax = "fPop + 1.96 * sePop",
+                                                 group = "pop"),
                              fill = ggplot2::alpha("orange", 0.5))
     }
     if (ask) readline("Press return for next page....")
-    print(bb1)
+    plot(p2)
     ## First derivative of the genotype-specific growth curves.
-    bb2 <- ggplot2::ggplot(data = x$genoLevel) +
-      ggplot2::geom_line(ggplot2::aes(timeNumber, fGenoDeriv1, group = genotype,
-                                      color = "1"), na.rm = TRUE) +
+    p3 <- ggplot2::ggplot(data = x$genoLevel,
+                          ggplot2::aes_string(x = "timeNumber")) +
+      ggplot2::geom_line(ggplot2::aes_string(y = "fGenoDeriv1", group = "genotype",
+                                             color = "'1'"), na.rm = TRUE) +
       ggplot2::geom_line(data = x$popLevel,
-                         ggplot2::aes(timeNumber, fPopDeriv1, group = pop,
-                                      color = "2"), na.rm = TRUE) +
+                         ggplot2::aes_string(y = "fPopDeriv1", group = "pop",
+                                             color = "'2'"), na.rm = TRUE) +
       ggplot2::geom_rug(data = x$plotObs,
-                        ggplot2::aes(x = timeNumber, y = NULL), color = "gray",
+                        ggplot2::aes(y = NULL), color = "gray",
                         length = ggplot2::unit(0.01, "npc")) +
-      ggplot2::scale_x_continuous(breaks = round(seq(minT, maxT, length.out = 5), 0)) +
+      ggplot2::scale_x_continuous(breaks = round(seq(minT, maxT,
+                                                     length.out = 5), 0)) +
       ggplot2::ylim(min(x$genoLevel$fGenoDeriv1),
                     max(x$genoLevel$fGenoDeriv1) * 1.2) +
       ggplot2::scale_color_manual(values = plotCols,
@@ -172,36 +177,38 @@ plot.psHDM <- function(x,
                                              expression((hat(f)[p](t))*minute))) +
       ggplot2::labs(x = xlab, y = "First derivative", color = "",
                     title = title$genoTraDeriv1) +
-      themeHDM() +
+      themeHDM +
       ggplot2::facet_grid(~ pop)
     if (!is.null(x$popLevel$sePopDeriv1)) {
-      bb2 <- bb2 +
+      p3 <- p3 +
         ggplot2::geom_ribbon(data = x$popLevel,
-                             ggplot2::aes(x = timeNumber,
-                                          ymin = fPopDeriv1 - 1.96 * sePopDeriv1,
-                                          ymax = fPopDeriv1 + 1.96 * sePopDeriv1,
-                                          group = pop),
+                             ggplot2::aes_string(
+                               ymin = "fPopDeriv1 - 1.96 * sePopDeriv1",
+                               ymax = "fPopDeriv1 + 1.96 * sePopDeriv1",
+                               group = "pop"),
                              fill = ggplot2::alpha("orange", 0.5))
     }
     if(ask) readline("Press return for next page....")
-    print(bb2)
+    plot(p3)
     ## Estimated genotypic deviations.
     plotCols <- c("1" = "blue")
-    cc1 <- ggplot2::ggplot(data = x$genoLevel) +
-      ggplot2::geom_line(ggplot2::aes(timeNumber, fGenoDev, group = genotype,
-                                      color = "1"), na.rm = TRUE) +
+    p4 <- ggplot2::ggplot(data = x$genoLevel,
+                           ggplot2::aes_string(x = "timeNumber")) +
+      ggplot2::geom_line(ggplot2::aes_string(y = "fGenoDev", group = "genotype",
+                                             color = "'1'"), na.rm = TRUE) +
       ggplot2::geom_rug(data = x$plotObs,
-                        ggplot2::aes(x = timeNumber, y = NULL), color = "gray",
+                        ggplot2::aes(y = NULL), color = "gray",
                         length = ggplot2::unit(0.01, "npc")) +
-      ggplot2::scale_x_continuous(breaks = round(seq(minT, maxT, length.out = 5), 0)) +
+      ggplot2::scale_x_continuous(breaks = round(seq(minT, maxT,
+                                                     length.out = 5), 0)) +
       ggplot2::scale_color_manual(values = plotCols,
                                   labels = c(expression(hat(f)[pg](t)))) +
       ggplot2::labs(x = xlab, y = ylab, title = title$genoDev,
                     color = "") +
-      themeHDM() +
+      themeHDM +
       ggplot2::facet_grid(~ pop)
     if(ask) readline("Press return for next page....")
-    print(cc1)
+    plot(p4)
   }
   ## Estimated plot trajectories.
   if (!is.null(x$plotLevel)) {
@@ -225,19 +232,21 @@ plot.psHDM <- function(x,
                                       levels = levels(dfTraGenoSub$genotype)[genotypeOrder])
     }
     plotCols <- c("1" = "gray", "2" = "blue", "3" = "red")
-    dd1 <- ggplot2::ggplot(data = dfObsSub) +
-      ggplot2::geom_line(ggplot2::aes(timeNumber, obsPlot, group = plotId,
-                                      color = "1"), na.rm = TRUE) +
+    p5 <- ggplot2::ggplot(data = dfObsSub,
+                           ggplot2::aes_string(x = "timeNumber")) +
+      ggplot2::geom_line(ggplot2::aes_string(y = "obsPlot", group = "plotId",
+                                      color = "'1'"), na.rm = TRUE) +
       ggplot2::geom_line(data = dfTraSub,
-                         ggplot2::aes(timeNumber, fPlot, group = plotId,
-                                      color = "2"), linetype = 2, na.rm = TRUE) +
+                         ggplot2::aes_string(y = "fPlot", group = "plotId",
+                                             color = "'2'"),
+                         linetype = 2, na.rm = TRUE) +
       ggplot2::geom_line(data = dfTraGenoSub,
-                         ggplot2::aes(timeNumber, fGeno, group = genotype,
-                                      color = "3"), na.rm = TRUE) +
-      ggplot2::geom_rug(data = dfObsSub,
-                        ggplot2::aes(x = timeNumber, y = NULL),
-                        color = "gray", length = ggplot2::unit(0.01, "npc")) +
-      ggplot2::scale_x_continuous(breaks = round(seq(minT, maxT, length.out = 5), 0)) +
+                         ggplot2::aes_string(y = "fGeno", group = "genotype",
+                                             color = "'3'"), na.rm = TRUE) +
+      ggplot2::geom_rug(ggplot2::aes(y = NULL), color = "gray",
+                        length = ggplot2::unit(0.01, "npc")) +
+      ggplot2::scale_x_continuous(breaks = round(seq(minT, maxT,
+                                                     length.out = 5), 0)) +
       ggplot2::ylim(min(dfObsSub$obsPlot, na.rm = TRUE),
                     max(dfObsSub$obsPlot, na.rm = TRUE) * 1.2) +
       ggplot2::scale_color_manual(values = plotCols,
@@ -246,20 +255,21 @@ plot.psHDM <- function(x,
                                              expression(hat(f)[p](t)+hat(f)[pg](t)))) +
       ggplot2::labs(x = xlab, y = ylab, title = title$plotTra,
                     color = "") +
-      themeHDM() +
+      themeHDM +
       ggplot2::facet_grid(~ genotype)
     if (!is.null(x$genoLevel$seGeno)) {
-      dd1 <- dd1 +
+      p5 <- p5 +
         ggplot2::geom_ribbon(data = dfTraGenoSub,
-                             ggplot2::aes(x = timeNumber,
-                                          ymin = fGeno - 1.96 * seGeno,
-                                          ymax = fGeno + 1.96 * seGeno,
-                                          group = pop),
+                             ggplot2::aes_string(
+                               ymin = "fGeno - 1.96 * seGeno",
+                               ymax = "fGeno + 1.96 * seGeno",
+                               group = "pop"),
                              fill = ggplot2::alpha("orange", 0.5))
     }
     if(ask) readline("Press return for next page....")
-    print(dd1)
+    plot(p5)
   }
+  invisible(list(p1, p2, p3, p4, p5))
 }
 
 # Needed functions for plotting --------------------------------------------------------
