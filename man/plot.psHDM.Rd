@@ -7,15 +7,15 @@
 \method{plot}{psHDM}(
   x,
   ...,
-  geno.sub,
-  geno.sub.names = NULL,
-  geno.sub.order = NULL,
+  genotypes,
+  genotypeNames = NULL,
+  genotypeOrder = NULL,
   xlab = NULL,
   ylab = NULL,
-  theme.HDM = theme.HDM(),
+  themeHDM = themeHDM(),
   ask = TRUE,
-  global.main = list(pop.tra = NULL, geno.tra = NULL, geno.tra.deriv1 = NULL, geno.dev
-    = NULL, plant.tra = NULL)
+  title = list(popTra = NULL, genoTra = NULL, genoTraDeriv1 = NULL, genoDev = NULL,
+    plotTra = NULL)
 )
 }
 \arguments{
@@ -24,24 +24,24 @@
 
 \item{...}{Not used.}
 
-\item{geno.sub}{A character vector with the genotypes for which plots are
+\item{genotypes}{A character vector with the genotypes for which plots are
 desired.}
 
-\item{geno.sub.names}{A character vector with the names for the genotypes
-selected (geno.sub). The default is \code{NULL}}
+\item{genotypeNames}{A character vector with the names for the genotypes
+selected (genotypes). The default is \code{NULL}}
 
-\item{geno.sub.order}{A vector with the order of the genotypes selected
-(geno.sub). The default is \code{NULL}}
+\item{genotypeOrder}{A vector with the order of the genotypes selected
+(genotypes). The default is \code{NULL}}
 
 \item{xlab}{The x label of the plot. The default is \code{NULL}}
 
 \item{ylab}{The y label of the plot. The default is \code{NULL}}
 
-\item{theme.HDM}{Theme to be used for the ggplots. The default is \code{theme.HDM()}.}
+\item{themeHDM}{Theme to be used for the ggplots. The default is \code{themeHDM()}.}
 
 \item{ask}{Should the next figure be drawn?}
 
-\item{global.main}{A list with overall titles for plots at each level of the
+\item{title}{A list with overall titles for plots at each level of the
 hierarchy. The default is \code{NULL} for all of them.}
 }
 \description{
@@ -50,7 +50,7 @@ after fitting (\code{\link{fitSplineHDM}}) or predicting
 (\code{\link{predict.psHDM}}): (1) Population-specific growth curves,
 (2) Genotype-specific growth curves (for all genotypes), (3) First-order
 derivative of the genotype-specific growth curves (for all genotypes),
-(4) Genotype-specific deviations (for all genotypes), and (5) Plant- and
+(4) Genotype-specific deviations (for all genotypes), and (5) Plot- and
 genotype-specific growth curves (for a selection of genotypes). If standard
 error are available, 95\% pointwise confidence intervals are depicted.
 }
@@ -72,19 +72,19 @@ fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
                           trait = "LeafArea_corr",
                           time = "timeNumber",
                           pop = "geno.decomp",
-                          geno = "genobytreat",
-                          plant = "plotId",
-                          dif.var = list(geno = FALSE, plant = FALSE),
-                          smooth.pop = list(nseg = 4, bdeg = 3, pord = 2),
-                          smooth.geno = list(nseg = 4, bdeg = 3, pord = 2),
-                          smooth.plant = list(nseg = 4, bdeg = 3, pord = 2),
+                          genotype = "genobytreat",
+                          plotId = "plotId",
+                          difVar = list(geno = FALSE, plant = FALSE),
+                          smoothPop = list(nseg = 4, bdeg = 3, pord = 2),
+                          smoothGeno = list(nseg = 4, bdeg = 3, pord = 2),
+                          smoothPlot = list(nseg = 4, bdeg = 3, pord = 2),
                           weights = "wt")
 
 ## Plot the P-Spline predictions at the three levels of the hierarchy
 ## Plots at plant level for some genotypes (as illustration)
 plot(fit.psHDM,
-    geno.sub = c("GenoA14_WD","GenoA51_WD","GenoB11_WW","GenoB02_WD","GenoB02_WW"),
-    theme.HDM = theme.HDM())
+    genotypes = c("GenoA14_WD","GenoA51_WD","GenoB11_WW","GenoB02_WD","GenoB02_WW"),
+    themeHDM = themeHDM())
 
 }
 \references{

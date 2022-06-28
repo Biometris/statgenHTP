@@ -64,7 +64,7 @@ MM.basis <- function (x,
 #'
 #' @noRd
 #' @keywords internal
-construct.capital.lambda <- function(g) {
+constructCapitalLambda <- function(g) {
   length.eq <- all(sapply(X = g, FUN = function(x) {
     diff(range(unlist(lapply(X = x, FUN = length)))) < .Machine$double.eps ^ 0.5
   }))
@@ -103,7 +103,7 @@ construct.capital.lambda <- function(g) {
                                  }, g = g, init = init, end = end, dim = dim))
     }
   } else {
-    stop("Error in construct.capital.lambda")
+    stop("Error in constructCapitalLambda")
   }
   return(res)
 }

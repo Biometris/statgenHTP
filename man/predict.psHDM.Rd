@@ -7,8 +7,8 @@
 \method{predict}{psHDM}(
   object,
   newtimes,
-  pred = list(pop = TRUE, geno = TRUE, plant = TRUE),
-  se = list(pop = TRUE, geno = TRUE, plant = FALSE),
+  pred = list(pop = TRUE, geno = TRUE, plot = TRUE),
+  se = list(pop = TRUE, geno = TRUE, plot = FALSE),
   trace = TRUE,
   ...
 )
@@ -21,12 +21,12 @@
 desired}
 
 \item{pred}{A list that controls the hierarchical levels at which
-predictions are desired (population/genotypes/plants).  The default is
+predictions are desired (population/genotypes/plots).  The default is
 \code{TRUE}.}
 
 \item{se}{A list that controls the hierarchical levels at which standard
-errors are desired (population/genotypes/plants).  The default is
-\code{TRUE} except at the plant level.}
+errors are desired (population/genotypes/plots).  The default is
+\code{TRUE} except at the plot level.}
 
 \item{trace}{An optional value that controls the function trace.
 The default is \code{TRUE}.}
@@ -38,24 +38,24 @@ An object of class \code{psHDM}, a list with the following outputs:
 predict.psHDM
 \code{newtimes} A numeric vector with the timepoints at which predictions
 and/or standard errors have been obtained.
-\code{pop.level} A data.frame with the estimated population trajectories
+\code{popLevel} A data.frame with the estimated population trajectories
 and first and second order derivatives, and if required their respective
 standard errors, at the \code{newtimes}.
-\code{geno.level} A data.frame with the estimated genotype-specific
+\code{genoLevel} A data.frame with the estimated genotype-specific
 deviations and trajectories and their respective first and second order
 derivatives, and if required their respective standard errors,
 at the \code{newtimes}.
-\code{plant.level} A data.frame with the estimated plant-specific
+\code{plotLevel} A data.frame with the estimated plot-specific
 deviations and trajectories and their respective first and second order
 derivatives, and if required their respective standard errors,
 at the \code{newtimes}.
-\code{plant.obs} A data.frame with the raw data at the original timepoints.
+\code{plotObs} A data.frame with the raw data at the original timepoints.
 }
 \description{
 Function that predicts the P-spline Hierarchical Curve Data Model (see
 \code{\link{fitSplineHDM}}) on a dense grid. It provides standard errors
 for curves at each level of the hierarchy. User has to be aware that
-standard errors at the plant level demand large memory. We suggest set
+standard errors at the plot level demand large memory. We suggest set
 that option at the \code{FALSE} level
 }
 \examples{
@@ -64,11 +64,11 @@ that option at the \code{FALSE} level
 pred.psHDM <- predict(object = fit.psHDM,
                      newtimes = seq(min(fit.psHDM$time),
                                    max(fit.psHDM$time), length.out = 100),
-                     pred = list(pop = TRUE, geno = TRUE, plant = TRUE),
-                     se = list(pop = TRUE, geno = TRUE, plant = FALSE))
+                     pred = list(pop = TRUE, geno = TRUE, plot = TRUE),
+                     se = list(pop = TRUE, geno = TRUE, plot = FALSE))
 
 ## Plot the P-Spline predictions at the three levels of the hierarchy
-## Plots at plant level for some genotypes (as illustration)
+## Plots at plot level for some genotypes (as illustration)
 plot(x = pred.psHDM,
     geno.sub = c("GenoA14_WD","GenoA51_WD","GenoB11_WW","GenoB02_WD","GenoB02_WW"),
     theme.HDM = theme.HDM())

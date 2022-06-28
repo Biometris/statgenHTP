@@ -29,15 +29,15 @@
 #' @param plant A character string indicating the genotypes/varieties to which
 #' each plant/plot/individual belongs. This variable must be a factor in the
 #' data frame.
-#' @param dif.var Should different variances for random effects at genotype
+#' @param difVar Should different variances for random effects at genotype
 #' (separately for each population) and plant level (separately for each
 #' genotype) be considered?.
 #' @param smooth.pop A list specifying the P-Spline model at the population
 #' level (nseg: number of segments; bdeg: degree of the B-spline basis; pord:
 #' penalty order).
-#' @param smooth.geno A list specifying the P-Spline model at the genotype
+#' @param smoothGeno A list specifying the P-Spline model at the genotype
 #' level.
-#' @param smooth.plant A list specifying the P-Spline model at the plant level.
+#' @param smoothPlot A list specifying the P-Spline model at the plant level.
 #' @param offset An optional numerical vector containing an a priori known
 #' component to be included in the linear predictor during fitting. The default
 #' is \code{NULL}.
@@ -55,14 +55,14 @@
 #'
 #' @return An object of class \code{psHDM}, a list with the following outputs:
 #' \code{time}, a numeric vector with the timepoints.
-#' \code{l.geno}, a vector with the names of the genotypes.
-#' \code{l.pop}, a vector with the names of the populations
-#' \code{l.plant}, a vector with the names of the plants
-#' \code{n.plants_p_pop}, a numeric vector with the number of plants per
+#' \code{genoLevs}, a vector with the names of the genotypes.
+#' \code{popLevs}, a vector with the names of the populations
+#' \code{plotLevs}, a vector with the names of the plants
+#' \code{nPlotPop}, a numeric vector with the number of plants per
 #' population.
-#' \code{n.geno_p_pop}, a numeric vector with the number of genotypes per
+#' \code{nGenoPop}, a numeric vector with the number of genotypes per
 #' population.
-#' \code{n.plants_p_geno}, a numeric vector with the number of plants per
+#' \code{nPlotGeno}, a numeric vector with the number of plants per
 #' genotype.
 #' \code{MM}, a list with the design matrices at plant, genotype and
 #' population levels.
@@ -119,21 +119,21 @@
 #'                           trait = "LeafArea_corr",
 #'                           time = "timeNumber",
 #'                           pop = "geno.decomp",
-#'                           geno = "genobytreat",
-#'                           plant = "plotId",
-#'                           dif.var = list(geno = FALSE, plant = FALSE),
-#'                           smooth.pop = list(nseg = 4, bdeg = 3, pord = 2),
-#'                           smooth.geno = list(nseg = 4, bdeg = 3, pord = 2),
-#'                           smooth.plant = list(nseg = 4, bdeg = 3, pord = 2),
+#'                           genotype = "genobytreat",
+#'                           plotId = "plotId",
+#'                           difVar = list(geno = FALSE, plant = FALSE),
+#'                           smoothPop = list(nseg = 4, bdeg = 3, pord = 2),
+#'                           smoothGeno = list(nseg = 4, bdeg = 3, pord = 2),
+#'                           smoothPlot = list(nseg = 4, bdeg = 3, pord = 2),
 #'                           weights = "wt")
 #'
 #' ## Visualize the data.frames with predicted values at the three levels of the hierarchy.
 #' ## Population level
-#' head(fit.psHDM$pop.level)
+#' head(fit.psHDM$popLevel)
 #' ## Genotype level
-#' head(fit.psHDM$geno.level)
-#' ## Plant level
-#' head(fit.psHDM$plant.level)
+#' head(fit.psHDM$genoLevel)
+#' ## Plot level
+#' head(fit.psHDM$plotLevel)
 #'
 #' ## Plot the P-Spline predictions at the three levels of the hierarchy
 #' ## Plots at plant level for some genotypes (as illustration)
@@ -151,19 +151,18 @@ fitSplineHDM <- function(inDat,
                          trait,
                          time,
                          pop,
-                         geno,
-                         plant,
-                         dif.var = list(geno = FALSE, plant = FALSE),
-                         smooth.pop = list(nseg = 10, bdeg = 3, pord = 2),
-                         smooth.geno = list(nseg = 10, bdeg = 3, pord = 2),
-                         smooth.plant = list(nseg = 10, bdeg = 3, pord = 2),
+                         genotype,
+                         plotId,
+                         difVar = list(geno = FALSE, plot = FALSE),
+                         smoothPop = list(nseg = 10, bdeg = 3, pord = 2),
+                         smoothGeno = list(nseg = 10, bdeg = 3, pord = 2),
+                         smoothPlot = list(nseg = 10, bdeg = 3, pord = 2),
                          offset = NULL,
                          weights = NULL,
                          family = gaussian(),
                          maxit = 200,
                          trace = TRUE,
                          thr = 1e-03) {
-  # browser()
   ## Checks.
   if (!is.character(trait) || length(trait) > 1) {
     stop("trait should be a character string of length 1.\n")
@@ -171,7 +170,7 @@ fitSplineHDM <- function(inDat,
   if (!inherits(inDat, "data.frame")) {
     stop("inDat should be a data.frame.\n")
   }
-  corrCols <- c(geno, trait, time, pop, plant)
+  corrCols <- c(genotype, trait, time, pop, plotId)
   if (!all(hasName(x = inDat, name = corrCols))) {
     stop("inDat should at least contain the following columns: ",
          paste(corrCols, collapse = ", "))
@@ -188,11 +187,12 @@ fitSplineHDM <- function(inDat,
   ## timepoints, row and column.
   timeDat <- data.frame(time = sort(unique(inDat[[time]])))
   colnames(timeDat) <- time
-  fullGrid <- merge(unique(inDat[c(pop, geno, plant, "colId", "rowId")]),
+  fullGrid <- merge(unique(inDat[c(pop, genotype, plotId, "colId", "rowId")]),
                     timeDat)
   inDat <- merge(fullGrid, inDat, all.x = TRUE)
   ## Order the data
-  inDat <- inDat[order(inDat[,pop], inDat[,geno], inDat[,plant], inDat[,time]),]
+  inDat <- inDat[order(inDat[, pop], inDat[, genotype], inDat[, plotId],
+                       inDat[, time]), ]
   ## Normalize time.
   raw.time <- timeDat[[time]]
   inDat[[time]] <- inDat[[time]] - min(inDat[[time]]) + 1
@@ -207,42 +207,42 @@ fitSplineHDM <- function(inDat,
     weights <- inDat[[weights]] ^ 2
   }
   ## Convert to factors - only if not already factors.
-  for (facVar in c(pop, geno, plant)) {
+  for (facVar in c(pop, genotype, plotId)) {
     if (!is.factor(inDat[[facVar]])) {
       inDat[[facVar]] <- factor(inDat[[facVar]])
     }
   }
   ## Elements and number of elements by level of the hierarchy.
-  l.pop <- unique(inDat[[pop]])
-  l.geno <- unique(inDat[[geno]])
-  l.plant <- unique(inDat[[plant]])
-  n.pop <- nlevels(inDat[[pop]])
-  n.plants_p_pop <- apply(X = table(inDat[[pop]], inDat[[plant]]),
-                          MARGIN = 1, FUN = function(x) { sum(x!=0) })
-  n.geno_p_pop <- apply(X = table(inDat[[pop]], inDat[[geno]]),
-                        MARGIN = 1, FUN = function(x) { sum(x!=0) })
-  n.geno <- nlevels(inDat[[geno]])
-  n.plants_p_geno <- apply(table(inDat[[geno]], inDat[[plant]]),
-                           MARGIN = 1, FUN = function(x) { sum(x!=0) })[l.geno]
-  n.tot <- nlevels(inDat[[plant]])
+  popLevs <- unique(inDat[[pop]])
+  genoLevs <- unique(inDat[[genotype]])
+  plotLevs <- unique(inDat[[plotId]])
+  nPop <- nlevels(inDat[[pop]])
+  nPlotPop <- apply(X = table(inDat[[pop]], inDat[[plotId]]),
+                    MARGIN = 1, FUN = function(x) { sum(x!=0) })
+  nGenoPop <- apply(X = table(inDat[[pop]], inDat[[genotype]]),
+                    MARGIN = 1, FUN = function(x) { sum(x!=0) })
+  nGeno <- nlevels(inDat[[genotype]])
+  nPlotGeno <- apply(table(inDat[[genotype]], inDat[[plotId]]),
+                     MARGIN = 1, FUN = function(x) { sum(x!=0) })[genoLevs]
+  nTot <- nlevels(inDat[[plotId]])
   # Time interval
   x <- sort(unique(inDat[[time]]))
   ## Construct design matrices: data in an array
   ## Design matrices for the population curves.
-  MM.pop <- MM.basis(x = x, ndx = smooth.pop$nseg, bdeg = smooth.pop$bdeg,
-                     pord = smooth.pop$pord)
-  X.pop <- MM.pop$X
-  Z.pop <- MM.pop$Z
+  MMPop <- MM.basis(x = x, ndx = smoothPop$nseg, bdeg = smoothPop$bdeg,
+                    pord = smoothPop$pord)
+  XPop <- MMPop$X
+  ZPop <- MMPop$Z
   #$ Design matrices for the genotype curves.
-  MM.geno <- MM.basis(x = x, ndx = smooth.geno$nseg, bdeg = smooth.geno$bdeg,
-                      pord = smooth.geno$pord)
-  X.geno <- MM.geno$X
-  Z.geno <- MM.geno$Z
+  MMGeno <- MM.basis(x = x, ndx = smoothGeno$nseg, bdeg = smoothGeno$bdeg,
+                     pord = smoothGeno$pord)
+  XGeno <- MMGeno$X
+  ZGeno <- MMGeno$Z
   ## Design matrices for the individual curves.
-  MM.ind <- MM.basis(x = x, ndx = smooth.plant$nseg, bdeg = smooth.plant$bdeg,
-                     pord = smooth.plant$pord)
-  X.ind <- MM.ind$X
-  Z.ind <- MM.ind$Z
+  MMPlot <- MM.basis(x = x, ndx = smoothPlot$nseg, bdeg = smoothPlot$bdeg,
+                     pord = smoothPlot$pord)
+  XPlot <- MMPlot$X
+  ZPlot <- MMPlot$Z
   ## Response, offset and weights
   y <- inDat[[trait]]
   offset.f <- inDat[["offset"]]
@@ -253,137 +253,131 @@ fitSplineHDM <- function(inDat,
   weights.f[nas] <- 0
   ## Construct matrices assigning plants to populations and genotypes
   ## Matrix to assign plants to populations
-  ind.ind.pop <- rep(1:n.pop, n.plants_p_pop)
-  if (n.pop == 1) {
-    C.pop <- matrix(rep(1, n.tot), ncol = 1)
+  plotPlotPop <- rep(1:nPop, nPlotPop)
+  if (nPop == 1) {
+    CPop <- matrix(rep(1, nTot), ncol = 1)
   } else {
-    xxt <- data.frame(ind.pop = as.factor(ind.ind.pop))
-    mft <- model.frame(~ ind.pop - 1, data = xxt, drop.unused.levels = TRUE)
+    xxt <- data.frame(plotPop = as.factor(plotPlotPop))
+    mft <- model.frame(~ plotPop - 1, data = xxt, drop.unused.levels = TRUE)
     mtt <- terms(mft)
-    f.termst <- attr(mtt, "term.labels")[attr(mtt,"dataClasses") == "factor"]
-    C.pop <- Matrix::sparse.model.matrix(mtt, data = mft,
-                                         contrasts.arg = lapply(X = mft[, f.termst, drop = FALSE],
-                                                                FUN = contrasts,
-                                                                contrasts = FALSE))
+    fTermst <- attr(mtt, "term.labels")[attr(mtt,"dataClasses") == "factor"]
+    CPop <- Matrix::sparse.model.matrix(mtt, data = mft,
+                                        contrasts.arg = lapply(X = mft[, fTermst, drop = FALSE],
+                                                               FUN = contrasts,
+                                                               contrasts = FALSE))
     attr(mtt, "xlev") <- .getXlevels(mtt, mft)
-    attr(mtt, "contrast") <- attr(C.pop, "contrast")
+    attr(mtt, "contrast") <- attr(CPop, "contrast")
   }
   ## Matrix to assign plants to genotypes.
-  ind.ind.geno <- rep(1:n.geno, n.plants_p_geno)
-  if (n.geno == 1) {
-    C.geno <- matrix(rep(1, n.tot), ncol = 1)
+  plotPlotGeno <- rep(1:nGeno, nPlotGeno)
+  if (nGeno == 1) {
+    CGeno <- matrix(rep(1, nTot), ncol = 1)
   } else {
-    xxg <- data.frame(ind.pop = as.factor(ind.ind.geno))
-    mfg <- model.frame(~ ind.pop - 1, xxg, drop.unused.levels = TRUE)
+    xxg <- data.frame(plotGeno = as.factor(plotPlotGeno))
+    mfg <- model.frame(~ plotGeno - 1, xxg, drop.unused.levels = TRUE)
     mtg <- terms(mfg)
-    f.termsg <- attr(mtg, "term.labels")[attr(mtg,"dataClasses") == "factor"]
-    C.geno <- Matrix::sparse.model.matrix(mtg, data = mfg,
-                                          contrasts.arg = lapply(X = mfg[,f.termsg, drop = FALSE],
-                                                                 FUN = contrasts,
-                                                                 contrasts = FALSE))
+    fTermsg <- attr(mtg, "term.labels")[attr(mtg,"dataClasses") == "factor"]
+    CGeno <- Matrix::sparse.model.matrix(mtg, data = mfg,
+                                         contrasts.arg = lapply(X = mfg[, fTermsg, drop = FALSE],
+                                                                FUN = contrasts,
+                                                                contrasts = FALSE))
     attr(mtg, "xlev") <- .getXlevels(mtg, mfg)
-    attr(mtg, "contrast") <- attr(C.geno,"contrast")
+    attr(mtg, "contrast") <- attr(CGeno,"contrast")
   }
   ## GLAM matrices
   GLAM <- TRUE
-  X <- list(X1 = C.pop,
-            X2 = X.pop) # Parametric population effect
-  Z <- list(Z1 = list(Z11 = C.pop,
-                      Z12 = Z.pop),
-            Z2 = list(Z21 = C.geno,
-                      Z22 = X.geno), # Random intercept and slope
-            Z3 = list(Z31 = C.geno,
-                      Z32 = Z.geno), # Genotype specific curves
-            Z4 = list(Z41 = Matrix::Diagonal(n = n.tot),
-                      Z42 = X.ind), # Random intercept and slopes (individual)
-            Z5 = list(Z51 = Matrix::Diagonal(n = n.tot),
-                      Z52 = Z.ind)) # Genotype specific curves (individual)
+  X <- list(X1 = CPop,
+            X2 = XPop) # Parametric population effect
+  Z <- list(Z1 = list(Z11 = CPop,
+                      Z12 = ZPop),
+            Z2 = list(Z21 = CGeno,
+                      Z22 = XGeno), # Random intercept and slope
+            Z3 = list(Z31 = CGeno,
+                      Z32 = ZGeno), # Genotype specific curves
+            Z4 = list(Z41 = Matrix::Diagonal(n = nTot),
+                      Z42 = XPlot), # Random intercept and slopes (plot)
+            Z5 = list(Z51 = Matrix::Diagonal(n = nTot),
+                      Z52 = ZPlot)) # Genotype specific curves (plot)
   ## Number of parameters: fixed and random (for each component)
-  np <- c(ncol(X.pop) * n.pop, ncol(Z.pop) * n.pop,
-          ncol(X.geno) * n.geno, ncol(Z.geno) * n.geno,
-          ncol(X.ind) * n.tot, ncol(Z.ind) * n.tot)
+  np <- c(ncol(XPop) * nPop, ncol(ZPop) * nPop,
+          ncol(XGeno) * nGeno, ncol(ZGeno) * nGeno,
+          ncol(XPlot) * nTot, ncol(ZPlot) * nTot)
   names(np) <- c("pop.fixed", "pop.random", "geno.x.random", "geno.z.random",
-                 "ind.x.random", "ind.z.random")
-  np.comp <- c(np[1] + np[2], np[3] + np[4], np[5] + np[6])
-  names(np.comp) <- c("pop", "geno", "plant")
-  np.e <- cumsum(np.comp)
-  np.s <- np.e - np.comp + 1
+                 "plot.x.random", "plot.z.random")
   ## Construct precision matrix
   ## Smooth main effect: one per population
-  g <- rep(x = list(MM.pop$d), times = n.pop)
-  if (isTRUE(dif.var$geno)) {
+  g <- rep(x = list(MMPop$d), times = nPop)
+  if (isTRUE(difVar$geno)) {
     ## Random intercepts and slopes (genotype).
-    for (i in 1:n.pop) {
-      g[[n.pop + i]] <- lapply(X = 1:smooth.geno$pord, FUN = function(j) {
-        rep(x = sapply(X = 1:smooth.geno$pord, FUN = function(k) {
+    for (i in 1:nPop) {
+      g[[nPop + i]] <- lapply(X = 1:smoothGeno$pord, FUN = function(j) {
+        rep(x = sapply(X = 1:smoothGeno$pord, FUN = function(k) {
           ifelse(k == j, 1, 0)
-        }), times = n.geno_p_pop[i])
+        }), times = nGenoPop[i])
       })
     }
     ## Smooth effects (genotype).
-    for (i in 1:n.pop) {
-      g[[n.pop * 2 + i]] <- rep(x = MM.geno$d, times = n.geno_p_pop[i])
+    for (i in 1:nPop) {
+      g[[nPop * 2 + i]] <- rep(x = MMGeno$d, times = nGenoPop[i])
     }
-    if (isTRUE(dif.var$plant)) {
+    if (isTRUE(difVar$plot)) {
       ## Random intercepts and slopes (individual).
-      for (i in 1:n.geno) {
-        g[[n.pop * 3 + i]] <- lapply(X = 1:smooth.plant$pord, FUN = function(j) {
-          rep(x = sapply(X = 1:smooth.plant$pord, FUN = function(k) {
+      for (i in 1:nGeno) {
+        g[[nPop * 3 + i]] <- lapply(X = 1:smoothPlot$pord, FUN = function(j) {
+          rep(x = sapply(X = 1:smoothPlot$pord, FUN = function(k) {
             ifelse(k == j, 1, 0)
-          }), times = n.plants_p_geno[i])
+          }), times = nPlotGeno[i])
         })
       }
       ## Smooth effects (individual).
-      for (i in 1:n.geno) {
-        g[[n.pop * 3 + n.geno + i]] <- rep(x = MM.ind$d,
-                                           times = n.plants_p_geno[i])
+      for (i in 1:nGeno) {
+        g[[nPop * 3 + nGeno + i]] <- rep(x = MMPlot$d, times = nPlotGeno[i])
       }
     } else {
       ## Random intercepts and slopes (individual).
-      g[[n.pop * 3 + 1]] <- lapply(X = 1:smooth.plant$pord, FUN = function(j) {
-        rep(x = sapply(X = 1:smooth.plant$pord, FUN = function(k) {
+      g[[nPop * 3 + 1]] <- lapply(X = 1:smoothPlot$pord, FUN = function(j) {
+        rep(x = sapply(X = 1:smoothPlot$pord, FUN = function(k) {
           ifelse(k == j, 1, 0)
-        }), times = n.tot)
+        }), times = nTot)
       })
       ## Smooth effects (individual).
-      g[[n.pop * 3 + 2]] <- list(rep(x = MM.ind$d, times = n.tot))
+      g[[nPop * 3 + 2]] <- list(rep(x = MMPlot$d, times = nTot))
     }
-  } else if (isFALSE(dif.var$geno)) {
+  } else if (isFALSE(difVar$geno)) {
     ## Random intercepts and slopes (genotype).
-    g[[n.pop + 1]] <- lapply(X = 1:smooth.geno$pord, FUN = function(j) {
-      rep(x = sapply(X = 1:smooth.geno$pord, FUN = function(k) {
+    g[[nPop + 1]] <- lapply(X = 1:smoothGeno$pord, FUN = function(j) {
+      rep(x = sapply(X = 1:smoothGeno$pord, FUN = function(k) {
         ifelse(k == j, 1, 0)
-      }), times = n.geno)
+      }), times = nGeno)
     })
     # Smooth effects (genotype)
-    g[[n.pop + 2]] <- list(rep(x = MM.geno$d, times = n.geno))
-    if (isTRUE(dif.var$plant)) {
+    g[[nPop + 2]] <- list(rep(x = MMGeno$d, times = nGeno))
+    if (isTRUE(difVar$plot)) {
       ## Random intercepts and slopes (individual).
-      for (i in 1:n.geno) {
-        g[[n.pop + 2 + i]] <- lapply(X = 1:smooth.plant$pord, FUN = function(j) {
-          rep(x = sapply(X = 1:smooth.plant$pord, FUN = function(k) {
+      for (i in 1:nGeno) {
+        g[[nPop + 2 + i]] <- lapply(X = 1:smoothPlot$pord, FUN = function(j) {
+          rep(x = sapply(X = 1:smoothPlot$pord, FUN = function(k) {
             ifelse(k == j, 1, 0)
-          }), times = n.plants_p_geno[i])
+          }), times = nPlotGeno[i])
         })
       }
       ## Smooth effects (individual).
-      for (i in 1:n.geno) {
-        g[[n.pop + 2 + n.geno + i]] <- rep(x = MM.ind$d,
-                                           times = n.plants_p_geno[i])
+      for (i in 1:nGeno) {
+        g[[nPop + 2 + nGeno + i]] <- rep(x = MMPlot$d, times = nPlotGeno[i])
       }
     } else {
       ## Random intercepts and slopes (individual).
-      g[[n.pop + 3]] <- lapply(X = 1:smooth.plant$pord, FUN = function(j) {
-        rep(x = sapply(X = 1:smooth.plant$pord, FUN = function(k) {
+      g[[nPop + 3]] <- lapply(X = 1:smoothPlot$pord, FUN = function(j) {
+        rep(x = sapply(X = 1:smoothPlot$pord, FUN = function(k) {
           ifelse(k == j, 1, 0)
-        }), times = n.tot)
+        }), times = nTot)
       })
       ## Smooth effects (individual).
-      g[[n.pop + 4]] <- list(rep(x = MM.ind$d, times = n.tot))
+      g[[nPop + 4]] <- list(rep(x = MMPlot$d, times = nTot))
     }
   }
   ## Construct the components of the precision matrix (as needed by the algorithm).
-  g <- construct.capital.lambda(g)
+  g <- constructCapitalLambda(g)
   ## Initialise the parameters.
   la = rep(x = 1, l = length(g) + 1)
   devold = 1e10
@@ -402,10 +396,10 @@ fitSplineHDM <- function(inDat,
     V <- construct.block(mat$XtX., mat$XtZ., mat$ZtX., mat$ZtZ.) # Does not change from iteration to iteration
     ## V is an object of class Matrix, transform it to spam.
     V <- spam::as.spam.dgCMatrix(V)
-    # number of coef for each random component.
-    g_ext <- lapply(X = g, FUN = function(x) { c(rep(0, np[1]), x) })
-    lG_ext <- lapply(X = g_ext, FUN = spam::diag.spam)
-    lP <- append(list(V), lG_ext)
+    ## number of coef for each random component.
+    gExt <- lapply(X = g, FUN = function(x) { c(rep(0, np[1]), x) })
+    lGExt <- lapply(X = gExt, FUN = spam::diag.spam)
+    lP <- append(list(V), lGExt)
     ADcholC <- LMMsolver:::ADchol(lP)
     EDmax <- sapply(g, function(x) sum(abs(x) > 1.0e-10))
     ## First iteration (cholesky decomposition).
@@ -456,8 +450,8 @@ fitSplineHDM <- function(inDat,
       dla <- abs(devold - dev)
       if (trace) {
         if(it == 1){
-          # header
-          ed.names <- c("","Deviance", paste0("ed.p",1:n.pop),
+          ## Print header.
+          ed.names <- c("", "Deviance", paste0("ed.p", 1:nPop),
                         "ed.g.int", "ed.g.slp", "ed.g.smooth",
                         "ed.i.int", "ed.i.slp", "ed.i.smooth")
           cat(sprintf("%12.12s", ed.names), sep = "")
@@ -471,32 +465,32 @@ fitSplineHDM <- function(inDat,
       la <- lanew
       devold <- dev
     }
-    eta.old <- eta
+    etaOld <- eta
     eta <- Xtheta(X, b.fixed) + Ztheta(Z, b.random, np[-1]) + offset.f
     mu <- family$linkinv(eta)
     ## Convergence criterion: linear predictor.
-    tol <- sum((eta - eta.old) ^ 2) / sum(eta ^ 2)
+    tol <- sum((eta - etaOld) ^ 2) / sum(eta ^ 2)
     if (tol < 1e-6 || family$family == "gaussian") break
   }
   coeff <- c(b.fixed, b.random)
   ## Plant raw data.
-  aux <- matrix(inDat[, trait], ncol = n.tot)
-  obs_ind <- lapply(X = split(aux, rep(ind.ind.geno, each = nrow(aux))),
+  aux <- matrix(inDat[, trait], ncol = nTot)
+  obsPlot <- lapply(X = split(aux, rep(plotPlotGeno, each = nrow(aux))),
                     FUN = function(x, nobs) {
                       matrix(x, nrow = nobs)
                     }, nobs = length(x))
-  names(obs_ind) <- l.geno
+  names(obsPlot) <- genoLevs
   ## Object to be returned
   res <- structure(
-    list(y = obs_ind,
+    list(y = obsPlot,
          time = raw.time,
-         l.geno = l.geno,
-         l.pop = l.pop,
-         l.plant = l.plant,
-         n.plants_p_pop = n.plants_p_pop,
-         n.geno_p_pop = n.geno_p_pop,
-         n.plants_p_geno = n.plants_p_geno,
-         MM = list(MM.pop = MM.pop, MM.geno = MM.geno, MM.plant = MM.ind),
+         genoLevs = genoLevs,
+         popLevs = popLevs,
+         plotLevs = plotLevs,
+         nPlotPop = nPlotPop,
+         nGenoPop = nGenoPop,
+         nPlotGeno = nPlotGeno,
+         MM = list(MMPop = MMPop, MMGeno = MMGeno, MMPlot = MMPlot),
          ed = unlist(ed),
          tot_ed = sum(unlist(ed)),
          vc = unlist(tau),
@@ -507,16 +501,16 @@ fitSplineHDM <- function(inDat,
          dim = np,
          family = family,
          Vp = spam::chol2inv(cholHn),
-         smooth = list(smooth.pop = smooth.pop, smooth.geno = smooth.geno,
-                       smooth.plant = smooth.plant)),
+         smooth = list(smoothPop = smoothPop, smoothGeno = smoothGeno,
+                       smoothPlot = smoothPlot)),
     class = c("psHDM", "list")
   )
   ## Make predictions on original data points.
   preds <- predict.psHDM(res,
-                         se = list(pop = FALSE, geno = FALSE, plant = FALSE),
+                         se = list(pop = FALSE, geno = FALSE, plot = FALSE),
                          trace = FALSE)
   ## Add predictions to results.
-  res <- c(res, preds[c("pop.level", "geno.level", "plant.level")])
+  res <- c(res, preds[c("popLevel", "genoLevel", "plotLevel")])
   class(res) <- c("psHDM", "list")
   return(res)
 }
