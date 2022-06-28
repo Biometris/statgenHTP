@@ -12,7 +12,8 @@ estimateSplineParameters(
   timeMin = NULL,
   timeMax = NULL,
   genotypes = NULL,
-  plotIds = NULL
+  plotIds = NULL,
+  fitLevel = c("pop", "genotype", "plotId")
 )
 }
 \arguments{

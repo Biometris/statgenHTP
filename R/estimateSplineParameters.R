@@ -66,16 +66,37 @@ estimateSplineParameters <- function(HTPSpline,
                                      timeMin = NULL,
                                      timeMax = NULL,
                                      genotypes = NULL,
-                                     plotIds = NULL) {
+                                     plotIds = NULL,
+                                     fitLevel = c("pop", "genotype", "plotId")) {
+  ## General settings.
   estimate <- match.arg(estimate)
   AUCScale <- match.arg(AUCScale)
-  estVar <- if (estimate == "predictions") "pred.value" else if
-  (estimate == "derivatives") "deriv" else "deriv2"
-  useTimeNumber <- attr(HTPSpline, which = "useTimeNumber")
-  useGenoDecomp <- attr(HTPSpline, which = "useGenoDecomp")
-  fitLevel <- attr(HTPSpline, which = "fitLevel")
   trait <- attr(HTPSpline, which = "trait")
-  predDat <- HTPSpline$predDat
+  if (inherits(HTPSpline, "HTPSpline")) {
+    ## HTP spline specific settings.
+    estVar <- if (estimate == "predictions") "pred.value" else if
+    (estimate == "derivatives") "deriv" else "deriv2"
+    useTimeNumber <- attr(HTPSpline, which = "useTimeNumber")
+    useGenoDecomp <- attr(HTPSpline, which = "useGenoDecomp")
+    fitLevel <- attr(HTPSpline, which = "fitLevel")
+    predDat <- HTPSpline$predDat
+    ## Construct levels for aggregating.
+    aggLevs <- unique(c("genotype", if (useGenoDecomp) "geno.decomp",
+                        fitLevel))
+  } else if (inherits(HTPSpline, "psHDM")) {
+    ## HDM spline specific settings.
+    fitLevel <- match.arg(fitLevel)
+    estVarBase <- paste0("f", tools::toTitleCase(substr(fitLevel, 1, 4)))
+    estVar <- if (estimate == "predictions") estVarBase else if
+    (estimate == "derivatives") paste0(estVarBase, "Deriv1") else
+      paste0(estVarBase, "Deriv2")
+    useTimeNumber <- TRUE
+    useGenoDecomp <- FALSE
+    predDat <- HTPSpline[[paste0(substr(fitLevel, 1, 4), "Level")]]
+    ## Construct levels for aggregating.
+    aggLevs <- unique(c("pop", if (fitLevel != "pop") "genotype",
+                        fitLevel))
+  }
   if (!is.null(genotypes) &&
       (!is.character(genotypes) ||
        !all(genotypes %in% predDat[["genotype"]]))) {
@@ -119,6 +140,8 @@ estimateSplineParameters <- function(HTPSpline,
   ## Restrict predDat to time interval.
   predDat <- predDat[predDat[[timeVar]] >= timeMin &
                        predDat[[timeVar]] <= timeMax, ]
+  ## Construct data for aggregating.
+  aggDat <- predDat[, aggLevs, drop = FALSE]
   ## Loop over what
   whatRes <- lapply(X = what, FUN = function(w) {
     if (substr(w, 1, 1) == "p") {
@@ -152,8 +175,7 @@ estimateSplineParameters <- function(HTPSpline,
     }
     ## Get estimates.
     resW <- aggregate(x = predDat[[estVar]],
-                      by = predDat[c("genotype", if (useGenoDecomp) "geno.decomp",
-                                     if (fitLevel == "plotId") "plotId")],
+                      by = aggDat,
                       FUN = estFun,
                       probs = if (is.character(estFun) &&
                                   estFun == "quantile") percentile)
@@ -162,14 +184,15 @@ estimateSplineParameters <- function(HTPSpline,
     if (w %in% c("min", "max")) {
       resW <- merge(resW, predDat, by.x = colnames(resW),
                     by.y = c(colnames(resW)[-ncol(resW)], estVar))
-      resW <- resW[, 1:(4 + (fitLevel == "plotId"))]
+      nTimeCols <- sum(c("timeNumber", "timePoint") %in% colnames(predDat))
+      resW <- resW[, 1:(1 + nTimeCols + length(aggLevs))]
       colnames(resW)[colnames(resW) %in% c("timeNumber", "timePoint")] <-
         paste0(w, "_", colnames(resW)[colnames(resW) %in% c("timeNumber", "timePoint")])
     }
     return(resW)
   })
   if (length(whatRes) > 1) {
-    res <- do.call(what = merge, args = whatRes)
+    res <- Reduce(f = merge, x = whatRes)
   } else {
     res <- whatRes[[1]]
   }

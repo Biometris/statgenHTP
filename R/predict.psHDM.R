@@ -452,5 +452,6 @@ predict.psHDM <- function(object,
                            what = "plot", xp = res$newtimes))
   }
   class(res) <- c("psHDM", "list")
+  attr(res, which = "trait") <- object$trait
   return(res)
 }
