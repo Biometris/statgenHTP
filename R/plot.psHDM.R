@@ -14,8 +14,8 @@
 #' @param x An object of class "psHDM" as obtained after fitting
 #' (\code{\link{fitSplineHDM}}) or predicting (\code{\link{predict.psHDM}}),
 #' @param ... Not used.
-#' @param genotypes A character vector with the genotypes for which plots are
-#' desired.
+#' @param genotypes A character vector with the genotypes for which plots at
+#' plot level are desired.
 #' @param genotypeNames A character vector with the names for the genotypes
 #' selected (genotypes). The default is \code{NULL}
 #' @param genotypeOrder A vector with the order of the genotypes selected
