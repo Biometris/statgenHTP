@@ -112,7 +112,7 @@ standardErrors <- function(Tm,
       whatE <- "plot"
     }
   }
-  lW <- length(object[[paste0("l", tools::toTitleCase(what))]])
+  lW <- length(object[[paste0(what, "Levs")]])
   seTheta <- Matrix::Matrix(Tm) %*%
     Matrix::Matrix(object$Vp[npS[whatS]:npE[whatE],
                              npS[whatS]:npE[whatE]]) %*% Matrix::t(Tm)
@@ -126,7 +126,7 @@ standardErrors <- function(Tm,
               sefd1 = sefd1,
               sefd2 = sefd2)
   res <- lapply(res, function(x){
-    colnames(x) <- object[[paste0("l", tools::toTitleCase(what))]]
+    colnames(x) <- object[[paste0(what, "Levs")]]
     return(x)
   })
   return(res)
@@ -175,8 +175,8 @@ listToDf <- function(object1,
       dfGenoTra$seGenoDeriv1 <- as.vector(object1$genoTra$sefd1)
       dfGenoTra$seGenoDeriv2 <- as.vector(object1$genoTra$sefd2)
       dfGenoTra$seGenoDev <- as.vector(object1$genoDev$sef)
-      dfGenoTra$se_geno_dev_deriv1 <- as.vector(object1$genoDev$sefd1)
-      dfGenoTra$se_geno_dev_deriv2 <- as.vector(object1$genoDev$sefd2)
+      dfGenoTra$seGenoDevDeriv1 <- as.vector(object1$genoDev$sefd1)
+      dfGenoTra$seGenoDevDeriv2 <- as.vector(object1$genoDev$sefd2)
     }
     res$genoLevel <- dfGenoTra
   }
@@ -216,7 +216,7 @@ listToDf <- function(object1,
                                   object2$nPlotGeno * length(object2$time)),
                    plotId = rep(object2$plotLevs, each = length(object2$time)),
                    obsPlot = c(do.call("cbind", object2$y)))
-      res$plotLevel <- dfPlotObs
+      res$plotObs <- dfPlotObs
     }
   }
   return(res)
@@ -264,6 +264,33 @@ listToDf <- function(object1,
 #' \code{plotObs} A data.frame with the raw data at the original timepoints.
 #'
 #' @examples
+#' ## The data from the Phenovator platform have been corrected for spatial
+#' ## trends and outliers for single observations have been removed.
+#' head(spatCorrectedArch)
+#' ggplot2::ggplot(data = spatCorrectedArch,
+#'                 ggplot2::aes(x= timeNumber, y = LeafArea_corr, group = plotId)) +
+#'   ggplot2::geom_line() +
+#'   ggplot2::facet_grid(~geno.decomp)
+#'
+#' ## We need to specify the genotype-by-treatment interaction
+#' ## Treatment: water regime (WW, WD)
+#' spatCorrectedArch$treat <- factor(spatCorrectedArch$geno.decomp,
+#'                                   labels = substr(levels(spatCorrectedArch$geno.decomp), 1, 2))
+#' spatCorrectedArch$genobytreat <- paste0(spatCorrectedArch$genotype,"_",spatCorrectedArch$treat)
+#'
+#' ## Fit P-Splines Hierarchical Curve Data Model
+#' fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
+#'                           trait = "LeafArea_corr",
+#'                           time = "timeNumber",
+#'                           pop = "geno.decomp",
+#'                           genotype = "genobytreat",
+#'                           plotId = "plotId",
+#'                           difVar = list(geno = FALSE, plant = FALSE),
+#'                           smoothPop = list(nseg = 4, bdeg = 3, pord = 2),
+#'                           smoothGeno = list(nseg = 4, bdeg = 3, pord = 2),
+#'                           smoothPlot = list(nseg = 4, bdeg = 3, pord = 2),
+#'                           weights = "wt")
+#'
 #' ## Predict the P-Splines Hierarchical Curve Data Model in a dense grid
 #' ## with standard errors at the population and genotype levels
 #' pred.psHDM <- predict(object = fit.psHDM,
@@ -275,8 +302,10 @@ listToDf <- function(object1,
 #' ## Plot the P-Spline predictions at the three levels of the hierarchy
 #' ## Plots at plot level for some genotypes (as illustration)
 #' plot(x = pred.psHDM,
-#'     genotypes = c("GenoA14_WD","GenoA51_WD","GenoB11_WW","GenoB02_WD","GenoB02_WW"),
-#'     themeHDM = themeHDM())
+#'     genotypes = c("GenoA14_WD", "GenoA51_WD", "GenoB11_WW", "GenoB02_WD",
+#'                  "GenoB02_WW"),
+#'     themeHDM = themeHDM(),
+#'     ask = FALSE)
 #'
 #' @references Pérez-Valencia, D.M., Rodríguez-Álvarez, M.X., Boer, M.P. et al.
 #' A two-stage approach for the spatio-temporal analysis of high-throughput

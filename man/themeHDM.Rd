@@ -6,6 +6,9 @@
 \usage{
 themeHDM(textSize = 20)
 }
+\arguments{
+\item{textSize}{Numeric value, font size of the texts in the plots.}
+}
 \description{
-themeHDM
+Custom theme for creating HDM plots.
 }
