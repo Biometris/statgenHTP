@@ -179,7 +179,7 @@ head(fit.psHDM$plotLevel)
 ## Plot the P-Spline predictions at the three levels of the hierarchy
 ## Plots at plant level for some genotypes (as illustration)
 plot(x = fit.psHDM,
-    geno.sub = c("GenoA14_WD", "GenoA51_WD", "GenoB11_WW",
+    genotypes = c("GenoA14_WD", "GenoA51_WD", "GenoB11_WW",
                  "GenoB02_WD","GenoB02_WW"),
     themeHDM = themeHDM())
 

@@ -48,6 +48,10 @@ for all genotypes for which splines where fitted.}
 \item{plotIds}{A character vector indicating the plotIds for which
 estimates should be extracted. If \code{NULL}, estimates will be extracted
 for all plotIds for which splines where fitted.}
+
+\item{fitLevel}{A character string indicating at which level of the data
+the parameter estimates should be made. Only used for splines fitted using
+\code{\link{fitSplineHDM}}.}
 }
 \value{
 An object of class HTPSplineEst, a data.frame containing the

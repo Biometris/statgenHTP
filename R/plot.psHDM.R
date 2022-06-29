@@ -277,7 +277,9 @@ plot.psHDM <- function(x,
 
 #' themeHDM
 #'
-#' themeHDM
+#' Custom theme for creating HDM plots.
+#'
+#' @param textSize Numeric value, font size of the texts in the plots.
 #'
 #' @export
 themeHDM <- function(textSize = 20) {

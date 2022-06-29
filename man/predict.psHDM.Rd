@@ -59,6 +59,33 @@ standard errors at the plot level demand large memory. We suggest set
 that option at the \code{FALSE} level
 }
 \examples{
+## The data from the Phenovator platform have been corrected for spatial
+## trends and outliers for single observations have been removed.
+head(spatCorrectedArch)
+ggplot2::ggplot(data = spatCorrectedArch,
+                ggplot2::aes(x= timeNumber, y = LeafArea_corr, group = plotId)) +
+  ggplot2::geom_line() +
+  ggplot2::facet_grid(~geno.decomp)
+
+## We need to specify the genotype-by-treatment interaction
+## Treatment: water regime (WW, WD)
+spatCorrectedArch$treat <- factor(spatCorrectedArch$geno.decomp,
+                                  labels = substr(levels(spatCorrectedArch$geno.decomp), 1, 2))
+spatCorrectedArch$genobytreat <- paste0(spatCorrectedArch$genotype,"_",spatCorrectedArch$treat)
+
+## Fit P-Splines Hierarchical Curve Data Model
+fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
+                          trait = "LeafArea_corr",
+                          time = "timeNumber",
+                          pop = "geno.decomp",
+                          genotype = "genobytreat",
+                          plotId = "plotId",
+                          difVar = list(geno = FALSE, plant = FALSE),
+                          smoothPop = list(nseg = 4, bdeg = 3, pord = 2),
+                          smoothGeno = list(nseg = 4, bdeg = 3, pord = 2),
+                          smoothPlot = list(nseg = 4, bdeg = 3, pord = 2),
+                          weights = "wt")
+
 ## Predict the P-Splines Hierarchical Curve Data Model in a dense grid
 ## with standard errors at the population and genotype levels
 pred.psHDM <- predict(object = fit.psHDM,
@@ -70,8 +97,10 @@ pred.psHDM <- predict(object = fit.psHDM,
 ## Plot the P-Spline predictions at the three levels of the hierarchy
 ## Plots at plot level for some genotypes (as illustration)
 plot(x = pred.psHDM,
-    genotypes = c("GenoA14_WD","GenoA51_WD","GenoB11_WW","GenoB02_WD","GenoB02_WW"),
-    themeHDM = themeHDM())
+    genotypes = c("GenoA14_WD", "GenoA51_WD", "GenoB11_WW", "GenoB02_WD",
+                 "GenoB02_WW"),
+    themeHDM = themeHDM(),
+    ask = FALSE)
 
 }
 \references{
