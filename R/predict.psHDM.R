@@ -144,6 +144,14 @@ listToDf <- function(object1,
     stop("The object class is not correct")
   }
   res <- list()
+  if (hasName(x = object2$time, name = "timePoint")) {
+    ## Create time point range.
+    ## Has to take into account irregular grids for xp.
+    timePointRange <- min(object2$time[["timePoint"]]) +
+      (xp - min(object2$time[["timeNumber"]])) /
+      (diff(range(object2$time[["timeNumber"]]))) *
+      diff(range(object2$time[["timePoint"]]))
+  }
   ## Population-specific growth curves.
   if (what == "pop") {
     dfPopTra <- data.frame(timeNumber = rep(xp, length(object2$popLevs)),
@@ -155,6 +163,9 @@ listToDf <- function(object1,
       dfPopTra$sePop <- c(object1$sef)
       dfPopTra$sePopDeriv1 <- c(object1$sefd1)
       dfPopTra$sePopDeriv2 <- c(object1$sefd2)
+    }
+    if (hasName(x = object2$time, name = "timePoint")) {
+      dfPopTra[["timePoint"]] <- rep(timePointRange, length(object2$popLevs))
     }
     res$popLevel <- dfPopTra
   }
@@ -177,6 +188,9 @@ listToDf <- function(object1,
       dfGenoTra$seGenoDev <- as.vector(object1$genoDev$sef)
       dfGenoTra$seGenoDevDeriv1 <- as.vector(object1$genoDev$sefd1)
       dfGenoTra$seGenoDevDeriv2 <- as.vector(object1$genoDev$sefd2)
+    }
+    if (hasName(x = object2$time, name = "timePoint")) {
+      dfGenoTra[["timePoint"]] <- rep(timePointRange, length(object2$genoLevs))
     }
     res$genoLevel <- dfGenoTra
   }
@@ -202,20 +216,28 @@ listToDf <- function(object1,
       dfPlotTra$sePlotDevDeriv1 <- as.vector(object1$plotDev$sefd1)
       dfPlotTra$sePlotDevDeriv2 <- as.vector(object1$plotDev$sefd2)
     }
+    if (hasName(x = object2$time, name = "timePoint")) {
+      dfPlotTra[["timePoint"]] <- rep(timePointRange, sum(object2$nPlotGeno))
+    }
     res$plotLevel <- dfPlotTra
-    if (isTRUE(setequal(xp, object2$time))) {
+    if (isTRUE(setequal(xp, object2$time[["timeNumber"]]))) {
       res$plotLevel$obsPlot <- c(do.call("cbind", object2$y))
     } else {
       ## Raw plot growth curves.
       ## (Observed data: in the raw time not in newtimes (xp)).
       dfPlotObs <-
-        data.frame(timeNumber = rep(object2$time, sum(object2$nPlotGeno)),
+        data.frame(timeNumber = rep(object2$time[["timeNumber"]],
+                                    sum(object2$nPlotGeno)),
                    pop = rep(object2$popLevs,
-                             object2$nPlotPop * length(object2$time)),
+                             object2$nPlotPop * nrow(object2$time)),
                    genotype = rep(object2$genoLevs,
-                                  object2$nPlotGeno * length(object2$time)),
-                   plotId = rep(object2$plotLevs, each = length(object2$time)),
+                                  object2$nPlotGeno * nrow(object2$time)),
+                   plotId = rep(object2$plotLevs, each = nrow(object2$time)),
                    obsPlot = c(do.call("cbind", object2$y)))
+      if (hasName(x = object2$time, name = "timePoint")) {
+        dfPlotObs[["timePoint"]] <- rep(object2$time[["timePoint"]],
+                                        sum(object2$nPlotGeno))
+      }
       res$plotObs <- dfPlotObs
     }
   }
@@ -294,8 +316,9 @@ listToDf <- function(object1,
 #' ## Predict the P-Splines Hierarchical Curve Data Model in a dense grid
 #' ## with standard errors at the population and genotype levels
 #' pred.psHDM <- predict(object = fit.psHDM,
-#'                      newtimes = seq(min(fit.psHDM$time),
-#'                                    max(fit.psHDM$time), length.out = 100),
+#'                      newtimes = seq(min(fit.psHDM$time$timeNumber),
+#'                                    max(fit.psHDM$time$timeNumber),
+#'                                    length.out = 100),
 #'                      pred = list(pop = TRUE, geno = TRUE, plot = TRUE),
 #'                      se = list(pop = TRUE, geno = TRUE, plot = FALSE))
 #'
@@ -323,7 +346,7 @@ predict.psHDM <- function(object,
     stop("The object class is not correct")
   }
   if (missing(newtimes)) {
-    xp <- object$time
+    xp <- object$time[["timeNumber"]]
   } else {
     if (!is.vector(newtimes) || !is.numeric(newtimes)) {
       stop("newtimes should be a vector")

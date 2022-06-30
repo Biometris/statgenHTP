@@ -2,11 +2,13 @@
 % Please edit documentation in R/fitSplineHDM.R
 \name{fitSplineHDM}
 \alias{fitSplineHDM}
-\title{fitSplineHDM}
+\title{Fit P-Spline Hierarchical Curve Data Models}
 \usage{
 fitSplineHDM(
   inDat,
   trait,
+  genotypes = NULL,
+  plotIds = NULL,
   time,
   pop,
   genotype,
@@ -20,7 +22,8 @@ fitSplineHDM(
   family = gaussian(),
   maxit = 200,
   trace = TRUE,
-  thr = 0.001
+  thr = 0.001,
+  minNoTP = NULL
 )
 }
 \arguments{
@@ -28,6 +31,14 @@ fitSplineHDM(
 
 \item{trait}{A character string indicating the trait for which the spline
 should be fitted.}
+
+\item{genotypes}{A character vector indicating the genotypes for which
+hierarchical models should be fitted. If \code{NULL}, splines will be fitted
+for all genotypes.}
+
+\item{plotIds}{A character vector indicating the plotIds for which
+hierarchical models should be fitted. If \code{NULL}, splines will be
+fitted for all plotIds.}
 
 \item{time}{A character string indicating the timepoints at which the trait
 is measured for each plant.}
@@ -74,6 +85,11 @@ The default is \code{TRUE}.}
 
 \item{thr}{An optional value that controls the convergence threshold of the
 algorithm. The default is 1.e-03.}
+
+\item{minNoTP}{The minimum number of time points for which data should be
+available for a plant. Defaults to 80\% of all time points present in the
+TP object. No splines are fitted for plants with less than the minimum number
+of timepoints.}
 }
 \value{
 An object of class \code{psHDM}, a list with the following outputs:

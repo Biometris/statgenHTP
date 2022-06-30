@@ -89,8 +89,9 @@ fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
 ## Predict the P-Splines Hierarchical Curve Data Model in a dense grid
 ## with standard errors at the population and genotype levels
 pred.psHDM <- predict(object = fit.psHDM,
-                     newtimes = seq(min(fit.psHDM$time),
-                                   max(fit.psHDM$time), length.out = 100),
+                     newtimes = seq(min(fit.psHDM$time$timeNumber),
+                                   max(fit.psHDM$time$timeNumber),
+                                   length.out = 100),
                      pred = list(pop = TRUE, geno = TRUE, plot = TRUE),
                      se = list(pop = TRUE, geno = TRUE, plot = FALSE))
 

@@ -1,6 +1,4 @@
-# Function ----------------------------------------------------------------
-
-#' fitSplineHDM
+#' Fit P-Spline Hierarchical Curve Data Models
 #'
 #' Fit the P-spline Hierarchical Curve Data Model used in the second stage of
 #' the two-stage approach proposed by Pérez-Valencia et al. (2022). This model
@@ -20,6 +18,12 @@
 #' @param inDat A data.frame with corrected spatial data.
 #' @param trait A character string indicating the trait for which the spline
 #' should be fitted.
+#' @param genotypes A character vector indicating the genotypes for which
+#' hierarchical models should be fitted. If \code{NULL}, splines will be fitted
+#' for all genotypes.
+#' @param plotIds A character vector indicating the plotIds for which
+#' hierarchical models should be fitted. If \code{NULL}, splines will be
+#' fitted for all plotIds.
 #' @param time A character string indicating the timepoints at which the trait
 #' is measured for each plant.
 #' @param pop A character string indicating the the populations to which each
@@ -52,6 +56,10 @@
 #' The default is \code{TRUE}.
 #' @param thr An optional value that controls the convergence threshold of the
 #' algorithm. The default is 1.e-03.
+#' @param minNoTP The minimum number of time points for which data should be
+#' available for a plant. Defaults to 80% of all time points present in the
+#' TP object. No splines are fitted for plants with less than the minimum number
+#' of timepoints.
 #'
 #' @return An object of class \code{psHDM}, a list with the following outputs:
 #' \code{time}, a numeric vector with the timepoints.
@@ -151,6 +159,8 @@
 #' @export
 fitSplineHDM <- function(inDat,
                          trait,
+                         genotypes = NULL,
+                         plotIds = NULL,
                          time,
                          pop,
                          genotype,
@@ -164,7 +174,8 @@ fitSplineHDM <- function(inDat,
                          family = gaussian(),
                          maxit = 200,
                          trace = TRUE,
-                         thr = 1e-03) {
+                         thr = 1e-03,
+                         minNoTP = NULL) {
   ## Checks.
   if (!is.character(trait) || length(trait) > 1) {
     stop("trait should be a character string of length 1.\n")
@@ -172,32 +183,98 @@ fitSplineHDM <- function(inDat,
   if (!inherits(inDat, "data.frame")) {
     stop("inDat should be a data.frame.\n")
   }
-  corrCols <- c(genotype, trait, time, pop, plotId)
-  if (!all(hasName(x = inDat, name = corrCols))) {
-    stop("inDat should at least contain the following columns: ",
-         paste(corrCols, collapse = ", "))
-  }
   if (!is.numeric(maxit) || length(maxit) > 1 || maxit < 0) {
     stop("maxit should be a positive numerical value.\n")
   }
   if (!is.numeric(thr) || length(thr) > 1 || thr < 0) {
     stop("thr should be a positive numerical value.\n")
   }
+  useTimeNumber <- TRUE
+  timeNumber <- "timeNumber"
+  if (isTRUE(useTimeNumber) &&
+      (is.null(timeNumber) || !is.character(timeNumber) ||
+       length(timeNumber) > 1)) {
+    stop("timeNumber should be a character string of length 1.\n")
+  }
+  corrCols <- c(genotype, trait, timeNumber, pop, plotId, "colId", "rowId")
+  # corrCols <- c("genotype", trait, if (fitLevel == "plotId") "plotId",
+  #               if (useTimeNumber) timeNumber else "timePoint")
+  if (!all(hasName(x = inDat, name = corrCols))) {
+    stop("inDat should at least contain the following columns: ",
+         paste(corrCols, collapse = ", "))
+  }
+  if (!is.null(genotypes) &&
+      (!is.character(genotypes) ||
+       !all(genotypes %in% inDat[["genotype"]]))) {
+    stop("genotypes should be a character vector of genotypes in inDat.\n")
+  }
+  if (!is.null(plotIds) &&
+      (!is.character(plotIds) || !all(plotIds %in% inDat[["plotId"]]))) {
+    stop("plotIds should be a character vector of plotIds in inDat.\n")
+  }
+  if (!is.null(minNoTP) && (!is.numeric(minNoTP) || length(minNoTP) > 1)) {
+    stop("minNoTP should be a numerical value.\n")
+  }
+  if (!useTimeNumber) {
+    if (!inherits(inDat[["timePoint"]], "POSIXct")) {
+      stop("Column timePoint should be of class POSIXct.\n")
+    }
+    ## Convert time point to time number with the first time point as 0.
+    minTime <- min(inDat[["timePoint"]], na.rm = TRUE)
+    inDat[["timeNumber"]] <- as.numeric(inDat[["timePoint"]] - minTime) / 1000
+  } else {
+    if (!is.numeric(inDat[[timeNumber]])) {
+      stop("timeNumber should be a numerical column.\n")
+    }
+    inDat[["timeNumber"]] <- inDat[[timeNumber]]
+  }
+  ## Restrict inDat to selected genotypes and plotIds.
+  if (!is.null(genotypes)) {
+    inDat <- inDat[inDat[["genotype"]] %in% genotypes, ]
+  }
+  if (!is.null(plotIds)) {
+    inDat <- inDat[inDat[["plotId"]] %in% plotIds, ]
+  }
+  if (nrow(inDat) == 0) {
+    stop("At least one valid combination of genotype and plotId should be ",
+         "selected.\n")
+  }
+  ## Check if geno.decomp in present in inDat.
+  useGenoDecomp <- hasName(x = inDat, name = "geno.decomp")
   ## Unused levels might cause strange behaviour.
   inDat <- droplevels(inDat)
+  ## Create data.frame with plants and genotypes for adding genotype to results.
+  if (useGenoDecomp) {
+    plantGeno <- unique(inDat[c("plotId", "genotype", "geno.decomp")])
+  } else {
+    plantGeno <- unique(inDat[c("plotId", "genotype")])
+  }
+  ## Determine minimum number of time points required.
+  nTimeNumber <- length(unique(inDat[["timeNumber"]]))
+  if (is.null(minNoTP)) {
+    minTP <- 0.8 * nTimeNumber
+  } else if (minNoTP < 0 || minNoTP > nTimeNumber) {
+    stop("minNoTP should be a number bewtween 0 and ", nTimeNumber, ".\n")
+  } else {
+    minTP <- minNoTP
+  }
+  ## Create data.frame with time number and, if present,
+  ## time point on prediction scale.
+  timeRange <- data.frame(timeNumber = sort(unique(inDat[["timeNumber"]])))
+  if (hasName(x = inDat, name = "timePoint")) {
+    timeRange[["timePoint"]] <- sort(unique(inDat[["timePoint"]]))
+  }
   ## Create a full data set of observations for all combinations of
   ## timepoints, row and column.
-  timeDat <- data.frame(time = sort(unique(inDat[[time]])))
-  colnames(timeDat) <- time
   fullGrid <- merge(unique(inDat[c(pop, genotype, plotId, "colId", "rowId")]),
-                    timeDat)
+                    timeRange)
   inDat <- merge(fullGrid, inDat, all.x = TRUE)
   ## Order the data
   inDat <- inDat[order(inDat[, pop], inDat[, genotype], inDat[, plotId],
-                       inDat[, time]), ]
+                       inDat[, "timeNumber"]), ]
   ## Normalize time.
-  raw.time <- timeDat[[time]]
-  inDat[[time]] <- inDat[[time]] - min(inDat[[time]]) + 1
+  rawTime <- timeRange[["timeNumber"]]
+  inDat[["timeNumber"]] <- inDat[["timeNumber"]] - min(inDat[["timeNumber"]]) + 1
   ## Define offset.
   if (is.null(offset)) {
     inDat$offset <- 0
@@ -228,7 +305,7 @@ fitSplineHDM <- function(inDat,
                      MARGIN = 1, FUN = function(x) { sum(x!=0) })[genoLevs]
   nTot <- nlevels(inDat[[plotId]])
   # Time interval
-  x <- sort(unique(inDat[[time]]))
+  x <- sort(unique(inDat[["timeNumber"]]))
   ## Construct design matrices: data in an array
   ## Design matrices for the population curves.
   MMPop <- MM.basis(x = x, ndx = smoothPop$nseg, bdeg = smoothPop$bdeg,
@@ -247,12 +324,12 @@ fitSplineHDM <- function(inDat,
   ZPlot <- MMPlot$Z
   ## Response, offset and weights
   y <- inDat[[trait]]
-  offset.f <- inDat[["offset"]]
-  weights.f <- weights
+  offsetf <- inDat[["offset"]]
+  weightsf <- weights
   ## Set missing values and corresponding weights to 0.
   nas <- is.na(y)
   y[nas] <- 0
-  weights.f[nas] <- 0
+  weightsf[nas] <- 0
   ## Construct matrices assigning plants to populations and genotypes
   ## Matrix to assign plants to populations
   plotPlotPop <- rep(1:nPop, nPlotPop)
@@ -391,9 +468,9 @@ fitSplineHDM <- function(inDat,
   ## Iteration process to estimate coefficients and variance components.
   for (iter in 1:maxit) {
     deriv <- family$mu.eta(eta)
-    z <- (eta - offset.f) + (y - mu) / deriv
+    z <- (eta - offsetf) + (y - mu) / deriv
     w <- as.vector(deriv ^ 2 / family$variance(mu))
-    w <- w * weights.f
+    w <- w * weightsf
     mat <- construct.matrices(X = X, Z = Z, z = z, w = w, GLAM = GLAM)
     V <- construct.block(mat$XtX., mat$XtZ., mat$ZtX., mat$ZtZ.) # Does not change from iteration to iteration
     ## V is an object of class Matrix, transform it to spam.
@@ -427,21 +504,21 @@ fitSplineHDM <- function(inDat,
       EDc <- theta * LMMsolver:::dlogdet(ADcholC, theta)
       ED <- EDmax - EDc[-1]
       ## Fixed and random coefficients.
-      b.fixed  <- b[1:np[1]]
-      b.random <- b[-(1:np[1])]
+      bFixed <- b[1:np[1]]
+      bRandom <- b[-(1:np[1])]
       ## Variance components as in SOP.
       ssv <- ed <- tau <- vector(mode = "list", length = length(g))
       for (i in 1:length(g)) {
         ed[[i]] = ED[i]
         ed[[i]] <- ifelse(ed[[i]] <= 1e-10, 1e-10, ed[[i]])
-        ssv[[i]] <- sum(b.random ^ 2 * g[[i]])
+        ssv[[i]] <- sum(bRandom ^ 2 * g[[i]])
         tau[[i]] <- ssv[[i]] / ed[[i]]
         tau[[i]] <- ifelse(tau[[i]] <= 1e-10, 1e-10, tau[[i]])
       }
-      ssr <- mat$yty. - t(c(b.fixed, b.random)) %*% (2 * mat$u - V %*% b)
+      ssr <- mat$yty. - t(c(bFixed, bRandom)) %*% (2 * mat$u - V %*% b)
       dev <- deviance_spam(C = cholHn, G = spam::diag.spam(G), w = w[w != 0],
                            sigma2 = la[1], ssr = ssr,
-                           edf = sum(b.random ^ 2 * Ginv))[1]
+                           edf = sum(bRandom ^ 2 * Ginv))[1]
       if (family$family %in% c("gaussian", "quasipoisson")) {
         phi <- as.numeric((ssr / (length(z[w != 0]) - sum(unlist(ed)) - np[1])))
       } else {
@@ -453,10 +530,10 @@ fitSplineHDM <- function(inDat,
       if (trace) {
         if(it == 1){
           ## Print header.
-          ed.names <- c("", "Deviance", paste0("ed.p", 1:nPop),
+          edNames <- c("", "Deviance", paste0("ed.p", 1:nPop),
                         "ed.g.int", "ed.g.slp", "ed.g.smooth",
                         "ed.i.int", "ed.i.slp", "ed.i.smooth")
-          cat(sprintf("%12.12s", ed.names), sep = "")
+          cat(sprintf("%12.12s", edNames), sep = "")
           cat('\n')
         }
         cat(sprintf("%1$3d %2$12.6f", it, dev), sep = "")
@@ -468,13 +545,13 @@ fitSplineHDM <- function(inDat,
       devold <- dev
     }
     etaOld <- eta
-    eta <- Xtheta(X, b.fixed) + Ztheta(Z, b.random, np[-1]) + offset.f
+    eta <- Xtheta(X, bFixed) + Ztheta(Z, bRandom, np[-1]) + offsetf
     mu <- family$linkinv(eta)
     ## Convergence criterion: linear predictor.
     tol <- sum((eta - etaOld) ^ 2) / sum(eta ^ 2)
     if (tol < 1e-6 || family$family == "gaussian") break
   }
-  coeff <- c(b.fixed, b.random)
+  coeff <- c(bFixed, bRandom)
   ## Plant raw data.
   aux <- matrix(inDat[, trait], ncol = nTot)
   obsPlot <- lapply(X = split(aux, rep(plotPlotGeno, each = nrow(aux))),
@@ -485,7 +562,7 @@ fitSplineHDM <- function(inDat,
   ## Object to be returned
   res <- structure(
     list(y = obsPlot,
-         time = raw.time,
+         time = timeRange,
          genoLevs = genoLevs,
          popLevs = popLevs,
          plotLevs = plotLevs,
@@ -494,7 +571,6 @@ fitSplineHDM <- function(inDat,
          nPlotGeno = nPlotGeno,
          MM = list(MMPop = MMPop, MMGeno = MMGeno, MMPlot = MMPlot),
          ed = unlist(ed),
-         tot_ed = sum(unlist(ed)),
          vc = unlist(tau),
          phi = phi,
          coeff = coeff,
