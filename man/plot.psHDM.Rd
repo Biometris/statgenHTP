@@ -24,8 +24,8 @@
 
 \item{...}{Not used.}
 
-\item{genotypes}{A character vector with the genotypes for which plots are
-desired.}
+\item{genotypes}{A character vector with the genotypes for which plots at
+plot level are desired.}
 
 \item{genotypeNames}{A character vector with the names for the genotypes
 selected (genotypes). The default is \code{NULL}}
