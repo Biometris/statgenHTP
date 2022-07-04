@@ -57,7 +57,7 @@
 #' @param thr An optional value that controls the convergence threshold of the
 #' algorithm. The default is 1.e-03.
 #' @param minNoTP The minimum number of time points for which data should be
-#' available for a plant. Defaults to 80% of all time points present in the
+#' available for a plant. Defaults to 60% of all time points present in the
 #' TP object. No splines are fitted for plants with less than the minimum number
 #' of timepoints.
 #'
@@ -115,18 +115,20 @@
 #' head(spatCorrectedArch)
 #' ggplot2::ggplot(data = spatCorrectedArch,
 #'                 ggplot2::aes(x= timeNumber, y = LeafArea_corr, group = plotId)) +
-#'   ggplot2::geom_line() +
+#'   ggplot2::geom_line(na.rm = TRUE) +
 #'   ggplot2::facet_grid(~geno.decomp)
 #'
 #' ## We need to specify the genotype-by-treatment interaction
 #' ## Treatment: water regime (WW, WD)
 #' spatCorrectedArch$treat <- factor(spatCorrectedArch$geno.decomp,
 #'                                   labels = substr(levels(spatCorrectedArch$geno.decomp), 1, 2))
-#' spatCorrectedArch$genobytreat <- paste0(spatCorrectedArch$genotype,"_",spatCorrectedArch$treat)
+#' spatCorrectedArch$genobytreat <- paste0(spatCorrectedArch$genotype, "_", spatCorrectedArch$treat)
 #'
-#' ## Fit P-Splines Hierarchical Curve Data Model
+#' ## Fit P-Splines Hierarchical Curve Data Model for selection of genotypes.
 #' fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
 #'                           trait = "LeafArea_corr",
+#'                           genotypes = c("GenoA14", "GenoA51", "GenoB11",
+#'                                        "GenoB02"),
 #'                           time = "timeNumber",
 #'                           pop = "geno.decomp",
 #'                           genotype = "genobytreat",
@@ -135,26 +137,26 @@
 #'                           smoothPop = list(nseg = 4, bdeg = 3, pord = 2),
 #'                           smoothGeno = list(nseg = 4, bdeg = 3, pord = 2),
 #'                           smoothPlot = list(nseg = 4, bdeg = 3, pord = 2),
-#'                           weights = "wt")
+#'                           weights = "wt",
+#'                           trace = FALSE)
 #'
-#' ## Visualize the data.frames with predicted values at the three levels of the hierarchy.
-#' ## Population level
+#' ## Visualize the data.frames with predicted values at the three levels of
+#' ## the hierarchy.
+#'
+#' # Population level
 #' head(fit.psHDM$popLevel)
-#' ## Genotype level
-#' head(fit.psHDM$genoLevel)
-#' ## Plot level
-#' head(fit.psHDM$plotLevel)
 #'
-#' ## Plot the P-Spline predictions at the three levels of the hierarchy
-#' ## Plots at plant level for some genotypes (as illustration)
-#' plot(x = fit.psHDM,
-#'     genotypes = c("GenoA14_WD", "GenoA51_WD", "GenoB11_WW",
-#'                  "GenoB02_WD","GenoB02_WW"),
-#'     themeHDM = themeHDM())
+#' # Genotype level
+#' head(fit.psHDM$genoLevel)
+#'
+#' # Plot level
+#' head(fit.psHDM$plotLevel)
 #'
 #' @references Pérez-Valencia, D.M., Rodríguez-Álvarez, M.X., Boer, M.P. et al.
 #' A two-stage approach for the spatio-temporal analysis of high-throughput
 #' phenotyping data. Sci Rep 12, 3177 (2022). \doi{10.1038/s41598-022-06935-9}
+#'
+#' @family functions for fitting hierarchical curve data models
 #'
 #' @export
 fitSplineHDM <- function(inDat,
@@ -252,11 +254,25 @@ fitSplineHDM <- function(inDat,
   ## Determine minimum number of time points required.
   nTimeNumber <- length(unique(inDat[["timeNumber"]]))
   if (is.null(minNoTP)) {
-    minTP <- 0.8 * nTimeNumber
+    minTP <- 0.6 * nTimeNumber
   } else if (minNoTP < 0 || minNoTP > nTimeNumber) {
     stop("minNoTP should be a number bewtween 0 and ", nTimeNumber, ".\n")
   } else {
     minTP <- minNoTP
+  }
+  ## Check for plotIds that have a limited amount of observations.
+  plotTab <- table(inDat[!is.na(inDat[[trait]]), "plotId"])
+  plotLimObs <- names(plotTab[plotTab < minTP])
+  if (length(plotLimObs) > 5) {
+    warning("More than 5 plots have observations for less than the ",
+            "minimum number of time points, which is ", round(minTP), ". The  ",
+            "first 5 are printed, to see them all run attr(..., 'plotLimObs') ",
+            "on the output\n",
+            paste(plotLimObs[1:5], collapse = ", "), "\n", call. = FALSE)
+  } else if (length(plotLimObs) > 0) {
+    warning("The following plots have observations for less than ",
+            "the minimum number of time points, which is ", round(minTP), ":\n",
+            paste(plotLimObs, collapse = ", "), "\n", call. = FALSE)
   }
   ## Create data.frame with time number and, if present,
   ## time point on prediction scale.
@@ -592,6 +608,7 @@ fitSplineHDM <- function(inDat,
   res <- c(res, preds[c("popLevel", "genoLevel", "plotLevel")])
   class(res) <- c("psHDM", "list")
   attr(res, which = "trait") <- trait
+  attr(res, which = "plotLimObs") <- plotLimObs
   return(res)
 }
 

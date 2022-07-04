@@ -7,15 +7,17 @@
 \method{plot}{psHDM}(
   x,
   ...,
-  genotypes,
+  plotType = c("popTra", "popGenoTra", "popGenoDeriv", "genoDev", "genoPlotTra"),
+  genotypes = NULL,
   genotypeNames = NULL,
   genotypeOrder = NULL,
-  xlab = NULL,
-  ylab = NULL,
+  xlab = "Time",
+  ylab = expression(tilde(y)[pgi](t)),
   themeHDM = themeHDM(),
-  ask = TRUE,
-  title = list(popTra = NULL, genoTra = NULL, genoTraDeriv1 = NULL, genoDev = NULL,
-    plotTra = NULL)
+  title = NULL,
+  output = TRUE,
+  outFile = NULL,
+  outFileOpts = NULL
 )
 }
 \arguments{
@@ -24,25 +26,35 @@
 
 \item{...}{Not used.}
 
+\item{plotType}{A character string indicating which plot should be made.}
+
 \item{genotypes}{A character vector with the genotypes for which plots at
-plot level are desired.}
+plot level are desired. Only used when \code{plotType == "genoPlotTra"}.}
 
-\item{genotypeNames}{A character vector with the names for the genotypes
-selected (genotypes). The default is \code{NULL}}
+\item{genotypeNames}{A character vector with alternative names for the
+plotted genotypes (genotypes). If \code{NULL} the names of the genotypes
+are used. Only used when \code{plotType == "genoPlotTra"}.}
 
-\item{genotypeOrder}{A vector with the order of the genotypes selected
-(genotypes). The default is \code{NULL}}
+\item{genotypeOrder}{A vector with the order of the selected genotypes
+(genotypes). If \code{NULL} then the order in the data is preserved.
+Only used when \code{plotType == "genoPlotTra"}.}
 
-\item{xlab}{The x label of the plot. The default is \code{NULL}}
+\item{xlab}{The x-axis label of the plot.}
 
-\item{ylab}{The y label of the plot. The default is \code{NULL}}
+\item{ylab}{The y-axis label of the plot.}
 
-\item{themeHDM}{Theme to be used for the ggplots. The default is \code{themeHDM()}.}
+\item{title}{A character string used as title for the plot. If \code{NULL} a
+default title is added to the plot depending on \code{plotType}.}
 
-\item{ask}{Should the next figure be drawn?}
+\item{output}{Should the plot be output to the current device? If
+\code{FALSE} only a (list of) ggplot object(s) is invisibly returned. Ignored if
+\code{outFile} is specified.}
 
-\item{title}{A list with overall titles for plots at each level of the
-hierarchy. The default is \code{NULL} for all of them.}
+\item{outFile}{A character string indicating the .pdf file to which the
+plots should be written. If \code{NULL}, no file is written.}
+
+\item{outFileOpts}{A named list of extra options for the pdf outfile, e.g.
+width and height. See \code{\link[grDevices]{pdf}} for all possible options.}
 }
 \description{
 This plot function provides five plots for objects of the class \code{psHDM}
@@ -52,7 +64,7 @@ after fitting (\code{\link{fitSplineHDM}}) or predicting
 derivative of the genotype-specific growth curves (for all genotypes),
 (4) Genotype-specific deviations (for all genotypes), and (5) Plot- and
 genotype-specific growth curves (for a selection of genotypes). If standard
-error are available, 95\% pointwise confidence intervals are depicted.
+errors are available, 95\% point wise confidence intervals are depicted.
 }
 \examples{
 ## The data from the Phenovator platform have been corrected for spatial
@@ -60,18 +72,20 @@ error are available, 95\% pointwise confidence intervals are depicted.
 head(spatCorrectedArch)
 ggplot2::ggplot(data = spatCorrectedArch,
                ggplot2::aes(x= timeNumber, y = LeafArea_corr, group = plotId)) +
-  ggplot2::geom_line() +
+  ggplot2::geom_line(na.rm = TRUE) +
   ggplot2::facet_grid(~geno.decomp)
 
 ## We need to specify the genotype-by-treatment interaction
 ## Treatment: water regime (WW, WD)
 spatCorrectedArch$treat <- factor(spatCorrectedArch$geno.decomp,
                                   labels = substr(levels(spatCorrectedArch$geno.decomp), 1, 2))
-spatCorrectedArch$genobytreat <- paste0(spatCorrectedArch$genotype,"_",spatCorrectedArch$treat)
+spatCorrectedArch$genobytreat <- paste0(spatCorrectedArch$genotype, "_", spatCorrectedArch$treat)
 
-## Fit P-Splines Hierarchical Curve Data Model
+## Fit P-Splines Hierarchical Curve Data Model for selection of genotypes.
 fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
                           trait = "LeafArea_corr",
+                          genotypes = c("GenoA14", "GenoA51", "GenoB11",
+                                       "GenoB02"),
                           time = "timeNumber",
                           pop = "geno.decomp",
                           genotype = "genobytreat",
@@ -80,13 +94,32 @@ fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
                           smoothPop = list(nseg = 4, bdeg = 3, pord = 2),
                           smoothGeno = list(nseg = 4, bdeg = 3, pord = 2),
                           smoothPlot = list(nseg = 4, bdeg = 3, pord = 2),
-                          weights = "wt")
+                          weights = "wt",
+                          trace = FALSE)
 
 ## Plot the P-Spline predictions at the three levels of the hierarchy
-## Plots at plant level for some genotypes (as illustration)
+
+## Plots at population level.
 plot(fit.psHDM,
-    genotypes = c("GenoA14_WD","GenoA51_WD","GenoB11_WW","GenoB02_WD","GenoB02_WW"),
-    themeHDM = themeHDM())
+    plotType = "popTra")
+
+## Plots at genotype level.
+plot(fit.psHDM,
+    plotType = "popGenoTra")
+
+## Plots of derivatives at genotype level.
+plot(fit.psHDM,
+    plotType = "popGenoDeriv")
+
+## Plots of deviations at genotype level.
+plot(fit.psHDM,
+    plotType = "genoDev")
+
+## Plots at plot level for selection of genotypes.
+plot(fit.psHDM,
+    plotType = "genoPlotTra",
+    genotypes = c("GenoA14_WD", "GenoA51_WD", "GenoB11_WW",
+                 "GenoB02_WD","GenoB02_WW"))
 
 }
 \references{
@@ -94,3 +127,9 @@ Pérez-Valencia, D.M., Rodríguez-Álvarez, M.X., Boer, M.P. et al.
 A two-stage approach for the spatio-temporal analysis of high-throughput
 phenotyping data. Sci Rep 12, 3177 (2022). \doi{10.1038/s41598-022-06935-9}
 }
+\seealso{
+Other functions for fitting hierarchical curve data models: 
+\code{\link{fitSplineHDM}()},
+\code{\link{predict.psHDM}()}
+}
+\concept{functions for fitting hierarchical curve data models}
