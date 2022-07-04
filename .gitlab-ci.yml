@@ -15,7 +15,7 @@ before_script:
   - echo "options(Ncpus = $(nproc --all))" >> /usr/local/lib/R/etc/Rprofile.site
   - install2.r devtools remotes
   # Uncomment lines below for installation of develop versions of LMMsolver
-  - r -e 'remotes::install_github("Biometris/LMMsolver", ref = "develop", dependencies = TRUE)'
+  # - r -e 'remotes::install_github("Biometris/LMMsolver", ref = "develop", dependencies = TRUE)'
   - r -e 'devtools::install_dev_deps()'
 
 r-release:

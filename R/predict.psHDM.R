@@ -291,18 +291,20 @@ listToDf <- function(object1,
 #' head(spatCorrectedArch)
 #' ggplot2::ggplot(data = spatCorrectedArch,
 #'                 ggplot2::aes(x= timeNumber, y = LeafArea_corr, group = plotId)) +
-#'   ggplot2::geom_line() +
+#'   ggplot2::geom_line(na.rm = TRUE) +
 #'   ggplot2::facet_grid(~geno.decomp)
 #'
 #' ## We need to specify the genotype-by-treatment interaction
 #' ## Treatment: water regime (WW, WD)
 #' spatCorrectedArch$treat <- factor(spatCorrectedArch$geno.decomp,
 #'                                   labels = substr(levels(spatCorrectedArch$geno.decomp), 1, 2))
-#' spatCorrectedArch$genobytreat <- paste0(spatCorrectedArch$genotype,"_",spatCorrectedArch$treat)
+#' spatCorrectedArch$genobytreat <- paste0(spatCorrectedArch$genotype, "_", spatCorrectedArch$treat)
 #'
-#' ## Fit P-Splines Hierarchical Curve Data Model
+#' ## Fit P-Splines Hierarchical Curve Data Model for selection of genotypes.
 #' fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
 #'                           trait = "LeafArea_corr",
+#'                           genotypes = c("GenoA14", "GenoA51", "GenoB11",
+#'                                        "GenoB02"),
 #'                           time = "timeNumber",
 #'                           pop = "geno.decomp",
 #'                           genotype = "genobytreat",
@@ -311,9 +313,10 @@ listToDf <- function(object1,
 #'                           smoothPop = list(nseg = 4, bdeg = 3, pord = 2),
 #'                           smoothGeno = list(nseg = 4, bdeg = 3, pord = 2),
 #'                           smoothPlot = list(nseg = 4, bdeg = 3, pord = 2),
-#'                           weights = "wt")
+#'                           weights = "wt",
+#'                           trace = FALSE)
 #'
-#' ## Predict the P-Splines Hierarchical Curve Data Model in a dense grid
+#' ## Predict the P-Splines Hierarchical Curve Data Model on a dense grid
 #' ## with standard errors at the population and genotype levels
 #' pred.psHDM <- predict(object = fit.psHDM,
 #'                      newtimes = seq(min(fit.psHDM$time$timeNumber),
@@ -326,13 +329,13 @@ listToDf <- function(object1,
 #' ## Plots at plot level for some genotypes (as illustration)
 #' plot(x = pred.psHDM,
 #'     genotypes = c("GenoA14_WD", "GenoA51_WD", "GenoB11_WW", "GenoB02_WD",
-#'                  "GenoB02_WW"),
-#'     themeHDM = themeHDM(),
-#'     ask = FALSE)
+#'                  "GenoB02_WW"))
 #'
 #' @references Pérez-Valencia, D.M., Rodríguez-Álvarez, M.X., Boer, M.P. et al.
 #' A two-stage approach for the spatio-temporal analysis of high-throughput
 #' phenotyping data. Sci Rep 12, 3177 (2022). \doi{10.1038/s41598-022-06935-9}
+#'
+#' @family functions for fitting hierarchical curve data models
 #'
 #' @export
 predict.psHDM <- function(object,
