@@ -22,7 +22,7 @@
 
 \item{plotType}{A character string indicating the type of plot to be made.}
 
-\item{what}{The types of estimate that should be extracted.}
+\item{what}{The types of estimate that should be plotted.}
 
 \item{title}{A character string used as title for the plot. If \code{NULL} a
 default title is added to the plot depending on \code{plotType}.}
@@ -38,7 +38,7 @@ plots should be written. If \code{NULL}, no file is written.}
 width and height. See \code{\link[grDevices]{pdf}} for all possible options.}
 }
 \value{
-A list of object of class ggplot is invisibly returned.
+A list of objects of class ggplot is invisibly returned.
 }
 \description{
 Plot the results of estimated spline parameters.
