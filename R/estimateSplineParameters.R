@@ -259,6 +259,7 @@ estimateSplineParameters <- function(x,
                    estimate = estimate,
                    trait = trait,
                    useGenoDecomp = useGenoDecomp,
+                   aggLevs = aggLevs,
                    class = c("splineEst", "data.frame"))
   return(res)
 }
@@ -270,9 +271,9 @@ estimateSplineParameters <- function(x,
 #' @param x An object of class \code{splineEst}
 #' @param ... Ignored.
 #' @param plotType A character string indicating the type of plot to be made.
-#' @param what The types of estimate that should be extracted.
+#' @param what The types of estimate that should be plotted.
 #'
-#' @return A list of object of class ggplot is invisibly returned.
+#' @return A list of objects of class ggplot is invisibly returned.
 #'
 #' @family functions for spline parameter estimation
 #'
@@ -286,12 +287,16 @@ plot.splineEst <- function(x,
                            outFile = NULL,
                            outFileOpts = NULL) {
   plotType <- match.arg(plotType)
-  what <- match.arg(what)
+  what <- match.arg(what, several.ok = TRUE)
   trait <- attr(x, which = "trait")
   estimate <- attr(x, which = "estimate")
   useGenoDecomp <- attr(x, which = "useGenoDecomp")
-  if (!is.factor(x[["genotype"]])) {
-    x[["genotype"]] <- as.factor(x[["genotype"]])
+  aggLevs <- attr(x, which = "aggLevs")
+  plotVar <- if (length(aggLevs) == 1) aggLevs else aggLevs[length(aggLevs) - 1]
+  for (aggLev in aggLevs) {
+    if (!is.factor(x[[aggLev]])) {
+      x[[aggLev]] <- as.factor(x[[aggLev]])
+    }
   }
   if (!is.null(outFile)) {
     chkFile(outFile, fileType = "pdf")
@@ -304,18 +309,17 @@ plot.splineEst <- function(x,
     pTot <- lapply(X = what, FUN = function(w) {
       estVar <- paste0(w, "_", estimate)
       pWhat <- ggplot2::ggplot(x,
-                               ggplot2::aes_string(x = "genotype", y = estVar)) +
+                               ggplot2::aes_string(x = plotVar, y = estVar)) +
         ggplot2::geom_boxplot(na.rm = TRUE) +
         ggplot2::labs(title = title, y = (paste(w, "of", trait))) +
         ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90,
                                                            vjust = 0.5))
       if (useGenoDecomp) {
-        pWhat <- pWhat + ggplot2::facet_grid(. ~ geno.decomp, scales = "free_x",
-                                             space = "free_x")
+        pWhat <- pWhat +
+          ggplot2::facet_grid(. ~ geno.decomp, scales = "free_x",
+                              space = "free_x")
       }
-      if (output) {
-        plot(pWhat)
-      }
+      return(pWhat)
     })
   } else if (plotType == "hist") {
     pTot <- lapply(X = what, FUN = function(w) {
@@ -324,13 +328,17 @@ plot.splineEst <- function(x,
         ggplot2::geom_histogram(na.rm = TRUE, bins = 10) +
         ggplot2::labs(title = title, y = (paste(w, "of", trait)))
       if (useGenoDecomp) {
-        pWhat <- pWhat + ggplot2::facet_grid(. ~ geno.decomp, scales = "free_x",
-                                             space = "free_x")
+        pWhat <- pWhat +
+          ggplot2::facet_grid(. ~ geno.decomp, scales = "free_x",
+                              space = "free_x")
       }
-      if (output) {
-        plot(pWhat)
-      }
+      return(pWhat)
     })
+  }
+  if (output) {
+    for (p in pTot) {
+      plot(p)
+    }
   }
   invisible(pTot)
 }
