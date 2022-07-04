@@ -1,251 +1,3 @@
-# Help functions ----------------------------------------------------------
-
-#' mixmodToBsplinePred
-#'
-#' @noRd
-#' @keywords internal
-mixmodToBsplinePred <- function(what = c("pop", "geno", "plot"),
-                                object,
-                                npS,
-                                npE,
-                                xp,
-                                Tmat = NULL,
-                                modMat = NULL,
-                                dev = TRUE,
-                                Bbasis = NULL){
-  ## Predictions.
-  ## Transformation matrix Tm, Mixed model coefficients MMCoeff,
-  ## theta and B, and fitted/predicted values f.
-  whatS <- whatE <- what
-  if (isFALSE(dev) && what != "pop") {
-    if (what == "geno") {
-      whatS <- "pop"
-      whatE <- "geno"
-    } else {
-      whatS <- "pop"
-      whatE <- "plot"
-    }
-  }
-  lW <- length(object[[paste0(what, "Levs")]])
-  MMW <- paste0("MM", tools::toTitleCase(what))
-  if (is.null(Tmat)) {
-    Tm <- cbind(Matrix::kronecker(Matrix::Diagonal(lW), object$MM[[MMW]]$U.X),
-                Matrix::kronecker(Matrix::Diagonal(lW), object$MM[[MMW]]$U.Z))
-  } else{
-    Tm <- Tmat
-  }
-  if (is.null(modMat)) {
-    mmat <- Matrix::Diagonal(lW)
-  } else if (is.list(modMat)) {
-    mmat <- list(mmat1 = modMat[[1]], mmat2 = modMat[[2]])
-  } else{
-    mmat <- modMat
-  }
-  MMCoeff <- Matrix::Matrix(object$coeff[npS[whatS]:npE[whatE]],
-                            ncol = 1)
-  theta <- Tm %*% MMCoeff
-  BFull <- function(mmat, what, deriv) {
-    Matrix::kronecker(mmat,
-                      spline.bbase(knots = object$MM[[MMW]]$knots,
-                                   X. = xp, BDEG. = object$smooth[[paste0("smooth",
-                                                                          tools::toTitleCase(what))]]$bdeg,
-                                   deriv = deriv))
-  }
-  if (is.null(Bbasis)) {
-    B <- BFull(mmat, what, deriv = 0)
-    Bd1 <- BFull(mmat, what, deriv = 1)
-    Bd2 <- BFull(mmat, what, deriv = 2)
-  } else {
-    if (what == "geno"){
-      B <- cbind(BFull(mmat, what = "pop", deriv = 0), Bbasis$B)
-      Bd1 <- cbind(BFull(mmat, what = "pop", deriv = 1), Bbasis$Bd1)
-      Bd2 <- cbind(BFull(mmat, what = "pop", deriv = 2), Bbasis$Bd2)
-    } else if(what == "plot") {
-      B <- cbind(BFull(mmat$mmat1, what = "pop", deriv = 0),
-                 BFull(mmat$mmat2, what = "geno", deriv = 0),
-                 Bbasis$B)
-      Bd1 <- cbind(BFull(mmat$mmat1, what = "pop", deriv = 1),
-                   BFull(mmat$mmat2, what = "geno", deriv = 1),
-                   Bbasis$Bd1)
-      Bd2 <- cbind(BFull(mmat$mmat1, what = "pop", deriv = 2),
-                   BFull(mmat$mmat2, what = "geno", deriv = 2),
-                   Bbasis$Bd2)
-    }
-  }
-  f <- matrix(B %*% theta, ncol = lW) # Note that f == eta_what
-  fd1 <- matrix(Bd1 %*% theta, ncol = lW)
-  fd2 <- matrix(Bd2 %*% theta, ncol = lW)
-  aux <- lapply(list(f = f, fd1 = fd1, fd2 = fd2), function(x) {
-    colnames(x) <- object[[paste0(what, "Levs")]]
-    return(x)
-  })
-  ## Object to be returned.
-  res <- list(level = what,
-              Tm = Tm,
-              B = B,
-              Bd1 = Bd1,
-              Bd2 = Bd2,
-              pred = aux)
-  return(res)
-}
-
-#' standardErrors
-#'
-#' @noRd
-#' @keywords internal
-standardErrors <- function(Tm,
-                           B,
-                           Bd1,
-                           Bd2,
-                           what = c("pop", "geno", "plot"),
-                           dev = TRUE,
-                           object,
-                           npS,
-                           npE) {
-  whatS <- whatE <- what
-  if (isFALSE(dev) && what != "pop"){
-    if (what == "geno") {
-      whatS <- "pop"
-      whatE <- "geno"
-    } else {
-      whatS <- "pop"
-      whatE <- "plot"
-    }
-  }
-  lW <- length(object[[paste0(what, "Levs")]])
-  seTheta <- Matrix::Matrix(Tm) %*%
-    Matrix::Matrix(object$Vp[npS[whatS]:npE[whatE],
-                             npS[whatS]:npE[whatE]]) %*% Matrix::t(Tm)
-  sef <- matrix(sqrt(Matrix::colSums(
-    Matrix::t(B) * Matrix::tcrossprod(seTheta, B))), ncol = lW)
-  sefd1 <- matrix(sqrt(Matrix::colSums(
-    Matrix::t(Bd1) * Matrix::tcrossprod(seTheta, Bd1))), ncol = lW)
-  sefd2 <- matrix(sqrt(Matrix::colSums(
-    Matrix::t(Bd2) * Matrix::tcrossprod(seTheta, Bd2))), ncol = lW)
-  res <- list(sef = sef,
-              sefd1 = sefd1,
-              sefd2 = sefd2)
-  res <- lapply(res, function(x){
-    colnames(x) <- object[[paste0(what, "Levs")]]
-    return(x)
-  })
-  return(res)
-}
-
-#' listToDf
-#'
-#' @noRd
-#' @keywords internal
-listToDf <- function(object1,
-                     object2,
-                     what,
-                     xp) {
-  if(!inherits(object2, "psHDM")) {
-    stop("The object class is not correct")
-  }
-  res <- list()
-  if (hasName(x = object2$time, name = "timePoint")) {
-    ## Create time point range.
-    ## Has to take into account irregular grids for xp.
-    timePointRange <- min(object2$time[["timePoint"]]) +
-      (xp - min(object2$time[["timeNumber"]])) /
-      (diff(range(object2$time[["timeNumber"]]))) *
-      diff(range(object2$time[["timePoint"]]))
-  }
-  ## Population-specific growth curves.
-  if (what == "pop") {
-    dfPopTra <- data.frame(timeNumber = rep(xp, length(object2$popLevs)),
-                           pop = rep(object2$popLevs, each = length(xp)),
-                           fPop = c(object1$f),
-                           fPopDeriv1 = c(object1$fd1),
-                           fPopDeriv2 = c(object1$fd2))
-    if (!is.null(object1$sef)) {
-      dfPopTra$sePop <- c(object1$sef)
-      dfPopTra$sePopDeriv1 <- c(object1$sefd1)
-      dfPopTra$sePopDeriv2 <- c(object1$sefd2)
-    }
-    if (hasName(x = object2$time, name = "timePoint")) {
-      dfPopTra[["timePoint"]] <- rep(timePointRange, length(object2$popLevs))
-    }
-    res$popLevel <- dfPopTra
-  }
-  ## Genotypic-specific growth curves and deviations
-  if (what == "geno") {
-    dfGenoTra <- data.frame(timeNumber = rep(xp, length(object2$genoLevs)),
-                            pop = rep(object2$popLevs,
-                                      object2$nGenoPop * length(xp)),
-                            genotype = rep(object2$genoLevs, each = length(xp)),
-                            fGeno = as.vector(object1$genoTra$f),
-                            fGenoDeriv1 = as.vector(object1$genoTra$fd1),
-                            fGenoDeriv2 = as.vector(object1$genoTra$fd2),
-                            fGenoDev = as.vector(object1$genoDev$f),
-                            fGenoDevDeriv1 = as.vector(object1$genoDev$fd1),
-                            fGenoDevDeriv2 = as.vector(object1$genoDev$fd2))
-    if (!is.null(object1$genoDev$sef)) {
-      dfGenoTra$seGeno <- as.vector(object1$genoTra$sef)
-      dfGenoTra$seGenoDeriv1 <- as.vector(object1$genoTra$sefd1)
-      dfGenoTra$seGenoDeriv2 <- as.vector(object1$genoTra$sefd2)
-      dfGenoTra$seGenoDev <- as.vector(object1$genoDev$sef)
-      dfGenoTra$seGenoDevDeriv1 <- as.vector(object1$genoDev$sefd1)
-      dfGenoTra$seGenoDevDeriv2 <- as.vector(object1$genoDev$sefd2)
-    }
-    if (hasName(x = object2$time, name = "timePoint")) {
-      dfGenoTra[["timePoint"]] <- rep(timePointRange, length(object2$genoLevs))
-    }
-    res$genoLevel <- dfGenoTra
-  }
-  ## Plot-specific growth curves and deviations
-  if (what == "plot") {
-    dfPlotTra <- data.frame(timeNumber = rep(xp, sum(object2$nPlotGeno)),
-                            pop = rep(object2$popLevs,
-                                      object2$nPlotPop * length(xp)),
-                            genotype = rep(object2$genoLevs,
-                                           object2$nPlotGeno * length(xp)),
-                            plotId = rep(object2$plotLevs, each = length(xp)),
-                            fPlot = as.vector(object1$plotTra$f),
-                            fPlotDeriv1 = as.vector(object1$plotTra$fd1),
-                            fPlotDeriv2 = as.vector(object1$plotTra$fd2),
-                            fPlotDev = as.vector(object1$plotDev$f),
-                            fPlotDevDeriv1 = as.vector(object1$plotDev$fd1),
-                            fPlotDevDeriv2 = as.vector(object1$plotDev$fd2))
-    if (!is.null(object1$plotDev$sef)){
-      dfPlotTra$sePlot <- as.vector(object1$plotTra$sef)
-      dfPlotTra$sePlotDeriv1 <- as.vector(object1$plotTra$sefd1)
-      dfPlotTra$sePlotDeriv2 <- as.vector(object1$plotTra$sefd2)
-      dfPlotTra$sePlotDev <- as.vector(object1$plotDev$sef)
-      dfPlotTra$sePlotDevDeriv1 <- as.vector(object1$plotDev$sefd1)
-      dfPlotTra$sePlotDevDeriv2 <- as.vector(object1$plotDev$sefd2)
-    }
-    if (hasName(x = object2$time, name = "timePoint")) {
-      dfPlotTra[["timePoint"]] <- rep(timePointRange, sum(object2$nPlotGeno))
-    }
-    res$plotLevel <- dfPlotTra
-    if (isTRUE(setequal(xp, object2$time[["timeNumber"]]))) {
-      res$plotLevel$obsPlot <- c(do.call("cbind", object2$y))
-    } else {
-      ## Raw plot growth curves.
-      ## (Observed data: in the raw time not in newtimes (xp)).
-      dfPlotObs <-
-        data.frame(timeNumber = rep(object2$time[["timeNumber"]],
-                                    sum(object2$nPlotGeno)),
-                   pop = rep(object2$popLevs,
-                             object2$nPlotPop * nrow(object2$time)),
-                   genotype = rep(object2$genoLevs,
-                                  object2$nPlotGeno * nrow(object2$time)),
-                   plotId = rep(object2$plotLevs, each = nrow(object2$time)),
-                   obsPlot = c(do.call("cbind", object2$y)))
-      if (hasName(x = object2$time, name = "timePoint")) {
-        dfPlotObs[["timePoint"]] <- rep(object2$time[["timePoint"]],
-                                        sum(object2$nPlotGeno))
-      }
-      res$plotObs <- dfPlotObs
-    }
-  }
-  return(res)
-}
-
-# Function ----------------------------------------------------------------
-
 #' predict.psHDM
 #'
 #' Function that predicts the P-spline Hierarchical Curve Data Model (see
@@ -510,3 +262,263 @@ predict.psHDM <- function(object,
   attr(res, which = "trait") <- object$trait
   return(res)
 }
+
+
+### Help functions
+
+#' mixmodToBsplinePred
+#'
+#' @noRd
+#' @keywords internal
+mixmodToBsplinePred <- function(what = c("pop", "geno", "plot"),
+                                object,
+                                npS,
+                                npE,
+                                xp,
+                                Tmat = NULL,
+                                modMat = NULL,
+                                dev = TRUE,
+                                Bbasis = NULL){
+  ## Predictions.
+  ## Transformation matrix Tm, Mixed model coefficients MMCoeff,
+  ## theta and B, and fitted/predicted values f.
+  whatS <- whatE <- what
+  if (isFALSE(dev) && what != "pop") {
+    if (what == "geno") {
+      whatS <- "pop"
+      whatE <- "geno"
+    } else {
+      whatS <- "pop"
+      whatE <- "plot"
+    }
+  }
+  lW <- length(object[[paste0(what, "Levs")]])
+  MMW <- paste0("MM", tools::toTitleCase(what))
+  if (is.null(Tmat)) {
+    Tm <- cbind(Matrix::kronecker(Matrix::Diagonal(lW), object$MM[[MMW]]$U.X),
+                Matrix::kronecker(Matrix::Diagonal(lW), object$MM[[MMW]]$U.Z))
+  } else{
+    Tm <- Tmat
+  }
+  if (is.null(modMat)) {
+    mmat <- Matrix::Diagonal(lW)
+  } else if (is.list(modMat)) {
+    mmat <- list(mmat1 = modMat[[1]], mmat2 = modMat[[2]])
+  } else{
+    mmat <- modMat
+  }
+  MMCoeff <- Matrix::Matrix(object$coeff[npS[whatS]:npE[whatE]],
+                            ncol = 1)
+  theta <- Tm %*% MMCoeff
+  BFull <- function(mmat, what, deriv) {
+    Matrix::kronecker(mmat,
+                      spline.bbase(knots = object$MM[[MMW]]$knots,
+                                   X. = xp, BDEG. = object$smooth[[paste0("smooth",
+                                                                          tools::toTitleCase(what))]]$bdeg,
+                                   deriv = deriv))
+  }
+  if (is.null(Bbasis)) {
+    B <- BFull(mmat, what, deriv = 0)
+    Bd1 <- BFull(mmat, what, deriv = 1)
+    Bd2 <- BFull(mmat, what, deriv = 2)
+  } else {
+    if (what == "geno"){
+      B <- cbind(BFull(mmat, what = "pop", deriv = 0), Bbasis$B)
+      Bd1 <- cbind(BFull(mmat, what = "pop", deriv = 1), Bbasis$Bd1)
+      Bd2 <- cbind(BFull(mmat, what = "pop", deriv = 2), Bbasis$Bd2)
+    } else if(what == "plot") {
+      B <- cbind(BFull(mmat$mmat1, what = "pop", deriv = 0),
+                 BFull(mmat$mmat2, what = "geno", deriv = 0),
+                 Bbasis$B)
+      Bd1 <- cbind(BFull(mmat$mmat1, what = "pop", deriv = 1),
+                   BFull(mmat$mmat2, what = "geno", deriv = 1),
+                   Bbasis$Bd1)
+      Bd2 <- cbind(BFull(mmat$mmat1, what = "pop", deriv = 2),
+                   BFull(mmat$mmat2, what = "geno", deriv = 2),
+                   Bbasis$Bd2)
+    }
+  }
+  f <- matrix(B %*% theta, ncol = lW) # Note that f == eta_what
+  fd1 <- matrix(Bd1 %*% theta, ncol = lW)
+  fd2 <- matrix(Bd2 %*% theta, ncol = lW)
+  aux <- lapply(list(f = f, fd1 = fd1, fd2 = fd2), function(x) {
+    colnames(x) <- object[[paste0(what, "Levs")]]
+    return(x)
+  })
+  ## Object to be returned.
+  res <- list(level = what,
+              Tm = Tm,
+              B = B,
+              Bd1 = Bd1,
+              Bd2 = Bd2,
+              pred = aux)
+  return(res)
+}
+
+#' standardErrors
+#'
+#' @noRd
+#' @keywords internal
+standardErrors <- function(Tm,
+                           B,
+                           Bd1,
+                           Bd2,
+                           what = c("pop", "geno", "plot"),
+                           dev = TRUE,
+                           object,
+                           npS,
+                           npE) {
+  whatS <- whatE <- what
+  if (isFALSE(dev) && what != "pop"){
+    if (what == "geno") {
+      whatS <- "pop"
+      whatE <- "geno"
+    } else {
+      whatS <- "pop"
+      whatE <- "plot"
+    }
+  }
+  lW <- length(object[[paste0(what, "Levs")]])
+  seTheta <- Matrix::Matrix(Tm) %*%
+    Matrix::Matrix(object$Vp[npS[whatS]:npE[whatE],
+                             npS[whatS]:npE[whatE]]) %*% Matrix::t(Tm)
+  sef <- matrix(sqrt(Matrix::colSums(
+    Matrix::t(B) * Matrix::tcrossprod(seTheta, B))), ncol = lW)
+  sefd1 <- matrix(sqrt(Matrix::colSums(
+    Matrix::t(Bd1) * Matrix::tcrossprod(seTheta, Bd1))), ncol = lW)
+  sefd2 <- matrix(sqrt(Matrix::colSums(
+    Matrix::t(Bd2) * Matrix::tcrossprod(seTheta, Bd2))), ncol = lW)
+  res <- list(sef = sef,
+              sefd1 = sefd1,
+              sefd2 = sefd2)
+  res <- lapply(res, function(x){
+    colnames(x) <- object[[paste0(what, "Levs")]]
+    return(x)
+  })
+  return(res)
+}
+
+#' listToDf
+#'
+#' @noRd
+#' @keywords internal
+listToDf <- function(object1,
+                     object2,
+                     what,
+                     xp) {
+  if(!inherits(object2, "psHDM")) {
+    stop("The object class is not correct")
+  }
+  res <- list()
+  if (hasName(x = object2$time, name = "timePoint")) {
+    ## Create time point range.
+    ## Has to take into account irregular grids for xp.
+    timePointRange <- min(object2$time[["timePoint"]]) +
+      (xp - min(object2$time[["timeNumber"]])) /
+      (diff(range(object2$time[["timeNumber"]]))) *
+      diff(range(object2$time[["timePoint"]]))
+  }
+  ## Population-specific growth curves.
+  if (what == "pop") {
+    dfPopTra <- data.frame(timeNumber = rep(xp, length(object2$popLevs)),
+                           pop = rep(object2$popLevs, each = length(xp)),
+                           fPop = c(object1$f),
+                           fPopDeriv1 = c(object1$fd1),
+                           fPopDeriv2 = c(object1$fd2))
+    if (!is.null(object1$sef)) {
+      dfPopTra$sePop <- c(object1$sef)
+      dfPopTra$sePopDeriv1 <- c(object1$sefd1)
+      dfPopTra$sePopDeriv2 <- c(object1$sefd2)
+    }
+    if (hasName(x = object2$time, name = "timePoint")) {
+      dfPopTra[["timePoint"]] <- rep(timePointRange, length(object2$popLevs))
+      dfPopTra <- dfPopTra[c("timeNumber", "timePoint",
+                             setdiff(colnames(dfPopTra),
+                                     c("timeNumber", "timePoint")))]
+    }
+    res$popLevel <- dfPopTra
+  }
+  ## Genotypic-specific growth curves and deviations
+  if (what == "geno") {
+    dfGenoTra <- data.frame(timeNumber = rep(xp, length(object2$genoLevs)),
+                            pop = rep(object2$popLevs,
+                                      object2$nGenoPop * length(xp)),
+                            genotype = rep(object2$genoLevs, each = length(xp)),
+                            fGeno = as.vector(object1$genoTra$f),
+                            fGenoDeriv1 = as.vector(object1$genoTra$fd1),
+                            fGenoDeriv2 = as.vector(object1$genoTra$fd2),
+                            fGenoDev = as.vector(object1$genoDev$f),
+                            fGenoDevDeriv1 = as.vector(object1$genoDev$fd1),
+                            fGenoDevDeriv2 = as.vector(object1$genoDev$fd2))
+    if (!is.null(object1$genoDev$sef)) {
+      dfGenoTra$seGeno <- as.vector(object1$genoTra$sef)
+      dfGenoTra$seGenoDeriv1 <- as.vector(object1$genoTra$sefd1)
+      dfGenoTra$seGenoDeriv2 <- as.vector(object1$genoTra$sefd2)
+      dfGenoTra$seGenoDev <- as.vector(object1$genoDev$sef)
+      dfGenoTra$seGenoDevDeriv1 <- as.vector(object1$genoDev$sefd1)
+      dfGenoTra$seGenoDevDeriv2 <- as.vector(object1$genoDev$sefd2)
+    }
+    if (hasName(x = object2$time, name = "timePoint")) {
+      dfGenoTra[["timePoint"]] <- rep(timePointRange, length(object2$genoLevs))
+      dfGenoTra <- dfGenoTra[c("timeNumber", "timePoint",
+                               setdiff(colnames(dfGenoTra),
+                                       c("timeNumber", "timePoint")))]
+    }
+    res$genoLevel <- dfGenoTra
+  }
+  ## Plot-specific growth curves and deviations
+  if (what == "plot") {
+    dfPlotTra <- data.frame(timeNumber = rep(xp, sum(object2$nPlotGeno)),
+                            pop = rep(object2$popLevs,
+                                      object2$nPlotPop * length(xp)),
+                            genotype = rep(object2$genoLevs,
+                                           object2$nPlotGeno * length(xp)),
+                            plotId = rep(object2$plotLevs, each = length(xp)),
+                            fPlot = as.vector(object1$plotTra$f),
+                            fPlotDeriv1 = as.vector(object1$plotTra$fd1),
+                            fPlotDeriv2 = as.vector(object1$plotTra$fd2),
+                            fPlotDev = as.vector(object1$plotDev$f),
+                            fPlotDevDeriv1 = as.vector(object1$plotDev$fd1),
+                            fPlotDevDeriv2 = as.vector(object1$plotDev$fd2))
+    if (!is.null(object1$plotDev$sef)){
+      dfPlotTra$sePlot <- as.vector(object1$plotTra$sef)
+      dfPlotTra$sePlotDeriv1 <- as.vector(object1$plotTra$sefd1)
+      dfPlotTra$sePlotDeriv2 <- as.vector(object1$plotTra$sefd2)
+      dfPlotTra$sePlotDev <- as.vector(object1$plotDev$sef)
+      dfPlotTra$sePlotDevDeriv1 <- as.vector(object1$plotDev$sefd1)
+      dfPlotTra$sePlotDevDeriv2 <- as.vector(object1$plotDev$sefd2)
+    }
+    if (hasName(x = object2$time, name = "timePoint")) {
+      dfPlotTra[["timePoint"]] <- rep(timePointRange, sum(object2$nPlotGeno))
+      dfPlotTra <- dfPlotTra[c("timeNumber", "timePoint",
+                               setdiff(colnames(dfPlotTra),
+                                       c("timeNumber", "timePoint")))]
+    }
+    res$plotLevel <- dfPlotTra
+    if (isTRUE(setequal(xp, object2$time[["timeNumber"]]))) {
+      res$plotLevel$obsPlot <- c(do.call("cbind", object2$y))
+    } else {
+      ## Raw plot growth curves.
+      ## (Observed data: in the raw time not in newtimes (xp)).
+      dfPlotObs <-
+        data.frame(timeNumber = rep(object2$time[["timeNumber"]],
+                                    sum(object2$nPlotGeno)),
+                   pop = rep(object2$popLevs,
+                             object2$nPlotPop * nrow(object2$time)),
+                   genotype = rep(object2$genoLevs,
+                                  object2$nPlotGeno * nrow(object2$time)),
+                   plotId = rep(object2$plotLevs, each = nrow(object2$time)),
+                   obsPlot = c(do.call("cbind", object2$y)))
+      if (hasName(x = object2$time, name = "timePoint")) {
+        dfPlotObs[["timePoint"]] <- rep(object2$time[["timePoint"]],
+                                        sum(object2$nPlotGeno))
+        dfPlotObs <- dfPlotObs[c("timeNumber", "timePoint",
+                                 setdiff(colnames(dfPlotObs),
+                                         c("timeNumber", "timePoint")))]
+      }
+      res$plotObs <- dfPlotObs
+    }
+  }
+  return(res)
+}
+

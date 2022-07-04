@@ -13,7 +13,6 @@
   genotypeOrder = NULL,
   xlab = "Time",
   ylab = expression(tilde(y)[pgi](t)),
-  themeHDM = themeHDM(),
   title = NULL,
   output = TRUE,
   outFile = NULL,

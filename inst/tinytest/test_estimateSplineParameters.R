@@ -40,7 +40,7 @@ expect_error(estimateSplineParameters(splineRes, what = "min",
 
 expect_silent(est1 <- estimateSplineParameters(splineRes, what = "min"))
 
-expect_inherits(est1, "HTPSplineEst")
+expect_inherits(est1, "splineEst")
 
 expect_equal_to_reference(est1, "splineEst", tolerance = 1e-6)
 
