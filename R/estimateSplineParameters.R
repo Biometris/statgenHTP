@@ -155,7 +155,12 @@ estimateSplineParameters <- function(x,
       paste0(estVarBase, "Deriv2")
     useTimeNumber <- TRUE
     useGenoDecomp <- FALSE
-    predDat <- x[[paste0(substr(fitLevel, 1, 4), "Level")]]
+    ## Check that predictions were made at the level estimates are computed.
+    fitLevelName <- paste0(substr(fitLevel, 1, 4), "Level")
+    if (is.null(x[[fitLevelName]])) {
+      stop("No predictions were made at ", substr(fitLevel, 1, 4), "level.\n")
+    }
+    predDat <- x[[fitLevelName]]
     ## Construct levels for aggregating.
     aggLevs <- unique(c("pop", if (fitLevel != "pop") "genotype",
                         if (fitLevel %in% c("plot", "plotDev")) "plotId"))
