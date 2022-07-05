@@ -369,7 +369,7 @@ The final step in the HTP data analysis is extracting interesting parameters fro
 ```{r paramVator, fig.height=2, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 subGenoVator <- c("G160", "G151")
 paramVator1 <- 
-  estimateSplineParameters(HTPSpline = fit.splineOut,
+  estimateSplineParameters(x = fit.splineOut,
                            estimate = "predictions",
                            what = "AUC",
                            timeMin = 330,

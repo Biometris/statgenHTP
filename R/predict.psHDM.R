@@ -1,4 +1,4 @@
-#' predict.psHDM
+#' Predict the P-Splines Hierarchical Curve Data Model
 #'
 #' Function that predicts the P-spline Hierarchical Curve Data Model (see
 #' \code{\link{fitSplineHDM}}) on a dense grid. It provides standard errors
@@ -40,26 +40,24 @@
 #' @examples
 #' ## The data from the Phenovator platform have been corrected for spatial
 #' ## trends and outliers for single observations have been removed.
-#' head(spatCorrectedArch)
-#' ggplot2::ggplot(data = spatCorrectedArch,
-#'                 ggplot2::aes(x= timeNumber, y = LeafArea_corr, group = plotId)) +
-#'   ggplot2::geom_line(na.rm = TRUE) +
-#'   ggplot2::facet_grid(~geno.decomp)
 #'
-#' ## We need to specify the genotype-by-treatment interaction
-#' ## Treatment: water regime (WW, WD)
-#' spatCorrectedArch$treat <- factor(spatCorrectedArch$geno.decomp,
-#'                                   labels = substr(levels(spatCorrectedArch$geno.decomp), 1, 2))
-#' spatCorrectedArch$genobytreat <- paste0(spatCorrectedArch$genotype, "_", spatCorrectedArch$treat)
+#' ## We need to specify the genotype-by-treatment interaction.
+#' ## Treatment: water regime (WW, WD).
+#' spatCorrectedArch[["treat"]] <- substr(spatCorrectedArch[["geno.decomp"]],
+#'                                       start = 1, stop = 2)
+#' spatCorrectedArch[["genoTreat"]] <-
+#'   interaction(spatCorrectedArch[["genotype"]],
+#'              spatCorrectedArch[["treat"]], sep = "_")
 #'
 #' ## Fit P-Splines Hierarchical Curve Data Model for selection of genotypes.
 #' fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
 #'                           trait = "LeafArea_corr",
-#'                           genotypes = c("GenoA14", "GenoA51", "GenoB11",
-#'                                        "GenoB02"),
+#'                           genotypes = c("GenoA14_WD", "GenoA51_WD",
+#'                                        "GenoB11_WW", "GenoB02_WD",
+#'                                        "GenoB02_WW"),
 #'                           time = "timeNumber",
 #'                           pop = "geno.decomp",
-#'                           genotype = "genobytreat",
+#'                           genotype = "genoTreat",
 #'                           plotId = "plotId",
 #'                           difVar = list(geno = FALSE, plant = FALSE),
 #'                           smoothPop = list(nseg = 4, bdeg = 3, pord = 2),
@@ -71,17 +69,33 @@
 #' ## Predict the P-Splines Hierarchical Curve Data Model on a dense grid
 #' ## with standard errors at the population and genotype levels
 #' pred.psHDM <- predict(object = fit.psHDM,
-#'                      newtimes = seq(min(fit.psHDM$time$timeNumber),
-#'                                    max(fit.psHDM$time$timeNumber),
+#'                      newtimes = seq(min(fit.psHDM$time[["timeNumber"]]),
+#'                                    max(fit.psHDM$time[["timeNumber"]]),
 #'                                    length.out = 100),
 #'                      pred = list(pop = TRUE, geno = TRUE, plot = TRUE),
 #'                      se = list(pop = TRUE, geno = TRUE, plot = FALSE))
 #'
 #' ## Plot the P-Spline predictions at the three levels of the hierarchy
-#' ## Plots at plot level for some genotypes (as illustration)
-#' plot(x = pred.psHDM,
-#'     genotypes = c("GenoA14_WD", "GenoA51_WD", "GenoB11_WW", "GenoB02_WD",
-#'                  "GenoB02_WW"))
+#'
+#' ## Plots at population level.
+#' plot(pred.psHDM,
+#'     plotType = "popTra")
+#'
+#' ## Plots at genotype level.
+#' plot(pred.psHDM,
+#'     plotType = "popGenoTra")
+#'
+#' ## Plots of derivatives at genotype level.
+#' plot(pred.psHDM,
+#'     plotType = "popGenoDeriv")
+#'
+#' ## Plots of deviations at genotype level.
+#' plot(pred.psHDM,
+#'     plotType = "genoDev")
+#'
+#' ## Plots at plot level.
+#' plot(pred.psHDM,
+#'     plotType = "genoPlotTra")
 #'
 #' @references Pérez-Valencia, D.M., Rodríguez-Álvarez, M.X., Boer, M.P. et al.
 #' A two-stage approach for the spatio-temporal analysis of high-throughput

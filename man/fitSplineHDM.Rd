@@ -9,7 +9,6 @@ fitSplineHDM(
   trait,
   genotypes = NULL,
   plotIds = NULL,
-  time,
   pop,
   genotype,
   plotId,
@@ -23,6 +22,8 @@ fitSplineHDM(
   maxit = 200,
   trace = TRUE,
   thr = 0.001,
+  useTimeNumber = FALSE,
+  timeNumber = NULL,
   minNoTP = NULL
 )
 }
@@ -39,9 +40,6 @@ for all genotypes.}
 \item{plotIds}{A character vector indicating the plotIds for which
 hierarchical models should be fitted. If \code{NULL}, splines will be
 fitted for all plotIds.}
-
-\item{time}{A character string indicating the timepoints at which the trait
-is measured for each plant.}
 
 \item{pop}{A character string indicating the the populations to which each
 genotype/variety belongs. This variable must be a factor in the data frame.}
@@ -85,6 +83,11 @@ The default is \code{TRUE}.}
 
 \item{thr}{An optional value that controls the convergence threshold of the
 algorithm. The default is 1.e-03.}
+
+\item{useTimeNumber}{Should the timeNumber be used instead of the timePoint?}
+
+\item{timeNumber}{If \code{useTimeNumber = TRUE}, a character vector
+indicating the column containing the numerical time to use.}
 
 \item{minNoTP}{The minimum number of time points for which data should be
 available for a plant. Defaults to 60\% of all time points present in the
@@ -165,20 +168,23 @@ ggplot2::ggplot(data = spatCorrectedArch,
   ggplot2::geom_line(na.rm = TRUE) +
   ggplot2::facet_grid(~geno.decomp)
 
-## We need to specify the genotype-by-treatment interaction
-## Treatment: water regime (WW, WD)
-spatCorrectedArch$treat <- factor(spatCorrectedArch$geno.decomp,
-                                  labels = substr(levels(spatCorrectedArch$geno.decomp), 1, 2))
-spatCorrectedArch$genobytreat <- paste0(spatCorrectedArch$genotype, "_", spatCorrectedArch$treat)
+## We need to specify the genotype-by-treatment interaction.
+## Treatment: water regime (WW, WD).
+spatCorrectedArch[["treat"]] <- substr(spatCorrectedArch[["geno.decomp"]],
+                                      start = 1, stop = 2)
+spatCorrectedArch[["genoTreat"]] <-
+  interaction(spatCorrectedArch[["genotype"]],
+             spatCorrectedArch[["treat"]], sep = "_")
 
 ## Fit P-Splines Hierarchical Curve Data Model for selection of genotypes.
 fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
                           trait = "LeafArea_corr",
-                          genotypes = c("GenoA14", "GenoA51", "GenoB11",
-                                       "GenoB02"),
+                          genotypes = c("GenoA14_WD", "GenoA51_WD",
+                                       "GenoB11_WW", "GenoB02_WD",
+                                       "GenoB02_WW"),
                           time = "timeNumber",
                           pop = "geno.decomp",
-                          genotype = "genobytreat",
+                          genotype = "genoTreat",
                           plotId = "plotId",
                           difVar = list(geno = FALSE, plant = FALSE),
                           smoothPop = list(nseg = 4, bdeg = 3, pord = 2),

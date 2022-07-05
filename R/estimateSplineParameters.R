@@ -67,21 +67,26 @@
 #'
 #' ### Estimate parameters for fitted HDM-splines.
 #'
-#' ## We need to specify the genotype-by-treatment interaction
-#' ## Treatment: water regime (WW, WD)
-#' spatCorrectedArch$treat <- factor(spatCorrectedArch$geno.decomp,
-#'                                  labels = substr(levels(spatCorrectedArch$geno.decomp), 1, 2))
-#' spatCorrectedArch$genobytreat <- paste0(spatCorrectedArch$genotype, "_",
-#'                                        spatCorrectedArch$treat)
+#' ## The data from the Phenovator platform have been corrected for spatial
+#' ## trends and outliers for single observations have been removed.
+#'
+#' ## We need to specify the genotype-by-treatment interaction.
+#' ## Treatment: water regime (WW, WD).
+#' spatCorrectedArch[["treat"]] <- substr(spatCorrectedArch[["geno.decomp"]],
+#'                                       start = 1, stop = 2)
+#' spatCorrectedArch[["genoTreat"]] <-
+#'   interaction(spatCorrectedArch[["genotype"]],
+#'              spatCorrectedArch[["treat"]], sep = "_")
 #'
 #' ## Fit P-Splines Hierarchical Curve Data Model for selection of genotypes.
 #' fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
 #'                           trait = "LeafArea_corr",
-#'                           genotypes = c("GenoA14", "GenoA51", "GenoB11",
-#'                                        "GenoB02"),
+#'                           genotypes = c("GenoA14_WD", "GenoA51_WD",
+#'                                        "GenoB11_WW", "GenoB02_WD",
+#'                                        "GenoB02_WW"),
 #'                           time = "timeNumber",
 #'                           pop = "geno.decomp",
-#'                           geno = "genobytreat",
+#'                           genotype = "genoTreat",
 #'                           plotId = "plotId",
 #'                           difVar = list(geno = FALSE, plant = FALSE),
 #'                           smoothPop = list(nseg = 4, bdeg = 3, pord = 2),
