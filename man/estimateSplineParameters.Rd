@@ -136,9 +136,9 @@ plot(paramArch, plotType = "box")
 
 ## Estimate area under the curve for predictions at the plot level.
 paramArch2 <- estimateSplineParameters(x = fit.psHDM,
-                                     what = "AUC",
-                                     fitLevel = "plot",
-                                     estimate = "predictions")
+                                      what = "AUC",
+                                      fitLevel = "plot",
+                                      estimate = "predictions")
 head(paramArch2)
 
 }
