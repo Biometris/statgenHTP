@@ -24,8 +24,9 @@
 #' @param plotIds A character vector indicating the plotIds for which
 #' hierarchical models should be fitted. If \code{NULL}, splines will be
 #' fitted for all plotIds.
-#' @param time A character string indicating the timepoints at which the trait
-#' is measured for each plant.
+#' @param useTimeNumber Should the timeNumber be used instead of the timePoint?
+#' @param timeNumber If \code{useTimeNumber = TRUE}, a character vector
+#' indicating the column containing the numerical time to use.
 #' @param pop A character string indicating the the populations to which each
 #' genotype/variety belongs. This variable must be a factor in the data frame.
 #' @param genotype A character string indicating the populations to which each
@@ -118,20 +119,23 @@
 #'   ggplot2::geom_line(na.rm = TRUE) +
 #'   ggplot2::facet_grid(~geno.decomp)
 #'
-#' ## We need to specify the genotype-by-treatment interaction
-#' ## Treatment: water regime (WW, WD)
-#' spatCorrectedArch$treat <- factor(spatCorrectedArch$geno.decomp,
-#'                                   labels = substr(levels(spatCorrectedArch$geno.decomp), 1, 2))
-#' spatCorrectedArch$genobytreat <- paste0(spatCorrectedArch$genotype, "_", spatCorrectedArch$treat)
+#' ## We need to specify the genotype-by-treatment interaction.
+#' ## Treatment: water regime (WW, WD).
+#' spatCorrectedArch[["treat"]] <- substr(spatCorrectedArch[["geno.decomp"]],
+#'                                       start = 1, stop = 2)
+#' spatCorrectedArch[["genoTreat"]] <-
+#'   interaction(spatCorrectedArch[["genotype"]],
+#'              spatCorrectedArch[["treat"]], sep = "_")
 #'
 #' ## Fit P-Splines Hierarchical Curve Data Model for selection of genotypes.
 #' fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
 #'                           trait = "LeafArea_corr",
-#'                           genotypes = c("GenoA14", "GenoA51", "GenoB11",
-#'                                        "GenoB02"),
+#'                           genotypes = c("GenoA14_WD", "GenoA51_WD",
+#'                                        "GenoB11_WW", "GenoB02_WD",
+#'                                        "GenoB02_WW"),
 #'                           time = "timeNumber",
 #'                           pop = "geno.decomp",
-#'                           genotype = "genobytreat",
+#'                           genotype = "genoTreat",
 #'                           plotId = "plotId",
 #'                           difVar = list(geno = FALSE, plant = FALSE),
 #'                           smoothPop = list(nseg = 4, bdeg = 3, pord = 2),
@@ -163,7 +167,6 @@ fitSplineHDM <- function(inDat,
                          trait,
                          genotypes = NULL,
                          plotIds = NULL,
-                         time,
                          pop,
                          genotype,
                          plotId,
@@ -177,6 +180,8 @@ fitSplineHDM <- function(inDat,
                          maxit = 200,
                          trace = TRUE,
                          thr = 1e-03,
+                         useTimeNumber = FALSE,
+                         timeNumber = NULL,
                          minNoTP = NULL) {
   ## Checks.
   if (!is.character(trait) || length(trait) > 1) {
@@ -191,23 +196,20 @@ fitSplineHDM <- function(inDat,
   if (!is.numeric(thr) || length(thr) > 1 || thr < 0) {
     stop("thr should be a positive numerical value.\n")
   }
-  useTimeNumber <- TRUE
-  timeNumber <- "timeNumber"
   if (isTRUE(useTimeNumber) &&
       (is.null(timeNumber) || !is.character(timeNumber) ||
        length(timeNumber) > 1)) {
     stop("timeNumber should be a character string of length 1.\n")
   }
-  corrCols <- c(genotype, trait, timeNumber, pop, plotId, "colId", "rowId")
-  # corrCols <- c("genotype", trait, if (fitLevel == "plotId") "plotId",
-  #               if (useTimeNumber) timeNumber else "timePoint")
+  corrCols <- c(genotype, trait, if (useTimeNumber) timeNumber else "timePoint",
+                pop, plotId, "colId", "rowId")
   if (!all(hasName(x = inDat, name = corrCols))) {
     stop("inDat should at least contain the following columns: ",
          paste(corrCols, collapse = ", "))
   }
   if (!is.null(genotypes) &&
       (!is.character(genotypes) ||
-       !all(genotypes %in% inDat[["genotype"]]))) {
+       !all(genotypes %in% inDat[[genotype]]))) {
     stop("genotypes should be a character vector of genotypes in inDat.\n")
   }
   if (!is.null(plotIds) &&
@@ -232,7 +234,7 @@ fitSplineHDM <- function(inDat,
   }
   ## Restrict inDat to selected genotypes and plotIds.
   if (!is.null(genotypes)) {
-    inDat <- inDat[inDat[["genotype"]] %in% genotypes, ]
+    inDat <- inDat[inDat[[genotype]] %in% genotypes, ]
   }
   if (!is.null(plotIds)) {
     inDat <- inDat[inDat[["plotId"]] %in% plotIds, ]
