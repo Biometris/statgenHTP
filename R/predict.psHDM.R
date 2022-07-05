@@ -112,15 +112,31 @@ predict.psHDM <- function(object,
                           ...) {
   ## Checks.
   if (!inherits(object, "psHDM")) {
-    stop("The object class is not correct")
+    stop("object should be of class psHDM.\n")
   }
   if (missing(newtimes)) {
     xp <- object$time[["timeNumber"]]
   } else {
     if (!is.vector(newtimes) || !is.numeric(newtimes)) {
-      stop("newtimes should be a vector")
+      stop("newtimes should be a vector.\n")
     }
     xp <- newtimes
+  }
+  if (!is.list(pred) || length(pred) != 3 ||
+      !(setequal(names(pred), c("pop", "geno", "plot")))) {
+        stop("pred should be a named list of length 3.\n")
+  }
+  if (!is.list(se) || length(se) != 3 ||
+      !(setequal(names(se), c("pop", "geno", "plot")))) {
+    stop("se should be a named list of length 3.\n")
+  }
+  if (isTRUE(pred$plot) && !(isTRUE(pred$geno) && isTRUE(pred$pop))) {
+    stop("Predictions at plot level can only be made if predictions are ",
+         "also made at geno and pop level.\n")
+  }
+  if (isTRUE(pred$geno) && !isTRUE(pred$pop)) {
+    stop("Predictions at geno level can only be made if predictions are ",
+         "also made at pop level.\n")
   }
   ## Output data.
   res <- list(newtimes = xp)
