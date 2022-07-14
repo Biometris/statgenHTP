@@ -58,12 +58,13 @@ width and height. See \code{\link[grDevices]{pdf}} for all possible options.}
 \description{
 This plot function provides five plots for objects of the class \code{psHDM}
 after fitting (\code{\link{fitSplineHDM}}) or predicting
-(\code{\link{predict.psHDM}}): (1) Population-specific growth curves,
-(2) Genotype-specific growth curves (for all genotypes), (3) First-order
-derivative of the genotype-specific growth curves (for all genotypes),
-(4) Genotype-specific deviations (for all genotypes), and (5) Plot- and
-genotype-specific growth curves (for a selection of genotypes). If standard
-errors are available, 95\% point wise confidence intervals are depicted.
+(\code{\link{predict.psHDM}}): (1) Population-specific growth curves (popTra),
+(2) Population and genotype-specific growth curves (for all genotypes, popGenoTra),
+(3) First-order derivative of the population and genotype-specific growth curves
+(for all genotypes, popGenoDeriv), (4) Genotype-specific deviations (for all
+genotypes, genoDev), and (5) Genotype- and plot-specific growth curves (for a
+selection of genotypes, genoPlotTra). If standard errors are available, 95\% point
+wise confidence intervals are depicted.
 }
 \examples{
 ## The data from the Phenovator platform have been corrected for spatial
@@ -96,23 +97,23 @@ fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
 
 ## Plot the P-Spline predictions at the three levels of the hierarchy
 
-## Plots at population level.
+## Population-specific growth curves.
 plot(fit.psHDM,
     plotType = "popTra")
 
-## Plots at genotype level.
+## Population and genotype-specific growth curves.
 plot(fit.psHDM,
     plotType = "popGenoTra")
 
-## Plots of derivatives at genotype level.
+## First-order derivative of the population- and genotype-specific growth curves.
 plot(fit.psHDM,
     plotType = "popGenoDeriv")
 
-## Plots of deviations at genotype level.
+## Genotype-specific deviations.
 plot(fit.psHDM,
     plotType = "genoDev")
 
-## Plots at plot level.
+## Genotype- and plot-specific growth curves.
 plot(fit.psHDM,
     plotType = "genoPlotTra")
 

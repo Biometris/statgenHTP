@@ -138,6 +138,26 @@ predict.psHDM <- function(object,
     stop("Predictions at geno level can only be made if predictions are ",
          "also made at pop level.\n")
   }
+  if (isTRUE(se$plot) && !(isTRUE(se$geno) && isTRUE(se$pop))) {
+    stop("Standard errors at plot level can only be computed if standard ",
+         "errors are also computed at geno and pop level.\n")
+  }
+  if (isTRUE(se$geno) && !isTRUE(se$pop)) {
+    stop("Standard errors at geno level can only be computed if standard ",
+         "errors are also computed at pop level.\n")
+  }
+  if (isTRUE(se$pop) && !isTRUE(pred$pop)) {
+    stop("Standard errors at population level can only be computed ",
+         "if predictions are also made at population level.\n")
+  }
+  if (isTRUE(se$geno) && !isTRUE(pred$geno)) {
+    stop("Standard errors at genotype level can only be computed ",
+         "if predictions are also made at genotype level.\n")
+  }
+  if (isTRUE(se$plot) && !isTRUE(pred$plot)) {
+    stop("Standard errors at plot level can only be computed ",
+         "if predictions are also made at plot level.\n")
+  }
   ## Output data.
   res <- list(newtimes = xp)
   ## Normalize time
