@@ -301,7 +301,7 @@ fitSplineHDM <- function(inDat,
   if (is.null(weights)) {
     weights <- rep(1, nrow(inDat))
   } else{
-    weights <- inDat[[weights]] ^ 2
+    weights <- inDat[[weights]]
   }
   ## Convert to factors - only if not already factors.
   for (facVar in c(pop, genotype, plotId)) {
