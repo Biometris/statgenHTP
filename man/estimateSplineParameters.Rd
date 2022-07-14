@@ -13,7 +13,7 @@ estimateSplineParameters(
   timeMax = NULL,
   genotypes = NULL,
   plotIds = NULL,
-  fitLevel = c("pop", "geno", "plot", "genoDev", "plotDev")
+  fitLevel = c("geno", "plot", "genoDev", "plotDev")
 )
 }
 \arguments{
@@ -122,12 +122,11 @@ fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
                           weights = "wt",
                           trace = FALSE)
 
-## Estimate minimum, maximum, mean and area under the curve
-## for derivatives at the genotype level.
+## Estimate minimum, maximum, and mean for predictions at the genotype level.
 paramArch <- estimateSplineParameters(x = fit.psHDM,
-                                     what = c("min", "max", "mean", "AUC"),
+                                     what = c("min", "max", "mean"),
                                      fitLevel = "geno",
-                                     estimate = "derivatives",
+                                     estimate = "predictions",
                                      timeMax = 28)
 head(paramArch)
 
