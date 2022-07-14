@@ -94,6 +94,10 @@ detectSingleOutMaize <- function(TP,
   modDat[["upSpTr1"]] <- ifelse(modDat[["devTr1"]] < modDat[["upDevTr1"]], 1, 0)
   modDat[["upSpTr2"]] <- ifelse(modDat[["devTr2"]] < modDat[["upDevTr2"]], 1, 0)
   modDat[["upSpTr3"]] <- ifelse(modDat[["devTr3"]] < modDat[["upDevTr3"]], 1, 0)
+  ## Remove missing values for response variables.
+  ## Leaving them in gives NA only rows in small and big plants.
+  modDat <- modDat[!is.na(modDat[[trait1]]) & !is.na(modDat[[trait2]]) &
+                     !is.na(modDat[[trait3]]), ]
   ## Detect small plants.
   modDat[["smallPlant"]] <-
     ifelse(modDat[["lowSpTr1"]] + modDat[["lowSpTr3"]] == 0, 1, 0)

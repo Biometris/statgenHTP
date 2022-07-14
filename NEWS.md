@@ -1,3 +1,7 @@
+# statgenHTP 1.0.6
+
+* A small bug in `detectSingleOutMaize` is fixed. Observations with a missing value for one of the involved traits are no longer tagged as outliers.
+
 # statgenHTP 1.0.5
 
 * No user visible changes
