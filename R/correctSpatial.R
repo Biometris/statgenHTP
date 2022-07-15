@@ -53,7 +53,7 @@ correctSpatialSpATS <- function(fitMod) {
   ## Add the residual error to the diagonal of the vcov matrix
   ## Required since the residuals are added to the predictions.
   vcovComb <- as.matrix(vcov) + fitMod$psi[1] * diag(nrow(vcov))
-  pred[["wt"]] <- sqrt(diag(solve(vcovComb)))
+  pred[["wt"]] <- diag(solve(vcovComb))
   ## Remove redundant columns since these are added from the data
   ## used for fitting the model.
   pred <- pred[, !colnames(pred) %in% c(fixVars, randVars)]
@@ -108,7 +108,7 @@ correctSpatialAsreml <- function(fitMod) {
   ## Required since the residuals are added to the predictions.
   vcovComb <- as.matrix(vcovGeno) + fitMod$sigma2 * diag(nrow(vcovGeno))
   predGeno <- predGeno$pvals[predGeno$pvals[["status"]] == "Estimable", ]
-  predGeno[["wt"]] <- sqrt(diag(solve(vcovComb)))
+  predGeno[["wt"]] <- diag(solve(vcovComb))
   ## Rename genoCol to genotype.
   colnames(predGeno)[colnames(predGeno) == genoCol] <- "genotype"
   ## Repeat for the check genotypes.
@@ -142,14 +142,20 @@ correctSpatialAsreml <- function(fitMod) {
   fixVars <- setdiff(fixVars, c("genotype", "genoCheck",
                                 if (useGenoDecomp) "geno.decomp"))
   randVars <- all.vars(fitMod$formulae$random)
-  randVars <- setdiff(randVars, c("genotype", "genoCheck",
+  randVars <- setdiff(randVars, c("genotype", "genoCheck", "units",
                                   if (useGenoDecomp) "geno.decomp"))
   predVars <- c(fixVars, randVars)
   modDat <- fitMod$call$data[union(c("genotype", if (useCheck) "check",
                                      "plotId", "timePoint", trait,
                                      if (useGenoDecomp) "geno.decomp"),
                                    predVars)]
+  ## Extract residuals.
   modDat[["resid"]] <- residuals(fitMod)
+  ## Construct residuals from 'full' residuals and residuals with nugget.
+  # res1 <- residuals(fitMod)
+  # res2 <- residuals(fitMod, spatial = "plot") # include nugget
+  # res <- res2 - res1
+  # modDat[["resid"]] <- res
   predTot <- merge(modDat, predTot, all.x = TRUE)
   predTot[[newTrait]] <- predTot[["predicted.value"]] + predTot[["resid"]]
   if (length(predVars) == 0) {

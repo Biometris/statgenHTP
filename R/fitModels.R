@@ -348,6 +348,7 @@ fitModels <- function(TP,
     if (genoRand) {
       ## Construct formula for random part of the model.
       randForm <- formula(paste("~ ", if (is.null(geno.decomp)) genoCol else
+        #paste0("at(", geno.decomp, "):", genoCol, "+ units")))
         paste0("at(", geno.decomp, "):", genoCol)))
     } else {
       ## For genotype fixed the base random formula is empty.
@@ -355,7 +356,7 @@ fitModels <- function(TP,
       fixedForm <- update(fixedForm,
                           paste("~ . + ", if (is.null(geno.decomp)) genoCol else
                             paste0(geno.decomp, ":", genoCol)))
-      randForm <- ~NULL
+      randForm <- NULL
     }
     if (!spatial) {
       ## Loop on timepoint to run asreml.
