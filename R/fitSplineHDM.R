@@ -167,9 +167,9 @@ fitSplineHDM <- function(inDat,
                          trait,
                          genotypes = NULL,
                          plotIds = NULL,
-                         pop,
-                         genotype,
-                         plotId,
+                         pop = "pop",
+                         genotype = "genotype",
+                         plotId = "plotId",
                          difVar = list(geno = FALSE, plot = FALSE),
                          smoothPop = list(nseg = 10, bdeg = 3, pord = 2),
                          smoothGeno = list(nseg = 10, bdeg = 3, pord = 2),
@@ -243,15 +243,22 @@ fitSplineHDM <- function(inDat,
     stop("At least one valid combination of genotype and plotId should be ",
          "selected.\n")
   }
-  ## Check if geno.decomp in present in inDat.
-  useGenoDecomp <- hasName(x = inDat, name = "geno.decomp")
   ## Unused levels might cause strange behaviour.
   inDat <- droplevels(inDat)
-  ## Create data.frame with plants and genotypes for adding genotype to results.
-  if (useGenoDecomp) {
-    plantGeno <- unique(inDat[c("plotId", "genotype", "geno.decomp")])
-  } else {
-    plantGeno <- unique(inDat[c("plotId", "genotype")])
+  ## Check that pop - geno - plot structure is unambiguously defined.
+  genoPopTab <- table(inDat[[genotype]], inDat[[pop]])
+  genoPopCount <- rowSums(genoPopTab > 0)
+  dupGeno <- names(genoPopCount[genoPopCount > 1])
+  if (length(dupGeno) > 0) {
+    stop("The following genotypes are in multiple populations:\n",
+         paste(dupGeno, collapse = ", "), "\n")
+  }
+  plotGenoTab <- table(inDat[[plotId]], inDat[[genotype]])
+  plotGenoCount <- rowSums(plotGenoTab > 0)
+  dupPlot <- names(plotGenoTab[plotGenoTab > 1])
+  if (length(dupPlot) > 0) {
+    stop("The following plots are specified for multiple genotypes:\n",
+         paste(dupPlot, collapse = ", "), "\n")
   }
   ## Determine minimum number of time points required.
   nTimeNumber <- length(unique(inDat[["timeNumber"]]))
