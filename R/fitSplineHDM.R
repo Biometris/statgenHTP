@@ -417,78 +417,48 @@ fitSplineHDM <- function(inDat,
   g <- rep(x = list(MMPop$d), times = nPop)
   if (isTRUE(difVar$geno)) {
     ## Random intercepts and slopes (genotype).
-    for (i in 1:nPop) {
-      g[[nPop + i]] <- lapply(X = 1:smoothGeno$pord, FUN = function(j) {
-        rep(x = sapply(X = 1:smoothGeno$pord, FUN = function(k) {
-          ifelse(k == j, 1, 0)
-        }), times = nGenoPop[i])
-      })
-    }
+    g <- c(g, lapply(X = nGenoPop, FUN = constructG, ord = smoothGeno$pord))
     ## Smooth effects (genotype).
-    for (i in 1:nPop) {
-      g[[nPop * 2 + i]] <- rep(x = MMGeno$d, times = nGenoPop[i])
+    for (genoPop in nGenoPop) {
+      g <- c(g, list(rep(x = MMGeno$d, times = genoPop)))
     }
     if (isTRUE(difVar$plot)) {
       ## Random intercepts and slopes (individual).
-      for (i in 1:nGeno) {
-        g[[nPop * 3 + i]] <- lapply(X = 1:smoothPlot$pord, FUN = function(j) {
-          rep(x = sapply(X = 1:smoothPlot$pord, FUN = function(k) {
-            ifelse(k == j, 1, 0)
-          }), times = nPlotGeno[i])
-        })
-      }
+      g <- c(g, lapply(X = nPlotGeno, FUN = constructG, ord = smoothPlot$pord))
       ## Smooth effects (individual).
-      for (i in 1:nGeno) {
-        g[[nPop * 3 + nGeno + i]] <- rep(x = MMPlot$d, times = nPlotGeno[i])
+      for (plotGeno in nPlotGeno) {
+        g <- c(g, list(rep(x = MMGeno$d, times = plotGeno)))
       }
     } else {
       ## Random intercepts and slopes (individual).
-      g[[nPop * 3 + 1]] <- lapply(X = 1:smoothPlot$pord, FUN = function(j) {
-        rep(x = sapply(X = 1:smoothPlot$pord, FUN = function(k) {
-          ifelse(k == j, 1, 0)
-        }), times = nTot)
-      })
+      g <- c(g, lapply(X = nTot, FUN = constructG, ord = smoothPlot$pord))
       ## Smooth effects (individual).
-      g[[nPop * 3 + 2]] <- list(rep(x = MMPlot$d, times = nTot))
+      g <- c(g, list(rep(x = MMPlot$d, times = nTot)))
     }
   } else if (isFALSE(difVar$geno)) {
     ## Random intercepts and slopes (genotype).
-    g[[nPop + 1]] <- lapply(X = 1:smoothGeno$pord, FUN = function(j) {
-      rep(x = sapply(X = 1:smoothGeno$pord, FUN = function(k) {
-        ifelse(k == j, 1, 0)
-      }), times = nGeno)
-    })
+    g <- c(g, lapply(X = nGeno, FUN = constructG, ord = smoothGeno$pord))
     # Smooth effects (genotype)
-    g[[nPop + 2]] <- list(rep(x = MMGeno$d, times = nGeno))
+    g <- c(g, list(rep(x = MMGeno$d, times = nGeno)))
     if (isTRUE(difVar$plot)) {
       ## Random intercepts and slopes (individual).
-      for (i in 1:nGeno) {
-        g[[nPop + 2 + i]] <- lapply(X = 1:smoothPlot$pord, FUN = function(j) {
-          rep(x = sapply(X = 1:smoothPlot$pord, FUN = function(k) {
-            ifelse(k == j, 1, 0)
-          }), times = nPlotGeno[i])
-        })
-      }
+      g <- c(g, lapply(X = nPlotGeno, FUN = constructG, ord = smoothPlot$pord))
       ## Smooth effects (individual).
-      for (i in 1:nGeno) {
-        g[[nPop + 2 + nGeno + i]] <- rep(x = MMPlot$d, times = nPlotGeno[i])
+      for (plotGeno in nPlotGeno) {
+        g <- c(g, list(rep(x = MMPlot$d, times = plotGeno)))
       }
     } else {
       ## Random intercepts and slopes (individual).
-      g[[nPop + 3]] <- lapply(X = 1:smoothPlot$pord, FUN = function(j) {
-        rep(x = sapply(X = 1:smoothPlot$pord, FUN = function(k) {
-          ifelse(k == j, 1, 0)
-        }), times = nTot)
-      })
+      g <- c(g, lapply(X = nTot, FUN = constructG, ord = smoothPlot$pord))
       ## Smooth effects (individual).
-      g[[nPop + 4]] <- list(rep(x = MMPlot$d, times = nTot))
+      g <- c(g, list(rep(x = MMPlot$d, times = nTot)))
     }
   }
   ## Construct the components of the precision matrix (as needed by the algorithm).
   g <- constructCapitalLambda(g)
   ## Initialise the parameters.
-  la = rep(x = 1, l = length(g) + 1)
-  devold = 1e10
+  la <- rep(x = 1, l = length(g) + 1)
+  devold <- 1e10
   mustart <- etastart <- NULL
   nobs <- length(y)
   eval(family$initialize)

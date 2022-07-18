@@ -59,6 +59,17 @@ MM.basis <- function (x,
   return(res)
 }
 
+#' Helper function for constructing intercepts and slopes part of
+#' precision matrices.
+#'
+#' @noRd
+#' @keywords internal
+constructG <- function(n, ord) {
+  lapply(X = seq_len(ord), FUN = function(j) {
+    rep(1 * (seq_len(ord) == j), times = n)
+  })
+}
+
 #' Helper function to construct the components of the precision matrix
 #' (as needed by the algorithm).
 #'
