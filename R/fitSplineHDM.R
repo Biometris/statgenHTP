@@ -255,7 +255,7 @@ fitSplineHDM <- function(inDat,
   }
   plotGenoTab <- table(inDat[[plotId]], inDat[[genotype]])
   plotGenoCount <- rowSums(plotGenoTab > 0)
-  dupPlot <- names(plotGenoTab[plotGenoTab > 1])
+  dupPlot <- names(plotGenoCount[plotGenoCount > 1])
   if (length(dupPlot) > 0) {
     stop("The following plots are specified for multiple genotypes:\n",
          paste(dupPlot, collapse = ", "), "\n")
