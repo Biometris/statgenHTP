@@ -97,9 +97,9 @@ of timepoints.}
 \value{
 An object of class \code{psHDM}, a list with the following outputs:
 \code{time}, a numeric vector with the timepoints.
-\code{genoLevs}, a vector with the names of the genotypes.
-\code{popLevs}, a vector with the names of the populations
-\code{plotLevs}, a vector with the names of the plants
+\code{popLevs}, a data.frame with the names of the populations
+\code{genoLevs}, a factor with the names of the genotypes.
+\code{plotLevs}, a factor with the names of the plants
 \code{nPlotPop}, a numeric vector with the number of plants per
 population.
 \code{nGenoPop}, a numeric vector with the number of genotypes per
