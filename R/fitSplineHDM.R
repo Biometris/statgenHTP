@@ -243,6 +243,10 @@ fitSplineHDM <- function(inDat,
     stop("At least one valid combination of genotype and plotId should be ",
          "selected.\n")
   }
+  if (!is.list(difVar) || length(difVar) != 2 ||
+      !(setequal(names(difVar), c("geno", "plot")))) {
+    stop("difVar should be a named list of length 2.\n")
+  }
   ## Unused levels might cause strange behaviour.
   inDat <- droplevels(inDat)
   ## Check that pop - geno - plot structure is unambiguously defined.

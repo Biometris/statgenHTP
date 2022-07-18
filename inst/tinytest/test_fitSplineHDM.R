@@ -23,11 +23,21 @@ expect_error(fitSplineHDM(1, trait = "t1_corr"),
              "inDat should be a data.frame")
 expect_error(fitSplineHDM(corr, trait = 1),
              "trait should be a character string of length 1")
+expect_error(fitSplineHDM(corr, trait = "t1_corr"),
+             "inDat should at least contain the following columns")
 expect_error(fitSplineHDM(corr, trait = "t1_corr", pop = "Basin"),
              "The following genotypes are in multiple populations")
 
 ## Move all check1s to Basin 1 for a consistent population structure.
 corr[corr[["genotype"]] == "check1", "Basin"] <- 1
+
+## Move 1 plot to the wrong genotype.
+corrErr <- corr
+corrErr[which(corrErr[["plotId"]] == "c10r3")[1], "genotype"] <- "G3"
+
+expect_error(fitSplineHDM(corrErr, trait = "t1_corr", pop = "Basin"),
+             "The following plots are specified for multiple genotypes")
+
 
 ## Fit a HDM spline on the corrected values.
 expect_warning(splineRes <- fitSplineHDM(inDat = corr, trait = "t1_corr",
@@ -113,151 +123,126 @@ expect_equal_to_reference(genoLevel, file = "genoLevel", tolerance = 1e-6)
 expect_equal_to_reference(plotLevel, file = "plotLevel", tolerance = 1e-6)
 
 
+## Check that option timeNumber functions correctly.
+expect_error(fitSplineHDM(corr, trait = "t1_corr", pop = "Basin",
+                          useTimeNumber = TRUE),
+             "timeNumber should be a character string of length 1")
+expect_error(fitSplineHDM(corr, trait = "t1_corr", pop = "Basin",
+                          useTimeNumber = TRUE, timeNumber = "genotype"),
+             "timeNumber should be a numerical column")
+
+expect_warning(fitSplineHDM(inDat = corr, trait = "t1_corr",
+                            pop = "Basin", useTimeNumber = TRUE,
+                            timeNumber = "timeNumber", trace = FALSE),
+               "for less than the minimum number of time points, which is 3")
+
+
+## Check that option genotypes functions correctly.
+expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                          genotypes = 1),
+             "genotypes should be a character vector of genotypes in inDat")
+expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                          genotypes = "G0"),
+             "genotypes should be a character vector of genotypes in inDat")
+
+splineRes2 <- fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                           genotypes = "G12", trace = FALSE)
+
+expect_true(all(splineRes2[["genoLevel"]][["genotype"]] == "G12"))
+expect_true(all(splineRes2[["plotLevel"]][["genotype"]] == "G12"))
 
 
 
+## Check that option plotIds functions correctly.
+expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                          plotIds = 1),
+             "plotIds should be a character vector of plotIds in inDat")
+expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                          plotIds = "p1"),
+             "plotIds should be a character vector of plotIds in inDat")
+expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                          genotypes = "G12", plotIds = "c13r2"),
+             "At least one valid combination of genotype and plotId should be selected")
+
+splineRes3 <- fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                           plotIds = "c13r2", trace = FALSE)
+
+expect_true(all(splineRes3[["plotLevel"]][["plotId"]] == "c13r2"))
+
+
+## Check that option minNoTP functions correctly.
+expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                          minNoTP = "a"),
+             "minNoTP should be a numerical value")
+expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                          minNoTP = 50),
+             "minNoTP should be a number bewtween 0 and 5")
+expect_silent(fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                           genotypes = "G12", minNoTP = 5))
+
+# Add some extra NA to corr.
+corr2 <- corr
+corr2[1:10, "t1_corr"] <- NA
+
+expect_warning(splineRes4 <- fitSplineHDM(inDat = corr2, trait = "t1_corr",
+                                          pop = "Basin", minNoTP = 5,
+                                          trace = FALSE),
+               "More than 5 plots have observations for less than the minimum")
+expect_equal(attr(splineRes4, which = "plotLimObs"),
+             c("c10r1", "c10r3", "c10r4", "c10r5", "c11r2", "c11r3", "c11r4",
+               "c11r5", "c12r3", "c12r4", "c12r5"))
+
+
+## Check that option maxit functions correctly.
+expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                          maxit = "a"),
+             "maxit should be a positive numerical value")
+expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                          maxit = -1),
+             "maxit should be a positive numerical value")
+
+splineRes5 <- fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                           maxit = 1, trace = FALSE)
+expect_false(splineRes5[["convergence"]])
+
+
+## Check that option thr functions correctly.
+expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                          thr = "a"),
+             "thr should be a positive numerical value")
+expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                          thr = -1),
+             "thr should be a positive numerical value")
+
+splineRes6 <- fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                           thr = 1, trace = FALSE)
+expect_true(splineRes6[["deviance"]] > splineRes[["deviance"]])
 
 
 
+## Check that difVar functions correctly.
 
+expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr",
+                          pop = "Basin", difVar = "a"),
+             "difVar should be a named list of length 2")
+expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr",
+                          pop = "Basin", difVar = list(geno = TRUE)),
+             "difVar should be a named list of length 2")
+expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                          difVar = list(geno = TRUE, pop = FALSE)),
+             "difVar should be a named list of length 2")
 
+splineRes7a <- fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                            difVar = list(geno = TRUE, plot = FALSE),
+                            trace = FALSE)
+splineRes7b <- fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                            difVar = list(geno = FALSE, plot = TRUE),
+                            trace = FALSE)
+splineRes7c <- fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                            difVar = list(geno = TRUE, plot = TRUE),
+                            trace = FALSE)
 
+expect_equal(length(splineRes7a[["vc"]]), 11)
+expect_equal(length(splineRes7b[["vc"]]), 71)
+expect_equal(length(splineRes7c[["vc"]]), 74)
 
-
-
-
-#
-# ## Check that option timeNumber functions correctly.
-# expect_error(fitSpline(corr, trait = "t1_corr", useTimeNumber = TRUE),
-#              "timeNumber should be a character string of length 1")
-# expect_error(fitSpline(corr, trait = "t1_corr", useTimeNumber = TRUE,
-#                        timeNumber = "genotype"),
-#              "timeNumber should be a numerical column")
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# expect_warning(splineRes2 <- fitSpline(inDat = corr,
-#                                        trait = "t1_corr",
-#                                        useTimeNumber = TRUE,
-#                                        timeNumber = "timeNumber"),
-#                "for less than the minimum number of time points, which is 4")
-#
-# ## Check that option genotypes functions correctly.
-# expect_error(fitSpline(inDat = corr, trait = "t1_corr", genotypes = 1),
-#              "genotypes should be a character vector of genotypes in inDat")
-# expect_error(fitSpline(inDat = corr, trait = "t1_corr", genotypes = "G0"),
-#              "genotypes should be a character vector of genotypes in inDat")
-# splineRes3 <- fitSpline(inDat = corr, trait = "t1_corr", genotypes = "G12")
-# expect_true(all(splineRes3[["coefDat"]][["genotype"]] == "G12"))
-# expect_true(all(splineRes3[["predDat"]][["genotype"]] == "G12"))
-#
-# ## Check that option plotIds functions correctly.
-# expect_error(fitSpline(inDat = corr, trait = "t1_corr", plotIds = 1),
-#              "plotIds should be a character vector of plotIds in inDat")
-# expect_error(fitSpline(inDat = corr, trait = "t1_corr", plotIds = "p1"),
-#              "plotIds should be a character vector of plotIds in inDat")
-# expect_error(fitSpline(inDat = corr, trait = "t1_corr", genotypes = "G12",
-#                        plotIds = "c13r2"),
-#              "At least one valid combination of genotype and plotId should be selected")
-# splineRes4 <- fitSpline(inDat = corr, trait = "t1_corr", plotIds = "c13r2")
-# expect_true(all(splineRes4[["coefDat"]][["plotId"]] == "c13r2"))
-# expect_true(all(splineRes4[["predDat"]][["plotId"]] == "c13r2"))
-#
-# ## Check that option knots functions correctly.
-# expect_error(fitSpline(inDat = corr, trait = "t1_corr", knots = "a"),
-#              "knots should be a positive numerical value")
-# expect_error(fitSpline(inDat = corr, trait = "t1_corr", knots = 3),
-#              "Number of knots should be at least 4 for proper spline fitting")
-# expect_silent(fitSpline(inDat = corr, trait = "t1_corr",
-#                         genotypes = "G12", knots = 20))
-#
-# ## Check that option minNoTP functions correctly.
-# expect_error(fitSpline(inDat = corr, trait = "t1_corr", minNoTP = "a"),
-#              "minNoTP should be a numerical value")
-# expect_error(fitSpline(inDat = corr, trait = "t1_corr", minNoTP = 50),
-#              "minNoTP should be a number bewtween 0 and 5")
-# expect_silent(fitSpline(inDat = corr, trait = "t1_corr",
-#                         genotypes = "G12", minNoTP = 5))
-#
-# # Add some extra NA to corr.
-# corr2 <- corr
-# corr2[["t1_corr"]][1:10] <- NA
-#
-# expect_warning(splineRes5 <- fitSpline(inDat = corr2, trait = "t1_corr",
-#                                        minNoTP = 5),
-#                "More than 5 plotIds have observations for less than the minimum")
-# expect_equal(attr(splineRes5, which = "plotLimObs"),
-#              c("c10r1", "c10r2", "c10r3", "c10r5", "c11r2", "c12r3", "c12r4",
-#                "c13r1", "c13r5", "c14r2", "c14r3"))
-#
-# ## Check that splines are fitted correctly when plotId is absent.
-# corr3 <- corr[, !colnames(corr) == "plotId"]
-# splineRes6 <- fitSpline(inDat = corr3, trait = "t1_corr")
-#
-# expect_equal(ncol(splineRes6[["coefDat"]]), 3)
-# expect_equal(ncol(splineRes6[["predDat"]]), 6)
-#
-# ### Check plotting of fitSpline results.
-#
-# # Create temporary file for exporting plots.
-# tmpFile <- tempfile(fileext = ".pdf")
-#
-# ## Check that general checks in plot function correctly.
-# expect_error(plot(splineRes, plotType = "a"),
-#              "should be one of")
-# expect_error(plot(splineRes, genotypes = "a"),
-#              "genotypes should be a character vector of genotypes in predDat")
-# expect_error(plot(splineRes, plotIds = "a"),
-#              "plotIds should be a character vector of plotIds in predDat")
-# expect_error(plot(splineRes, genotypes = "G12", plotIds = "c13r2"),
-#              "At least one valid combination of genotype and plotId should be selected")
-#
-# ## Check that general output structure is correct.
-# expect_silent(p <- plot(splineRes))
-# expect_inherits(p, "list")
-# expect_equal(length(p), 1)
-# expect_inherits(p[[1]], "ggplot")
-#
-# ## Check that option title functions correctly.
-# p1 <- plot(splineRes, plotIds = "c13r2", title = "bla")
-# expect_equal(p1[[1]]$labels$title, "bla")
-#
-# # Changing plotType should change the default title.
-# expect_equal(p[[1]]$labels$title, "Corrected data and P-spline prediction")
-# p2 <- plot(splineRes, plotIds = "c13r2", plotType = "derivatives")
-# expect_equal(p2[[1]]$labels$title, "P-spline first derivatives")
-# p3 <- plot(splineRes, plotIds = "c13r2", plotType = "derivatives2")
-# expect_equal(p3[[1]]$labels$title, "P-spline second derivatives")
-#
-# ## Check that plotting fitted splines without plotId functions correctly.
-# expect_silent(plot(splineRes6, genotypes = "G12"))
-#
-# ## Check that plotting to pdf functions correctly.
-# expect_silent(plot(splineRes, plotIds = "c13r2", output = TRUE,
-#                    outFile = tmpFile))
-#
-# ## Remove tmpFile
-# unlink(tmpFile)
-#
-#
