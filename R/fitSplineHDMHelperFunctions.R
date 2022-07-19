@@ -76,45 +76,43 @@ constructG <- function(n, ord) {
 #' @noRd
 #' @keywords internal
 constructCapitalLambda <- function(g) {
-  length.eq <- all(sapply(X = g, FUN = function(x) {
+  lengthEqual <- all(sapply(X = g, FUN = function(x) {
     diff(range(unlist(lapply(X = x, FUN = length)))) < .Machine$double.eps ^ 0.5
   }))
-  if (length.eq) {
-    l <- length(g)
-    if (l == 1) {
-      if (length(g[[1]]) == 1) {
-        res <- g
-      } else {
-        res <- do.call("c", lapply(X = g, FUN = function(x) x))
-      }
+  if (!lengthEqual) {
+    stop("Error in constructCapitalLambda.\n")
+  }
+  if (length(g) == 1) {
+    if (length(g[[1]]) == 1) {
+      res <- g
     } else {
-      dim <- sapply(X = g, FUN = function(x) {
-        if (is.list(x)) {
-          unlist(lapply(X = x, FUN = length))[1]
-        } else {
-          length(x)
-        }
-      })
-      end <- cumsum(dim)
-      init <- end - dim + 1
-      res <- do.call("c", lapply(X = 1:length(g),
-                                 FUN = function(x, g, init, end, dim) {
-                                   temp <- g[[x]]
-                                   if (is.list(temp)) {
-                                     lapply(X = temp, FUN = function(y, x, dim) {
-                                       aux <- rep(0L, length.out = sum(dim))
-                                       aux[init[x]:end[x]] <- y
-                                       return(aux)
-                                     }, x = x, dim = dim)
-                                   } else {
-                                     aux <- rep(0L, length.out = sum(dim))
-                                     aux[init[x]:end[x]] <- temp
-                                     list(aux)
-                                   }
-                                 }, g = g, init = init, end = end, dim = dim))
+      res <- do.call("c", lapply(X = g, FUN = function(x) x))
     }
   } else {
-    stop("Error in constructCapitalLambda")
+    dims <- sapply(X = g, FUN = function(x) {
+      if (is.list(x)) {
+        length(x[[1]])
+      } else {
+        length(x)
+      }
+    })
+    ends <- cumsum(dims)
+    inits <- ends - dims + 1
+    zeros <- rep(0, length.out = sum(dims))
+    res <- do.call(rbind, unlist(sapply(X = 1:length(g), FUN = function(x) {
+      temp <- g[[x]]
+      if (is.list(temp)) {
+        lapply(X = temp, FUN = function(y) {
+          zeros[inits[x]:ends[x]] <- y
+          return(zeros)
+        })
+      } else {
+        zeros[inits[x]:ends[x]] <- temp
+        list(zeros)
+      }
+    }), recursive = FALSE)
+    )
+
   }
   return(res)
 }

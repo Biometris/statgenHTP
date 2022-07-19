@@ -137,7 +137,7 @@
 #'                           pop = "geno.decomp",
 #'                           genotype = "genoTreat",
 #'                           plotId = "plotId",
-#'                           difVar = list(geno = FALSE, plant = FALSE),
+#'                           difVar = list(geno = FALSE, plot = FALSE),
 #'                           smoothPop = list(nseg = 4, bdeg = 3, pord = 2),
 #'                           smoothGeno = list(nseg = 4, bdeg = 3, pord = 2),
 #'                           smoothPlot = list(nseg = 4, bdeg = 3, pord = 2),
@@ -457,7 +457,7 @@ fitSplineHDM <- function(inDat,
   ## Construct the components of the precision matrix (as needed by the algorithm).
   g <- constructCapitalLambda(g)
   ## Initialise the parameters.
-  la <- rep(x = 1, l = length(g) + 1)
+  la <- rep(x = 1, times = nrow(g) + 1)
   devold <- 1e10
   mustart <- etastart <- NULL
   nobs <- length(y)
@@ -475,56 +475,46 @@ fitSplineHDM <- function(inDat,
     ## V is an object of class Matrix, transform it to spam.
     V <- spam::as.spam.dgCMatrix(V)
     ## number of coef for each random component.
-    gExt <- lapply(X = g, FUN = function(x) { c(rep(0, np[1]), x) })
-    lGExt <- lapply(X = gExt, FUN = spam::diag.spam)
+    lGExt <- apply(X = g, MARGIN = 1, FUN = function(x) {
+      spam::diag.spam(c(rep(0, np[1]), x))
+    }, simplify = FALSE)
     lP <- append(list(V), lGExt)
     ADcholC <- LMMsolver:::ADchol(lP)
-    EDmax <- sapply(g, function(x) sum(abs(x) > 1.0e-10))
+    EDmax <- rowSums(g > 1e-10)
     ## First iteration (cholesky decomposition).
-    Ginv <- vector(length = length(g[[1]]))
-    for (i in 1:length(g)) {
-      Ginv <- Ginv + g[[i]]
-    }
+    Ginv <- colSums(g)
     G <- 1 / Ginv
     D <- spam::diag.spam(c(rep(x = 0, times = np[1]), Ginv))
     cholHn <- chol(V + D) # The sparsness structure does not change (Ginv is diagonal)
     for (it in 1:maxit) {
-      Ginv <- vector(length = length(g[[1]]))
-      for (i in 1:length(g)) {
-        Ginv <- Ginv + (1 / la[i + 1]) * g[[i]]
-      }
+      Ginv <- colSums(g / la[-1])
       G <- 1 / Ginv
       D <- spam::diag.spam(c(rep(x = 0, times = np[1]), Ginv))
-      Hn <- (1 / la[1]) * V + D
+      Hn <- V / la[1] + D
       cholHn <- update(cholHn, Hn)
       b <- spam::backsolve(cholHn,
-                           spam::forwardsolve(cholHn, (1 / la[1]) * mat$u))
+                           spam::forwardsolve(cholHn, mat$u / la[1]))
       theta <- 1 / la
       EDc <- theta * LMMsolver:::dlogdet(ADcholC, theta)
-      ED <- EDmax - EDc[-1]
       ## Fixed and random coefficients.
       bFixed <- b[1:np[1]]
       bRandom <- b[-(1:np[1])]
+      bRandom2 <- bRandom ^ 2
       ## Variance components as in SOP.
-      ssv <- ed <- tau <- vector(mode = "list", length = length(g))
-      for (i in 1:length(g)) {
-        ed[[i]] = ED[i]
-        ed[[i]] <- ifelse(ed[[i]] <= 1e-10, 1e-10, ed[[i]])
-        ssv[[i]] <- sum(bRandom ^ 2 * g[[i]])
-        tau[[i]] <- ssv[[i]] / ed[[i]]
-        tau[[i]] <- ifelse(tau[[i]] <= 1e-10, 1e-10, tau[[i]])
-      }
-      ssr <- mat$yty. - t(c(bFixed, bRandom)) %*% (2 * mat$u - V %*% b)
+      ed <- ifelse(EDmax - EDc[-1] <= 1e-10, 1e-10, EDmax - EDc[-1])
+      ssv <- g %*% bRandom2
+      tau <- ifelse(ssv / ed <= 1e-10, 1e-10, ssv / ed)
+      ssr <- mat$yty. - crossprod(c(bFixed, bRandom), 2 * mat$u - V %*% b)
       dev <- deviance_spam(C = cholHn, G = spam::diag.spam(G), w = w[w != 0],
                            sigma2 = la[1], ssr = ssr,
-                           edf = sum(bRandom ^ 2 * Ginv))[1]
+                           edf = sum(bRandom2 * Ginv))[1]
       if (family$family %in% c("gaussian", "quasipoisson")) {
-        phi <- as.numeric((ssr / (length(z[w != 0]) - sum(unlist(ed)) - np[1])))
+        phi <- as.numeric((ssr / (length(z[w != 0]) - sum(ed) - np[1])))
       } else {
         phi <- 1
       }
       ## New variance components and convergence check.
-      lanew <- c(phi, unlist(tau))
+      lanew <- c(phi, tau)
       dla <- abs(devold - dev)
       if (trace) {
         if(it == 1){
@@ -536,7 +526,7 @@ fitSplineHDM <- function(inDat,
           cat('\n')
         }
         cat(sprintf("%1$3d %2$12.6f", it, dev), sep = "")
-        cat(sprintf("%12.3f", unlist(ed)), sep = "")
+        cat(sprintf("%12.3f", ed), sep = "")
         cat('\n')
       }
       if (dla < thr) break
@@ -569,8 +559,8 @@ fitSplineHDM <- function(inDat,
          nGenoPop = nGenoPop,
          nPlotGeno = nPlotGeno,
          MM = list(MMPop = MMPop, MMGeno = MMGeno, MMPlot = MMPlot),
-         ed = unlist(ed),
-         vc = unlist(tau),
+         ed = ed,
+         vc = as.vector(tau),
          phi = phi,
          coeff = coeff,
          deviance = dev,

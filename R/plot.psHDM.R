@@ -49,7 +49,7 @@
 #'                           pop = "geno.decomp",
 #'                           genotype = "genoTreat",
 #'                           plotId = "plotId",
-#'                           difVar = list(geno = FALSE, plant = FALSE),
+#'                           difVar = list(geno = FALSE, plot = FALSE),
 #'                           smoothPop = list(nseg = 4, bdeg = 3, pord = 2),
 #'                           smoothGeno = list(nseg = 4, bdeg = 3, pord = 2),
 #'                           smoothPlot = list(nseg = 4, bdeg = 3, pord = 2),
