@@ -361,10 +361,11 @@ mixmodToBsplinePred <- function(what = c("pop", "geno", "plot"),
                             ncol = 1)
   theta <- Tm %*% MMCoeff
   BFull <- function(mmat, what, deriv) {
+    MMW <- paste0("MM", tools::toTitleCase(what))
+    smW <- paste0("smooth", tools::toTitleCase(what))
     Matrix::kronecker(mmat,
                       spline.bbase(knots = object$MM[[MMW]]$knots,
-                                   X. = xp, BDEG. = object$smooth[[paste0("smooth",
-                                                                          tools::toTitleCase(what))]]$bdeg,
+                                   X. = xp, BDEG. = object$smooth[[smW]]$bdeg,
                                    deriv = deriv))
   }
   if (is.null(Bbasis)) {

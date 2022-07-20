@@ -47,13 +47,15 @@ MM.basis <- function (x,
   n <- nrow(B)
   D <- diff(diag(m), differences = pord)
   P.svd <- svd(crossprod(D))
-  d <- (P.svd$d)[1:(m - pord)]
-  U.Z <- (P.svd$u)[, 1:(m - pord)]
+  d <- P.svd$d[1:(m - pord)]
+  U.Z <- P.svd$u[, 1:(m - pord)]
   Z <- Matrix::Matrix(B %*% U.Z)
-  X <- Matrix::Matrix(outer(X = x, Y = 0:(pord-1), FUN = "^"))
-  U.X <- outer(X = knots[-c((1:(bdeg - 1)),
-                            (length(knots) - bdeg + 2):length(knots))],
-               Y = 0:(pord-1), FUN = "^")
+  ## Compute X - Wood 2012
+  X <- B %*% P.svd$u[, -(1:(m - pord))]
+  XScale <- scale(X, scale = FALSE)
+  Xf <- svd(crossprod(XScale))$u[, ncol(XScale):1]
+  U.X <- P.svd$u[, -(1:(m - pord)), drop = FALSE] %*% Xf
+  X <- X %*% Xf
   res <- list(X = X, Z = Z, d = d, B = B, m = m, D = D, knots = knots,
               U.X = U.X, U.Z = U.Z)
   return(res)

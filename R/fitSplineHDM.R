@@ -248,6 +248,22 @@ fitSplineHDM <- function(inDat,
       !(setequal(names(difVar), c("geno", "plot")))) {
     stop("difVar should be a named list of length 2.\n")
   }
+  if (!is.list(smoothPop) || length(smoothPop) != 3 ||
+      !(setequal(names(smoothPop), c("nseg", "bdeg", "pord")))) {
+    stop("smoothPop should be a named list of length 3.\n")
+  }
+  if (!is.numeric(smoothPop$nseg) || length(smoothPop$nseg) > 1 ||
+      smoothPop$nseg < 1) {
+    stop("nseg in smoothPop should be a positive numerical value.\n")
+  }
+  if (!is.numeric(smoothPop$bdeg) || length(smoothPop$bdeg) > 1 ||
+      smoothPop$bdeg < 1) {
+    stop("bdeg in smoothPop should be a positive numerical value.\n")
+  }
+  if (!is.numeric(smoothPop$pord) || length(smoothPop$pord) > 1 ||
+      smoothPop$pord < 1) {
+    stop("pord in smoothPop should be a positive numerical value.\n")
+  }
   ## Unused levels might cause strange behaviour.
   inDat <- droplevels(inDat)
   ## Check that pop - geno - plot structure is unambiguously defined.
@@ -521,8 +537,8 @@ fitSplineHDM <- function(inDat,
         if(it == 1){
           ## Print header.
           edNames <- c("", "Deviance", paste0("ed.p", 1:nPop),
-                        "ed.g.int", "ed.g.slp", "ed.g.smooth",
-                        "ed.i.int", "ed.i.slp", "ed.i.smooth")
+                       "ed.g.int", "ed.g.slp", "ed.g.smooth",
+                       "ed.i.int", "ed.i.slp", "ed.i.smooth")
           cat(sprintf("%12.12s", edNames), sep = "")
           cat('\n')
         }
