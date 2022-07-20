@@ -226,6 +226,7 @@ fitSplineHDM <- function(inDat,
     ## Convert time point to time number with the first time point as 0.
     minTime <- min(inDat[["timePoint"]], na.rm = TRUE)
     inDat[["timeNumber"]] <- as.numeric(inDat[["timePoint"]] - minTime) / 1000
+    inDat[["timeNumber"]] <- as.numeric(strftime(inDat[["timePoint"]], format = "%j"))
   } else {
     if (!is.numeric(inDat[[timeNumber]])) {
       stop("timeNumber should be a numerical column.\n")
