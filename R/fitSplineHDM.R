@@ -226,7 +226,7 @@ fitSplineHDM <- function(inDat,
     ## Convert time point to time number with the first time point as 0.
     minTime <- min(inDat[["timePoint"]], na.rm = TRUE)
     inDat[["timeNumber"]] <- as.numeric(inDat[["timePoint"]] - minTime) / 1000
-    inDat[["timeNumber"]] <- as.numeric(strftime(inDat[["timePoint"]], format = "%j"))
+    #inDat[["timeNumber"]] <- as.numeric(strftime(inDat[["timePoint"]], format = "%j"))
   } else {
     if (!is.numeric(inDat[[timeNumber]])) {
       stop("timeNumber should be a numerical column.\n")
@@ -248,22 +248,9 @@ fitSplineHDM <- function(inDat,
       !(setequal(names(difVar), c("geno", "plot")))) {
     stop("difVar should be a named list of length 2.\n")
   }
-  if (!is.list(smoothPop) || length(smoothPop) != 3 ||
-      !(setequal(names(smoothPop), c("nseg", "bdeg", "pord")))) {
-    stop("smoothPop should be a named list of length 3.\n")
-  }
-  if (!is.numeric(smoothPop$nseg) || length(smoothPop$nseg) > 1 ||
-      smoothPop$nseg < 1) {
-    stop("nseg in smoothPop should be a positive numerical value.\n")
-  }
-  if (!is.numeric(smoothPop$bdeg) || length(smoothPop$bdeg) > 1 ||
-      smoothPop$bdeg < 1) {
-    stop("bdeg in smoothPop should be a positive numerical value.\n")
-  }
-  if (!is.numeric(smoothPop$pord) || length(smoothPop$pord) > 1 ||
-      smoothPop$pord < 1) {
-    stop("pord in smoothPop should be a positive numerical value.\n")
-  }
+  chkSmooth(smoothPop)
+  chkSmooth(smoothGeno)
+  chkSmooth(smoothPlot)
   ## Unused levels might cause strange behaviour.
   inDat <- droplevels(inDat)
   ## Check that pop - geno - plot structure is unambiguously defined.

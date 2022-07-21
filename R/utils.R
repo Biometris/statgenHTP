@@ -337,6 +337,28 @@ chkTimePoints <- function(x,
   return(timePoints)
 }
 
+#' Helper function for checking structure of smooth arguments to
+#' fitSplineHDM.
+#'
+#' @noRd
+#' @keywords internal
+chkSmooth <- function(x) {
+  xName <- deparse(substitute(x))
+  if (!is.list(x) || length(x) != 3 ||
+      !(setequal(names(x), c("nseg", "bdeg", "pord")))) {
+    stop(xName, " should be a named list of length 3.\n")
+  }
+  if (!is.numeric(x$nseg) || length(x$nseg) > 1 || x$nseg < 1) {
+    stop("nseg in ", xName, " should be a positive numerical value.\n")
+  }
+  if (!is.numeric(x$bdeg) || length(x$bdeg) > 1 || x$bdeg < 1) {
+    stop("bdeg in ", xName, " should be a positive numerical value.\n")
+  }
+  if (!is.numeric(x$pord) || length(x$pord) > 1 || x$pord < 1) {
+    stop("pord in ", xName, " should be a positive numerical value.\n")
+  }
+}
+
 #' Helper function for minimal plot theme.
 #'
 #' @noRd

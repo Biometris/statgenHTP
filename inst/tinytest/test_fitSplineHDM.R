@@ -246,3 +246,53 @@ expect_equal(length(splineRes7a[["vc"]]), 11)
 expect_equal(length(splineRes7b[["vc"]]), 71)
 expect_equal(length(splineRes7c[["vc"]]), 74)
 
+
+## Check that smoothPop functions correctly.
+
+expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr",
+                          pop = "Basin", smoothPop = "a"),
+             "smoothPop should be a named list of length 3")
+expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                          smoothPop = list(nseg = "a", bdeg = "1", pord = "1")),
+             "nseg in smoothPop should be a positive numerical value")
+expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                          smoothPop = list(nseg = 2, bdeg = -1, pord = "1")),
+             "bdeg in smoothPop should be a positive numerical value")
+expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                          smoothPop = list(nseg = 2, bdeg = 3, pord = 1:2)),
+             "pord in smoothPop should be a positive numerical value")
+
+# splineRes8 <- fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+#                            smoothPop = list(nseg = 8, bdeg = 3, pord = 2))
+
+
+## Check that smoothGeno functions correctly.
+
+expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr",
+                          pop = "Basin", smoothGeno = "a"),
+             "smoothGeno should be a named list of length 3")
+expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                          smoothGeno = list(nseg = "a", bdeg = "1", pord = "1")),
+             "nseg in smoothGeno should be a positive numerical value")
+expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                          smoothGeno = list(nseg = 2, bdeg = -1, pord = "1")),
+             "bdeg in smoothGeno should be a positive numerical value")
+expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                          smoothGeno = list(nseg = 2, bdeg = 3, pord = 1:2)),
+             "pord in smoothGeno should be a positive numerical value")
+
+
+## Check that smoothPlot functions correctly.
+
+expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr",
+                          pop = "Basin", smoothPlot = "a"),
+             "smoothPlot should be a named list of length 3")
+expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                          smoothPlot = list(nseg = "a", bdeg = "1", pord = "1")),
+             "nseg in smoothPlot should be a positive numerical value")
+expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                          smoothPlot = list(nseg = 2, bdeg = -1, pord = "1")),
+             "bdeg in smoothPlot should be a positive numerical value")
+expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                          smoothPlot = list(nseg = 2, bdeg = 3, pord = 1:2)),
+             "pord in smoothPlot should be a positive numerical value")
