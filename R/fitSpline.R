@@ -112,7 +112,7 @@ fitSpline <- function(inDat,
     }
     ## Convert time point to time number with the first time point as 0.
     minTime <- min(inDat[["timePoint"]], na.rm = TRUE)
-    inDat[["timeNumber"]] <- as.numeric(inDat[["timePoint"]] - minTime) / 1000
+    inDat[["timeNumber"]] <- as.numeric(inDat[["timePoint"]] - minTime)
   } else {
     if (!is.numeric(inDat[[timeNumber]])) {
       stop("timeNumber should be a numerical column.\n")
@@ -233,11 +233,6 @@ fitSpline <- function(inDat,
       ## Merge time, predictions and plotId.
       predDat <- data.frame(timeRangePl, pred.value = yPred,
                             deriv = yDeriv, deriv2 = yDeriv2, plotId = plant)
-      if (!useTimeNumber) {
-        ## Restore original values of timeNumber.
-        predDat[["timeNumber"]] <- 1000 * predDat[["timeNumber"]]
-        inDat[["timeNumber"]] <- 1000 * inDat[["timeNumber"]]
-      }
       return(list(coeff = coeff, predDat = predDat))
     } else {
       return(list(coeff = NULL, predDat = NULL))
