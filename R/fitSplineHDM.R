@@ -297,9 +297,8 @@ fitSplineHDM <- function(inDat,
   if (hasName(x = inDat, name = "timePoint")) {
     timeRange[["timePoint"]] <- sort(unique(inDat[["timePoint"]]))
   }
-  ## Create a full data set of observations for all combinations of
-  ## timepoints, row and column.
-  fullGrid <- merge(unique(inDat[c(pop, genotype, plotId, "colId", "rowId")]),
+  ## Create a full data set of observations for all combinations of timepoints.
+  fullGrid <- merge(unique(inDat[c(pop, genotype, plotId)]),
                     timeRange)
   inDat <- merge(fullGrid, inDat, all.x = TRUE)
   ## Order the data
@@ -310,7 +309,9 @@ fitSplineHDM <- function(inDat,
   inDat[["timeNumber"]] <- inDat[["timeNumber"]] - min(inDat[["timeNumber"]]) + 1
   ## Define offset.
   if (is.null(offset)) {
-    inDat$offset <- 0
+    inDat[["offset"]] <- 0
+  } else {
+    inDat[["offset"]] <- offset
   }
   ## Specify weights.
   if (is.null(weights)) {
