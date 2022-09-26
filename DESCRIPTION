@@ -68,7 +68,7 @@ Suggests:
    knitr, 
    rmarkdown, 
    tinytest (>= 1.2.4)
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.1
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr
 URL: https://biometris.github.io/statgenHTP/index.html, https://github.com/Biometris/statgenHTP/

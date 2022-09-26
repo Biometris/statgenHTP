@@ -45,7 +45,7 @@ The functions are illustrated with the three example data sets. For more informa
 
 ## Example 1
 
-The data from the Phenovator platform have been corrected for spatial trends and time points outliers have been removed (see [*statgenHTP tutorial: 2. Outlier detection for single observations*](OutlierSingleObs_HTP.html) and [**statgenHTP tutorial: 3. Correction for spatial trends**](SpatialModel_HTP.html)). At this stage, the cleaned and corrected data are used:
+The data from the Phenovator platform have been corrected for spatial trends and time points outliers have been removed (see [**statgenHTP tutorial: 2. Outlier detection for single observations**](OutlierSingleObs_HTP.html) and [**statgenHTP tutorial: 3. Correction for spatial trends**](SpatialModel_HTP.html)). At this stage, the cleaned and corrected data are used:
 
 ```{r fitSplineVator, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 data(spatCorrectedVator)  
@@ -122,12 +122,12 @@ knitr::kable(head(outVator), align=c('c','c'), booktabs = TRUE, row.names=F)
 
 For this subset of genotypes, 2 plants were tagged as outliers:
 
--   c21r25 and c9r4 had both low correlations and high angles. In addition c9r4 also had a low average ratio for the slope.
+-   c3r43 and c9r4 had both low correlations. In addition c9r4 also had high angles and a low average ratio for the slope.
 
-The `outVator` can be visualized by selecting genotypes. Here genotype G151 which has plant c21r25 tagged as outlier:
+The `outVator` can be visualized by selecting genotypes. Here genotype G160 which has plant c9r4 tagged as outlier:
 
 ```{r plotOutVator,  fig.height=6, fig.width=8, echo=TRUE, message=FALSE, warning=FALSE}
-plot(outVator, genotypes = "G151")
+plot(outVator, genotypes = "G160")
 ```
 
 The figure above contains:
@@ -140,7 +140,7 @@ It is possible to visualize only the plants tagged for one or two reasons instea
 
 ```{r plotOutVatorSlope,  fig.height=6, fig.width=8, echo=TRUE, message=FALSE, warning=FALSE}
 plot(outVator, 
-     genotypes = "G151", 
+     genotypes = "G160", 
      reason = "slope")
 ```
 
@@ -148,7 +148,7 @@ When numerical time was used to fit the splines, it can be used also to plot the
 
 ```{r plotOutVatorNum, echo=TRUE, eval=FALSE}
 plot(outVator, 
-     genotypes = "G151",  
+     genotypes = "G160",  
      useTimeNumber = TRUE, 
      timeNumber = "timeNumHour")
 ```
@@ -160,10 +160,10 @@ spatCorrectedVatorOut <- removeSerieOut(dat = spatCorrectedVator,
                                         serieOut = outVator)
 # Check for time series outliers in data from which individual outlying 
 # observations were already removed and to which a spatial adjustment has been applied
-head(spatCorrectedVator[spatCorrectedVator$plotId == "c21r25",
+head(spatCorrectedVator[spatCorrectedVator$plotId == "c9r4",
                         c("EffpsII_corr", "EffpsII")])
 # Check the same value in the new corrected data.frame
-head(spatCorrectedVatorOut[spatCorrectedVatorOut$plotId == "c21r25",
+head(spatCorrectedVatorOut[spatCorrectedVatorOut$plotId == "c9r4",
                            c("EffpsII_corr", "EffpsII")])
 ```
 
@@ -259,7 +259,7 @@ knitr::kable(head(outArch), align=c('c','c'), booktabs = TRUE, row.names=FALSE)
 ```
 
 ```{r plotOutArch,  fig.height=6, fig.width=8, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
-plot(outArch, genotypes = "GenoB07", geno.decomp = "WD_Panel2")
+plot(outArch, genotypes = "GenoA01", geno.decomp = "WD_Panel1")
 ```
 
 ```{r rmOutArch}
@@ -267,10 +267,10 @@ spatCorrectedArchOut <- removeSerieOut(dat = spatCorrectedArch,
                                        serieOut = outArch)
 # Check for time series outliers in data from which individual outlying 
 # observations were already removed and to which a spatial adjustment has been applied
-head(spatCorrectedArch[spatCorrectedArch$plotId=="c7r2",
+head(spatCorrectedArch[spatCorrectedArch$plotId == "c16r2",
                        c("LeafArea_corr", "LeafArea")])
 # Check the same value in the new corrected data.frame
-head(spatCorrectedArchOut[spatCorrectedArchOut$plotId=="c7r2",
+head(spatCorrectedArchOut[spatCorrectedArchOut$plotId == "c16r2",
                           c("LeafArea_corr", "LeafArea")])
 ```
 
@@ -312,16 +312,16 @@ outRoot <- detectSerieOut(corrDat = noCorrectedRoot,
 
 ```{r plotRootOut,  fig.height=6, fig.width=7, message=FALSE, eval=TRUE}
 plot(outRoot,
-     genotypes = "10")
+     genotypes = "6")
 ```
 
 ```{r rmOutRoot}
 noCorrectedRootOut <- removeSerieOut(dat = noCorrectedRoot,
                                      serieOut = outRoot)
 # Check one value annotated as outlier in the original corrected data.frame
-head(noCorrectedRoot[noCorrectedRoot$plotId == "A_29_2", "tipPos_y"])
+head(noCorrectedRoot[noCorrectedRoot$plotId == "A_21_2", "tipPos_y"])
 # Check the same value in the new corrected data.frame
-head(noCorrectedRootOut[noCorrectedRootOut$plotId == "A_29_2", "tipPos_y"])
+head(noCorrectedRootOut[noCorrectedRootOut$plotId == "A_21_2", "tipPos_y"])
 ```
 
 ------------------------------------------------------------------------
@@ -369,6 +369,8 @@ The `detectSingleOutMaize` returns a list of 3 elements :
 -   modDat: a data.frame with the used data set, the fitted values and residuals calculated by the models, and the plants flagged as outlier
 -   smallPlants: a data.frame of the "small" plants detected as outliers
 -   bigPlants: a data.frame of the "big" plants detected as outliers
+
+The table below shows the smallPlants data.frame.
 
 ```{r headsmallPl, echo=FALSE, message=FALSE, eval=TRUE}
 knitr::kable(test2$smallPlants[1:6, 1:5], align=c('c','c'), booktabs = TRUE)

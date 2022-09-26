@@ -1,3 +1,7 @@
+url: ~
+template:
+  bootstrap: 5
+
 home:
   title: An R package for analysis of High Throughput Phenotyping data
 
@@ -26,6 +30,10 @@ navbar:
           href: https://biometris.github.io/statgenGWAS
         - text: "statgenIBD"
           href: https://biometris.github.io/statgenIBD
+        - text: "statgenMPP"
+          href: https://biometris.github.io/statgenMPP
+        - text: "LMMsolver"
+          href: https://biometris.github.io/LMMsolver
     - icon: fa-github fa-lg fab
       text: "github"
       href: https://github.com/Biometris/statgenHTP
@@ -36,6 +44,7 @@ articles:
       The vignettes provide a full description of the statgenHTP package
       including some fully worked examples.
     contents:
+      - Overview_HTP
       - vignettesSite/Intro_HTP
       - vignettesSite/OutlierSingleObs_HTP
       - vignettesSite/SpatialModel_HTP
@@ -74,7 +83,13 @@ reference:
 - title: Estimate parameters
 - contents:
   - estimateSplineParameters
-  - plot.HTPSplineEst
+  - plot.splineEst
+- title: Fit HDM splines
+- contents:
+  - fitSplineHDM
+  - predict.psHDM
+  - plot.psHDM
+  - themeHDM
 - title: Detect outliers for series of observations
 - contents:
   - detectSerieOut

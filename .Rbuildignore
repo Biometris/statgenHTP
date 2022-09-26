@@ -20,3 +20,4 @@ testScript*
 ^CRAN-RELEASE$
 ^\.github$
 vignettesSite
+public
