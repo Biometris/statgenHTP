@@ -98,9 +98,6 @@ plot.psHDM <- function(x,
                        output = TRUE,
                        outFile = NULL,
                        outFileOpts = NULL) {
-  if (!inherits(x, "psHDM")) {
-    stop("The object class is not correct")
-  }
   if (!is.null(xlab) && length(xlab) > 1) {
     stop("xlab should have length 1.\n")
   }
@@ -136,8 +133,10 @@ plot.psHDM <- function(x,
   if (is.null(x$plotObs)) {
     x$plotObs <- x$plotLevel
   }
-  minT <- min(x$plotObs[["timeNumber"]])
-  maxT <- max(x$plotObs[["timeNumber"]])
+  if (!is.null(x$plotObs)) {
+    minT <- min(x$plotObs[["timeNumber"]])
+    maxT <- max(x$plotObs[["timeNumber"]])
+  }
   if (plotType == "popTra") {
     if (is.null(x$popLevel)) {
       stop("Population-specific growth curves can only be plotted if ",
@@ -372,30 +371,3 @@ plot.psHDM <- function(x,
   invisible(p)
 }
 
-# Needed functions for plotting --------------------------------------------------------
-# Theme for the ggplot plots ----------------------------------------------
-
-#' themeHDM
-#'
-#' Custom theme for creating HDM plots.
-#'
-#' @param textSize Numeric value, font size of the texts in the plots.
-#'
-#' @export
-themeHDM <- function(textSize = 20) {
-  ggplot2::theme(strip.text.x = ggplot2::element_text(size = textSize + 5),
-                 strip.text.y = ggplot2::element_text(size = textSize + 5),
-                 plot.title = ggplot2::element_text(hjust = 0.5,
-                                                    size = textSize + 5,
-                                                    face = "bold"),
-                 axis.text = ggplot2::element_text(size = textSize),
-                 axis.title = ggplot2::element_text(size = textSize + 5),
-                 legend.title = ggplot2::element_text(size = textSize),
-                 legend.text = ggplot2::element_text(size = textSize + 5,
-                                                     hjust = 0),
-                 legend.background = ggplot2::element_rect(fill = ggplot2::alpha("white", 0)),
-                 legend.key = ggplot2::element_rect(fill = ggplot2::alpha("white", 0)),
-                 legend.justification = c(1, 1),
-                 legend.position = "top",
-                 panel.background = ggplot2::element_rect(fill = "gray95"))
-}
