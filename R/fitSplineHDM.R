@@ -43,12 +43,14 @@
 #' @param smoothGeno A list specifying the P-Spline model at the genotype
 #' level.
 #' @param smoothPlot A list specifying the P-Spline model at the plant level.
-#' @param offset An optional numerical vector containing an a priori known
-#' component to be included in the linear predictor during fitting. The default
-#' is \code{NULL}.
-#' @param weights A character string indicating the weights to be used in the
-#' fitting process (for error propagation from first stage to second stage).
-#' By default, the weights are considered to be one. The default is \code{NULL}.
+#' @param offset A character string indicating the column in the data with
+#' an a priori known component to be included in the linear predictor during
+#' fitting. By default, when \code{offset = NULL}, the offset is considered to
+#' be zero.
+#' @param weights A character string indicating the column in the data containing
+#' the weights to be used in the fitting process (for error propagation from
+#' first stage to second stage). By default, when \code{weights = NULL}, the
+#' weights are considered to be one.
 #' @param family An object of class \code{family} specifying the distribution
 #' and link function. The default is \code{gaussian()}.
 #' @param maxit An optional value that controls the maximum number of iterations
@@ -213,7 +215,7 @@ fitSplineHDM <- function(inDat,
     stop("genotypes should be a character vector of genotypes in inDat.\n")
   }
   if (!is.null(plotIds) &&
-      (!is.character(plotIds) || !all(plotIds %in% inDat[["plotId"]]))) {
+      (!is.character(plotIds) || !all(plotIds %in% inDat[[plotId]]))) {
     stop("plotIds should be a character vector of plotIds in inDat.\n")
   }
   if (!is.null(minNoTP) && (!is.numeric(minNoTP) || length(minNoTP) > 1)) {
@@ -226,7 +228,6 @@ fitSplineHDM <- function(inDat,
     ## Convert time point to time number with the first time point as 0.
     minTime <- min(inDat[["timePoint"]], na.rm = TRUE)
     inDat[["timeNumber"]] <- as.numeric(inDat[["timePoint"]] - minTime) / 1000
-    #inDat[["timeNumber"]] <- as.numeric(strftime(inDat[["timePoint"]], format = "%j"))
   } else {
     if (!is.numeric(inDat[[timeNumber]])) {
       stop("timeNumber should be a numerical column.\n")
@@ -309,15 +310,21 @@ fitSplineHDM <- function(inDat,
   inDat[["timeNumber"]] <- inDat[["timeNumber"]] - min(inDat[["timeNumber"]]) + 1
   ## Define offset.
   if (is.null(offset)) {
-    inDat[["offset"]] <- 0
-  } else {
-    inDat[["offset"]] <- offset
+    offsetf <- rep(0, nrow(inDat))
+  } else{
+    if (!hasName(x = inDat, name = offset)) {
+      stop("offset should be a column in inDat.\n")
+    }
+    offsetf <- inDat[[offset]]
   }
   ## Specify weights.
   if (is.null(weights)) {
-    weights <- rep(1, nrow(inDat))
+    weightsf <- rep(1, nrow(inDat))
   } else{
-    weights <- inDat[[weights]]
+    if (!hasName(x = inDat, name = weights)) {
+      stop("weights should be a column in inDat.\n")
+    }
+    weightsf <- inDat[[weights]]
   }
   ## Convert to factors - only if not already factors.
   for (facVar in c(pop, genotype, plotId)) {
@@ -356,14 +363,13 @@ fitSplineHDM <- function(inDat,
                      pord = smoothPlot$pord)
   XPlot <- MMPlot$X
   ZPlot <- MMPlot$Z
-  ## Response, offset and weights
+  ## Response.
   y <- inDat[[trait]]
-  offsetf <- inDat[["offset"]]
-  weightsf <- weights
   ## Set missing values and corresponding weights to 0.
   nas <- is.na(y)
   y[nas] <- 0
   weightsf[nas] <- 0
+  offsetf[nas] <- 0
   ## Construct matrices assigning plants to populations and genotypes
   ## Matrix to assign plants to populations
   plotPlotPop <- rep(1:nPop, nPlotPop)

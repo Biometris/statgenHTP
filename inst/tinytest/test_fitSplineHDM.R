@@ -1,4 +1,4 @@
-### Test fitSpline
+### Test fitSplineHDM
 
 Sys.setlocale("LC_COLLATE", "C")
 
@@ -262,8 +262,10 @@ expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
                           smoothPop = list(nseg = 2, bdeg = 3, pord = 1:2)),
              "pord in smoothPop should be a positive numerical value")
 
-# splineRes8 <- fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
-#                            smoothPop = list(nseg = 8, bdeg = 3, pord = 2))
+splineRes8 <- fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                           smoothPop = list(nseg = 8, bdeg = 3, pord = 2),
+                           trace = FALSE)
+expect_equivalent(splineRes8$smooth$smoothPop, list(8, 3, 2))
 
 
 ## Check that smoothGeno functions correctly.
@@ -281,6 +283,11 @@ expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
                           smoothGeno = list(nseg = 2, bdeg = 3, pord = 1:2)),
              "pord in smoothGeno should be a positive numerical value")
 
+splineRes9 <- fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                           smoothGeno = list(nseg = 8, bdeg = 3, pord = 2),
+                           trace = FALSE)
+expect_equivalent(splineRes9$smooth$smoothGeno, list(8, 3, 2))
+
 
 ## Check that smoothPlot functions correctly.
 
@@ -296,3 +303,29 @@ expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
 expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
                           smoothPlot = list(nseg = 2, bdeg = 3, pord = 1:2)),
              "pord in smoothPlot should be a positive numerical value")
+
+splineRes10 <- fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                           smoothPlot = list(nseg = 8, bdeg = 3, pord = 2),
+                           trace = FALSE)
+expect_equivalent(splineRes10$smooth$smoothPlot, list(8, 3, 2))
+
+
+## Check that offset functions correctly.
+
+expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                          offset = "t2"),
+             "offset should be a column in inDat")
+
+splineRes11 <- fitSplineHDM(inDat = corr, trait = "t1_corr",
+                            pop = "Basin", offset = "t1", trace = FALSE)
+
+
+
+## Check that weight functions correctly.
+
+expect_error(fitSplineHDM(inDat = corr, trait = "t1_corr", pop = "Basin",
+                          weights = "weight"),
+             "weights should be a column in inDat")
+
+splineRes12 <- fitSplineHDM(inDat = corr, trait = "t1_corr",
+                            pop = "Basin", weights = "wt", trace = FALSE)

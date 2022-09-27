@@ -64,13 +64,15 @@ level.}
 
 \item{smoothPlot}{A list specifying the P-Spline model at the plant level.}
 
-\item{offset}{An optional numerical vector containing an a priori known
-component to be included in the linear predictor during fitting. The default
-is \code{NULL}.}
+\item{offset}{A character string indicating the column in the data with
+an a priori known component to be included in the linear predictor during
+fitting. By default, when \code{offset = NULL}, the offset is considered to
+be zero.}
 
-\item{weights}{A character string indicating the weights to be used in the
-fitting process (for error propagation from first stage to second stage).
-By default, the weights are considered to be one. The default is \code{NULL}.}
+\item{weights}{A character string indicating the column in the data containing
+the weights to be used in the fitting process (for error propagation from
+first stage to second stage). By default, when \code{weights = NULL}, the
+weights are considered to be one.}
 
 \item{family}{An object of class \code{family} specifying the distribution
 and link function. The default is \code{gaussian()}.}

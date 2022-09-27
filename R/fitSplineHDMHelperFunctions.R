@@ -180,7 +180,7 @@ A1.form <- function(l,
     W <- Matrix::Matrix(1, nrow = n[1], ncol = n[2])
   } else {
     dim(w) <- n
-    W <- as(w, "dgeMatrix")
+    W <- as(as(as(w, "dMatrix"), "generalMatrix"), "unpackedMatrix")
   }
   lRTen <- lapply(X = rev(l), FUN = Rten)
   tmp <- Reduce(Matrix::crossprod, x = lRTen, init = W)
@@ -216,7 +216,7 @@ A2.form <- function(l1,
     W <- Matrix::Matrix(1, nrow = n[1], ncol = n[2])
   } else {
     dim(w) <- n
-    W <- as(w, "dgeMatrix")
+    W <- as(as(as(w, "dMatrix"), "generalMatrix"), "unpackedMatrix")
   }
   lRTen2 <- mapply(FUN = Rten2, rev(l2), rev(l1))
   tmp <- Reduce(Matrix::crossprod, x = lRTen2, init = W)
