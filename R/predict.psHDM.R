@@ -111,14 +111,11 @@ predict.psHDM <- function(object,
                           trace = TRUE,
                           ...) {
   ## Checks.
-  if (!inherits(object, "psHDM")) {
-    stop("object should be of class psHDM.\n")
-  }
   if (missing(newtimes)) {
     xp <- object$time[["timeNumber"]]
   } else {
     if (!is.vector(newtimes) || !is.numeric(newtimes)) {
-      stop("newtimes should be a vector.\n")
+      stop("newtimes should be a numerical vector.\n")
     }
     xp <- newtimes
   }
