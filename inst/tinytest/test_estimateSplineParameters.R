@@ -76,3 +76,57 @@ expect_silent(est4 <- estimateSplineParameters(splineRes,
                                                what = c("min", "max")))
 
 expect_equal(est4[["min_predictions"]], est1[["min_predictions"]])
+
+
+### HDM splines
+
+## Create TP object.
+testTP2 <- createTimePoints(dat = testDat, experimentName = "testExp",
+                            genotype = "Genotype", timePoint = "timepoints",
+                            repId = "Replicate", plotId = "pos",
+                            rowNum = "y", colNum = "x")
+
+## Fit model.
+testFitMod2 <- fitModels(testTP2, trait = "t1", geno.decomp = "repId",
+                         extraFixedFactors = "Basin", quiet = TRUE)
+
+## Get corrected values.
+corr2 <- getCorrected(testFitMod2)
+
+## Move all check1s to Basin 1 for a consistent population structure.
+corr2[corr2[["genotype"]] == "check1", "Basin"] <- 1
+
+## Fit a HDM spline on the corrected values.
+splineRes3 <- fitSplineHDM(inDat = corr2, trait = "t1_corr",
+                           pop = "Basin", trace = FALSE)
+
+## Check that estimates work correctly for HDM splines.
+est5 <- estimateSplineParameters(splineRes3,
+                                 what = c("min", "max", "AUC", "p10"),
+                                 AUCScale = "hour")
+
+expect_equal_to_reference(est5, "splineEstHDM", tolerance = 1e-6)
+
+
+## Check that option fitLevel works correctly.
+
+est6 <- estimateSplineParameters(splineRes3, what = "mean", fitLevel = "plot")
+est7 <- estimateSplineParameters(splineRes3, what = "mean", fitLevel = "genoDev")
+
+expect_equal(nrow(est6), 25)
+expect_equal(nrow(est7), 22)
+
+
+## Check that plotting of estimates works correctly.
+
+## Create temporary file for output.
+tmpFile <- tempfile(fileext = ".pdf")
+
+p1 <- plot(est1, plotType = "box", outFile = tmpFile)
+expect_inherits(p1, "list")
+expect_inherits(p1[[1]], "ggplot")
+
+p2 <- plot(est5, plotType = "hist", what = "p10", outFile = tmpFile)
+expect_inherits(p2, "list")
+expect_inherits(p2[[1]], "ggplot")
+

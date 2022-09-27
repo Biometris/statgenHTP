@@ -212,7 +212,7 @@ estimateSplineParameters <- function(x,
   ## Loop over what
   whatRes <- lapply(X = what, FUN = function(w) {
     if (substr(w, 1, 1) == "p") {
-      percentile <- suppressWarnings(as.numeric(substring(what, 2))) / 100
+      percentile <- suppressWarnings(as.numeric(substring(w, 2))) / 100
       if (is.na(percentile) || percentile < 0 || percentile > 1) {
         stop("A percentile should be give as pN, with N between 0 and 100.\n")
       }
