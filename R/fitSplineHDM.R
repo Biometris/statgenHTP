@@ -467,6 +467,16 @@ fitSplineHDM <- function(inDat,
   }
   ## Construct the components of the precision matrix (as needed by the algorithm).
   g <- constructCapitalLambda(g)
+  ## Construct names for ed.
+  edNames <- c(paste0("p", 1:nPop),
+               if (isTRUE(difVar$geno))
+                 paste0(paste0("g.", c("int", "slp", "smooth"),
+                               rep(1:nPop, each = 3))) else
+                                 c("g.int", "g.slp", "g.smooth"),
+               if (isTRUE(difVar$plot))
+                 paste0(paste0("i.", c("int", "slp", "smooth"),
+                               rep(1:nGeno, each = 3))) else
+                                 c("i.int", "i.slp", "i.smooth"))
   ## Initialise the parameters.
   la <- rep(x = 1, times = nrow(g) + 1)
   devold <- 1e10
@@ -530,10 +540,8 @@ fitSplineHDM <- function(inDat,
       if (trace) {
         if(it == 1){
           ## Print header.
-          edNames <- c("", "Deviance", paste0("ed.p", 1:nPop),
-                       "ed.g.int", "ed.g.slp", "ed.g.smooth",
-                       "ed.i.int", "ed.i.slp", "ed.i.smooth")
-          cat(sprintf("%12.12s", edNames), sep = "")
+          headNames <- c("", "Deviance", paste0("ed", edNames))
+          cat(sprintf("%12.12s", headNames), sep = "")
           cat('\n')
         }
         cat(sprintf("%1$3d %2$12.6f", it, dev), sep = "")
@@ -559,7 +567,10 @@ fitSplineHDM <- function(inDat,
                       matrix(x, nrow = nobs)
                     }, nobs = length(x))
   names(obsPlot) <- genoLevs
-  ## Object to be returned
+  ## Add names to ed and vc.
+  vc <- as.vector(tau)
+  names(vc) <- names(ed) <- edNames
+  ## Object to be returned.
   res <- structure(
     list(y = obsPlot,
          time = timeRange,
@@ -571,7 +582,7 @@ fitSplineHDM <- function(inDat,
          nPlotGeno = nPlotGeno,
          MM = list(MMPop = MMPop, MMGeno = MMGeno, MMPlot = MMPlot),
          ed = ed,
-         vc = as.vector(tau),
+         vc = vc,
          phi = phi,
          coeff = coeff,
          deviance = dev,
