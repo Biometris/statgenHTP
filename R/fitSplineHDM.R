@@ -570,6 +570,11 @@ fitSplineHDM <- function(inDat,
   ## Add names to ed and vc.
   vc <- as.vector(tau)
   names(vc) <- names(ed) <- edNames
+  ## Check convergence.
+  convergence <- it < maxit
+  if (!convergence) {
+    warning("Model didn't converge in ", it, " iterations.\n")
+  }
   ## Object to be returned.
   res <- structure(
     list(y = obsPlot,
@@ -586,7 +591,7 @@ fitSplineHDM <- function(inDat,
          phi = phi,
          coeff = coeff,
          deviance = dev,
-         convergence = it < maxit,
+         convergence = convergence,
          dim = np,
          family = family,
          Vp = spam::chol2inv(cholHn),
