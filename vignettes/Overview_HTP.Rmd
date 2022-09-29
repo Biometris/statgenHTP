@@ -301,7 +301,7 @@ getEffDims | Effective dimensions - only for SpATS engine |
 genoPredSp <- getGenoPred(modPhenoSp)
 ```
 ```{r getPred, echo=FALSE, message=FALSE}
-knitr::kable(head(genoPredSp$genoPred), align = c('c','c','c','c','c'), padding = 0)
+knitr::kable(head(genoPredSp$genoPred), align = "c", padding = 0)
 ```
 
 # Outlier detection for series of observations
@@ -346,7 +346,7 @@ outVator <- detectSerieOut(corrDat = spatCorrectedVator,
 ```
 
 ```{r headOutPoint, echo=FALSE, message=FALSE, eval=TRUE}
-knitr::kable(head(outVator), align=c('c','c'), booktabs = TRUE, row.names=F)
+knitr::kable(head(outVator), align = "c", booktabs = TRUE, row.names = FALSE)
 ```
 
 Visualizing the results we see that for genotype G151 plant c21r25 is tagged as outlier:
@@ -376,10 +376,7 @@ paramVator1 <-
                            timeMax = 432,
                            genotypes = subGenoVator)
 
-ggplot(paramVator1, aes(x = genotype, y = AUC_predictions)) + 
-  geom_boxplot(na.rm = TRUE) +
-  ylab("AUC of EffPsII") +
-  theme_classic()
+plot(paramVator1, plotType = "box")
 ```
 
 ------------------------------------------------------------------------
