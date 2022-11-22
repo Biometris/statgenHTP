@@ -542,8 +542,6 @@ fitSplineHDM <- function(inDat,
           ## Print header.
           cat("Effective dimensions\n")
           cat("-------------------------\n")
-          # headNames <- c("It.", "Deviance", edNames)
-          # cat(sprintf("%1$3s %2$12s %3$10s", headNames), sep = "")
           cat(sprintf("%1$3s %2$12s","It.","Deviance"), sep = "")
           cat(sprintf("%10s", edNames), sep = "")
           cat("\n")
