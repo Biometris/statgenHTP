@@ -50,8 +50,9 @@ MM.basis <- function (x,
   d <- P.svd$d[1:(m - pord)]
   U.Z <- P.svd$u[, 1:(m - pord)]
   Z <- Matrix::Matrix(B %*% U.Z)
-  if(bdeg == 3 & pord = 2){
+  if(bdeg == 3 & pord == 2){
     ## Compute X - Perez-Valencia et. al., 2022
+    X <- NULL
     for(i in 0:(pord-1)){
       X <- cbind(X,x^i)
     }

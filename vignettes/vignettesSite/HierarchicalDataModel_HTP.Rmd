@@ -17,7 +17,6 @@ knitr::opts_chunk$set(
   )
 options(rmarkdown.html_vignette.check_title = FALSE)
 library(statgenHTP)
-library(ggplot2)
 ```
 
 # Introduction
@@ -43,7 +42,7 @@ Note that the functions described in this tutorial can be applied to spatially c
 To illustrate the analysis, we use the spatially corrected leaf area from the PhenoArch data `spatCorrectedArch`. We assume that plots (`plotId`, $M = 1673$) are nested in genotypes (`genotype`, $L = 90$), and genotypes are nested in populations (`geno.decomp`, $K = 4$). The following plot depicts the kind of growth curves that are modeled here  
 
 ```{r visualiseData, echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE, fig.height=3, fig.width=6, fig.pos='c',}
-ggplot2::ggplot(data = spatCorrectedArch,
+ggplot2::ggplot(data = statgenHTP::spatCorrectedArch,
                 ggplot2::aes(x= timeNumber, y = LeafArea_corr, group = plotId)) +
   ggplot2::geom_line(na.rm = TRUE) +
   ggplot2::facet_grid(~geno.decomp)
