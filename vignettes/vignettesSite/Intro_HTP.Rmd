@@ -28,13 +28,14 @@ The aim of this package is to provide a suit of functions to (1) detect outliers
 
 **Structure of the package**
 
-The overall structure of the package is in 5 main parts:
+The overall structure of the package is in 6 main parts:
 
 1.  Data description and preparation - *statgenHTP tutorial: 1. Introduction, data description and preparation*
 2.  Outlier detection: single observations - [*statgenHTP tutorial: 2. Outlier detection for single observations*](OutlierSingleObs_HTP.html)
 3.  Correction for spatial trends - [*statgenHTP tutorial: 3. Correction for spatial trends*](SpatialModel_HTP.html)
 4.  Outlier detection: series of observations - [*statgenHTP tutorial: 4. Outlier detection for series of observations*](OutlierSerieObs_HTP.html)
-5.  Parameter estimation - [*statgenHTP tutorial: 5. Estimation of parameters for time courses*](ParameterEstimation_HTP.html)
+5.  Modeling genetic signal - [*statgenHTP tutorial: 5. Modelling the temporal evolution of the genetic signal*](HierarchicalDataModel_HTP.html)
+6.  Parameter estimation - [*statgenHTP tutorial: 6. Estimation of parameters for time courses*](ParameterEstimation_HTP.html)
 
 This document describes in detail the three data sets used to exemplify the functions. It also contains descriptions on how to prepare the data for analysis and how to visualize them.
 

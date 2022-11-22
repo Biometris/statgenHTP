@@ -39,7 +39,7 @@ where briefly,
 * $f_t(u,v) + Z_r c_{rt} + Z_c c_{ct}$, represents the spatial effects, with $f_t(u,v)$ corresponding to the spatial function, e.g. the `PSANOVA` function from the SpATS package, $Z_r c_{rt}$ and $Z_c c_{ct}$ represent the design matrices and effects for the random row and column effects respectively, 
 * $\epsilon_t$, is the residual.
 
-> For more details see Pérez D.M. *et al.* (*in prep.*).
+> For more details see @Perez2022.
 
 
 This tutorial describes in detail how to perform analyses to correct for spatial trends using different modeling engines and how to extract the results from the models.

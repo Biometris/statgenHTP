@@ -1,5 +1,5 @@
 ---
-title: "statgenHTP tutorial: 5. Estimation of parameters from time courses"
+title: "statgenHTP tutorial: 6. Estimation of parameters from time courses"
 author: "Emilie Millet, Bart-Jan van Rossum, Martin Boer, Fred van Eeuwijk"
 date: "`r Sys.Date()`"
 output:
