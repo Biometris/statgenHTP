@@ -310,7 +310,7 @@ plot.psHDM <- function(x,
                         length = ggplot2::unit(0.01, "npc")) +
       ggplot2::scale_x_continuous(breaks = round(seq(minT, maxT,
                                                      length.out = 5), 0)) +
-      ggplot2::ylim(min(dfObsSub$obsPlot, na.rm = TRUE) * 0.5,
+      ggplot2::ylim(min(dfObsSub$obsPlot, na.rm = TRUE) - sd(dfObsSub$obsPlot, na.rm = TRUE)*0.2,
                     max(dfObsSub$obsPlot, na.rm = TRUE) * 1.2) +
       ggplot2::scale_color_manual(values = plotCols,
                                   labels = c(expression(tilde(y)[pgi](t)),
