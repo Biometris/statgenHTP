@@ -50,12 +50,23 @@ MM.basis <- function (x,
   d <- P.svd$d[1:(m - pord)]
   U.Z <- P.svd$u[, 1:(m - pord)]
   Z <- Matrix::Matrix(B %*% U.Z)
-  ## Compute X - Wood 2012
-  X <- B %*% P.svd$u[, -(1:(m - pord))]
-  XScale <- scale(X, scale = FALSE)
-  Xf <- svd(crossprod(XScale))$u[, ncol(XScale):1]
-  U.X <- P.svd$u[, -(1:(m - pord)), drop = FALSE] %*% Xf
-  X <- X %*% Xf
+  if(bdeg == 3 & pord = 2){
+    ## Compute X - Perez-Valencia et. al., 2022
+    for(i in 0:(pord-1)){
+      X <- cbind(X,x^i)
+    }
+    U.X <- NULL
+    for(i in 0:(pord-1)){
+      U.X <- cbind(U.X, knots[-c((1:(bdeg - 1)),(length(knots)- (bdeg - 1) + 1):length(knots))]^i)
+    }
+  } else{
+    ## Compute X - Wood 2012
+    X <- B %*% P.svd$u[, -(1:(m - pord))]
+    XScale <- scale(X, scale = FALSE)
+    Xf <- svd(crossprod(XScale))$u[, ncol(XScale):1]
+    U.X <- P.svd$u[, -(1:(m - pord)), drop = FALSE] %*% Xf
+    X <- X %*% Xf
+  }
   res <- list(X = X, Z = Z, d = d, B = B, m = m, D = D, knots = knots,
               U.X = U.X, U.Z = U.Z)
   return(res)
