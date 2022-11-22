@@ -549,7 +549,7 @@ fitSplineHDM <- function(inDat,
           cat("\n")
         }
         cat(sprintf("%1$3d %2$12.6f", it, dev), sep = "")
-        cat(sprintf("%12.3f", ed), sep = "")
+        cat(sprintf("%10.3f", ed), sep = "")
         cat('\n')
       }
       if (dla < thr) break
