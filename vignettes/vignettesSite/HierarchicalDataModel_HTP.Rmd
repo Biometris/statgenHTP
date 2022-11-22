@@ -42,7 +42,7 @@ Note that the functions described in this tutorial can be applied to spatially c
 To illustrate the analysis, we use the spatially corrected leaf area from the PhenoArch data `spatCorrectedArch`. We assume that plots (`plotId`, $M = 1673$) are nested in genotypes (`genotype`, $L = 90$), and genotypes are nested in populations (`geno.decomp`, $K = 4$). The following plot depicts the kind of growth curves that are modeled here  
 
 ```{r visualiseData, echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE, fig.height=3, fig.width=6, fig.pos='c',}
-ggplot2::ggplot(data = statgenHTP::spatCorrectedArch,
+ggplot2::ggplot(data = spatCorrectedArch,
                 ggplot2::aes(x= timeNumber, y = LeafArea_corr, group = plotId)) +
   ggplot2::geom_line(na.rm = TRUE) +
   ggplot2::facet_grid(~geno.decomp)
@@ -148,7 +148,7 @@ The `plot.psHDM` function plots `psHDM` objects (as obtained from `fitSplineHDM`
 ## Plots at population level
 If `plotType = "popTra"`, population-specific growth curves are depicted ($\hat{f}_p(t)$) separately for each population, and their $95\%$ point wise confidence intervals. Additionally, the grey lines represent the `trait` that is used in the `fitSplineHDM` function at the plot level ($\tilde{y}_{pgi}$).  
 
-```{r plotPredPopVator, fig.height=2, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r plotPredPopVator, fig.height=3, fig.width=6, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 ## Population-specific growth curves.
 plot(pred.psHDM, plotType = "popTra")
 ```
@@ -158,141 +158,38 @@ At genotype level we can visualise three plots:
 
 * If `plotType = "popGenoTra"`, population ($\hat{f}_p(t)$) and genotype-specific ($\hat{f}_p(t)+\hat{f}_{pg}(t)$) growth curves are depicted for all genotypes separately for each population. $95\%$ point wise confidence intervals are depicted for population growth curves.  
 
-```{r plotPredGenoTraVator, fig.height=2, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r plotPredGenoTraVator, fig.height=3, fig.width=6, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 ## Population and genotype-specific growth curves.
-plot(pred.psHDM,
-    plotType = "popGenoTra")
+plot(pred.psHDM, plotType = "popGenoTra")
 ```
 
 * If `plotType = "popGenoDeriv"`, first-order derivative of the population ($\hat{f}'_p(t)$) and genotype-specific ($\hat{f}'_p(t)+\hat{f}'_{pg}(t)$) growth curves are depicted for all genotypes separately for each population. $95\%$ point wise confidence intervals are depicted for the first-order derivative of the population growth curves.  
  
 
-```{r plotPredGenoDerivVator, fig.height=2, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r plotPredGenoDerivVator, fig.height=3, fig.width=6, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 ## First-order derivative of the population- and genotype-specific growth curves.
 plot(pred.psHDM, plotType = "popGenoDeriv")
 ```
 
 * If `plotType = "GenoDev"`, genotype-specific deviations ($\hat{f}_{pg}(t)$) are depicted for all genotypes separately for each population.   
 
-```{r plotPredGenoDevVator, fig.height=2, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r plotPredGenoDevVator, fig.height=3, fig.width=6, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 ## Genotype-specific deviations.
-plot(fit.psHDM,
-    plotType = "genoDev")
+plot(pred.psHDM, plotType = "genoDev")
 ```
 
 ## Plots at plot level
 
-```{r plotPredPlotVator, fig.height=2, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+If `plotType = "genoPlotTra"`, genotype ($\hat{f}_p(t)+\hat{f}_{pg}(t)$) and plot-specific ($\hat{f}_p(t)+\hat{f}_{pg}(t)+\hat{f}_{pgi}(t)$) growth curves are depicted for all plots separately for a selection of genotypes. Additional $95\%$ point wise confidence intervals are depicted for genotype-specific growth curves.  
+
+```{r plotPredPlotVator, fig.height=3, fig.width=6, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 ## Genotype- and plot-specific growth curves.
-plot(fit.psHDM,
-    plotType = "genoPlotTra")
+plot(pred.psHDM, plotType = "genoPlotTra", 
+     genotypes = c("GenoA14_WD", "GenoA51_WD", 
+                   "GenoB11_WW", "GenoB02_WD"))
 ```
 
-
-<!-- For this subset of genotypes, there is a variability in AUC of the psII efficiency. This could be used in genetic analysis and maybe to perform a GWAS. -->
-
-<!-- Another example is using the derivative during the recovery period (at the end of the time course, so after the light change) to get the maximum slope, or the maximum rate of the psII per time unit during this period. -->
-
-<!-- ```{r paramVator2, fig.height=2, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE} -->
-<!-- paramVator2 <- -->
-<!--   estimateSplineParameters(x = fit.splineNumOut, -->
-<!--                            estimate = "derivatives", -->
-<!--                            what = "max", -->
-<!--                            timeMin = 210, -->
-<!--                            timeMax = 312, -->
-<!--                            genotypes = subGenoVator) -->
-
-<!-- plot(paramVator2, plotType = "box") -->
-<!-- ``` -->
-
-<!-- > Note: when "min" or "max" is selected, the output also contains the parameter occurence time point, as numerical `timeNumber` and date `timePoint`. See in the table below: -->
-
-<!-- ```{r headParam2, echo=FALSE, message=FALSE, eval=TRUE} -->
-<!-- knitr::kable(head(paramVator2), align=c('c','c'), booktabs = TRUE) -->
-<!-- ``` -->
-
-<!-- ## Example 2 -->
-
-<!-- For this example, we will use the genotypic prediction (BLUPs, see [**statgenHTP tutorial: 3. Correction for spatial trends**](SpatialModel_HTP.html)) available in the `spatPredArch` data set. We will fit P-splines at the genotypic level using the `geno.decomp` levels defined in the spatial model. -->
-
-<!-- ```{r fitSplineArch,  fig.height=3, fig.width=6, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE} -->
-<!-- data(spatPredArch)   -->
-<!-- fit.splineGenoArch <- fitSpline(inDat = spatPredArch,  -->
-<!--                                 trait = "predicted.values", -->
-<!--                                 knots = 15, -->
-<!--                                 minNoTP = 18) -->
-
-<!-- plot(fit.splineGenoArch,  -->
-<!--      genotypes = "GenoA36") -->
-<!-- ``` -->
-
-<!-- We can estimate the maximum value of the leaf area from the predicted P-splines: -->
-
-<!-- ```{r paramArch1, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE} -->
-<!-- paramArch1 <- -->
-<!--   estimateSplineParameters(x = fit.splineGenoArch, -->
-<!--                            estimate = "predictions", -->
-<!--                            what = "max") -->
-<!-- ``` -->
-
-
-<!-- ```{r paramArch1fig, fig.height=2, fig.width=6, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE} -->
-<!-- plot(paramArch1, plotType = "hist") -->
-<!-- ``` -->
-
-<!-- ## Example 3 -->
-
-<!-- For this example, we will use the raw data from the RootPhAir, corrected for individually outlying observations (see [**statgenHTP tutorial: 2. Outlier detection for single observations**](OutlierSingleObs_HTP.html)) and time course outliers (see [**statgenHTP tutorial: 4. Outlier detection Time course**](OutlierSerieObs_HTP.html)). We will fit P-splines at the plant level on a subset of genotypes. -->
-
-<!-- ```{r rmOutRoot, echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE} -->
-<!-- subGenoRoot <- c( "2", "6", "8", "9", "10", "520", "522") -->
-<!-- fit.splineRoot <- fitSpline(inDat = noCorrectedRoot, -->
-<!--                             trait = "tipPos_y", -->
-<!--                             knots = 10, -->
-<!--                             genotypes = subGenoRoot, -->
-<!--                             minNoTP = 0, -->
-<!--                             useTimeNumber = TRUE, -->
-<!--                             timeNumber = "thermalTime") -->
-
-<!-- predDatRoot <- fit.splineRoot$predDat -->
-<!-- coefDatRoot <- fit.splineRoot$coefDat -->
-
-<!-- outRoot <- detectSerieOut(corrDat = noCorrectedRoot, -->
-<!--                           predDat = predDatRoot, -->
-<!--                           coefDat = coefDatRoot, -->
-<!--                           trait = "tipPos_y", -->
-<!--                           genotypes = subGenoRoot, -->
-<!--                           thrCor = 0.9, -->
-<!--                           thrPca = 25) -->
-
-<!-- outRootFinal <- outRoot[outRoot$plotId %in% c("A_03_5","A_29_2"),] -->
-<!-- noCorrectedRootOut <- removeSerieOut(dat = noCorrectedRoot, -->
-<!--                                      serieOut = outRootFinal) -->
-<!-- noCorrectedRootOut <- noCorrectedRootOut[!is.na(noCorrectedRootOut$tipPos_y),] -->
-<!-- noCorrectedRootOut <- droplevels(noCorrectedRootOut) -->
-<!-- ``` -->
-
-<!-- ```{r fitSplineRoot, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE} -->
-<!-- subGenoRoot <- c( "2","6","8","9","10","520","522") -->
-<!-- fit.splineRootOut <- fitSpline(inDat = noCorrectedRootOut, -->
-<!--                                trait = "tipPos_y", -->
-<!--                                knots = 10, -->
-<!--                                genotypes = subGenoRoot, -->
-<!--                                minNoTP = 0, -->
-<!--                                useTimeNumber = TRUE, -->
-<!--                                timeNumber = "thermalTime") -->
-<!-- ``` -->
-
-<!-- We will then estimate the mean growth rate using `what = "mean"` for the subset of genotypes: -->
-<!-- ```{r paramRoot1, fig.height=2, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE} -->
-<!-- paramRoot1 <- -->
-<!--   estimateSplineParameters(x = fit.splineRootOut, -->
-<!--                            estimate = "derivatives", -->
-<!--                            what = "mean") -->
-
-<!-- plot(paramRoot1, plotType = "box") -->
-<!-- ``` -->
-
+xxxxx
 ------------------------------------------------------------------------
 
 ## References
