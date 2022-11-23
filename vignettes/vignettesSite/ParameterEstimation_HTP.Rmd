@@ -1,6 +1,6 @@
 ---
 title: "statgenHTP tutorial: 6. Estimation of parameters from time courses"
-author: "Emilie Millet, Bart-Jan van Rossum, Martin Boer, Fred van Eeuwijk"
+author: "Emilie Millet, Bart-Jan van Rossum, Martin Boer, Fred van Eeuwijk, Diana M. Pérez-Valencia, María Xosé Rodríguez-Álvarez"
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:
@@ -36,7 +36,7 @@ knitr::include_graphics("figures/psplinederiv_Vator.png", auto_pdf = TRUE)
 
 These parameters could then be further analyzed, for example in a GxE analysis (see [*statgenGxE*](https://biometris.github.io/statgenGxE/index.html)), or a genetic analysis (see [*statgenGWAS*](https://biometris.github.io/statgenGWAS/index.html)).
 
-The functions described in this tutorial can be applied to corrected data, genotypic means (BLUEs or BLUPS) (see [**statgenHTP tutorial: 3. Correction for spatial trends**](SpatialModel_HTP.html)) or on raw data. It allows estimating maximum, minimum, mean, area under the curve (auc) or percentile using predicted values, first or second derivative, during a given period or for the whole time course. 
+The functions described in this tutorial can be applied to corrected data, genotypic means (BLUEs or BLUPS) (see [**statgenHTP tutorial: 3. Correction for spatial trends**](SpatialModel_HTP.html)), curves obtained from the P-splines hierarchical data model (see [**statgenHTP tutorial: 5. Modelling the temporal evolution of the genetic signal**](HierarchicalDataModel_HTP.html)), or on raw data. It allows estimating maximum, minimum, mean, area under the curve (auc) or percentile using predicted values, first or second derivative, during a given period or for the whole time course. 
 
 ------------------------------------------------------------------------
 
@@ -133,6 +133,82 @@ plot(paramArch1, plotType = "hist")
 ```
 
 ## Example 3
+
+For this example, we will use curves obtained from the P-splines hierarchical data model (see [**statgenHTP tutorial: 5. Modelling the temporal evolution of the genetic signal**](HierarchicalDataModel_HTP.html)). We can use `psHDM` objects (that is, as obtained from `fitSplineHDM` (fitted curves) or `predict.psHDM` (predicted curves)). For this example, we will use predicted curves.
+
+```{r fitPredPheno, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+## The data from the Phenovator platform have been corrected for spatial
+## trends and outliers for single observations have been removed.
+
+## We need to specify the genotype-by-treatment interaction.
+## Treatment: water regime (WW, WD).
+spatCorrectedArch[["treat"]] <- substr(spatCorrectedArch[["geno.decomp"]],
+                                      start = 1, stop = 2)
+spatCorrectedArch[["genoTreat"]] <-
+  interaction(spatCorrectedArch[["genotype"]],
+             spatCorrectedArch[["treat"]], sep = "_")
+
+## Fit P-Splines Hierarchical Curve Data Model for all genotypes.
+fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
+                           trait = "LeafArea_corr",
+                           pop = "geno.decomp",
+                           genotype = "genoTreat",
+                           plotId = "plotId",
+                           difVar = list(geno = FALSE, plot = FALSE),
+                           smoothPop = list(nseg = 5, bdeg = 3, pord = 2),
+                           smoothGeno = list(nseg = 5, bdeg = 3, pord = 2),
+                           smoothPlot = list(nseg = 5, bdeg = 3, pord = 2),
+                           weights = "wt",
+                           trace = FALSE,
+                           useTimeNumber = FALSE)
+
+## Predict the P-Splines Hierarchical Curve Data Model on a dense grid
+## Only predictions (and standard errors) are obtained  
+## at the population and genotype levels
+pred.psHDM <- predict(object = fit.psHDM,
+                      newtimes = seq(min(fit.psHDM$time[["timeNumber"]]),
+                                     max(fit.psHDM$time[["timeNumber"]]),
+                                     length.out = 100),
+                      pred = list(pop = TRUE, geno = TRUE, plot = TRUE),
+                      se = list(pop = TRUE, geno = TRUE, plot = FALSE))
+```
+Although we have available information at population, genotype and plot levels, this function only extract information at genotype and plot levels. Nevertheless, we are generally interested in the genotype level. For example, in the paper by @Perez2022, they extracted three features: the maximum spatially corrected leaf area (from estimated genotype-specific growth curves), the maximum speed rate (from the first derivative of the estimated genotype-specific growth curves), and the area under the estimated genotype-specific deviations, as follows 
+
+```{r paramPhenoGenoPred, fig.height=2, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+## Estimate maximum spatially corrected leaf area (from estimated genotype-specific growth curves)
+paramArch1 <- estimateSplineParameters(x = pred.psHDM,
+                                     what = "max",
+                                     fitLevel = "geno",
+                                     estimate = "predictions")
+
+## Create a boxplot of the estimates.
+plot(paramArch1, plotType = "box")
+```
+
+```{r paramPhenoGenoDeriv, fig.height=2, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+## Estimate maximum speed rate (from the first derivative of the estimated genotype-specific growth curves)
+paramArch2 <- estimateSplineParameters(x = pred.psHDM,
+                                     what = "max",
+                                     fitLevel = "geno",
+                                     estimate = "derivatives",
+                                     timeMax = 2500)
+
+## Create a boxplot of the estimates.
+plot(paramArch2, plotType = "box")
+```
+
+```{r paramPhenoGenoDev, fig.height=2, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+## Estimate area under the estimated genotype-specific deviations.
+paramArch3 <- estimateSplineParameters(x = pred.psHDM,
+                                     what = "AUC",
+                                     fitLevel = "genoDev",
+                                     estimate = "predictions")
+
+## Create a boxplot of the estimates.
+plot(paramArch3, plotType = "box")
+```
+
+## Example 4
 
 For this example, we will use the raw data from the RootPhAir, corrected for individually outlying observations (see [**statgenHTP tutorial: 2. Outlier detection for single observations**](OutlierSingleObs_HTP.html)) and time course outliers (see [**statgenHTP tutorial: 4. Outlier detection Time course**](OutlierSerieObs_HTP.html)). We will fit P-splines at the plant level on a subset of genotypes.
 
