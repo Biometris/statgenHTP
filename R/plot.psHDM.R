@@ -95,7 +95,7 @@ plot.psHDM <- function(x,
                        xlab = "Time",
                        ylab = expression(tilde(y)[pgi](t)),
                        title = NULL,
-                       sizeThemeDHM = 15,
+                       themeSizeHDM = 15,
                        output = TRUE,
                        outFile = NULL,
                        outFileOpts = NULL) {
