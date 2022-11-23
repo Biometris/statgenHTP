@@ -1,5 +1,5 @@
 ---
-title: "statgenHTP tutorial: 5. Modeling the temporal evolution of the genetic signal"
+title: "statgenHTP tutorial: 5. Modelling the temporal evolution of the genetic signal"
 author: "Diana M. Pérez-Valencia, María Xosé Rodríguez-Álvarez, Bart-Jan van Rossum, Emilie Millet, Martin Boer, Fred van Eeuwijk"
 date: "`r Sys.Date()`"
 output:
@@ -42,11 +42,12 @@ Note that the functions described in this tutorial can be applied to spatially c
 
 To illustrate the analysis, we use the spatially corrected leaf area from the PhenoArch data `spatCorrectedArch`. We assume that plots (`plotId`, $M = 1673$) are nested in genotypes (`genotype`, $L = 90$), and genotypes are nested in populations (`geno.decomp`, $k = 4$). The following plot depicts the kind of growth curves that are modelled here  
 
-```{r visualiseData, echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE, fig.height=3, fig.width=6, fig.pos='c',}
+```{r visualiseData, echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE, fig.height=3, fig.width=7, fig.pos='c',}
 ggplot2::ggplot(data = spatCorrectedArch,
                 ggplot2::aes(x= timeNumber, y = LeafArea_corr, group = plotId)) +
   ggplot2::geom_line(na.rm = TRUE) +
-  ggplot2::facet_grid(~geno.decomp)
+  ggplot2::facet_grid(~geno.decomp) +
+  ggplot2::labs(x = "DOY", y = "Spatially corrected leaf area")
 ```
 
 ------------------------------------------------------------------------
@@ -85,7 +86,6 @@ spatCorrectedArch[["DOY"]] <- as.numeric(strftime(spatCorrectedArch$timePoint, f
 ## Fit P-Splines Hierarchical Curve Data Model for all genotypes.
 fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
                            trait = "LeafArea_corr",
-                           time = "DOY",
                            pop = "geno.decomp",
                            genotype = "genoTreat",
                            plotId = "plotId",
@@ -95,6 +95,7 @@ fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
                            smoothPlot = list(nseg = 7, bdeg = 3, pord = 2),
                            weights = "wt",
                            trace = TRUE,
+                           timeNumber = "DOY",
                            useTimeNumber = TRUE)
 ```
 
@@ -149,9 +150,9 @@ The `plot.psHDM` function plots `psHDM` objects (as obtained from `fitSplineHDM`
 ## Plots at population level
 If `plotType = "popTra"`, population-specific growth curves are depicted ($\hat{f}_p(t)$) separately for each population, and their $95\%$ point wise confidence intervals. Additionally, the grey lines represent the `trait` that is used in the `fitSplineHDM` function at the plot level ($\tilde{y}_{pgi}$).  
 
-```{r plotPredPopVator, fig.height=3, fig.width=6, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r plotPredPopVator, fig.height=4, fig.width=7, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 ## Population-specific growth curves.
-plot(pred.psHDM, plotType = "popTra")
+plot(pred.psHDM, plotType = "popTra", themeSizeHDM = 10)
 ```
 
 ## Plots at genotype level
@@ -159,38 +160,40 @@ At genotype level we can visualise three plots:
 
 * If `plotType = "popGenoTra"`, population ($\hat{f}_p(t)$) and genotype-specific ($\hat{f}_p(t)+\hat{f}_{pg}(t)$) growth curves are depicted for all genotypes separately for each population. $95\%$ point wise confidence intervals are depicted for population growth curves.  
 
-```{r plotPredGenoTraVator, fig.height=3, fig.width=6, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r plotPredGenoTraVator, fig.height=4, fig.width=7, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 ## Population and genotype-specific growth curves.
-plot(pred.psHDM, plotType = "popGenoTra")
+plot(pred.psHDM, plotType = "popGenoTra", themeSizeHDM = 10)
 ```
 
 * If `plotType = "popGenoDeriv"`, first-order derivative of the population ($\hat{f}'_p(t)$) and genotype-specific ($\hat{f}'_p(t)+\hat{f}'_{pg}(t)$) growth curves are depicted for all genotypes separately for each population. $95\%$ point wise confidence intervals are depicted for the first-order derivative of the population growth curves.  
  
 
-```{r plotPredGenoDerivVator, fig.height=3, fig.width=6, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r plotPredGenoDerivVator, fig.height=4, fig.width=7, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 ## First-order derivative of the population- and genotype-specific growth curves.
-plot(pred.psHDM, plotType = "popGenoDeriv")
+plot(pred.psHDM, plotType = "popGenoDeriv", themeSizeHDM = 10)
 ```
 
 * If `plotType = "GenoDev"`, genotype-specific deviations ($\hat{f}_{pg}(t)$) are depicted for all genotypes separately for each population.   
 
-```{r plotPredGenoDevVator, fig.height=3, fig.width=6, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r plotPredGenoDevVator, fig.height=4, fig.width=7, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 ## Genotype-specific deviations.
-plot(pred.psHDM, plotType = "genoDev")
+plot(pred.psHDM, plotType = "genoDev", themeSizeHDM = 10)
 ```
 
 ## Plots at plot level
 
 If `plotType = "genoPlotTra"`, genotype ($\hat{f}_p(t)+\hat{f}_{pg}(t)$) and plot-specific ($\hat{f}_p(t)+\hat{f}_{pg}(t)+\hat{f}_{pgi}(t)$) growth curves are depicted for all plots separately for a selection of genotypes. Additional $95\%$ point wise confidence intervals are depicted for genotype-specific growth curves. For this `plotType`, the user has the option to change names (`genotypeNames`) and/or order (`genotypeOrder`) of the selected genotypes. 
 
-```{r plotPredPlotVator, fig.height=6, out.width='80%', echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r plotPredPlotVator, fig.height=7, fig.width=7, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 ## As an example we used ten randomly selected genotypes 
-plot.genos <- sample(pred.psHDM$genoLevel$genotype,10)
-names.genos <- (substring(plot.genos, first = 5))
+plot.genos  <- sample(pred.psHDM$genoLevel$genotype,10, replace = FALSE)
+names.genos <- substring(plot.genos, first = 5)
 
 ## Genotype- and plot-specific growth curves.
-plot(pred.psHDM, plotType = "genoPlotTra", 
-     genotypes = plot.genos, genotypeNames = names.genos)
+plot(pred.psHDM, 
+     plotType = "genoPlotTra", 
+     genotypes = plot.genos, genotypeNames = names.genos,
+     themeSizeHDM = 10)
 ```
 
 ------------------------------------------------------------------------
