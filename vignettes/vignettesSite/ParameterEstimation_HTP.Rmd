@@ -173,10 +173,16 @@ pred.psHDM <- predict(object = fit.psHDM,
                       se = list(pop = TRUE, geno = TRUE, plot = FALSE),
                       trace = FALSE)
 ```
-Although we have available information at population, genotype and plot levels, this function only extract information at genotype and plot levels. Nevertheless, we are generally interested in the genotype level. For example, in the paper by @Perez2022, they extracted three features: the maximum spatially corrected leaf area (from estimated genotype-specific trajectories), the maximum speed rate (from the first derivative of the estimated genotype-specific trajectories), and the area under the estimated genotype-specific deviations, as follows 
+Although we have available information at population, genotype and plot levels, this function only extract information at genotype and plot levels. Nevertheless, we are generally interested in the genotype level. For example, in the paper by @Perez2022, they extracted three features: 
+
+* The maximum spatially corrected leaf area (from estimated genotype-specific trajectories)
+
 
 ```{r paramPhenoGenoPred, fig.height=2, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
-## Estimate maximum spatially corrected leaf area (from estimated genotype-specific trajectories)
+##  From estimated genotype-specific trajectories
+plot(pred.psHDM, plotType = "popGenoTra", themeSizeHDM = 4)
+
+## Estimate maximum spatially corrected leaf area 
 paramArch1 <- estimateSplineParameters(x = pred.psHDM,
                                      what = "max",
                                      fitLevel = "geno",
@@ -186,8 +192,13 @@ paramArch1 <- estimateSplineParameters(x = pred.psHDM,
 plot(paramArch1, plotType = "box")
 ```
 
+* The maximum speed rate (from the first derivative of the estimated genotype-specific trajectories)
+
 ```{r paramPhenoGenoDeriv, fig.height=2, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
-## Estimate maximum speed rate (from the first derivative of the estimated genotype-specific trajectories)
+## From the first derivative of the estimated genotype-specific trajectories
+plot(pred.psHDM, plotType = "popGenoDeriv", themeSizeHDM = 4)
+
+## Estimate maximum speed rate 
 ## We are interested on a local maximum (before timeNumber 2500)
 paramArch2 <- estimateSplineParameters(x = pred.psHDM,
                                      what = "max",
@@ -199,8 +210,13 @@ paramArch2 <- estimateSplineParameters(x = pred.psHDM,
 plot(paramArch2, plotType = "box")
 ```
 
+* The area under the estimated genotype-specific deviations, as follows 
+
 ```{r paramPhenoGenoDev, fig.height=2, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
-## Estimate area under the estimated genotype-specific deviations.
+## From the estimated genotype-specific deviations
+plot(pred.psHDM, plotType = "genoDev", themeSizeHDM = 4)
+
+## Estimate area under the curve (AUC).
 paramArch3 <- estimateSplineParameters(x = pred.psHDM,
                                      what = "AUC",
                                      fitLevel = "genoDev",
