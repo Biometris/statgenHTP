@@ -225,7 +225,7 @@ plot.psHDM <- function(x,
                         length = ggplot2::unit(0.01, "npc")) +
       ggplot2::scale_x_continuous(breaks = round(seq(minT, maxT,
                                                      length.out = 5), 0)) +
-      ggplot2::ylim(min(x$genoLevel$fGenoDeriv1),
+      ggplot2::ylim(min(x$genoLevel$fGenoDeriv1) - sd(x$genoLevel$fGenoDeriv1, na.rm = TRUE)*0.2,
                     max(x$genoLevel$fGenoDeriv1) * 1.2) +
       ggplot2::scale_color_manual(values = plotCols,
                                   labels = c(expression((hat(f)[p](t)+hat(f)[pg](t))*minute),
