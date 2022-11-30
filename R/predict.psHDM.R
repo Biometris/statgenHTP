@@ -306,7 +306,7 @@ predict.psHDM <- function(object,
                            what = "plot", xp = res$newtimes))
   }
   class(res) <- c("psHDM", "list")
-  attr(res, which = "trait") <- attributes(fit.psHDM)[["trait"]] #object$trait
+  attr(res, which = "trait") <- attributes(object)[["trait"]] #object$trait
   return(res)
 }
 
