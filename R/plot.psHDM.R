@@ -26,6 +26,7 @@
 #' Only used when \code{plotType == "genoPlotTra"}.
 #' @param xlab The x-axis label of the plot.
 #' @param ylab The y-axis label of the plot.
+#' @param themeSizeHDM Reference size for the theme
 #'
 #' @examples
 #' ## The data from the Phenovator platform have been corrected for spatial
