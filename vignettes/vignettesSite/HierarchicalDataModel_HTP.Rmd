@@ -155,10 +155,10 @@ pred.psHDM <- predict(object = fit.psHDM,
 
 As result, three data frames with predictions (and standard errors) at population (`pred.psHDM$popLevel`), genotype (`pred.psHDM$GenoLevel`) and plot (`pred.psHDM$plotLevel`) levels are returned, as shown below
 
-```{r headPredValues, echo=TRUE, message=FALSE, eval=TRUE}
-knitr::kable(head(pred.psHDM$popLevel), align=c('c','c'), booktabs = TRUE, caption = 'Predicted values and standard errors at population level')
-knitr::kable(head(pred.psHDM$genoLevel), align=c('c','c'), booktabs = TRUE, caption = 'Predicted values and standard errors at genotype level')
-knitr::kable(head(pred.psHDM$plotLevel), align=c('c','c'), booktabs = TRUE, caption = 'Predicted values and standard errors at plot level')
+```{r headPredValues, echo=FALSE, message=FALSE, eval=TRUE}
+knitr::kable(head(pred.psHDM$popLevel), align=c('c','c'), booktabs = TRUE, caption = 'Predicted curves and standard errors at population level')
+knitr::kable(head(pred.psHDM$genoLevel), align=c('c','c'), booktabs = TRUE, caption = 'Predicted curves and standard errors at genotype level')
+knitr::kable(head(pred.psHDM$plotLevel), align=c('c','c'), booktabs = TRUE, caption = 'Predicted curves and standard errors at plot level')
 ```
 
 > Note: if the original time points are used for predictions, the data frame at plot level (`pred.psHDM$plotLevel`) will have an additional column (`obsPlot`) with the raw data. Otherwise, an additional data frame (`pred.psHDM$plotObs`) with the raw data will be returned.
