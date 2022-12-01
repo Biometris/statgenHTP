@@ -29,17 +29,18 @@ The statgenHTP package is developed as an easy-to-use package for analyzing data
 
 New phenotyping techniques enable measuring traits at high throughput, with traits being measured at multiple time points for hundreds or thousands of plants. This requires automatic modeling of the data [@Tardieu2017] with a model that is robust, flexible and has easy selection steps.
 
-The aim of this package is to provide a suit of functions to (1) detect outliers at the time point or at the plant levels, (2) accurately separate the genetic effects from the spatial effects at each time point and (3) estimate relevant parameters from a modeled time course. It will provide the user with either genotypic values or corrected values that can be used for further modeling, e.g. extract responses to environment [@vanEeuw2019].
+The aim of this package is to provide a suit of functions to (1) detect outliers at the time point or at the plant levels, (2) accurately separate the genetic effects from the spatial effects at each time point, (3) model the temporal evolution of the genetic signal, and (4) estimate relevant parameters from a modeled time course. It will provide the user with either genotypic values or corrected values that can be used for further modeling, e.g. extract responses to environment [@vanEeuw2019].
 
 **Structure of the package**
 
-The overall structure of the package is in 5 main parts:
+The overall structure of the package is in 6 main parts:
 
 1.  Data description and preparation - [*statgenHTP tutorial: 1. Introduction, data description and preparation*](https://biometris.github.io/statgenHTP/articles/vignettesSite/Intro_HTP.html)
 2.  Outlier detection: single observations - [*statgenHTP tutorial: 2. Outlier detection for single observations*](https://biometris.github.io/statgenHTP/articles/vignettesSite/OutlierSingleObs_HTP.html)
 3.  Correction for spatial trends - [*statgenHTP tutorial: 3. Correction for spatial trends*](https://biometris.github.io/statgenHTP/articles/vignettesSite/SpatialModel_HTP.html)
 4.  Outlier detection: series of observations - [*statgenHTP tutorial: 4. Outlier detection for series of observations*](https://biometris.github.io/statgenHTP/articles/vignettesSite/OutlierSerieObs_HTP.html)
-5.  Parameter estimation - [*statgenHTP tutorial: 5. Estimation of parameters for time courses*](https://biometris.github.io/statgenHTP/articles/vignettesSite/ParameterEstimation_HTP.html)
+5.  Modeling genetic signal - [*statgenHTP tutorial: 5. Modelling the temporal evolution of the genetic signal*](https://biometris.github.io/statgenHTP/articles/vignettesSite/HierarchicalDataModel_HTP.html)
+6.  Parameter estimation - [*statgenHTP tutorial: 6. Estimation of parameters for time courses*](https://biometris.github.io/statgenHTP/articles/vignettesSite/ParameterEstimation_HTP.html)
 
 This document gives an overview of these five steps and how to use the package to perform an analysis. For a more in depth description of the data, a theoretical background for the different steps and examples with additional data sets see the package [website](https://biometris.github.io/statgenHTP/).
 
@@ -140,7 +141,7 @@ plot(phenoTP,
 
 ## Raw data plot
 
-Raw data can be displayed per genotype with one color per plotId. 
+Raw data can be displayed per genotype with one color per plotId.
 
 ```{r rawVator, include=TRUE, fig.height=3, fig.width=7, fig.align = 'center'}
 ## Create the raw data time courses for three genotypes.
@@ -152,7 +153,7 @@ plot(phenoTP,
 
 ## Boxplot
 
-Boxplots can be made to visually assess the variability of the trait(s) in the `TP` object. By default a box is plotted per time point for the specified trait using all time points. 
+Boxplots can be made to visually assess the variability of the trait(s) in the `TP` object. By default a box is plotted per time point for the specified trait using all time points.
 
 ```{r boxPlot, fig.height=4.5, fig.width=7, fig.align = 'center'}
 ## Create a boxplot for "EffpsII" using the default all time points.
@@ -194,7 +195,7 @@ resuVatorHTP <- detectSingleOut(TP = phenoTP,
 knitr::kable(head(resuVatorHTP), align = c('c','c'), padding = 0)
 ```
 
-The predicted values and the confidence interval can be visualized using the `plot` function. 
+The predicted values and the confidence interval can be visualized using the `plot` function.
 
 ```{r plotOutVatorFA1, fig.height=1.5, fig.width=5, fig.align = 'center'}
 plot(resuVatorHTP,
@@ -212,13 +213,14 @@ phenoTPOut <- removeSingleOut(phenoTP,
 
 Phenotyping facilities display spatial heterogeneity. For example, the spatial variability of incident light can go up to 100% between pots within a greenhouse [@Cabrera2016]. Taking into account these spatial trends is a prerequisite for precise estimation of genetic and treatment effects. In the same way as in field trials, platform experiments should obey standard principles for experimental design and statistical modeling.
 
-To get corrected values and genotypic predictions we want to accurately separate the genetic effects from the spatial effects at each time point. To do this,   for each time point a spatial model is fitted for the trait we are interested in. In `statgenHTP` spatial models can either be fitted using *SpATS* [@RodAlv2018] and *ASReml* [@Gilmour2017]. This vignette will focus on models fitted using SpATS. For models fitted using ASReml see [this vignette](https://biometris.github.io/statgenHTP/articles/vignettesSite/SpatialModel_HTP.html).
+To get corrected values and genotypic predictions we want to accurately separate the genetic effects from the spatial effects at each time point. To do this, for each time point a spatial model is fitted for the trait we are interested in. In `statgenHTP` spatial models can either be fitted using *SpATS* [@RodAlv2018] and *ASReml* [@Gilmour2017]. This vignette will focus on models fitted using SpATS. For models fitted using ASReml see [this vignette](https://biometris.github.io/statgenHTP/articles/vignettesSite/SpatialModel_HTP.html).
 
 ## Spatial model using SpATS {#SpATS}
 
 When SpATS is used for modeling, an extra spatial term is included in the model. This spatial component is composed using the `PSANOVA` function in the SpATS package which uses 2-dimensional smoothing with P-splines as described in @Lee2013 and in @RodAlv2018.
 
-In the example below the model is fitted for a few points. 
+In the example below the model is fitted for a few points.
+
 ```{r fitSp, message=FALSE}
 ## Fit a model for a few time points.
 modPhenoSp <- fitModels(TP = phenoTPOut, 
@@ -229,7 +231,7 @@ summary(modPhenoSp)
 
 ## Model plots
 
-Several types of plots can be made for fitted models. A **spatial** plot consists of spatial plots of the raw data, fitted values, residuals and either BLUEs or BLUPs, and a histogram of the BLUEs or BLUPs. When SpATS is used for modeling an extra plot with the fitted spatial trend is included. 
+Several types of plots can be made for fitted models. A **spatial** plot consists of spatial plots of the raw data, fitted values, residuals and either BLUEs or BLUPs, and a histogram of the BLUEs or BLUPs. When SpATS is used for modeling an extra plot with the fitted spatial trend is included.
 
 ```{r plotSpatPerc,  fig.height=4, fig.width=7.3, message=FALSE, eval=TRUE}
 plot(modPhenoSp,
@@ -238,16 +240,18 @@ plot(modPhenoSp,
      spaTrend = "percentage")
 ```
 
-It is also possible to create a time lapse of the ratio of spatial trends over time. The scale is the same as previously described. The time lapse is always written to an output file. 
+It is also possible to create a time lapse of the ratio of spatial trends over time. The scale is the same as previously described. The time lapse is always written to an output file.
+
 ```{r plotTimeLapse,  fig.height=5, fig.width=6, message=FALSE, eval=FALSE}
 plot(modPhenoSp, 
      plotType = "timeLapse",
      outFile = "TimeLapse_modPhenoSp.gif")
 ```
 
-In the **rawPred** plot the raw data (colored dots, one color per plotId) is plotted overlaid with the predicted values (black dots) from the fitted model. 
+In the **rawPred** plot the raw data (colored dots, one color per plotId) is plotted overlaid with the predicted values (black dots) from the fitted model.
 
 *Note: The model has been fitted on a limited number of time points, which is reflected in the plots. For plots using more time point see [this vignette](https://biometris.github.io/statgenHTP/articles/vignettesSite/SpatialModel_HTP.html).*
+
 ```{r plotSpPred, message=FALSE, fig.height=2, fig.width=6, fig.align = 'center'}
 plot(modPhenoSp, 
      plotType = "rawPred",
@@ -262,7 +266,7 @@ plot(modPhenoSp,
      genotypes = c("G007", "G058"))
 ```
 
-The last three types of plot display different model parameters over time. Plot type **herit** plots the heritability over time. 
+The last three types of plot display different model parameters over time. Plot type **herit** plots the heritability over time.
 
 ```{r plotSpHerit, message=FALSE, fig.height=2.5, fig.width=3.5, fig.align = 'center'}
 plot(modPhenoSp, 
@@ -271,12 +275,14 @@ plot(modPhenoSp,
 ```
 
 Plot type **variance** plots the residual, column and row variances over time. These plots can serve as diagnostics of the experiment.
+
 ```{r plotSpVar, fig.height=3, fig.width=5, message=FALSE, fig.align = 'center'}
 plot(modPhenoSp, 
      plotType = "variance")
 ```
 
-Plot type **effDim** plots the effective dimension from models fitted using SpATS over time. 
+Plot type **effDim** plots the effective dimension from models fitted using SpATS over time.
+
 ```{r plotSpED, message=FALSE, fig.height=3, fig.width=5, fig.align = 'center'}
 plot(modPhenoSp, 
      plotType = "effDim",
@@ -288,18 +294,19 @@ plot(modPhenoSp,
 
 All results that can be extracted are shown in the table below. The first column contains the function names. The second column contains a short description of the result that will be extracted and, where needed, states for which modeling engines it can be extracted.
 
-FUNCTION | DESCRIPTION |
-------------- | --------------------------------------------------------------- |
-getGenoPred | Best Linear Unbiased Predictions (BLUPS, genotype as random) or Estimators (BLUEs, genotype as fixed) |
-getCorrected | Spatially corrected values at the experimental unit level |
-getVar | Variance components |
-getHerit | Generalized heritabilities - only when genotype is random |
-getEffDims | Effective dimensions - only for SpATS engine |
+| FUNCTION     | DESCRIPTION                                                                                           |
+|----------------|--------------------------------------------------------|
+| getGenoPred  | Best Linear Unbiased Predictions (BLUPS, genotype as random) or Estimators (BLUEs, genotype as fixed) |
+| getCorrected | Spatially corrected values at the experimental unit level                                             |
+| getVar       | Variance components                                                                                   |
+| getHerit     | Generalized heritabilities - only when genotype is random                                             |
+| getEffDims   | Effective dimensions - only for SpATS engine                                                          |
 
 ```{r getFun, message=FALSE}
 ## Extract the genotypic predictions for one time point: 
 genoPredSp <- getGenoPred(modPhenoSp)
 ```
+
 ```{r getPred, echo=FALSE, message=FALSE}
 knitr::kable(head(genoPredSp$genoPred), align = "c", padding = 0)
 ```
@@ -362,6 +369,96 @@ fit.splineOut <- removeSerieOut(fitSpline = fit.spline,
                                 serieOut = outVator)
 ```
 
+# Modeling the genetic signal
+
+This section presents the second stage of the two-stage approach proposed by @Perez2022. The aim is modeling the temporal evolution of the genetic signal after a spatial correction is performed on a phenotypic trait. Then, datasets are long time-series of spatially corrected plant/plot trajectories, and a hierarchical structure is assumed with plots nested in genotypes, genotypes nested in populations.
+
+To illustrate, we will use the `spatCorrectedVator` data (available in the package), which contains information for 73 time points (`timePoint`), 1431 plots (`plotId`), 196 genotypes (`genotype`) on the spatially corrected photosystem II efficiency (`EffpsII_corr`). For simplicity, we will assume one population (`pop`).
+
+```{r importspatCorrectedVator}
+data("spatCorrectedVator")
+spatCorrectedVator$pop <- rep(1, nrow(spatCorrectedVator))
+```
+
+```{r headspatCorrectedVator, echo=FALSE, message=FALSE}
+knitr::kable(head(spatCorrectedVator), align=c('c','c'), booktabs = TRUE)
+```
+
+## Model fitting
+
+To model this sample of time-series of spatially corrected plant/plot trajectories a P-spline-based hierarchical data model (PsHDM) is used [@Perez2022]. To fit the PsHDM, we use the `fitSplineHDM` function with cubic (`bdeg` $= 3$) B-spline basis functions with `nseg` $= 7$ segments, and second order penalties (`pord`$=2$) to represent functions at the three levels of the hierarchy.
+
+```{r fitPsHDMVator, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedVator,
+                           trait = "EffpsII_corr",
+                           pop = "pop",
+                           genotype = "genotype",
+                           plotId = "plotId",
+                           difVar = list(geno = FALSE, plot = FALSE),
+                           smoothPop = list(nseg = 10, bdeg = 3, pord = 2),
+                           smoothGeno = list(nseg = 10, bdeg = 3, pord = 2),
+                           smoothPlot = list(nseg = 10, bdeg = 3, pord = 2),
+                           weights = "wt",
+                           trace = FALSE)
+```
+
+As result three data frames with estimated curves (time series of estimated trajectories and deviations) and their first and second derivatives for the three-levels of the hierarchy are obtained ( see `fit.psHDM$popLevel`, `fit.psHDM$genoLevel`, and `fit.psHDM$plotLevel`). The outputs can then be used to estimate relevant parameters from the curves for further analysis.
+
+## Model prediction
+
+The `predict.psHDM` function can be used to predict the PsHDM after the fitting process is performed. Predictions can be made on a dense grid of time points. It also allows for standard error calculation, which can be used to construct (approximate) pointwise confidence intervals for the estimated curves.
+
+In the following example, we use the previous `fit.psHDM` object to make predictions at the three levels of the hierarchy and standard errors at the population and genotype levels (standard errors at the plot level can demand large memory and time). Predictions are performed on a dense grid of 100 time points.
+
+```{r predictSplineHDMVatorNum, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+pred.psHDM <- predict(object = fit.psHDM,
+                      newtimes = seq(min(fit.psHDM$time[["timeNumber"]]),
+                                     max(fit.psHDM$time[["timeNumber"]]),
+                                     length.out = 100),
+                      pred = list(pop = TRUE, geno = TRUE, plot = TRUE),
+                      se = list(pop = TRUE, geno = TRUE, plot = FALSE),
+                      trace = FALSE)
+```
+
+As result, three data frames with predictions (and standard errors) at population (`pred.psHDM$popLevel`), genotype (`pred.psHDM$GenoLevel`) and plot (`pred.psHDM$plotLevel`) levels are returned.
+
+## Model plot
+
+The `plot.psHDM` function plots `psHDM` objects (as obtained from `fitSplineHDM` and `predict.psHDM` functions). In addition, if a `predict.psHDM` object is used, $95\%$ pointwise confidence intervals are depicted. To illustrate, we will use the prediction object (`x = pred.psHDM`).
+
+-   If `plotType = "popTra"`, the estimated population trajectory is depicted and its $95\%$ pointwise confidence intervals. Additionally, the grey lines represent the `trait` that is used in the `fitSplineHDM` function at the plot level.
+
+```{r plotPredPopVator, fig.height=4, fig.width=7, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+plot(pred.psHDM, plotType = "popTra", themeSizeHDM = 10)
+```
+
+-   If `plotType = "popGenoTra"`, estimated population and genotype trajectories are depicted for all genotypes. $95\%$ pointwise confidence intervals are depicted for the population trajectory.
+
+```{r plotPredGenoTraVator, fig.height=4, fig.width=7, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+plot(pred.psHDM, plotType = "popGenoTra", themeSizeHDM = 10)
+```
+
+-   If `plotType = "popGenoDeriv"`, first-order derivative of the estimated population and genotype trajectories are depicted for all genotypes. $95\%$ pointwise confidence intervals are depicted for the first-order derivative of the population trajectories.
+
+```{r plotPredGenoDerivVator, fig.height=4, fig.width=7, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+plot(pred.psHDM, plotType = "popGenoDeriv", themeSizeHDM = 10)
+```
+
+-   If `plotType = "GenoDev"`, estimated genotype deviations are depicted for all genotypes.
+
+```{r plotPredGenoDevVator, fig.height=4, fig.width=7, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+plot(pred.psHDM, plotType = "genoDev", themeSizeHDM = 10)
+```
+
+If `plotType = "genoPlotTra"`, estimated genotype and plot trajectories are depicted for all plots separately for a selection of genotypes. Additional $95\%$ pointwise confidence intervals are depicted for the estimated genotype trajectories.
+
+```{r plotPredPlotVator, fig.height=4, fig.width=7, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+plot(pred.psHDM, 
+     plotType = "genoPlotTra", 
+     genotypes = c("G096", "G159", "G054", "G182", "G009"),
+     themeSizeHDM = 10)
+```
+
 # Estimation of parameters from time courses
 
 The final step in the HTP data analysis is extracting interesting parameters from the modeled time courses. The parameters can then be further analyzed, for example in a GxE analysis (see [*statgenGxE*](https://biometris.github.io/statgenGxE/index.html)), or a genetic analysis (see [*statgenGWAS*](https://biometris.github.io/statgenGWAS/index.html)).
@@ -377,6 +474,19 @@ paramVator1 <-
                            genotypes = subGenoVator)
 
 plot(paramVator1, plotType = "box")
+```
+
+These parameters can also be obtained from estimated time courses after the genetic signal is modeled. For example, we can extract the minimum spatially corrected photosystem II efficiency (from previously estimated plot trajectories), for some genotypes (as illustration).
+
+```{r paramPhenoGenoPred, fig.height=2, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+paramVator2 <-
+  estimateSplineParameters(x = pred.psHDM,
+                           what = "min",
+                           genotypes = c("G096", "G159", "G054", "G182", "G009"),
+                           fitLevel = "plot",
+                           estimate = "predictions")
+
+plot(paramVator2, plotType = "box")
 ```
 
 ------------------------------------------------------------------------
