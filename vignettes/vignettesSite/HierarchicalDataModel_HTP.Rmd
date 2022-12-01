@@ -130,7 +130,7 @@ knitr::kable(head(fit.psHDM$plotLevel), align=c('c','c'), booktabs = TRUE, capti
 ------------------------------------------------------------------------
 
 # Predict the P-spline Hierarchical Curve Data Model
-The `predict.psHDM` function can be used to predict the PsHDM after the fitting process is performed (with the `fitSplineHDM` function). This function allows predictions can be performed on a denser grid of time points, and it also allows for standard error calculation for curves at each level of the hierarchy, which can be used to construct (approximate) pointwise confidence intervals for the estimated curves. 
+The `predict.psHDM` function can be used to predict the PsHDM after the fitting process is performed (with the `fitSplineHDM` function). This function allows predictions can be performed on a dense grid of time points, and it also allows for standard error calculation for curves at each level of the hierarchy, which can be used to construct (approximate) pointwise confidence intervals for the estimated curves. 
 
 > Note 1: As a hierarchical model is assumed, predictions at inner levels (genotypes and plots) require predictions at outer levels (populations and genotypes). That is, if the user only wants predictions at genotype level (`geno = TRUE`), then predictions at population level (`pop = TRUE`) should be calculated as well.
 
@@ -166,10 +166,10 @@ knitr::kable(head(pred.psHDM$plotLevel), align=c('c','c'), booktabs = TRUE, capt
 ------------------------------------------------------------------------
 
 # Plot the P-spline Hierarchical Curve Data Model
-The `plot.psHDM` function plots `psHDM` objects (as obtained from `fitSplineHDM` and `predict.psHDM`), which contains information about trajectories, deviations and first-order derivatives at the three levels of the hierarchy. In addition, if a `predict.psHDM` object is used, $95\%$ point wise confidence intervals are depicted. To illustrate this example, we will use `x = pred.psHDM`, as obtained in the prediction section.
+The `plot.psHDM` function plots `psHDM` objects (as obtained from `fitSplineHDM` and `predict.psHDM` functions), which contains information about trajectories, deviations and first-order derivatives at the three levels of the hierarchy. In addition, if a `predict.psHDM` object is used, $95\%$ pointwise confidence intervals are depicted. To illustrate this example, we will use `x = pred.psHDM`, as obtained in the prediction section.
 
 ## Plots at population level
-If `plotType = "popTra"`, population-specific trajectories are depicted ($\hat{f}_p(t)$) separately for each population, and their $95\%$ point wise confidence intervals. Additionally, the grey lines represent the `trait` that is used in the `fitSplineHDM` function at the plot level ($\tilde{y}_{pgi}$).  
+If `plotType = "popTra"`, estimated population-specific trajectories are depicted ($\hat{f}_p(t)$) separately for each population, and their $95\%$ pointwise confidence intervals. Additionally, the grey lines represent the `trait` that is used in the `fitSplineHDM` function at the plot level ($\tilde{y}_{pgi}$).  
 
 ```{r plotPredPopVator, fig.height=4, fig.width=7, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 ## Population-specific trajectories.
@@ -179,14 +179,14 @@ plot(pred.psHDM, plotType = "popTra", themeSizeHDM = 10)
 ## Plots at genotype level
 At genotype level we can visualise three plots:
 
-* If `plotType = "popGenoTra"`, population ($\hat{f}_p(t)$) and genotype-specific ($\hat{f}_p(t)+\hat{f}_{pg}(t)$) trajectories are depicted for all genotypes separately for each population. $95\%$ point wise confidence intervals are depicted for population trajectories.  
+* If `plotType = "popGenoTra"`, estimated population ($\hat{f}_p(t)$) and genotype-specific ($\hat{f}_p(t)+\hat{f}_{pg}(t)$) trajectories are depicted for all genotypes separately for each population. $95\%$ pointwise confidence intervals are depicted for the estimated population trajectories.  
 
 ```{r plotPredGenoTraVator, fig.height=4, fig.width=7, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 ## Population and genotype-specific trajectories.
 plot(pred.psHDM, plotType = "popGenoTra", themeSizeHDM = 10)
 ```
 
-* If `plotType = "popGenoDeriv"`, first-order derivative of the population ($\hat{f}'_p(t)$) and genotype-specific ($\hat{f}'_p(t)+\hat{f}'_{pg}(t)$) trajectories are depicted for all genotypes separately for each population. $95\%$ point wise confidence intervals are depicted for the first-order derivative of the population trajectories.  
+* If `plotType = "popGenoDeriv"`, first-order derivative of the estimated population ($\hat{f}'_p(t)$) and genotype-specific ($\hat{f}'_p(t)+\hat{f}'_{pg}(t)$) trajectories are depicted for all genotypes separately for each population. $95\%$ pointwise confidence intervals are depicted for estimated trajectories at the population level.  
  
 
 ```{r plotPredGenoDerivVator, fig.height=4, fig.width=7, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
@@ -194,7 +194,7 @@ plot(pred.psHDM, plotType = "popGenoTra", themeSizeHDM = 10)
 plot(pred.psHDM, plotType = "popGenoDeriv", themeSizeHDM = 10)
 ```
 
-* If `plotType = "GenoDev"`, genotype-specific deviations ($\hat{f}_{pg}(t)$) are depicted for all genotypes separately for each population.   
+* If `plotType = "GenoDev"`, estimated genotype-specific deviations ($\hat{f}_{pg}(t)$) are depicted for all genotypes separately for each population.   
 
 ```{r plotPredGenoDevVator, fig.height=4, fig.width=7, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 ## Genotype-specific deviations.
@@ -203,7 +203,7 @@ plot(pred.psHDM, plotType = "genoDev", themeSizeHDM = 10)
 
 ## Plots at plot level
 
-If `plotType = "genoPlotTra"`, genotype ($\hat{f}_p(t)+\hat{f}_{pg}(t)$) and plot-specific ($\hat{f}_p(t)+\hat{f}_{pg}(t)+\hat{f}_{pgi}(t)$) trajectories are depicted for all plots separately for a selection of genotypes. Additional $95\%$ point wise confidence intervals are depicted for genotype-specific trajectories. For this `plotType`, the user has the option to change names (`genotypeNames`) and/or order (`genotypeOrder`) of the selected genotypes. 
+If `plotType = "genoPlotTra"`, estimated genotype ($\hat{f}_p(t)+\hat{f}_{pg}(t)$) and plot-specific ($\hat{f}_p(t)+\hat{f}_{pg}(t)+\hat{f}_{pgi}(t)$) trajectories are depicted for all plots separately for a selection of genotypes. Additional $95\%$ pointwise confidence intervals are depicted for the estimated genotype-specific trajectories. For this `plotType`, the user has the option to change names (`genotypeNames`) and/or order (`genotypeOrder`) of the selected genotypes. 
 
 ```{r plotPredPlotVator, fig.height=7, fig.width=7, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 ## As an example we used ten randomly selected genotypes 
