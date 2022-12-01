@@ -386,7 +386,7 @@ knitr::kable(head(spatCorrectedVator), align=c('c','c'), booktabs = TRUE)
 
 ## Model fitting
 
-To model this sample of time-series of spatially corrected plant/plot trajectories a P-spline-based hierarchical data model (PsHDM) is used [@Perez2022]. To fit the PsHDM, we use the `fitSplineHDM` function with cubic (`bdeg` $= 3$) B-spline basis functions with `nseg` $= 7$ segments, and second order penalties (`pord`$=2$) to represent functions at the three levels of the hierarchy.
+To model this sample of time-series of spatially corrected plant/plot trajectories a P-spline-based hierarchical data model (PsHDM) is used [@Perez2022]. To fit the PsHDM, we use the `fitSplineHDM` function with cubic (`bdeg` $= 3$) B-spline basis functions with `nseg` $= 10$ segments, and second order penalties (`pord`$=2$) to represent functions at the three levels of the hierarchy.
 
 ```{r fitPsHDMVator, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
 fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedVator,
