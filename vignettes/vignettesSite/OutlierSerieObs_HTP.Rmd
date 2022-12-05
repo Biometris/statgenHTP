@@ -61,7 +61,7 @@ predDat <- fit.spline$predDat
 coefDat <- fit.spline$coefDat
 ```
 
-The object `fit.spline` contains the P-spline model coefficients (`coefDat`) and the predicted value (`pred.value` in the table below), i.e the values predicted using the P-spline model coefficients. Predictions are made on a denser grid of time points: the time points for prediction are calculated as the smallest gap between two time points divided by 9, so dividing the smallest gap in 10 segments. The object `fit.spline` also contains the first and second derivatives (`deriv` and `deriv2` in the table below, see also [**statgenHTP tutorial: 5. Estimation of parameters from time courses**](ParameterEstimation_HTP.html)).
+The object `fit.spline` contains the P-spline model coefficients (`coefDat`) and the predicted value (`pred.value` in the table below), i.e the values predicted using the P-spline model coefficients. Predictions are made on a denser grid of time points: the time points for prediction are calculated as the smallest gap between two time points divided by 9, so dividing the smallest gap in 10 segments. The object `fit.spline` also contains the first and second derivatives (`deriv` and `deriv2` in the table below, see also [**statgenHTP tutorial: 6. Estimation of parameters from time courses**](ParameterEstimation_HTP.html)).
 
 ```{r headpredDat, echo=FALSE, message=FALSE, eval=TRUE}
 knitr::kable(head(predDat), align=c('c','c'), booktabs = TRUE)

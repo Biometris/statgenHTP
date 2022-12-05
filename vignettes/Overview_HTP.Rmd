@@ -1,6 +1,6 @@
 ---
 title: "statgenHTP: A short overview"
-author: "Emilie Millet, Diana Pérez-Valencia, Bart-Jan van Rossum"
+author: "Emilie Millet, Diana M. Pérez-Valencia, Bart-Jan van Rossum"
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:
@@ -82,7 +82,7 @@ summary(phenoTP)
 
 In this data set, 3 plants contain less than 50% of the 73 time points. The user may choose to check the data for these plants and eventually to remove them from the data set.
 
-The function `getTimePoints` allows to generate a `data.frame` containing the time points and their numbers in the `TP` object. Below is an example with the first 6 time points of the `phenoTP`:
+The function `getTimePoints()` allows to generate a `data.frame` containing the time points and their numbers in the `TP` object. Below is an example with the first 6 time points of the `phenoTP`:
 
 ```{r getTimepoints}
 ## Extract the time points table.
@@ -202,7 +202,7 @@ plot(resuVatorHTP,
      outOnly = FALSE)
 ```
 
-The annotated points can be replaced by NA for the studied trait using the function `removeSingleOut`. It creates a new `TP` object.
+The annotated points can be replaced by NA for the studied trait using the function `removeSingleOut()`. It creates a new `TP` object.
 
 ```{r rmSingleOutVator}
 phenoTPOut <- removeSingleOut(phenoTP,
@@ -296,11 +296,11 @@ All results that can be extracted are shown in the table below. The first column
 
 | FUNCTION     | DESCRIPTION                                                                                           |
 |----------------|--------------------------------------------------------|
-| getGenoPred  | Best Linear Unbiased Predictions (BLUPS, genotype as random) or Estimators (BLUEs, genotype as fixed) |
-| getCorrected | Spatially corrected values at the experimental unit level                                             |
-| getVar       | Variance components                                                                                   |
-| getHerit     | Generalized heritabilities - only when genotype is random                                             |
-| getEffDims   | Effective dimensions - only for SpATS engine                                                          |
+| getGenoPred()  | Best Linear Unbiased Predictions (BLUPS, genotype as random) or Estimators (BLUEs, genotype as fixed) |
+| getCorrected() | Spatially corrected values at the experimental unit level                                             |
+| getVar()       | Variance components                                                                                   |
+| getHerit()     | Generalized heritabilities - only when genotype is random                                             |
+| getEffDims()   | Effective dimensions - only for SpATS engine                                                          |
 
 ```{r getFun, message=FALSE}
 ## Extract the genotypic predictions for one time point: 
@@ -423,7 +423,7 @@ As result, three data frames with predictions (and standard errors) at populatio
 
 ## Model plot
 
-The `plot.psHDM()` function plots `psHDM` objects (as obtained from `fitSplineHDM()` and `predict.psHDM()` functions). In addition, if a `predict.psHDM` object is used, $95\%$ pointwise confidence intervals are depicted. To illustrate, we will use the prediction object (`x = pred.psHDM`).
+The `plot.psHDM()` function plots `psHDM` objects (as obtained from `fitSplineHDM()` and `predict.psHDM()` functions). In addition, if a `predict.psHDM` object is used, $95\%$ pointwise confidence intervals are depicted. To illustrate, we will use the prediction object (`pred.psHDM`).
 
 -   If `plotType = "popTra"`, the estimated population trajectory is depicted and its $95\%$ pointwise confidence intervals. Additionally, the grey lines represent the `trait` that is used in the `fitSplineHDM` function at the plot level.
 

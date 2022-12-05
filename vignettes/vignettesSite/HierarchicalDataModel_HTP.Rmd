@@ -20,6 +20,7 @@ library(statgenHTP)
 ```
 
 # Introduction
+
 This document presents the second stage of the two-stage approach proposed by @Perez2022. The aim is modeling the temporal evolution of the genetic signal after a spatial correction is performed on a phenotypic trait (see [**statgenHTP tutorial: 3. Correction for spatial trends**](SpatialModel_HTP.html)).
 
 Data consist of time-series (curves) of a (possibly) spatially corrected plant/plot phenotype. We assume that data present a hierarchical structure with plots nested in genotypes, and genotypes nested in "populations". We denote as $\tilde{y}_{pgi}(t)$ the spatially corrected plant/plot phenotype for the $i$th plant ($i = 1,\ldots,m_{pg}$) of the $g$th genotype $g=1,\ldots,\ell_p$ in the $p$th population ($p= 1,\ldots, k$) at time $t$. As such, there is a total of $M=\sum_{p=1}^k{\sum_{g=1}^{\ell_p}{m_{pg}}}$ plots/plants, $L=\sum_{p=1}^k{\ell_p}$ genotypes, and $k$ populations. To model this sample of curves the following additive decomposition of the phenotypic variation over time is considered, and a P-spline-based three-level nested hierarchical data model (hereafter refer as **psHDM**) is used
@@ -43,7 +44,7 @@ Before proceeding, we note that the functions described in this tutorial can be 
 
 To illustrate the analysis, we use the spatially corrected leaf area from the PhenoArch data `data(spatCorrectedArch)`. We assume that plots (`plotId`, $M = 1673$) are nested in genotypes (`genotype`, $L = 90$), and genotypes are nested in populations (`geno.decomp`, $k = 4$). The following code provides a summary of the dataset and plot the kind of trajectories that are modelled here  
 
-```{r visualiseData, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE, fig.height=3, fig.width=7, fig.align='center'}
+```{r visualiseData, message=FALSE, warning=FALSE, eval=TRUE, fig.height=3, fig.width=7, fig.align='center'}
 data(spatCorrectedArch)
 summary(spatCorrectedArch)
 ggplot2::ggplot(data = spatCorrectedArch,
@@ -56,9 +57,10 @@ ggplot2::ggplot(data = spatCorrectedArch,
 ------------------------------------------------------------------------
 
 # Fit the P-spline Hierarchical Curve Data Model (psHDM)
+
 Before starting with the fitting process, for this specific example we first need to specify the genotype-by-treatment interaction (genotype-by-water regime). As is explained in @Perez2022, the actual implementation of the **psHDM** model does not allow for crossed effect, but only for nested effects. As such, to analyse this dataset with the proposed model, we combine the genotype and the water regime information, which results in $L = 180$ genotypes (`genoTreat` = $90$ `genotype` $\times$ $2$ `treat`). 
 
-```{r newVarVatorNum, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r newVarVatorNum, message=FALSE, warning=FALSE}
 ## Extracting the treatment: water regime (WW, WD).
 spatCorrectedArch[["treat"]] <- substr(spatCorrectedArch[["geno.decomp"]],
                                       start = 1, stop = 2)
@@ -69,14 +71,14 @@ spatCorrectedArch[["genoTreat"]] <-
              spatCorrectedArch[["treat"]], sep = "_")
 ```
 
-To fit the **psHDM** model, we use the `fitSplineHDM` function. First of all, we note that numerical time is required to fit the model. If the  `timeNumber` column is used as it is returned by the `getCorrected` function, the user has to be aware that it is a simple enumeration of the timepoints. Care must be taken when dealing with non-equidistant timepoints to keep the same time scale as in the original `timePoint` column. If `useTimeNumber = FALSE`, an internal numerical transformation of the time points is made (and returned) using the first time point as origin. The user can also specify any other numerical time transformation. For instance, in this example, we first construct a new column called `DOY` with time in days of the year 
+To fit the **psHDM** model, we use the `fitSplineHDM()` function. First of all, we note that numerical time is required to fit the model. If the `timeNumber` column is used as it is returned by the `getCorrected()` function, the user has to be aware that it is a simple enumeration of the timepoints. Care must be taken when dealing with non-equidistant timepoints to keep the same time scale as in the original `timePoint` column. If `useTimeNumber = FALSE`, an internal numerical transformation of the time points is made (and returned) using the first time point as origin. The user can also specify any other numerical time transformation. For instance, in this example, we first construct a new column called `DOY` with time in days of the year 
 
-```{r echo=TRUE, message=FALSE, warning=FALSE, eval = TRUE}
+```{r message=FALSE, warning=FALSE, eval = TRUE}
 ## Create a new timeNumber with days of the year (DOY)
 spatCorrectedArch[["DOY"]] <- as.numeric(strftime(spatCorrectedArch$timePoint, format = "%j"))
 ```
 and then fit the model (results of the fitting process are provided below)
-```{r fitSplineHDMVatorNum_no_eval, echo=TRUE, message=FALSE, warning=FALSE, eval=FALSE}
+```{r fitSplineHDMVatorNum_no_eval, message=FALSE, warning=FALSE, eval=FALSE}
 ## Fit P-Splines Hierarchical Curve Data Model for all genotypes.
 fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
                            trait = "LeafArea_corr",
@@ -92,11 +94,12 @@ fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
                            timeNumber = "DOY",
                            useTimeNumber = TRUE)
 ```
-In the example above, we use cubic ($bdeg = 3$) B-spline basis of dimension $b_{pop} = b_{gen} = b_{plot} = 10$ and second order penalties ($pord = 2$) to represent $f_p$, $f_{pg}$ and $f_{pgi}$. Note that the `fitSplineHDM` function uses as argument the number of segments `nseg` instead of the number of B-spline basis $b$ (`nseg` = $b$ - `bdeg`, that is, for our example, if $b = 10$ then `nseg` = 7). We encourage the user to try different values for `nseg` and compare the results. Under this model configuration, the mixed model formulation of the **psHDM** model has a total of 18570 regression coefficients (both fixed and random $4 \times 10 + 180 \times 10 + 1673 \times 10$) and $11$ variance components. The fitting can also be performed for a subset of genotypes or plots. The user only needs to specify the desired vector of `genotypes` and/or `plotIds`.
+
+In the example above, we use cubic ($bdeg = 3$) B-spline basis of dimension $b_{pop} = b_{gen} = b_{plot} = 10$ and second order penalties ($pord = 2$) to represent $f_p$, $f_{pg}$ and $f_{pgi}$. Note that the `fitSplineHDM()` function uses as argument the number of segments `nseg` instead of the number of B-spline basis $b$ (`nseg` = $b$ - `bdeg`, that is, for our example, if $b = 10$ then `nseg` = 7). We encourage the user to try different values for `nseg` and compare the results. Under this model configuration, the mixed model formulation of the **psHDM** model has a total of 18570 regression coefficients (both fixed and random $4 \times 10 + 180 \times 10 + 1673 \times 10$) and $11$ variance components. The fitting can also be performed for a subset of genotypes or plots. The user only needs to specify the desired vector of `genotypes` and/or `plotIds`.
 
 > Note: If the user prefers to use different penalty orders and/or B-spline degree values, the parameterisation proposed by @Wood2013 is the one used by the `fitSplineHDM` function to obtain the design matrix for the fixed effects (i.e., $\boldsymbol{X}$) in the mixed model formulation. 
 
-With the `difVar` argument, the user can also specify if the genetic variation varies across populations (`geno = TRUE`) and the plant variation changes across genotypes (`plot=TRUE`). Consequently, the number of variance components, `fit.psHDM$vc` (and effective dimension, `fit.psHDM$ed`) will increase with the number of populations and/or genotypes, while the number of coefficients will remain the same.
+With the `difVar` argument, the user can also specify if the genetic variation varies across populations (`geno = TRUE`) and the plant variation changes across genotypes (`plot = TRUE`). Consequently, the number of variance components, `fit.psHDM$vc` (and effective dimension, `fit.psHDM$ed`) will increase with the number of populations and/or genotypes, while the number of coefficients will remain the same.
 
 If `trace = TRUE` a report with changes in deviance and effective dimension is printed by iteration. It is useful to understand the importance of model components [@RodAlv2018], as well as to detect convergence problems. 
 
@@ -104,7 +107,7 @@ If `trace = TRUE` a report with changes in deviance and effective dimension is p
 
 <!-- Note that numerical time is required to fit the PsHDM. If the  `timeNumber` column is used as it is returned by the `getCorrected` function, the user has to be aware that it is a simple enumeration of the timepoints. Care must be taken when dealing with non-equidistant timepoints to keep the same time scale as in the original `timePoint` column. If `useTimeNumber = FALSE`, an internal numerical transformation of the time points is made (and returned) using the first time point as origin. The user can also specify any other numerical time transformation. For instance, in this example, we provide a new column called `DOY` with time in days of the year.  -->
 
-```{r fitSplineHDMVatorNum, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r fitSplineHDMVatorNum, message=FALSE, warning=FALSE}
 ## Fit P-Splines Hierarchical Curve Data Model for all genotypes.
 fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
                            trait = "LeafArea_corr",
@@ -122,16 +125,16 @@ fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
 ```
 
 The resulting object, in this case `fit.psHDM`, contains different information about the data structure, the fitting process, and three data frames with the estimated curves at each of the three-levels of the hierarchy (population, genotypes and plots). That is, it contains the estimated time series of trajectories and deviations, as well as their first and second-order derivatives. For a detailed description of the returned values see `help(fitSplineHDM)`. 
-```{r info_fit_psHDM, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r info_fit_psHDM, message=FALSE, warning=FALSE}
 names(fit.psHDM)
 ```
 An example of the estimated curves structure follows. `popLevel` contains, for each population (`pop`), the estimated population trajectories ($\hat{f}_p$, `fPop`) as well as their first ($\hat{f}'_p$, `fPopDeriv1`) and second-order ($\hat{f}''_p$, `fPopDeriv2`) derivatives
 
-```{r info_fit_popLevel, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r info_fit_popLevel, message=FALSE, warning=FALSE}
 names(fit.psHDM$popLevel)
 ```
 
-```{r headPopFittedValues, echo=FALSE, message=FALSE, eval=TRUE}
+```{r headPopFittedValues, echo=FALSE, message=FALSE}
 knitr::kable(head(fit.psHDM$popLevel), align=c('c','c'), booktabs = TRUE, caption = 'Estimated curves at population level')
 ```
 
@@ -141,11 +144,11 @@ Further, `genoLevel` contains, for each genotype (`genotype`) in a population (`
 
 * Estimated genotype trajectories ($\hat{f}_{p} +\hat{f}_{pg}$, `fGenoDev`) as well as their first ($\hat{f}'_{p} +\hat{f}'_{pg}$, `fGenoDevDeriv1`) and second-order ($\hat{f}''_{p} +\hat{f}''_{pg}$, `fGenoDevDeriv2`) derivatives.
 
-```{r info_fit_genoLevel, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r info_fit_genoLevel, message=FALSE, warning=FALSE}
 names(fit.psHDM$genoLevel)
 ```
 
-```{r headGenoFittedValues, echo=FALSE, message=FALSE, eval=TRUE}
+```{r headGenoFittedValues, echo=FALSE, message=FALSE}
 knitr::kable(head(fit.psHDM$genoLevel), align=c('c','c'), booktabs = TRUE, caption = 'Estimated curves at genotype level')
 ```
 
@@ -157,20 +160,21 @@ Finally, `plotLevel` contains, for each plot (`plotId`) in a genotype (`genotype
 
 * The original `trait` values ($\tilde{y}_{pgi}$, `ObsPlot`).
 
-```{r info_fit_plotLevel, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r info_fit_plotLevel, message=FALSE, warning=FALSE}
 names(fit.psHDM$plotLevel)
 ```
 
-```{r headPlotFittedValues, echo=FALSE, message=FALSE, eval=TRUE}
+```{r headPlotFittedValues, echo=FALSE, message=FALSE}
 knitr::kable(head(fit.psHDM$plotLevel), align=c('c','c'), booktabs = TRUE, caption = 'Estimated curves at plot level')
 ```
 
 ------------------------------------------------------------------------
 
 # Predict the P-spline Hierarchical Curve Data Model
-The `predict.psHDM` function can be used to obtain prediction from a fitted **psHDM** model (obtained using the `fitSplineHDM` function; see above). In particular, this function allows obtaining predictions (estimated curves at each level of the hierarchy) on a dense grid of time points. Also, it allows the calculation of standard errors. These standard errors can be used to construct (approximate) pointwise confidence intervals for the estimated curves.
 
-```{r predictSplineHDMVatorNum_example, eval=TRUE, echo=TRUE, message=FALSE, warning=FALSE}
+The `predict.psHDM()` function can be used to obtain prediction from a fitted **psHDM** model (obtained using the `fitSplineHDM()` function; see above). In particular, this function allows obtaining predictions (estimated curves at each level of the hierarchy) on a dense grid of time points. Also, it allows the calculation of standard errors. These standard errors can be used to construct (approximate) pointwise confidence intervals for the estimated curves.
+
+```{r predictSplineHDMVatorNum_example, eval=TRUE, message=FALSE, warning=FALSE}
 ## Predict the P-Splines Hierarchical Curve Data Model on a dense grid
 ## with standard errors at the population and genotype levels
 pred.psHDM <- predict(object = fit.psHDM,
@@ -189,7 +193,7 @@ pred.psHDM <- predict(object = fit.psHDM,
 > Note 3: Standard errors (argument `se`) at the plot level demand large computing memory and time. For this example, if we use the original time points, estimation take approximately 20 minutes in a (64-bit) \texttt{R} 4.2.1 and a 1.60GHz Dual-Core\textsuperscript{TM} i5 processor computer with 16GB of RAM and macOS Monterrey Version 12.5. As such, if it is not strictly necessary, we suggest the user to set the standard errors at the `plot` level as `FALSE`. For comparison, if `plot = FALSE` for the standard errors argument, the computation time for the same example is 4 seconds approximately.
 
 In the code above, we use the `fit.psHDM` object to make predictions at the three levels of the hierarchy (`pred = list(pop = TRUE, geno = TRUE, plot = TRUE)`), and to obtain standard errors at the population and genotype levels (`se = list(pop = TRUE, geno = TRUE, plot = FALSE)`). The original data is measured at 33 time points, but predictions are obtained at 100 time points in the same range than the original time points (argument `newtimes`). As result, three data frames with predictions (and standard errors) at population (`popLevel`), genotype (`GenoLevel`) and plot (`plotLevel`) levels are returned
-```{r predictSplineHDMVatorNum_results, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r predictSplineHDMVatorNum_results, message=FALSE, warning=FALSE}
 names(pred.psHDM)
 names(pred.psHDM$popLevel)
 names(pred.psHDM$GenoLevel)
@@ -198,7 +202,7 @@ names(pred.psHDM$plotLevel)
 
 > Note 4: If the original time points are used for predictions, the data frame at plot level (`plotLevel`) will have an additional column (`obsPlot`) with the raw data. Otherwise, an additional data frame (`plotObs`) with the raw data will be returned.
 
-```{r headPredValues, echo=FALSE, message=FALSE, eval=TRUE}
+```{r headPredValues, echo=FALSE, message=FALSE}
 knitr::kable(head(pred.psHDM$popLevel), align=c('c','c'), booktabs = TRUE, caption = 'Predicted curves and standard errors at population level')
 knitr::kable(head(pred.psHDM$genoLevel), align=c('c','c'), booktabs = TRUE, caption = 'Predicted curves and standard errors at genotype level')
 knitr::kable(head(pred.psHDM$plotLevel), align=c('c','c'), booktabs = TRUE, caption = 'Predicted curves and standard errors at plot level')
@@ -207,14 +211,16 @@ knitr::kable(head(pred.psHDM$plotLevel), align=c('c','c'), booktabs = TRUE, capt
 ------------------------------------------------------------------------
 
 # Plot the P-spline Hierarchical Curve Data Model
-The `plot.psHDM` function plots `psHDM` objects. We note that objects of class `psHDM` can be obtained using  both `fitSplineHDM` and `predict.psHDM` functions. In both cases, the resulting object contains information about estimated trajectories, deviations and first-order derivatives at the three levels of the hierarchy. As such, plots of these curves can be obtained. In addition, when plots are obtained from an object obtained using the `predict.psHDM` function, $95\%$ pointwise confidence intervals are also depicted. 
 
-To illustrate the usage of function `plot.psHDM`, we use here the object `pred.psHDM` obtained in the prediction section.
+The `plot.psHDM()` function plots `psHDM` objects. We note that objects of class `psHDM` can be obtained using  both `fitSplineHDM()` and `predict.psHDM()` functions. In both cases, the resulting object contains information about estimated trajectories, deviations and first-order derivatives at the three levels of the hierarchy. As such, plots of these curves can be obtained. In addition, when plots are obtained from an object obtained using the `predict.psHDM()` function, $95\%$ pointwise confidence intervals are also depicted. 
+
+To illustrate the usage of function `plot.psHDM()`, we use here the object `pred.psHDM` obtained in the prediction section.
 
 ## Plots at population level
+
 If `plotType = "popTra"`, estimated population-specific trajectories are depicted ($\hat{f}_p(t)$) separately for each population, and their $95\%$ pointwise confidence intervals. Additionally, the grey lines represent the observed `trait` that is used in the `fitSplineHDM` function (i.e., $\tilde{y}_{pgi}$).  
 
-```{r plotPredPopVator, fig.height=4, fig.width=7, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r plotPredPopVator, fig.height=4, fig.width=7, message=FALSE, warning=FALSE}
 ## Population-specific trajectories.
 plot(pred.psHDM, plotType = "popTra", themeSizeHDM = 10)
 ```
@@ -223,27 +229,30 @@ plot(pred.psHDM, plotType = "popTra", themeSizeHDM = 10)
 At genotype level we can visualise three plots:
 
 * If `plotType = "popGenoTra"`, estimated population ($\hat{f}_p(t)$) and genotype-specific ($\hat{f}_p(t)+\hat{f}_{pg}(t)$) trajectories are depicted for all genotypes separately for each population. $95\%$ pointwise confidence intervals are depicted for the estimated population trajectories.
-  ```{r plotPredGenoTraVator, fig.height = 3, fig.width = 6, echo=TRUE, message=FALSE,    warning=FALSE, eval=TRUE, fig.align='center'}
+
+```{r plotPredGenoTraVator, fig.height = 3, fig.width = 6, message=FALSE,    warning=FALSE, fig.align='center'}
   ## Population and genotype-specific trajectories.
   plot(pred.psHDM, plotType = "popGenoTra", themeSizeHDM = 10)
-  ```
+```
 
 * If `plotType = "popGenoDeriv"`, first-order derivative of the estimated population ($\hat{f}'_p(t)$) and genotype-specific ($\hat{f}'_p(t)+\hat{f}'_{pg}(t)$) trajectories are depicted for all genotypes separately for each population. $95\%$ pointwise confidence intervals are depicted for estimated trajectories at the population level.  
-  ```{r plotPredGenoDerivVator, fig.height = 3, fig.width = 6, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE, fig.align='center'}
+
+```{r plotPredGenoDerivVator, fig.height = 3, fig.width = 6, message=FALSE, warning=FALSE, eval=TRUE, fig.align='center'}
   ## First-order derivative of the population- and genotype-specific trajectories.
   plot(pred.psHDM, plotType = "popGenoDeriv", themeSizeHDM = 10)
-  ```
+```
 
 * Finally, if `plotType = "GenoDev"`, estimated genotype-specific deviations ($\hat{f}_{pg}(t)$) are depicted for all genotypes separately for each population.   
-  ```{r plotPredGenoDevVator, fig.height = 3, fig.width = 6, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE, fig.align='center'}
+```{r plotPredGenoDevVator, fig.height = 3, fig.width = 6, message=FALSE, warning=FALSE, eval=TRUE, fig.align='center'}
   ## Genotype-specific deviations.
   plot(pred.psHDM, plotType = "genoDev", themeSizeHDM = 10)
-  ```
+```
   
 ## Plots at plot level
+
 Finally, if we are interested in obtaining plots at the plot level, we use `plotType = "genoPlotTra"`. Here, estimated genotype ($\hat{f}_p(t)+\hat{f}_{pg}(t)$) and plot-specific ($\hat{f}_p(t)+\hat{f}_{pg}(t)+\hat{f}_{pgi}(t)$) trajectories are depicted for all plots separately for a selection of genotypes. Also, $95\%$ pointwise confidence intervals are depicted for the estimated genotype-specific trajectories. For this `plotType`, the user has the option to change names (`genotypeNames`) and/or order (`genotypeOrder`) of the selected genotypes. 
 
-```{r plotPredPlotVator, fig.height=7, fig.width=7, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r plotPredPlotVator, fig.height=7, fig.width=7, message=FALSE, warning=FALSE}
 ## As an example we used ten randomly selected genotypes 
 set.seed(1)
 plot.genos  <- sample(pred.psHDM$genoLevel$genotype,10, replace = FALSE)

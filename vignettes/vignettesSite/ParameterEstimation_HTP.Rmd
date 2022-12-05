@@ -46,7 +46,7 @@ The functions described in this tutorial can be applied to corrected data, genot
 
 We will use the `fit.splineNumOut` previously created (see [**statgenHTP tutorial: 4. Outlier detection for series of observations**](OutlierSerieObs_HTP.html)). It contains the P-spline prediction on a subset of plants without the time course outliers. We will estimate the area under the curve of the trait:
 
-```{r fitSplineVatorNum, echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r fitSplineVatorNum, echo=FALSE, message=FALSE, warning=FALSE}
 subGenoVator <- c("G070", "G160", "G151", "G179", "G175", "G004", "G055")
 fit.splineNum <- fitSpline(inDat = spatCorrectedVator,
                            trait = "EffpsII_corr",
@@ -68,7 +68,7 @@ fit.splineNumOut <- removeSerieOut(fitSpline = fit.splineNum,
 ```
 
 
-```{r paramVator, fig.height=2, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r paramVator, fig.height=2, fig.width=4, message=FALSE, warning=FALSE}
 subGenoVator <- c("G070", "G160", "G151", "G179", "G175", "G004", "G055")
 paramVator1 <- 
   estimateSplineParameters(x = fit.splineNumOut,
@@ -85,7 +85,7 @@ For this subset of genotypes, there is a variability in AUC of the psII efficien
 
 Another example is using the derivative during the recovery period (at the end of the time course, so after the light change) to get the maximum slope, or the maximum rate of the psII per time unit during this period.
 
-```{r paramVator2, fig.height=2, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r paramVator2, fig.height=2, fig.width=4, message=FALSE, warning=FALSE}
 paramVator2 <-
   estimateSplineParameters(x = fit.splineNumOut,
                            estimate = "derivatives",
@@ -99,7 +99,7 @@ plot(paramVator2, plotType = "box")
 
 > Note: when "min" or "max" is selected, the output also contains the parameter occurence time point, as numerical `timeNumber` and date `timePoint`. See in the table below:
 
-```{r headParam2, echo=FALSE, message=FALSE, eval=TRUE}
+```{r headParam2, echo=FALSE, message=FALSE}
 knitr::kable(head(paramVator2), align=c('c','c'), booktabs = TRUE)
 ```
 
@@ -107,7 +107,7 @@ knitr::kable(head(paramVator2), align=c('c','c'), booktabs = TRUE)
 
 For this example, we will use the genotypic prediction (BLUPs, see [**statgenHTP tutorial: 3. Correction for spatial trends**](SpatialModel_HTP.html)) available in the `spatPredArch` data set. We will fit P-splines at the genotypic level using the `geno.decomp` levels defined in the spatial model.
 
-```{r fitSplineArch,  fig.height=3, fig.width=6, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r fitSplineArch,  fig.height=3, fig.width=6, message=FALSE, warning=FALSE}
 data(spatPredArch)  
 fit.splineGenoArch <- fitSpline(inDat = spatPredArch, 
                                 trait = "predicted.values",
@@ -120,7 +120,7 @@ plot(fit.splineGenoArch,
 
 We can estimate the maximum value of the leaf area from the predicted P-splines:
 
-```{r paramArch1, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r paramArch1, message=FALSE, warning=FALSE}
 paramArch1 <-
   estimateSplineParameters(x = fit.splineGenoArch,
                            estimate = "predictions",
@@ -128,15 +128,15 @@ paramArch1 <-
 ```
 
 
-```{r paramArch1fig, fig.height=2, fig.width=6, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r paramArch1fig, fig.height=2, fig.width=6, message=FALSE, warning=FALSE}
 plot(paramArch1, plotType = "hist")
 ```
 
 ## Example 3
 
-For this example, we will use curves obtained from the P-splines hierarchical data model (see [**statgenHTP tutorial: 5. Modelling the temporal evolution of the genetic signal**](HierarchicalDataModel_HTP.html)). We can use `psHDM` objects (that is, as obtained from `fitSplineHDM` (fitted curves) or `predict.psHDM` (predicted curves)). For this example, we will use predicted curves.
+For this example, we will use curves obtained from the P-splines hierarchical data model (see [**statgenHTP tutorial: 5. Modelling the temporal evolution of the genetic signal**](HierarchicalDataModel_HTP.html)). We can use `psHDM` objects (that is, objects obtained from `fitSplineHDM()` (fitted curves) or `predict.psHDM()` (predicted curves)). For this example, we will use predicted curves.
 
-```{r fitPredPheno, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r fitPredPheno, message=FALSE, warning=FALSE}
 ## The data from the Phenovator platform have been corrected for spatial
 ## trends and outliers for single observations have been removed.
 
@@ -173,16 +173,18 @@ pred.psHDM <- predict(object = fit.psHDM,
                       se = list(pop = TRUE, geno = TRUE, plot = FALSE),
                       trace = FALSE)
 ```
-Although we have available information at population, genotype and plot levels, this function only extract information at genotype and plot levels. Nevertheless, we are generally interested in the genotype level. For example, in the paper by @Perez2022, they extracted three features: 
+
+Although we have available information at population, genotype and plot levels, this function only extracts information at genotype and plot levels. Nevertheless, we are generally interested in the genotype level. For example, in the paper by @Perez2022, they extracted three features: 
 
 * The maximum spatially corrected leaf area (from estimated genotype-specific trajectories)
 
-
-```{r paramPhenoGenoPred, fig.height=2, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r paramPhenoGenoPred1, fig.height=3, fig.width=4, message=FALSE, warning=FALSE}
 ##  From estimated genotype-specific trajectories
 plot(pred.psHDM, plotType = "popGenoTra", themeSizeHDM = 4)
+```
 
-## Estimate maximum spatially corrected leaf area 
+```{r paramPhenoGenoPred2, fig.height=3, fig.width=4, message=FALSE, warning=FALSE}
+## Estimate maximum spatially corrected leaf area.
 paramArch1 <- estimateSplineParameters(x = pred.psHDM,
                                      what = "max",
                                      fitLevel = "geno",
@@ -194,10 +196,12 @@ plot(paramArch1, plotType = "box")
 
 * The maximum speed rate (from the first derivative of the estimated genotype-specific trajectories)
 
-```{r paramPhenoGenoDeriv, fig.height=2, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r paramPhenoGenoDeriv1, fig.height=3, message=FALSE, warning=FALSE}
 ## From the first derivative of the estimated genotype-specific trajectories
 plot(pred.psHDM, plotType = "popGenoDeriv", themeSizeHDM = 4)
+```
 
+```{r paramPhenoGenoDeriv2, fig.height=3, fig.width=4, message=FALSE, warning=FALSE}
 ## Estimate maximum speed rate 
 ## We are interested on a local maximum (before timeNumber 2500)
 paramArch2 <- estimateSplineParameters(x = pred.psHDM,
@@ -212,10 +216,12 @@ plot(paramArch2, plotType = "box")
 
 * The area under the estimated genotype-specific deviations, as follows 
 
-```{r paramPhenoGenoDev, fig.height=2, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r paramPhenoGenoDev1, fig.height=3, message=FALSE, warning=FALSE}
 ## From the estimated genotype-specific deviations
 plot(pred.psHDM, plotType = "genoDev", themeSizeHDM = 4)
+``` 
 
+```{r paramPhenoGenoDev2, fig.height=3, fig.width=4, message=FALSE, warning=FALSE}
 ## Estimate area under the curve (AUC).
 paramArch3 <- estimateSplineParameters(x = pred.psHDM,
                                      what = "AUC",
@@ -230,7 +236,7 @@ plot(paramArch3, plotType = "box")
 
 For this example, we will use the raw data from the RootPhAir, corrected for individually outlying observations (see [**statgenHTP tutorial: 2. Outlier detection for single observations**](OutlierSingleObs_HTP.html)) and time course outliers (see [**statgenHTP tutorial: 4. Outlier detection Time course**](OutlierSerieObs_HTP.html)). We will fit P-splines at the plant level on a subset of genotypes.
 
-```{r rmOutRoot, echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r rmOutRoot, echo=FALSE, message=FALSE, warning=FALSE}
 subGenoRoot <- c( "2", "6", "8", "9", "10", "520", "522")
 fit.splineRoot <- fitSpline(inDat = noCorrectedRoot,
                             trait = "tipPos_y",
@@ -258,7 +264,7 @@ noCorrectedRootOut <- noCorrectedRootOut[!is.na(noCorrectedRootOut$tipPos_y),]
 noCorrectedRootOut <- droplevels(noCorrectedRootOut)
 ```
 
-```{r fitSplineRoot, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r fitSplineRoot, message=FALSE, warning=FALSE}
 subGenoRoot <- c( "2","6","8","9","10","520","522")
 fit.splineRootOut <- fitSpline(inDat = noCorrectedRootOut,
                                trait = "tipPos_y",
@@ -270,7 +276,7 @@ fit.splineRootOut <- fitSpline(inDat = noCorrectedRootOut,
 ```
 
 We will then estimate the mean growth rate using `what = "mean"` for the subset of genotypes:
-```{r paramRoot1, fig.height=2, fig.width=4, echo=TRUE, message=FALSE, warning=FALSE, eval=TRUE}
+```{r paramRoot1, fig.height=2, fig.width=4, message=FALSE, warning=FALSE}
 paramRoot1 <-
   estimateSplineParameters(x = fit.splineRootOut,
                            estimate = "derivatives",
