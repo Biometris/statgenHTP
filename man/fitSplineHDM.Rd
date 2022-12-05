@@ -184,7 +184,6 @@ fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
                           genotypes = c("GenoA14_WD", "GenoA51_WD",
                                        "GenoB11_WW", "GenoB02_WD",
                                        "GenoB02_WW"),
-                          time = "timeNumber",
                           pop = "geno.decomp",
                           genotype = "genoTreat",
                           plotId = "plotId",
@@ -193,7 +192,9 @@ fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
                           smoothGeno = list(nseg = 4, bdeg = 3, pord = 2),
                           smoothPlot = list(nseg = 4, bdeg = 3, pord = 2),
                           weights = "wt",
-                          trace = FALSE)
+                          trace = FALSE,
+                          timeNumber = "timeNumber",
+                          useTimeNumber = TRUE)
 
 ## Visualize the data.frames with predicted values at the three levels of
 ## the hierarchy.

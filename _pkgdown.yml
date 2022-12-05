@@ -49,6 +49,7 @@ articles:
       - vignettesSite/OutlierSingleObs_HTP
       - vignettesSite/SpatialModel_HTP
       - vignettesSite/OutlierSerieObs_HTP
+      - vignettesSite/HierarchicalDataModel_HTP
       - vignettesSite/ParameterEstimation_HTP
 
 reference:
@@ -89,7 +90,6 @@ reference:
   - fitSplineHDM
   - predict.psHDM
   - plot.psHDM
-  - themeHDM
 - title: Detect outliers for series of observations
 - contents:
   - detectSerieOut

@@ -14,6 +14,7 @@
   xlab = "Time",
   ylab = expression(tilde(y)[pgi](t)),
   title = NULL,
+  themeSizeHDM = 15,
   output = TRUE,
   outFile = NULL,
   outFileOpts = NULL
@@ -44,6 +45,8 @@ Only used when \code{plotType == "genoPlotTra"}.}
 
 \item{title}{A character string used as title for the plot. If \code{NULL} a
 default title is added to the plot depending on \code{plotType}.}
+
+\item{themeSizeHDM}{Reference size for the theme}
 
 \item{output}{Should the plot be output to the current device? If
 \code{FALSE} only a (list of) ggplot object(s) is invisibly returned. Ignored if
