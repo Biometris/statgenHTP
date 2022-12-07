@@ -24,9 +24,11 @@
 #' fitted for all plotIds.
 #' @param trait A character string indicating the trait for which the spline
 #' should be fitted.
+#' @param useTimeNumber Should the timeNumber be used instead of the timePoint?.
+#' If \code{useTimeNumber = FALSE}, inDat should contain a column called timePoint
+#' of class \code{POSIXct}.
 #' @param timeNumber If \code{useTimeNumber = TRUE}, a character vector
 #' indicating the column containing the numerical time to use.
-#' @param useTimeNumber Should the timeNumber be used instead of the timePoint?
 #' @param pop A character string indicating the the populations to which each
 #' genotype/variety belongs. This variable must be a factor in the data frame.
 #' @param genotype A character string indicating the populations to which each
@@ -132,8 +134,8 @@
 #' ## Fit P-Splines Hierarchical Curve Data Model for selection of genotypes.
 #' fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
 #'                           trait = "LeafArea_corr",
+#'                           useTimeNumber = TRUE,
 #'                           timeNumber = "timeNumber",
-#'                           useTimeNumber = TRUE)
 #'                           genotypes = c("GenoA14_WD", "GenoA51_WD",
 #'                                        "GenoB11_WW", "GenoB02_WD",
 #'                                        "GenoB02_WW"),
@@ -145,7 +147,7 @@
 #'                           smoothPop = list(nseg = 4, bdeg = 3, pord = 2),
 #'                           smoothGeno = list(nseg = 4, bdeg = 3, pord = 2),
 #'                           smoothPlot = list(nseg = 4, bdeg = 3, pord = 2),
-#'                           trace = FALSE,
+#'                           trace = FALSE)
 #'
 #' ## Visualize the data.frames with predicted values at the three levels of
 #' ## the hierarchy.
@@ -170,8 +172,8 @@ fitSplineHDM <- function(inDat,
                          genotypes = NULL,
                          plotIds = NULL,
                          trait,
-                         timeNumber = NULL,
                          useTimeNumber = FALSE,
+                         timeNumber = NULL,
                          pop = "pop",
                          genotype = "genotype",
                          plotId = "plotId",
