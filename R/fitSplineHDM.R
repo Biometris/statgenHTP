@@ -10,7 +10,7 @@
 #' and the penalty order for the three-levels of the hierarchy. The user can
 #' also decide if different variances for random effects at genotype (separately
 #' for each population) and plant (separately for each genotype) levels are
-#' desired. The function outputs are fitted values (time series of trajectories
+#' desired. The function outputs are estimated curves (time series of trajectories
 #' and deviations) and their first and second derivatives for the three-levels
 #' of the hierarchy. The outputs can then be used to estimate relevant parameters
 #' from the curves for further analysis (see \code{\link{estimateSplineParameters}}).
