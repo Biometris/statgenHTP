@@ -16,17 +16,17 @@
 #' from the curves for further analysis (see \code{\link{estimateSplineParameters}}).
 #'
 #' @param inDat A data.frame with corrected spatial data.
-#' @param trait A character string indicating the trait for which the spline
-#' should be fitted.
 #' @param genotypes A character vector indicating the genotypes for which
 #' hierarchical models should be fitted. If \code{NULL}, splines will be fitted
 #' for all genotypes.
 #' @param plotIds A character vector indicating the plotIds for which
 #' hierarchical models should be fitted. If \code{NULL}, splines will be
 #' fitted for all plotIds.
-#' @param useTimeNumber Should the timeNumber be used instead of the timePoint?
+#' @param trait A character string indicating the trait for which the spline
+#' should be fitted.
 #' @param timeNumber If \code{useTimeNumber = TRUE}, a character vector
 #' indicating the column containing the numerical time to use.
+#' @param useTimeNumber Should the timeNumber be used instead of the timePoint?
 #' @param pop A character string indicating the the populations to which each
 #' genotype/variety belongs. This variable must be a factor in the data frame.
 #' @param genotype A character string indicating the populations to which each
@@ -34,6 +34,10 @@
 #' @param plotId A character string indicating the genotypes/varieties to which
 #' each plant/plot/individual belongs. This variable must be a factor in the
 #' data frame.
+#' @param weights A character string indicating the column in the data containing
+#' the weights to be used in the fitting process (for error propagation from
+#' first stage to second stage). By default, when \code{weights = NULL}, the
+#' weights are considered to be one.
 #' @param difVar Should different variances for random effects at genotype
 #' (separately for each population) and plant level (separately for each
 #' genotype) be considered?.
@@ -47,10 +51,6 @@
 #' an a priori known component to be included in the linear predictor during
 #' fitting. By default, when \code{offset = NULL}, the offset is considered to
 #' be zero.
-#' @param weights A character string indicating the column in the data containing
-#' the weights to be used in the fitting process (for error propagation from
-#' first stage to second stage). By default, when \code{weights = NULL}, the
-#' weights are considered to be one.
 #' @param family An object of class \code{family} specifying the distribution
 #' and link function. The default is \code{gaussian()}.
 #' @param maxit An optional value that controls the maximum number of iterations
@@ -132,20 +132,20 @@
 #' ## Fit P-Splines Hierarchical Curve Data Model for selection of genotypes.
 #' fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
 #'                           trait = "LeafArea_corr",
+#'                           timeNumber = "timeNumber",
+#'                           useTimeNumber = TRUE)
 #'                           genotypes = c("GenoA14_WD", "GenoA51_WD",
 #'                                        "GenoB11_WW", "GenoB02_WD",
 #'                                        "GenoB02_WW"),
 #'                           pop = "geno.decomp",
 #'                           genotype = "genoTreat",
 #'                           plotId = "plotId",
+#'                           weights = "wt",
 #'                           difVar = list(geno = FALSE, plot = FALSE),
 #'                           smoothPop = list(nseg = 4, bdeg = 3, pord = 2),
 #'                           smoothGeno = list(nseg = 4, bdeg = 3, pord = 2),
 #'                           smoothPlot = list(nseg = 4, bdeg = 3, pord = 2),
-#'                           weights = "wt",
 #'                           trace = FALSE,
-#'                           timeNumber = "timeNumber",
-#'                           useTimeNumber = TRUE)
 #'
 #' ## Visualize the data.frames with predicted values at the three levels of
 #' ## the hierarchy.
@@ -167,24 +167,24 @@
 #'
 #' @export
 fitSplineHDM <- function(inDat,
-                         trait,
                          genotypes = NULL,
                          plotIds = NULL,
+                         trait,
+                         timeNumber = NULL,
+                         useTimeNumber = FALSE,
                          pop = "pop",
                          genotype = "genotype",
                          plotId = "plotId",
+                         weights = NULL,
                          difVar = list(geno = FALSE, plot = FALSE),
                          smoothPop = list(nseg = 10, bdeg = 3, pord = 2),
                          smoothGeno = list(nseg = 10, bdeg = 3, pord = 2),
                          smoothPlot = list(nseg = 10, bdeg = 3, pord = 2),
                          offset = NULL,
-                         weights = NULL,
                          family = gaussian(),
                          maxit = 200,
                          trace = TRUE,
                          thr = 1e-03,
-                         useTimeNumber = FALSE,
-                         timeNumber = NULL,
                          minNoTP = NULL) {
   ## Checks.
   if (!is.character(trait) || length(trait) > 1) {
@@ -204,8 +204,8 @@ fitSplineHDM <- function(inDat,
        length(timeNumber) > 1)) {
     stop("timeNumber should be a character string of length 1.\n")
   }
-  corrCols <- c(genotype, trait, if (useTimeNumber) timeNumber else "timePoint",
-                pop, plotId, "colId", "rowId")
+  corrCols <- c(trait, if (useTimeNumber) timeNumber else "timePoint",
+                genotype, pop, plotId, "colId", "rowId")
   if (!all(hasName(x = inDat, name = corrCols))) {
     stop("inDat should at least contain the following columns: ",
          paste(corrCols, collapse = ", "))
