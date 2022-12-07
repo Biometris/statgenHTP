@@ -377,7 +377,7 @@ To illustrate, we will use the `spatCorrectedVator` data (available in the packa
 
 ```{r importspatCorrectedVator}
 ## Add population to data.
-spatCorrectedVator$pop <- rep(1, nrow(spatCorrectedVator))
+spatCorrectedVator$pop <- rep("Pop1", nrow(spatCorrectedVator))
 ```
 
 ## Model fitting
@@ -387,11 +387,13 @@ To model this sample of time-series of spatially corrected plant/plot trajectori
 ```{r fitPsHDMVator, message=FALSE, warning=FALSE}
 ## Fit P-spline HDM.
 fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedVator,
+                           genotypes = subGenoVator,
                            trait = "EffpsII_corr",
+                           useTimeNumber = FALSE, 
+                           # This means that the timePoint is going to be used instead of timeNumber
                            pop = "pop",
                            genotype = "genotype",
                            plotId = "plotId",
-                           genotypes = subGenoVator,
                            difVar = list(geno = FALSE, plot = FALSE),
                            smoothPop = list(nseg = 10, bdeg = 3, pord = 2),
                            smoothGeno = list(nseg = 10, bdeg = 3, pord = 2),
