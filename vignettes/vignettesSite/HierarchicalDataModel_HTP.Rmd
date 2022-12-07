@@ -23,16 +23,16 @@ library(statgenHTP)
 
 This document presents the second stage of the two-stage approach proposed by @Perez2022. The aim is modeling the temporal evolution of the genetic signal after a spatial correction is performed on a phenotypic trait (see [**statgenHTP tutorial: 3. Correction for spatial trends**](SpatialModel_HTP.html)).
 
-Data consist of time-series (curves) of a (possibly) spatially corrected plant/plot phenotype. We assume that data present a hierarchical structure with plots nested in genotypes, and genotypes nested in "populations". We denote as $\tilde{y}_{pgi}(t)$ the spatially corrected plant/plot phenotype for the $i$th plant ($i = 1,\ldots,m_{pg}$) of the $g$th genotype $g=1,\ldots,\ell_p$ in the $p$th population ($p= 1,\ldots, k$) at time $t$. As such, there is a total of $M=\sum_{p=1}^k{\sum_{g=1}^{\ell_p}{m_{pg}}}$ plots/plants, $L=\sum_{p=1}^k{\ell_p}$ genotypes, and $k$ populations. To model this sample of curves the following additive decomposition of the phenotypic variation over time is considered, and a P-spline-based three-level nested hierarchical data model (hereafter refer as **psHDM**) is used
+Data consist of time-series (curves) of a (possibly) spatially corrected plant/plot phenotype. We assume that data present a hierarchical structure with plots nested in genotypes, and genotypes nested in "populations". We denote as $\tilde{y}_{pgi}(t)$ the spatially corrected phenotype for the $i$th plant ($i = 1,\ldots,m_{pg}$) of the $g$th genotype $g=1,\ldots,\ell_p$ in the $p$th population ($p= 1,\ldots, k$) at time $t$. As such, there is a total of $M=\sum_{p=1}^k{\sum_{g=1}^{\ell_p}{m_{pg}}}$ plots/plants, $L=\sum_{p=1}^k{\ell_p}$ genotypes, and $k$ populations. To model this sample of curves the following additive decomposition of the phenotypic variation over time is considered, and a P-spline-based three-level nested hierarchical data model (hereafter refer as **psHDM**) is used
 
 $\tilde{y}_{pgi}(t) = f_{p}(t) + f_{pg}(t) + f_{pgi}(t) + \varepsilon_{pgi}(t),\;\;\varepsilon_{pgi}(t)\sim N\left(0, \sigma^{2}w_{pgi}(t)\right),$
 
 where
 
-* $f_{p}$ is the $p$th population mean function.
-* $f_{pg}$ is the genotype-specific deviation from $f_p$ for the $g$th genotype. Note that $f_{p} + f_{pg}$ represents the genotype-specific trajectory for the $g$th genotype.
-* $f_{pgi}$ is the plot-specific deviation from $f_{pg}$ for the $i$th plot. In the same way than for the genotypes, $f_{p} + f_{pg} + f_{pgi}$ is the plot-specific trajectory for the $i$th plot.
-* $\varepsilon_{pgi}$ is the random noise curve, and $w_{pgi}$ is the weight obtained from, e.g., the spatial correction.
+-   $f_{p}$ is the $p$th population mean function.
+-   $f_{pg}$ is the genotype-specific deviation from $f_p$ for the $g$th genotype. Note that $f_{p} + f_{pg}$ represents the genotype-specific trajectory for the $g$th genotype.
+-   $f_{pgi}$ is the plot-specific deviation from $f_{pg}$ for the $i$th plot. In the same way than for the genotypes, $f_{p} + f_{pg} + f_{pgi}$ is the plot-specific trajectory for the $i$th plot.
+-   $\varepsilon_{pgi}$ is the random noise curve, and $w_{pgi}$ is the weight obtained from, e.g., the spatial correction.
 
 An illustration of these curves follows
 
@@ -40,7 +40,7 @@ An illustration of these curves follows
 knitr::include_graphics("figures/curvesHDM.png", auto_pdf = TRUE)
 ```
 
-Before proceeding, we note that the functions described in this tutorial can be applied to both spatially corrected data (see [**statgenHTP tutorial: 3. Correction for spatial trends**](SpatialModel_HTP.html)) or raw data. These functions also allow estimating first- and second-order derivative curves from trajectory and deviation curves at the three levels of the hierarchy (populations, genotypes and plots/plants). All these curves can be used as input to extract time‐independent parameters to characterise genotypes (see [**statgenHTP tutorial: 6. Estimation of parameters from time courses**](ParameterEstimation_HTP.html)). 
+Before proceeding, we note that the functions described in this tutorial can be applied to both spatially corrected data (see [**statgenHTP tutorial: 3. Correction for spatial trends**](SpatialModel_HTP.html)) or raw data. These functions also allow estimating first- and second-order derivative curves from trajectory and deviation curves at the three levels of the hierarchy (populations, genotypes and plots/plants). All these curves can be used as input to extract time‐independent parameters to characterise genotypes (see [**statgenHTP tutorial: 6. Estimation of parameters from time courses**](ParameterEstimation_HTP.html)).
 
 To illustrate the analysis, we use the maize data corrected for spatial trends, `spatCorrectedArch`. The data structure is as follows
 
@@ -49,14 +49,33 @@ data(spatCorrectedArch)
 str(spatCorrectedArch)
 ```
 
-We will use the spatially corrected leaf area (`LeafArea_corr`) as response variable. We assume that plots (`plotId`, $M = 1673$) are nested in genotypes (`genotype`, $L = 90$), and genotypes are nested in populations (`geno.decomp`, $k = 4$). Furthermore, uncertainty is propagated from stage to stage using weights (`wt`). Since we are in the context of longitudinal models, it is natural that we use time as a covariate. we note that numerical time is required to fit the model. If the `timeNumber` column is used as it is returned by the `getCorrected()` function, the user has to be aware that it is a simple enumeration of the timepoints. Care must be taken when dealing with non-equidistant timepoints to keep the same time scale as in the original `timePoint` column. The user can also specify any other numerical time transformation. For instance, in this example, we first construct a new column called `DOY` with time in days of the year 
+For this specific example we first need to specify the genotype-by-treatment interaction (genotype-by-water regime). As is explained in @Perez2022, the actual implementation of the **psHDM** model does not allow for crossed effect, but only for nested effects. As such, to analyse this dataset with the proposed model, we combine the genotype and the water regime information as follows (i.e., $180$ `genoTreat` = $90$ `genotype` $\times$ $2$ `treat`)
+
+```{r newVarVatorNum, message=FALSE, warning=FALSE}
+str(spatCorrectedArch[["geno.decomp"]])
+str(spatCorrectedArch[["genotype"]])
+
+## Extracting the treatment: water regime (WW, WD).
+spatCorrectedArch[["treat"]] <- as.factor(substr(spatCorrectedArch[["geno.decomp"]],
+                                                 start = 1, stop = 2))
+str(spatCorrectedArch[["treat"]])
+
+## Specifying the genotype-by-treatment interaction.
+spatCorrectedArch[["genoTreat"]] <-
+  interaction(spatCorrectedArch[["genotype"]],
+             spatCorrectedArch[["treat"]], sep = "_")
+
+str(spatCorrectedArch[["genoTreat"]])
+```
+
+We will use the spatially corrected leaf area (`LeafArea_corr`) as response variable. We assume that plots (`plotId`, $M = 1673$) are nested in genotype-by-water regime (`genoTreat`, $L = 180$), and genotype-by-water regime are nested in populations/panel-by-water regime (`geno.decomp`, $k = 4$). Furthermore, uncertainty is propagated from stage to stage using weights (`wt`). Since we are in the context of longitudinal models, it is natural that we use time as a covariate (i.e., the timepoints at which the phenotype of interest was measured). We note that the implemented function requires numerical times. If the `timeNumber` column is used as it is returned by the `getCorrected()` function, the user has to be aware that it is a simple enumeration of the timepoints. Care must be taken when dealing with non-equidistant timepoints to keep the same time scale as in the original `timePoint` column. The user can also specify any other numerical time transformation. For instance, in this example, we first construct a new column called `DOY` with time in days of the year
 
 ```{r createDOY, message=FALSE, warning=FALSE, eval = TRUE}
 ## Create a new timeNumber with days of the year (DOY)
 spatCorrectedArch[["DOY"]] <- as.numeric(strftime(spatCorrectedArch$timePoint, format = "%j"))
 ```
 
-The following code plot depicts the kind of trajectories that are modelled here  
+The following code depicts the kind of curves that are modelled here (at plant/plot level)
 
 ```{r visualiseData, message=FALSE, warning=FALSE, eval=TRUE, fig.height=3, fig.width=7, fig.align='center'}
 ggplot2::ggplot(data = spatCorrectedArch,
@@ -70,73 +89,60 @@ ggplot2::ggplot(data = spatCorrectedArch,
 
 # Fit the P-spline Hierarchical Curve Data Model (psHDM)
 
-Before starting with the fitting process, for this specific example we first need to specify the genotype-by-treatment interaction (genotype-by-water regime). As is explained in @Perez2022, the actual implementation of the **psHDM** model does not allow for crossed effect, but only for nested effects. As such, to analyse this dataset with the proposed model, we combine the genotype and the water regime information, which results in $L = 180$ genotypes (`genoTreat` = $90$ `genotype` $\times$ $2$ `treat`). 
-
-```{r newVarVatorNum, message=FALSE, warning=FALSE}
-## Extracting the treatment: water regime (WW, WD).
-spatCorrectedArch[["treat"]] <- substr(spatCorrectedArch[["geno.decomp"]],
-                                      start = 1, stop = 2)
-
-## Specifying the genotype-by-treatment interaction.
-spatCorrectedArch[["genoTreat"]] <-
-  interaction(spatCorrectedArch[["genotype"]],
-             spatCorrectedArch[["treat"]], sep = "_")
-```
-
-To fit the **psHDM** model, we use the `fitSplineHDM()` function as follows (results of the fitting process are provided below)
+To fit the **psHDM** model, we use the `fitSplineHDM()` function (results of the fitting process are provided below)
 
 ```{r fitSplineHDMVatorNum_no_eval, message=FALSE, warning=FALSE, eval=FALSE}
 ## Fit P-Splines Hierarchical Curve Data Model for all genotypes.
 fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
                            trait = "LeafArea_corr",
+                           useTimeNumber = TRUE,
+                           timeNumber = "DOY",
                            pop = "geno.decomp",
                            genotype = "genoTreat",
                            plotId = "plotId",
+                           weights = "wt",
                            difVar = list(geno = FALSE, plot = FALSE),
                            smoothPop = list(nseg = 7, bdeg = 3, pord = 2),
                            smoothGeno = list(nseg = 7, bdeg = 3, pord = 2),
                            smoothPlot = list(nseg = 7, bdeg = 3, pord = 2),
-                           weights = "wt",
-                           trace = TRUE,
-                           timeNumber = "DOY",
-                           useTimeNumber = TRUE)
+                           trace = TRUE)
 ```
 
 In the example above, we use cubic ($bdeg = 3$) B-spline basis of dimension $b_{pop} = b_{gen} = b_{plot} = 10$ and second order penalties ($pord = 2$) to represent $f_p$, $f_{pg}$ and $f_{pgi}$. Note that the `fitSplineHDM()` function uses as argument the number of segments `nseg` instead of the number of B-spline basis $b$ (`nseg` = $b$ - `bdeg`, that is, for our example, if $b = 10$ then `nseg` = 7). We encourage the user to try different values for `nseg` and compare the results. Under this model configuration, the mixed model formulation of the **psHDM** model has a total of 18570 regression coefficients (both fixed and random $4 \times 10 + 180 \times 10 + 1673 \times 10$) and $11$ variance components. The fitting can also be performed for a subset of genotypes or plots. The user only needs to specify the desired vector of `genotypes` and/or `plotIds`.
 
-> Note: If the user prefers to use different penalty orders and/or B-spline degree values, the parameterisation proposed by @Wood2013 is the one used by the `fitSplineHDM` function to obtain the design matrix for the fixed effects (i.e., $\boldsymbol{X}$) in the mixed model formulation. 
+> Note: If the user prefers to use different penalty orders and/or B-spline degree values, the parameterisation proposed by @Wood2013 is the one used by the `fitSplineHDM` function to obtain the design matrix for the fixed effects (i.e., $\boldsymbol{X}$) in the mixed model formulation.
 
-If `useTimeNumber = FALSE`, an internal numerical transformation of the time points (`timePoint`) is made (and returned) using the first time point as origin. 
+If `useTimeNumber = FALSE`, an internal numerical transformation of the time points (`timePoint`) is made (and returned) using the first time point as origin.
+
+In this example we are using the weights obtained after a spatial correction is performed in a previous stage (i.e., `weights = wt`, with `wt` a column in `spatCorrectedArch`). However, if `weights = NULL`, the weights are considered to be one. For instance, this could be the case of modelling raw data.
 
 With the `difVar` argument, the user can also specify if the genetic variation varies across populations (`geno = TRUE`) and the plant variation changes across genotypes (`plot = TRUE`). Consequently, the number of variance components, `fit.psHDM$vc` (and effective dimension, `fit.psHDM$ed`) will increase with the number of populations and/or genotypes, while the number of coefficients will remain the same.
 
-If `trace = TRUE` a report with changes in deviance and effective dimension is printed by iteration. It is useful to understand the importance of model components [@RodAlv2018], as well as to detect convergence problems. 
-
-<!-- Estimation took approximately 40 seconds in a (64-bit) \texttt{R} 4.2.1 and a 1.60GHz Dual-Core\textsuperscript{TM} i5 processor computer with 16GB of RAM and macOS Monterrey Version 12.5. -->
-
-<!-- Note that numerical time is required to fit the PsHDM. If the  `timeNumber` column is used as it is returned by the `getCorrected` function, the user has to be aware that it is a simple enumeration of the timepoints. Care must be taken when dealing with non-equidistant timepoints to keep the same time scale as in the original `timePoint` column. If `useTimeNumber = FALSE`, an internal numerical transformation of the time points is made (and returned) using the first time point as origin. The user can also specify any other numerical time transformation. For instance, in this example, we provide a new column called `DOY` with time in days of the year.  -->
+If `trace = TRUE` a report with changes in deviance and effective dimension is printed by iteration. It is useful to understand the importance of model components [@RodAlv2018], as well as to detect convergence problems.
 
 ```{r fitSplineHDMVatorNum, message=FALSE, warning=FALSE}
 ## Fit P-Splines Hierarchical Curve Data Model for all genotypes.
 fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
                            trait = "LeafArea_corr",
+                           useTimeNumber = TRUE,
+                           timeNumber = "DOY",
                            pop = "geno.decomp",
                            genotype = "genoTreat",
                            plotId = "plotId",
+                           weights = "wt",
                            difVar = list(geno = FALSE, plot = FALSE),
                            smoothPop = list(nseg = 7, bdeg = 3, pord = 2),
                            smoothGeno = list(nseg = 7, bdeg = 3, pord = 2),
                            smoothPlot = list(nseg = 7, bdeg = 3, pord = 2),
-                           weights = "wt",
-                           trace = TRUE,
-                           timeNumber = "DOY",
-                           useTimeNumber = TRUE)
+                           trace = TRUE)
 ```
 
-The resulting object, in this case `fit.psHDM`, contains different information about the data structure, the fitting process, and three data frames with the estimated curves at each of the three-levels of the hierarchy (population, genotypes and plots). That is, it contains the estimated time series of trajectories and deviations, as well as their first and second-order derivatives. For a detailed description of the returned values see `help(fitSplineHDM)`. 
+The resulting object, in this case `fit.psHDM`, contains different information about the data structure, the fitting process, and three data frames with the estimated curves at each of the three-levels of the hierarchy (population, genotypes and plots). That is, it contains the estimated trajectories and deviations, as well as their first and second-order derivatives. For a detailed description of the returned values see `help(fitSplineHDM)`.
+
 ```{r info_fit_psHDM, message=FALSE, warning=FALSE}
 names(fit.psHDM)
 ```
+
 An example of the estimated curves structure follows. `popLevel` contains, for each population (`pop`), the estimated population trajectories ($\hat{f}_p$, `fPop`) as well as their first ($\hat{f}'_p$, `fPopDeriv1`) and second-order ($\hat{f}''_p$, `fPopDeriv2`) derivatives
 
 ```{r info_fit_popLevel, message=FALSE, warning=FALSE}
@@ -149,9 +155,9 @@ knitr::kable(head(fit.psHDM$popLevel), align=c('c','c'), booktabs = TRUE, captio
 
 Further, `genoLevel` contains, for each genotype (`genotype`) in a population (`pop`)
 
-* Estimated genotype deviations ($\hat{f}_{pg}$, `fGeno`) as well as their first ($\hat{f}'_{pg}$, `fGenoDeriv1`) and second-order ($\hat{f}''_{pg}$, `fGenoDeriv2`) derivatives.
+-   Estimated genotype deviations ($\hat{f}_{pg}$, `fGeno`) as well as their first ($\hat{f}'_{pg}$, `fGenoDeriv1`) and second-order ($\hat{f}''_{pg}$, `fGenoDeriv2`) derivatives.
 
-* Estimated genotype trajectories ($\hat{f}_{p} +\hat{f}_{pg}$, `fGenoDev`) as well as their first ($\hat{f}'_{p} +\hat{f}'_{pg}$, `fGenoDevDeriv1`) and second-order ($\hat{f}''_{p} +\hat{f}''_{pg}$, `fGenoDevDeriv2`) derivatives.
+-   Estimated genotype trajectories ($\hat{f}_{p} +\hat{f}_{pg}$, `fGenoDev`) as well as their first ($\hat{f}'_{p} +\hat{f}'_{pg}$, `fGenoDevDeriv1`) and second-order ($\hat{f}''_{p} +\hat{f}''_{pg}$, `fGenoDevDeriv2`) derivatives.
 
 ```{r info_fit_genoLevel, message=FALSE, warning=FALSE}
 names(fit.psHDM$genoLevel)
@@ -163,11 +169,11 @@ knitr::kable(head(fit.psHDM$genoLevel), align=c('c','c'), booktabs = TRUE, capti
 
 Finally, `plotLevel` contains, for each plot (`plotId`) in a genotype (`genotype`) in a population (`pop`)
 
-* Estimated plot deviations ($\hat{f}_{pgi}$, `fPlot`) as well as their first ($\hat{f}'_{pgi}$, `fPlotDeriv1`) and second-order ($\hat{f}''_{pgi}$, `fPlotDeriv2`) derivatives.
+-   Estimated plot deviations ($\hat{f}_{pgi}$, `fPlot`) as well as their first ($\hat{f}'_{pgi}$, `fPlotDeriv1`) and second-order ($\hat{f}''_{pgi}$, `fPlotDeriv2`) derivatives.
 
-* Estimated plot trajectories ($\hat{f}_{p} +\hat{f}_{pg}+\hat{f}_{pgi}$, `fPlotDev`) as well as their first ($\hat{f}'_{p} +\hat{f}'_{pg}+\hat{f}'_{pgi}$, `fPlotDevDeriv1`) and second-order ($\hat{f}''_{p} +\hat{f}''_{pg}+\hat{f}''_{pgi}$, `fPlotDevDeriv2`) derivatives. 
+-   Estimated plot trajectories ($\hat{f}_{p} +\hat{f}_{pg}+\hat{f}_{pgi}$, `fPlotDev`) as well as their first ($\hat{f}'_{p} +\hat{f}'_{pg}+\hat{f}'_{pgi}$, `fPlotDevDeriv1`) and second-order ($\hat{f}''_{p} +\hat{f}''_{pg}+\hat{f}''_{pgi}$, `fPlotDevDeriv2`) derivatives.
 
-* The original `trait` values ($\tilde{y}_{pgi}$, `ObsPlot`).
+-   The original `trait` values ($\tilde{y}_{pgi}$, `ObsPlot`).
 
 ```{r info_fit_plotLevel, message=FALSE, warning=FALSE}
 names(fit.psHDM$plotLevel)
@@ -202,6 +208,7 @@ pred.psHDM <- predict(object = fit.psHDM,
 > Note 3: Standard errors (argument `se`) at the plot level demand large computing memory and time. For this example, if we use the original time points, estimation take approximately 20 minutes in a (64-bit) \texttt{R} 4.2.1 and a 1.60GHz Dual-Core\textsuperscript{TM} i5 processor computer with 16GB of RAM and macOS Monterrey Version 12.5. As such, if it is not strictly necessary, we suggest the user to set the standard errors at the `plot` level as `FALSE`. For comparison, if `plot = FALSE` for the standard errors argument, the computation time for the same example is 4 seconds approximately.
 
 In the code above, we use the `fit.psHDM` object to make predictions at the three levels of the hierarchy (`pred = list(pop = TRUE, geno = TRUE, plot = TRUE)`), and to obtain standard errors at the population and genotype levels (`se = list(pop = TRUE, geno = TRUE, plot = FALSE)`). The original data is measured at 33 time points, but predictions are obtained at 100 time points in the same range than the original time points (argument `newtimes`). As result, three data frames with predictions (and standard errors) at population (`popLevel`), genotype (`GenoLevel`) and plot (`plotLevel`) levels are returned
+
 ```{r predictSplineHDMVatorNum_results, message=FALSE, warning=FALSE}
 names(pred.psHDM)
 names(pred.psHDM$popLevel)
@@ -221,47 +228,49 @@ knitr::kable(head(pred.psHDM$plotLevel), align=c('c','c'), booktabs = TRUE, capt
 
 # Plot the P-spline Hierarchical Curve Data Model
 
-The `plot.psHDM()` function plots `psHDM` objects. We note that objects of class `psHDM` can be obtained using  both `fitSplineHDM()` and `predict.psHDM()` functions. In both cases, the resulting object contains information about estimated trajectories, deviations and first-order derivatives at the three levels of the hierarchy. As such, plots of these curves can be obtained. In addition, when plots are obtained from an object obtained using the `predict.psHDM()` function, $95\%$ pointwise confidence intervals are also depicted. 
+The `plot.psHDM()` function plots `psHDM` objects. We note that objects of class `psHDM` can be obtained using both `fitSplineHDM()` and `predict.psHDM()` functions. In both cases, the resulting object contains information about estimated trajectories, deviations and first-order derivatives at the three levels of the hierarchy. As such, plots of these curves can be obtained. In addition, when plots are obtained from an object obtained using the `predict.psHDM()` function, $95\%$ pointwise confidence intervals are also depicted.
 
 To illustrate the usage of function `plot.psHDM()`, we use here the object `pred.psHDM` obtained in the prediction section.
 
 ## Plots at population level
 
-If `plotType = "popTra"`, estimated population-specific trajectories are depicted ($\hat{f}_p(t)$) separately for each population, and their $95\%$ pointwise confidence intervals. Additionally, the grey lines represent the observed `trait` that is used in the `fitSplineHDM` function (i.e., $\tilde{y}_{pgi}$).  
+If `plotType = "popTra"`, estimated population-specific trajectories are depicted ($\hat{f}_p(t)$) separately for each population, and their $95\%$ pointwise confidence intervals. Additionally, the grey lines represent the observed `trait` that is used in the `fitSplineHDM` function (i.e., $\tilde{y}_{pgi}$).
 
-```{r plotPredPopVator, fig.height=4, fig.width=7, message=FALSE, warning=FALSE}
+```{r plotPredPopVator, fig.height=3, fig.width=6, message=FALSE, warning=FALSE}
 ## Population-specific trajectories.
 plot(pred.psHDM, plotType = "popTra", themeSizeHDM = 10)
 ```
 
 ## Plots at genotype level
+
 At genotype level we can visualise three plots:
 
-* If `plotType = "popGenoTra"`, estimated population ($\hat{f}_p(t)$) and genotype-specific ($\hat{f}_p(t)+\hat{f}_{pg}(t)$) trajectories are depicted for all genotypes separately for each population. $95\%$ pointwise confidence intervals are depicted for the estimated population trajectories.
+-   If `plotType = "popGenoTra"`, estimated population ($\hat{f}_p(t)$) and genotype-specific ($\hat{f}_p(t)+\hat{f}_{pg}(t)$) trajectories are depicted for all genotypes separately for each population. $95\%$ pointwise confidence intervals are depicted for the estimated population trajectories.
 
 ```{r plotPredGenoTraVator, fig.height = 3, fig.width = 6, message=FALSE,    warning=FALSE, fig.align='center'}
   ## Population and genotype-specific trajectories.
   plot(pred.psHDM, plotType = "popGenoTra", themeSizeHDM = 10)
 ```
 
-* If `plotType = "popGenoDeriv"`, first-order derivative of the estimated population ($\hat{f}'_p(t)$) and genotype-specific ($\hat{f}'_p(t)+\hat{f}'_{pg}(t)$) trajectories are depicted for all genotypes separately for each population. $95\%$ pointwise confidence intervals are depicted for estimated trajectories at the population level.  
+-   If `plotType = "popGenoDeriv"`, first-order derivative of the estimated population ($\hat{f}'_p(t)$) and genotype-specific ($\hat{f}'_p(t)+\hat{f}'_{pg}(t)$) trajectories are depicted for all genotypes separately for each population. $95\%$ pointwise confidence intervals are depicted for estimated trajectories at the population level.
 
 ```{r plotPredGenoDerivVator, fig.height = 3, fig.width = 6, message=FALSE, warning=FALSE, eval=TRUE, fig.align='center'}
   ## First-order derivative of the population- and genotype-specific trajectories.
   plot(pred.psHDM, plotType = "popGenoDeriv", themeSizeHDM = 10)
 ```
 
-* Finally, if `plotType = "GenoDev"`, estimated genotype-specific deviations ($\hat{f}_{pg}(t)$) are depicted for all genotypes separately for each population.   
+-   Finally, if `plotType = "GenoDev"`, estimated genotype-specific deviations ($\hat{f}_{pg}(t)$) are depicted for all genotypes separately for each population.\
+
 ```{r plotPredGenoDevVator, fig.height = 3, fig.width = 6, message=FALSE, warning=FALSE, eval=TRUE, fig.align='center'}
   ## Genotype-specific deviations.
   plot(pred.psHDM, plotType = "genoDev", themeSizeHDM = 10)
 ```
-  
+
 ## Plots at plot level
 
-Finally, if we are interested in obtaining plots at the plot level, we use `plotType = "genoPlotTra"`. Here, estimated genotype ($\hat{f}_p(t)+\hat{f}_{pg}(t)$) and plot-specific ($\hat{f}_p(t)+\hat{f}_{pg}(t)+\hat{f}_{pgi}(t)$) trajectories are depicted for all plots separately for a selection of genotypes. Also, $95\%$ pointwise confidence intervals are depicted for the estimated genotype-specific trajectories. For this `plotType`, the user has the option to change names (`genotypeNames`) and/or order (`genotypeOrder`) of the selected genotypes. 
+Finally, if we are interested in obtaining plots at the plot level, we use `plotType = "genoPlotTra"`. Here, estimated genotype ($\hat{f}_p(t)+\hat{f}_{pg}(t)$) and plot-specific ($\hat{f}_p(t)+\hat{f}_{pg}(t)+\hat{f}_{pgi}(t)$) trajectories are depicted for all plots separately for a selection of genotypes. Also, $95\%$ pointwise confidence intervals are depicted for the estimated genotype-specific trajectories. For this `plotType`, the user has the option to change names (`genotypeNames`) and/or order (`genotypeOrder`) of the selected genotypes.
 
-```{r plotPredPlotVator, fig.height=7, fig.width=7, message=FALSE, warning=FALSE}
+```{r plotPredPlotVator, fig.height=6, fig.width=6, message=FALSE, warning=FALSE}
 ## As an example we used ten randomly selected genotypes 
 set.seed(1)
 plot.genos  <- sample(pred.psHDM$genoLevel$genotype,10, replace = FALSE)
@@ -276,4 +285,5 @@ plot(pred.psHDM,
 ```
 
 ------------------------------------------------------------------------
+
 ## References
