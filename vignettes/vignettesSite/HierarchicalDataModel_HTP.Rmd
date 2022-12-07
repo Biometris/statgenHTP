@@ -42,16 +42,28 @@ knitr::include_graphics("figures/curvesHDM.png", auto_pdf = TRUE)
 
 Before proceeding, we note that the functions described in this tutorial can be applied to both spatially corrected data (see [**statgenHTP tutorial: 3. Correction for spatial trends**](SpatialModel_HTP.html)) or raw data. These functions also allow estimating first- and second-order derivative curves from trajectory and deviation curves at the three levels of the hierarchy (populations, genotypes and plots/plants). All these curves can be used as input to extract time‐independent parameters to characterise genotypes (see [**statgenHTP tutorial: 6. Estimation of parameters from time courses**](ParameterEstimation_HTP.html)). 
 
-To illustrate the analysis, we use the spatially corrected leaf area from the PhenoArch data `data(spatCorrectedArch)`. We assume that plots (`plotId`, $M = 1673$) are nested in genotypes (`genotype`, $L = 90$), and genotypes are nested in populations (`geno.decomp`, $k = 4$). The following code provides a summary of the dataset and plot the kind of trajectories that are modelled here  
+To illustrate the analysis, we use the maize data corrected for spatial trends, `spatCorrectedArch`. The data structure is as follows
+
+```{r summaryData, message=FALSE, warning=FALSE, eval=TRUE,  fig.align='center'}
+data(spatCorrectedArch)
+str(spatCorrectedArch)
+```
+
+We will use the spatially corrected leaf area (`LeafArea_corr`) as response variable. We assume that plots (`plotId`, $M = 1673$) are nested in genotypes (`genotype`, $L = 90$), and genotypes are nested in populations (`geno.decomp`, $k = 4$). Furthermore, uncertainty is propagated from stage to stage using weights (`wt`). Since we are in the context of longitudinal models, it is natural that we use time as a covariate. we note that numerical time is required to fit the model. If the `timeNumber` column is used as it is returned by the `getCorrected()` function, the user has to be aware that it is a simple enumeration of the timepoints. Care must be taken when dealing with non-equidistant timepoints to keep the same time scale as in the original `timePoint` column. The user can also specify any other numerical time transformation. For instance, in this example, we first construct a new column called `DOY` with time in days of the year 
+
+```{r createDOY, message=FALSE, warning=FALSE, eval = TRUE}
+## Create a new timeNumber with days of the year (DOY)
+spatCorrectedArch[["DOY"]] <- as.numeric(strftime(spatCorrectedArch$timePoint, format = "%j"))
+```
+
+The following code plot depicts the kind of trajectories that are modelled here  
 
 ```{r visualiseData, message=FALSE, warning=FALSE, eval=TRUE, fig.height=3, fig.width=7, fig.align='center'}
-data(spatCorrectedArch)
-summary(spatCorrectedArch)
 ggplot2::ggplot(data = spatCorrectedArch,
-                ggplot2::aes(x= timeNumber, y = LeafArea_corr, group = plotId)) +
+                ggplot2::aes(x= DOY, y = LeafArea_corr, group = plotId)) +
   ggplot2::geom_line(na.rm = TRUE) +
   ggplot2::facet_grid(~geno.decomp) +
-  ggplot2::labs(x = "DOY", y = "Spatially corrected leaf area")
+  ggplot2::labs(y = "Spatially corrected leaf area")
 ```
 
 ------------------------------------------------------------------------
@@ -71,13 +83,8 @@ spatCorrectedArch[["genoTreat"]] <-
              spatCorrectedArch[["treat"]], sep = "_")
 ```
 
-To fit the **psHDM** model, we use the `fitSplineHDM()` function. First of all, we note that numerical time is required to fit the model. If the `timeNumber` column is used as it is returned by the `getCorrected()` function, the user has to be aware that it is a simple enumeration of the timepoints. Care must be taken when dealing with non-equidistant timepoints to keep the same time scale as in the original `timePoint` column. If `useTimeNumber = FALSE`, an internal numerical transformation of the time points is made (and returned) using the first time point as origin. The user can also specify any other numerical time transformation. For instance, in this example, we first construct a new column called `DOY` with time in days of the year 
+To fit the **psHDM** model, we use the `fitSplineHDM()` function as follows (results of the fitting process are provided below)
 
-```{r message=FALSE, warning=FALSE, eval = TRUE}
-## Create a new timeNumber with days of the year (DOY)
-spatCorrectedArch[["DOY"]] <- as.numeric(strftime(spatCorrectedArch$timePoint, format = "%j"))
-```
-and then fit the model (results of the fitting process are provided below)
 ```{r fitSplineHDMVatorNum_no_eval, message=FALSE, warning=FALSE, eval=FALSE}
 ## Fit P-Splines Hierarchical Curve Data Model for all genotypes.
 fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
@@ -98,6 +105,8 @@ fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
 In the example above, we use cubic ($bdeg = 3$) B-spline basis of dimension $b_{pop} = b_{gen} = b_{plot} = 10$ and second order penalties ($pord = 2$) to represent $f_p$, $f_{pg}$ and $f_{pgi}$. Note that the `fitSplineHDM()` function uses as argument the number of segments `nseg` instead of the number of B-spline basis $b$ (`nseg` = $b$ - `bdeg`, that is, for our example, if $b = 10$ then `nseg` = 7). We encourage the user to try different values for `nseg` and compare the results. Under this model configuration, the mixed model formulation of the **psHDM** model has a total of 18570 regression coefficients (both fixed and random $4 \times 10 + 180 \times 10 + 1673 \times 10$) and $11$ variance components. The fitting can also be performed for a subset of genotypes or plots. The user only needs to specify the desired vector of `genotypes` and/or `plotIds`.
 
 > Note: If the user prefers to use different penalty orders and/or B-spline degree values, the parameterisation proposed by @Wood2013 is the one used by the `fitSplineHDM` function to obtain the design matrix for the fixed effects (i.e., $\boldsymbol{X}$) in the mixed model formulation. 
+
+If `useTimeNumber = FALSE`, an internal numerical transformation of the time points (`timePoint`) is made (and returned) using the first time point as origin. 
 
 With the `difVar` argument, the user can also specify if the genetic variation varies across populations (`geno = TRUE`) and the plant variation changes across genotypes (`plot = TRUE`). Consequently, the number of variance components, `fit.psHDM$vc` (and effective dimension, `fit.psHDM$ed`) will increase with the number of populations and/or genotypes, while the number of coefficients will remain the same.
 
