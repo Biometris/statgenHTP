@@ -108,7 +108,7 @@ fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
                            trace = TRUE)
 ```
 
-In the example above, we use cubic ($bdeg = 3$) B-spline basis of dimension $b_{pop} = b_{gen} = b_{plot} = 10$ and second order penalties ($pord = 2$) to represent $f_p$, $f_{pg}$ and $f_{pgi}$. Note that the `fitSplineHDM()` function uses as argument the number of segments `nseg` instead of the number of B-spline basis $b$ (`nseg` = $b$ - `bdeg`, that is, for our example, if $b = 10$ then `nseg` = 7). We encourage the user to try different values for `nseg` and compare the results. Under this model configuration, the mixed model formulation of the **psHDM** model has a total of 18570 regression coefficients (both fixed and random $4 \times 10 + 180 \times 10 + 1673 \times 10$) and $11$ variance components. The fitting can also be performed for a subset of genotypes or plots. The user only needs to specify the desired vector of `genotypes` and/or `plotIds`.
+In the example above, we use cubic ($bdeg = 3$) B-spline basis of dimension $b_{pop} = b_{gen} = b_{plot} = 10$ and second order penalties ($pord = 2$) to represent $f_p$, $f_{pg}$ and $f_{pgi}$. We note that the `fitSplineHDM()` function uses as argument the number of segments `nseg` instead of the number of B-spline basis $b$ (`nseg` = $b$ - `bdeg`, that is, for our example, if $b = 10$ then `nseg` = 7). We encourage the user to try different values for `nseg` and compare the results. Under this model configuration, the mixed model formulation of the **psHDM** model has a total of 18570 regression coefficients (both fixed and random $4 \times 10 + 180 \times 10 + 1673 \times 10$) and $11$ variance components. The fitting can also be performed for a subset of genotypes or plots. The user only needs to specify the desired vector of `genotypes` and/or `plotIds`.
 
 > Note: If the user prefers to use different penalty orders and/or B-spline degree values, the parameterisation proposed by @Wood2013 is the one used by the `fitSplineHDM` function to obtain the design matrix for the fixed effects (i.e., $\boldsymbol{X}$) in the mixed model formulation.
 
@@ -187,7 +187,7 @@ knitr::kable(head(fit.psHDM$plotLevel), align=c('c','c'), booktabs = TRUE, capti
 
 # Predict the P-spline Hierarchical Curve Data Model
 
-The `predict.psHDM()` function can be used to obtain prediction from a fitted **psHDM** model (obtained using the `fitSplineHDM()` function; see above). In particular, this function allows obtaining predictions (estimated curves at each level of the hierarchy) on a dense grid of time points. Also, it allows the calculation of standard errors. These standard errors can be used to construct (approximate) pointwise confidence intervals for the estimated curves.
+The `predict.psHDM()` function can be used to obtain predictions from a fitted **psHDM** model (obtained using the `fitSplineHDM()` function; see above). In particular, this function allows obtaining predictions (estimated curves at each level of the hierarchy) on a dense grid of time points. Also, it allows the calculation of standard errors. These standard errors can be used to construct (approximate) pointwise confidence intervals for the estimated curves.
 
 ```{r predictSplineHDMVatorNum_example, eval=TRUE, message=FALSE, warning=FALSE}
 ## Predict the P-Splines Hierarchical Curve Data Model on a dense grid
