@@ -6,32 +6,29 @@
 \usage{
 fitSplineHDM(
   inDat,
-  trait,
   genotypes = NULL,
   plotIds = NULL,
+  trait,
+  useTimeNumber = FALSE,
+  timeNumber = NULL,
   pop = "pop",
   genotype = "genotype",
   plotId = "plotId",
+  weights = NULL,
   difVar = list(geno = FALSE, plot = FALSE),
   smoothPop = list(nseg = 10, bdeg = 3, pord = 2),
   smoothGeno = list(nseg = 10, bdeg = 3, pord = 2),
   smoothPlot = list(nseg = 10, bdeg = 3, pord = 2),
   offset = NULL,
-  weights = NULL,
   family = gaussian(),
   maxit = 200,
   trace = TRUE,
   thr = 0.001,
-  useTimeNumber = FALSE,
-  timeNumber = NULL,
   minNoTP = NULL
 )
 }
 \arguments{
 \item{inDat}{A data.frame with corrected spatial data.}
-
-\item{trait}{A character string indicating the trait for which the spline
-should be fitted.}
 
 \item{genotypes}{A character vector indicating the genotypes for which
 hierarchical models should be fitted. If \code{NULL}, splines will be fitted
@@ -40,6 +37,16 @@ for all genotypes.}
 \item{plotIds}{A character vector indicating the plotIds for which
 hierarchical models should be fitted. If \code{NULL}, splines will be
 fitted for all plotIds.}
+
+\item{trait}{A character string indicating the trait for which the spline
+should be fitted.}
+
+\item{useTimeNumber}{Should the timeNumber be used instead of the timePoint?.
+If \code{useTimeNumber = FALSE}, inDat should contain a column called timePoint
+of class \code{POSIXct}.}
+
+\item{timeNumber}{If \code{useTimeNumber = TRUE}, a character vector
+indicating the column containing the numerical time to use.}
 
 \item{pop}{A character string indicating the the populations to which each
 genotype/variety belongs. This variable must be a factor in the data frame.}
@@ -50,6 +57,11 @@ genotype/variety belongs. This variable must be a factor in the data frame.}
 \item{plotId}{A character string indicating the genotypes/varieties to which
 each plant/plot/individual belongs. This variable must be a factor in the
 data frame.}
+
+\item{weights}{A character string indicating the column in the data containing
+the weights to be used in the fitting process (for error propagation from
+first stage to second stage). By default, when \code{weights = NULL}, the
+weights are considered to be one.}
 
 \item{difVar}{Should different variances for random effects at genotype
 (separately for each population) and plant level (separately for each
@@ -69,11 +81,6 @@ an a priori known component to be included in the linear predictor during
 fitting. By default, when \code{offset = NULL}, the offset is considered to
 be zero.}
 
-\item{weights}{A character string indicating the column in the data containing
-the weights to be used in the fitting process (for error propagation from
-first stage to second stage). By default, when \code{weights = NULL}, the
-weights are considered to be one.}
-
 \item{family}{An object of class \code{family} specifying the distribution
 and link function. The default is \code{gaussian()}.}
 
@@ -85,11 +92,6 @@ The default is \code{TRUE}.}
 
 \item{thr}{An optional value that controls the convergence threshold of the
 algorithm. The default is 1.e-03.}
-
-\item{useTimeNumber}{Should the timeNumber be used instead of the timePoint?}
-
-\item{timeNumber}{If \code{useTimeNumber = TRUE}, a character vector
-indicating the column containing the numerical time to use.}
 
 \item{minNoTP}{The minimum number of time points for which data should be
 available for a plant. Defaults to 60\% of all time points present in the
@@ -156,7 +158,7 @@ The number of segments is chosen by the user, as well as the B-spline degree,
 and the penalty order for the three-levels of the hierarchy. The user can
 also decide if different variances for random effects at genotype (separately
 for each population) and plant (separately for each genotype) levels are
-desired. The function outputs are fitted values (time series of trajectories
+desired. The function outputs are estimated curves (time series of trajectories
 and deviations) and their first and second derivatives for the three-levels
 of the hierarchy. The outputs can then be used to estimate relevant parameters
 from the curves for further analysis (see \code{\link{estimateSplineParameters}}).
@@ -181,20 +183,20 @@ spatCorrectedArch[["genoTreat"]] <-
 ## Fit P-Splines Hierarchical Curve Data Model for selection of genotypes.
 fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
                           trait = "LeafArea_corr",
+                          useTimeNumber = TRUE,
+                          timeNumber = "timeNumber",
                           genotypes = c("GenoA14_WD", "GenoA51_WD",
                                        "GenoB11_WW", "GenoB02_WD",
                                        "GenoB02_WW"),
                           pop = "geno.decomp",
                           genotype = "genoTreat",
                           plotId = "plotId",
+                          weights = "wt",
                           difVar = list(geno = FALSE, plot = FALSE),
                           smoothPop = list(nseg = 4, bdeg = 3, pord = 2),
                           smoothGeno = list(nseg = 4, bdeg = 3, pord = 2),
                           smoothPlot = list(nseg = 4, bdeg = 3, pord = 2),
-                          weights = "wt",
-                          trace = FALSE,
-                          timeNumber = "timeNumber",
-                          useTimeNumber = TRUE)
+                          trace = FALSE)
 
 ## Visualize the data.frames with predicted values at the three levels of
 ## the hierarchy.
