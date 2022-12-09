@@ -1,12 +1,12 @@
 ## Patch release for r-release-macos-arm64 check error
 
-- Fixed check error on r-release-macos-arm64
+- Large addition of extra module to the package. Also some minor bugfixes.
 
 ----
 
 ## Test environments
 
-* local Windows 10 install, R 4.1.1
+* local Windows 10 install, R 4.2.2
 * Ubuntu (on github actions, devel and release)
 * macOS (on github actions, release)
 * R-hub (devel and release)
