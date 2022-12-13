@@ -4,89 +4,83 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>statgenHTP tutorial: 5. Estimation of parameters from time courses • statgenHTP</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../../bootstrap-toc.css">
-<script src="../../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="statgenHTP">
+<title>statgenHTP tutorial: 6. Estimation of parameters from time courses • statgenHTP</title>
+<script src="../../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../../deps/bootstrap-5.1.3/bootstrap.min.css" rel="stylesheet">
+<script src="../../deps/bootstrap-5.1.3/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../../pkgdown.css" rel="stylesheet">
-<script src="../../pkgdown.js"></script><meta property="og:title" content="statgenHTP tutorial: 5. Estimation of parameters from time courses">
+<!-- bootstrap-toc --><script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../../pkgdown.js"></script><meta property="og:title" content="statgenHTP tutorial: 6. Estimation of parameters from time courses">
 <meta property="og:description" content="statgenHTP">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
-<body data-spy="scroll" data-target="#toc">
-    <div class="container template-article">
-      <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <span class="navbar-brand">
-        <a class="navbar-link" href="../../index.html">statgenHTP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.5</span>
-      </span>
-    </div>
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+    
 
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-<li>
-  <a href="../../index.html">
+    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    
+    <a class="navbar-brand me-2" href="../../index.html">statgenHTP</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.6</small>
+
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item">
+  <a class="nav-link" href="../../index.html">
     <span class="fa fa-home"></span>
      
   </a>
 </li>
-<li>
-  <a href="../../articles/index.html">Vignettes</a>
+<li class="active nav-item">
+  <a class="nav-link" href="../../articles/index.html">Vignettes</a>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right">
-<li>
-  <a href="../../news/index.html">
+<form class="form-inline my-2 my-lg-0" role="search">
+        <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../../search.json" id="search-input" placeholder="Search for" autocomplete="off">
+</form>
+
+      <ul class="navbar-nav">
+<li class="nav-item">
+  <a class="nav-link" href="../../news/index.html">
     <span class="fa fa-newspaper-o"></span>
      
     news
   </a>
 </li>
-<li>
-  <a href="../../reference/index.html">
+<li class="nav-item">
+  <a class="nav-link" href="../../reference/index.html">
     <span class="fa fa-file-code-o"></span>
      
     functions
   </a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown--other-packages">
     <span class="fa fa-seedling"></span>
      
     other packages
-     
-    <span class="caret"></span>
   </a>
-  <ul class="dropdown-menu" role="menu">
-<li>
-      <a href="https://biometris.github.io/statgenSTA">statgenSTA</a>
-    </li>
-    <li>
-      <a href="https://biometris.github.io/statgenGxE">statgenGxE</a>
-    </li>
-    <li>
-      <a href="https://biometris.github.io/statgenGWAS">statgenGWAS</a>
-    </li>
-    <li>
-      <a href="https://biometris.github.io/statgenIBD">statgenIBD</a>
-    </li>
-  </ul>
+  <div class="dropdown-menu" aria-labelledby="dropdown--other-packages">
+    <a class="external-link dropdown-item" href="https://biometris.github.io/statgenSTA">statgenSTA</a>
+    <a class="external-link dropdown-item" href="https://biometris.github.io/statgenGxE">statgenGxE</a>
+    <a class="external-link dropdown-item" href="https://biometris.github.io/statgenGWAS">statgenGWAS</a>
+    <a class="external-link dropdown-item" href="https://biometris.github.io/statgenIBD">statgenIBD</a>
+    <a class="external-link dropdown-item" href="https://biometris.github.io/statgenMPP">statgenMPP</a>
+    <a class="external-link dropdown-item" href="https://biometris.github.io/LMMsolver">LMMsolver</a>
+  </div>
 </li>
-<li>
-  <a href="https://github.com/Biometris/statgenHTP">
+<li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/Biometris/statgenHTP">
     <span class="fa fa-github fa-lg fab"></span>
      
     github
@@ -94,71 +88,68 @@
 </li>
       </ul>
 </div>
-<!--/.nav-collapse -->
+
+    
   </div>
-<!--/.container -->
-</div>
-<!--/.navbar -->
+</nav><div class="container template-article">
 
-      
 
-      </header><script src="ParameterEstimation_HTP_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
-  <div class="col-md-9 contents">
-    <div class="page-header toc-ignore">
-      <h1 data-toc-skip>statgenHTP tutorial: 5. Estimation of parameters from time courses</h1>
-                        <h4 class="author">Emilie Millet, Bart-Jan van Rossum, Martin Boer, Fred van Eeuwijk</h4>
+
+<script src="ParameterEstimation_HTP_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="" class="logo" alt=""><h1>statgenHTP tutorial: 6. Estimation of parameters from time courses</h1>
+                        <h4 data-toc-skip class="author">Emilie Millet, Bart-Jan van Rossum, Martin Boer, Fred van Eeuwijk, Diana M. Pérez-Valencia, María Xosé Rodríguez-Álvarez</h4>
             
-            <h4 class="date">2021-09-29</h4>
+            <h4 data-toc-skip class="date">2022-12-13</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/Biometris/statgenHTP/blob/master/vignettes/vignettesSite/ParameterEstimation_HTP.Rmd"><code>vignettes/vignettesSite/ParameterEstimation_HTP.Rmd</code></a></small>
-      <div class="hidden name"><code>ParameterEstimation_HTP.Rmd</code></div>
-
+      <small class="dont-index">Source: <a href="https://github.com/Biometris/statgenHTP/blob/HEAD/vignettes/vignettesSite/ParameterEstimation_HTP.Rmd" class="external-link"><code>vignettes/vignettesSite/ParameterEstimation_HTP.Rmd</code></a></small>
+      <div class="d-none name"><code>ParameterEstimation_HTP.Rmd</code></div>
     </div>
 
     
     
-<div id="introduction" class="section level1">
-<h1 class="hasAnchor">
-<a href="#introduction" class="anchor"></a>Introduction</h1>
+<div class="section level2">
+<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+</h2>
 <p>This document presents the final step of the HTP data analysis: extracting interesting parameters from the modeled time courses <span class="citation">(Brien et al. <a href="#ref-Brien2020" role="doc-biblioref">2020</a>)</span>. For example, in the second data set from the PhenoArch platform, the maximum leaf area (from the P-splines) or the maximum leaf growth rate (from the first derivatives) are relevant parameters (see figure below). We could assess their variability in the genotypes and the difference between treatments, <em>e.g.</em> has the water scenario decreased the maximum leaf area?</p>
 <p><img src="figures/psplinederiv_Arch.png" width="80%"></p>
 <p>It is also possible to specify a period for the parameter estimation. For example, in the first data set from the Phenovator platform, we can select the period with the high light intensity (see figure below) and estimate the maximum slope during that period (from the first derivatives). This could be interpreted as a recovery rate of the photosystem II efficiency.</p>
 <p><img src="figures/psplinederiv_Vator.png" width="80%"></p>
-<p>These parameters could then be further analyzed, for example in a GxE analysis (see <a href="https://biometris.github.io/statgenGxE/index.html"><em>statgenGxE</em></a>), or a genetic analysis (see <a href="https://biometris.github.io/statgenGWAS/index.html"><em>statgenGWAS</em></a>).</p>
-<p>The functions described in this tutorial can be applied to corrected data, genotypic means (BLUEs or BLUPS) (see <a href="SpatialModel_HTP.html"><strong>statgenHTP tutorial: 3. Correction for spatial trends</strong></a>) or on raw data. It allows estimating maximum, minimum, mean, area under the curve (auc) or percentile using predicted values, first or second derivative, during a given period or for the whole time course.</p>
+<p>These parameters could then be further analyzed, for example in a GxE analysis (see <a href="https://biometris.github.io/statgenGxE/index.html" class="external-link"><em>statgenGxE</em></a>), or a genetic analysis (see <a href="https://biometris.github.io/statgenGWAS/index.html" class="external-link"><em>statgenGWAS</em></a>).</p>
+<p>The functions described in this tutorial can be applied to corrected data, genotypic means (BLUEs or BLUPS) (see <a href="SpatialModel_HTP.html"><strong>statgenHTP tutorial: 3. Correction for spatial trends</strong></a>), curves obtained from the P-splines hierarchical data model (see <a href="HierarchicalDataModel_HTP.html"><strong>statgenHTP tutorial: 5. Modelling the temporal evolution of the genetic signal</strong></a>), or on raw data. It allows estimating maximum, minimum, mean, area under the curve (auc) or percentile using predicted values, first or second derivative, during a given period or for the whole time course.</p>
 <hr>
 </div>
-<div id="estimation-of-parameters-from-curves" class="section level1">
-<h1 class="hasAnchor">
-<a href="#estimation-of-parameters-from-curves" class="anchor"></a>Estimation of parameters from curves</h1>
-<div id="example-1" class="section level2">
-<h2 class="hasAnchor">
-<a href="#example-1" class="anchor"></a>Example 1</h2>
+<div class="section level2">
+<h2 id="estimation-of-parameters-from-curves">Estimation of parameters from curves<a class="anchor" aria-label="anchor" href="#estimation-of-parameters-from-curves"></a>
+</h2>
+<div class="section level3">
+<h3 id="example-1">Example 1<a class="anchor" aria-label="anchor" href="#example-1"></a>
+</h3>
 <p>We will use the <code>fit.splineNumOut</code> previously created (see <a href="OutlierSerieObs_HTP.html"><strong>statgenHTP tutorial: 4. Outlier detection for series of observations</strong></a>). It contains the P-spline prediction on a subset of plants without the time course outliers. We will estimate the area under the curve of the trait:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">subGenoVator</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"G070"</span>, <span class="st">"G160"</span>, <span class="st">"G151"</span>, <span class="st">"G179"</span>, <span class="st">"G175"</span>, <span class="st">"G004"</span>, <span class="st">"G055"</span><span class="op">)</span>
-<span class="va">paramVator1</span> <span class="op">&lt;-</span> 
-  <span class="fu"><a href="../../reference/estimateSplineParameters.html">estimateSplineParameters</a></span><span class="op">(</span>HTPSpline <span class="op">=</span> <span class="va">fit.splineNumOut</span>,
-                           estimate <span class="op">=</span> <span class="st">"predictions"</span>,
-                           what <span class="op">=</span> <span class="st">"AUC"</span>,
-                           timeMin <span class="op">=</span> <span class="fl">330</span>,
-                           timeMax <span class="op">=</span> <span class="fl">432</span>,
-                           genotypes <span class="op">=</span> <span class="va">subGenoVator</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">paramVator1</span>, plotType <span class="op">=</span> <span class="st">"box"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">subGenoVator</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"G070"</span>, <span class="st">"G160"</span>, <span class="st">"G151"</span>, <span class="st">"G179"</span>, <span class="st">"G175"</span>, <span class="st">"G004"</span>, <span class="st">"G055"</span><span class="op">)</span></span>
+<span><span class="va">paramVator1</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="../../reference/estimateSplineParameters.html">estimateSplineParameters</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">fit.splineNumOut</span>,</span>
+<span>                           estimate <span class="op">=</span> <span class="st">"predictions"</span>,</span>
+<span>                           what <span class="op">=</span> <span class="st">"AUC"</span>,</span>
+<span>                           timeMin <span class="op">=</span> <span class="fl">330</span>,</span>
+<span>                           timeMax <span class="op">=</span> <span class="fl">432</span>,</span>
+<span>                           genotypes <span class="op">=</span> <span class="va">subGenoVator</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">paramVator1</span>, plotType <span class="op">=</span> <span class="st">"box"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ParameterEstimation_HTP_files/figure-html/paramVator-1.png" width="384"></p>
 <p>For this subset of genotypes, there is a variability in AUC of the psII efficiency. This could be used in genetic analysis and maybe to perform a GWAS.</p>
 <p>Another example is using the derivative during the recovery period (at the end of the time course, so after the light change) to get the maximum slope, or the maximum rate of the psII per time unit during this period.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">paramVator2</span> <span class="op">&lt;-</span>
-  <span class="fu"><a href="../../reference/estimateSplineParameters.html">estimateSplineParameters</a></span><span class="op">(</span>HTPSpline <span class="op">=</span> <span class="va">fit.splineNumOut</span>,
-                           estimate <span class="op">=</span> <span class="st">"derivatives"</span>,
-                           what <span class="op">=</span> <span class="st">"max"</span>,
-                           timeMin <span class="op">=</span> <span class="fl">210</span>,
-                           timeMax <span class="op">=</span> <span class="fl">312</span>,
-                           genotypes <span class="op">=</span> <span class="va">subGenoVator</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">paramVator2</span>, plotType <span class="op">=</span> <span class="st">"box"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">paramVator2</span> <span class="op">&lt;-</span></span>
+<span>  <span class="fu"><a href="../../reference/estimateSplineParameters.html">estimateSplineParameters</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">fit.splineNumOut</span>,</span>
+<span>                           estimate <span class="op">=</span> <span class="st">"derivatives"</span>,</span>
+<span>                           what <span class="op">=</span> <span class="st">"max"</span>,</span>
+<span>                           timeMin <span class="op">=</span> <span class="fl">210</span>,</span>
+<span>                           timeMax <span class="op">=</span> <span class="fl">312</span>,</span>
+<span>                           genotypes <span class="op">=</span> <span class="va">subGenoVator</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">paramVator2</span>, plotType <span class="op">=</span> <span class="st">"box"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ParameterEstimation_HTP_files/figure-html/paramVator2-1.png" width="384"></p>
 <blockquote>
 <p>Note: when “min” or “max” is selected, the output also contains the parameter occurence time point, as numerical <code>timeNumber</code> and date <code>timePoint</code>. See in the table below:</p>
@@ -189,113 +180,212 @@
 <tr class="odd">
 <td align="center">G004</td>
 <td align="center">c19r15</td>
-<td align="center">0.0073180</td>
+<td align="center">0.0073183</td>
 <td align="center">232.0000</td>
 <td align="center">2018-06-10 08:37:00</td>
 </tr>
 <tr class="even">
 <td align="center">G004</td>
 <td align="center">c21r45</td>
-<td align="center">0.0091551</td>
+<td align="center">0.0091547</td>
 <td align="center">223.3333</td>
 <td align="center">2018-06-09 23:57:00</td>
 </tr>
 <tr class="odd">
 <td align="center">G004</td>
 <td align="center">c24r48</td>
-<td align="center">0.0080869</td>
+<td align="center">0.0080870</td>
 <td align="center">224.2222</td>
 <td align="center">2018-06-10 00:50:20</td>
 </tr>
 <tr class="even">
 <td align="center">G004</td>
 <td align="center">c2r15</td>
-<td align="center">0.0079296</td>
+<td align="center">0.0079295</td>
 <td align="center">226.0000</td>
 <td align="center">2018-06-10 02:37:00</td>
 </tr>
 </tbody>
 </table>
 </div>
-<div id="example-2" class="section level2">
-<h2 class="hasAnchor">
-<a href="#example-2" class="anchor"></a>Example 2</h2>
+<div class="section level3">
+<h3 id="example-2">Example 2<a class="anchor" aria-label="anchor" href="#example-2"></a>
+</h3>
 <p>For this example, we will use the genotypic prediction (BLUPs, see <a href="SpatialModel_HTP.html"><strong>statgenHTP tutorial: 3. Correction for spatial trends</strong></a>) available in the <code>spatPredArch</code> data set. We will fit P-splines at the genotypic level using the <code>geno.decomp</code> levels defined in the spatial model.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">spatPredArch</span><span class="op">)</span>  
-<span class="va">fit.splineGenoArch</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fitSpline.html">fitSpline</a></span><span class="op">(</span>inDat <span class="op">=</span> <span class="va">spatPredArch</span>, 
-                                trait <span class="op">=</span> <span class="st">"predicted.values"</span>,
-                                knots <span class="op">=</span> <span class="fl">15</span>,
-                                minNoTP <span class="op">=</span> <span class="fl">18</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">fit.splineGenoArch</span>, 
-     genotypes <span class="op">=</span> <span class="st">"GenoA36"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">spatPredArch</span><span class="op">)</span>  </span>
+<span><span class="va">fit.splineGenoArch</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fitSpline.html">fitSpline</a></span><span class="op">(</span>inDat <span class="op">=</span> <span class="va">spatPredArch</span>, </span>
+<span>                                trait <span class="op">=</span> <span class="st">"predicted.values"</span>,</span>
+<span>                                knots <span class="op">=</span> <span class="fl">15</span>,</span>
+<span>                                minNoTP <span class="op">=</span> <span class="fl">18</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.splineGenoArch</span>, </span>
+<span>     genotypes <span class="op">=</span> <span class="st">"GenoA36"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ParameterEstimation_HTP_files/figure-html/fitSplineArch-1.png" width="576"></p>
 <p>We can estimate the maximum value of the leaf area from the predicted P-splines:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">paramArch1</span> <span class="op">&lt;-</span>
-  <span class="fu"><a href="../../reference/estimateSplineParameters.html">estimateSplineParameters</a></span><span class="op">(</span>HTPSpline <span class="op">=</span> <span class="va">fit.splineGenoArch</span>,
-                           estimate <span class="op">=</span> <span class="st">"predictions"</span>,
-                           what <span class="op">=</span> <span class="st">"max"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">paramArch1</span> <span class="op">&lt;-</span></span>
+<span>  <span class="fu"><a href="../../reference/estimateSplineParameters.html">estimateSplineParameters</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">fit.splineGenoArch</span>,</span>
+<span>                           estimate <span class="op">=</span> <span class="st">"predictions"</span>,</span>
+<span>                           what <span class="op">=</span> <span class="st">"max"</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">paramArch1</span>, plotType <span class="op">=</span> <span class="st">"hist"</span><span class="op">)</span></code></pre></div>
-<p><img src="ParameterEstimation_HTP_files/figure-html/paramArch1fig-1.png" width="576"> ## Example 3</p>
-<p>For this example, we will use the raw data from the RootPhAir, corrected for individually outlying observations (see <a href="OutlierSingleObs_HTP.html"><strong>statgenHTP tutorial: 2. Outlier detection for single observations</strong></a>) and time course outliers (see <a href="OutlierSerieObs_HTP.html"><strong>statgenHTP tutorial: 4. Outlier detection Time course</strong></a>). We will fit P-splines at the plant level on a subset of genotypes.</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">paramArch1</span>, plotType <span class="op">=</span> <span class="st">"hist"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="ParameterEstimation_HTP_files/figure-html/paramArch1fig-1.png" width="576"></p>
+</div>
+<div class="section level3">
+<h3 id="example-3">Example 3<a class="anchor" aria-label="anchor" href="#example-3"></a>
+</h3>
+<p>For this example, we will use curves obtained from the P-splines hierarchical data model (see <a href="HierarchicalDataModel_HTP.html"><strong>statgenHTP tutorial: 5. Modelling the temporal evolution of the genetic signal</strong></a>). We can use <code>psHDM</code> objects (that is, objects obtained from <code><a href="../../reference/fitSplineHDM.html">fitSplineHDM()</a></code> (fitted curves) or <code><a href="../../reference/predict.psHDM.html">predict.psHDM()</a></code> (predicted curves)). For this example, we will use predicted curves.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">subGenoRoot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span> <span class="st">"2"</span>,<span class="st">"6"</span>,<span class="st">"8"</span>,<span class="st">"9"</span>,<span class="st">"10"</span>,<span class="st">"520"</span>,<span class="st">"522"</span><span class="op">)</span>
-<span class="va">fit.splineRootOut</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fitSpline.html">fitSpline</a></span><span class="op">(</span>inDat <span class="op">=</span> <span class="va">noCorrectedRootOut</span>,
-                               trait <span class="op">=</span> <span class="st">"tipPos_y"</span>,
-                               knots <span class="op">=</span> <span class="fl">10</span>,
-                               genotypes <span class="op">=</span> <span class="va">subGenoRoot</span>,
-                               minNoTP <span class="op">=</span> <span class="fl">0</span>,
-                               useTimeNumber <span class="op">=</span> <span class="cn">TRUE</span>,
-                               timeNumber <span class="op">=</span> <span class="st">"thermalTime"</span><span class="op">)</span></code></pre></div>
-<p>We will then estimate the mean growth rate using <code>what = "mean"</code> for the subset of genotypes:</p>
+<code class="sourceCode R"><span><span class="co">## The data from the Phenovator platform have been corrected for spatial</span></span>
+<span><span class="co">## trends and outliers for single observations have been removed.</span></span>
+<span></span>
+<span><span class="co">## We need to specify the genotype-by-treatment interaction.</span></span>
+<span><span class="co">## Treatment: water regime (WW, WD).</span></span>
+<span><span class="va">spatCorrectedArch</span><span class="op">[[</span><span class="st">"treat"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">spatCorrectedArch</span><span class="op">[[</span><span class="st">"geno.decomp"</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>                                      start <span class="op">=</span> <span class="fl">1</span>, stop <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="va">spatCorrectedArch</span><span class="op">[[</span><span class="st">"genoTreat"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/interaction.html" class="external-link">interaction</a></span><span class="op">(</span><span class="va">spatCorrectedArch</span><span class="op">[[</span><span class="st">"genotype"</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>             <span class="va">spatCorrectedArch</span><span class="op">[[</span><span class="st">"treat"</span><span class="op">]</span><span class="op">]</span>, sep <span class="op">=</span> <span class="st">"_"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## Fit P-Splines Hierarchical Curve Data Model for all genotypes.</span></span>
+<span><span class="va">fit.psHDM</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fitSplineHDM.html">fitSplineHDM</a></span><span class="op">(</span>inDat <span class="op">=</span> <span class="va">spatCorrectedArch</span>,</span>
+<span>                           trait <span class="op">=</span> <span class="st">"LeafArea_corr"</span>,</span>
+<span>                           pop <span class="op">=</span> <span class="st">"geno.decomp"</span>,</span>
+<span>                           genotype <span class="op">=</span> <span class="st">"genoTreat"</span>,</span>
+<span>                           plotId <span class="op">=</span> <span class="st">"plotId"</span>,</span>
+<span>                           difVar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>geno <span class="op">=</span> <span class="cn">FALSE</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span>
+<span>                           smoothPop <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>nseg <span class="op">=</span> <span class="fl">5</span>, bdeg <span class="op">=</span> <span class="fl">3</span>, pord <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
+<span>                           smoothGeno <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>nseg <span class="op">=</span> <span class="fl">5</span>, bdeg <span class="op">=</span> <span class="fl">3</span>, pord <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
+<span>                           smoothPlot <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>nseg <span class="op">=</span> <span class="fl">5</span>, bdeg <span class="op">=</span> <span class="fl">3</span>, pord <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
+<span>                           weights <span class="op">=</span> <span class="st">"wt"</span>,</span>
+<span>                           trace <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>                           useTimeNumber <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## Predict the P-Splines Hierarchical Curve Data Model on a dense grid</span></span>
+<span><span class="co">## Only predictions (and standard errors) are obtained  </span></span>
+<span><span class="co">## at the population and genotype levels</span></span>
+<span><span class="va">pred.psHDM</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">fit.psHDM</span>,</span>
+<span>                      newtimes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">fit.psHDM</span><span class="op">$</span><span class="va">time</span><span class="op">[[</span><span class="st">"timeNumber"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>                                     <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">fit.psHDM</span><span class="op">$</span><span class="va">time</span><span class="op">[[</span><span class="st">"timeNumber"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>                                     length.out <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>,</span>
+<span>                      pred <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>pop <span class="op">=</span> <span class="cn">TRUE</span>, geno <span class="op">=</span> <span class="cn">TRUE</span>, plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>                      se <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>pop <span class="op">=</span> <span class="cn">TRUE</span>, geno <span class="op">=</span> <span class="cn">TRUE</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span>
+<span>                      trace <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p>Although we have available information at population, genotype and plot levels, this function only extracts information at genotype and plot levels. Nevertheless, we are generally interested in the genotype level. For example, in the paper by <span class="citation">Pérez-Valencia et al. (<a href="#ref-Perez2022" role="doc-biblioref">2022</a>)</span>, they extracted three features:</p>
+<ul>
+<li>The maximum spatially corrected leaf area (from estimated genotype-specific trajectories)</li>
+</ul>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">paramRoot1</span> <span class="op">&lt;-</span>
-  <span class="fu"><a href="../../reference/estimateSplineParameters.html">estimateSplineParameters</a></span><span class="op">(</span>HTPSpline <span class="op">=</span> <span class="va">fit.splineRootOut</span>,
-                           estimate <span class="op">=</span> <span class="st">"derivatives"</span>,
-                           what <span class="op">=</span> <span class="st">"mean"</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">paramRoot1</span>, plotType <span class="op">=</span> <span class="st">"box"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co">##  From estimated genotype-specific trajectories</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pred.psHDM</span>, plotType <span class="op">=</span> <span class="st">"popGenoTra"</span>, themeSizeHDM <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
+<p><img src="ParameterEstimation_HTP_files/figure-html/paramPhenoGenoPred1-1.png" width="384"></p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## Estimate maximum spatially corrected leaf area.</span></span>
+<span><span class="va">paramArch1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/estimateSplineParameters.html">estimateSplineParameters</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">pred.psHDM</span>,</span>
+<span>                                     what <span class="op">=</span> <span class="st">"max"</span>,</span>
+<span>                                     fitLevel <span class="op">=</span> <span class="st">"geno"</span>,</span>
+<span>                                     estimate <span class="op">=</span> <span class="st">"predictions"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## Create a boxplot of the estimates.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">paramArch1</span>, plotType <span class="op">=</span> <span class="st">"box"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="ParameterEstimation_HTP_files/figure-html/paramPhenoGenoPred2-1.png" width="384"></p>
+<ul>
+<li>The maximum speed rate (from the first derivative of the estimated genotype-specific trajectories)</li>
+</ul>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## From the first derivative of the estimated genotype-specific trajectories</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pred.psHDM</span>, plotType <span class="op">=</span> <span class="st">"popGenoDeriv"</span>, themeSizeHDM <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
+<p><img src="ParameterEstimation_HTP_files/figure-html/paramPhenoGenoDeriv1-1.png" width="700"></p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## Estimate maximum speed rate </span></span>
+<span><span class="co">## We are interested on a local maximum (before timeNumber 2500)</span></span>
+<span><span class="va">paramArch2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/estimateSplineParameters.html">estimateSplineParameters</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">pred.psHDM</span>,</span>
+<span>                                     what <span class="op">=</span> <span class="st">"max"</span>,</span>
+<span>                                     fitLevel <span class="op">=</span> <span class="st">"geno"</span>,</span>
+<span>                                     estimate <span class="op">=</span> <span class="st">"derivatives"</span>,</span>
+<span>                                     timeMax <span class="op">=</span> <span class="fl">2500</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## Create a boxplot of the estimates.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">paramArch2</span>, plotType <span class="op">=</span> <span class="st">"box"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="ParameterEstimation_HTP_files/figure-html/paramPhenoGenoDeriv2-1.png" width="384"></p>
+<ul>
+<li>The area under the estimated genotype-specific deviations, as follows</li>
+</ul>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## From the estimated genotype-specific deviations</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pred.psHDM</span>, plotType <span class="op">=</span> <span class="st">"genoDev"</span>, themeSizeHDM <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
+<p><img src="ParameterEstimation_HTP_files/figure-html/paramPhenoGenoDev1-1.png" width="700"></p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## Estimate area under the curve (AUC).</span></span>
+<span><span class="va">paramArch3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/estimateSplineParameters.html">estimateSplineParameters</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">pred.psHDM</span>,</span>
+<span>                                     what <span class="op">=</span> <span class="st">"AUC"</span>,</span>
+<span>                                     fitLevel <span class="op">=</span> <span class="st">"genoDev"</span>,</span>
+<span>                                     estimate <span class="op">=</span> <span class="st">"predictions"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## Create a boxplot of the estimates.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">paramArch3</span>, plotType <span class="op">=</span> <span class="st">"box"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="ParameterEstimation_HTP_files/figure-html/paramPhenoGenoDev2-1.png" width="384"></p>
+</div>
+<div class="section level3">
+<h3 id="example-4">Example 4<a class="anchor" aria-label="anchor" href="#example-4"></a>
+</h3>
+<p>For this example, we will use the raw data from the RootPhAir, corrected for individually outlying observations (see <a href="OutlierSingleObs_HTP.html"><strong>statgenHTP tutorial: 2. Outlier detection for single observations</strong></a>) and time course outliers (see <a href="OutlierSerieObs_HTP.html"><strong>statgenHTP tutorial: 4. Outlier detection Time course</strong></a>). We will fit P-splines at the plant level on a subset of genotypes.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">subGenoRoot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"2"</span>,<span class="st">"6"</span>,<span class="st">"8"</span>,<span class="st">"9"</span>,<span class="st">"10"</span>,<span class="st">"520"</span>,<span class="st">"522"</span><span class="op">)</span></span>
+<span><span class="va">fit.splineRootOut</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fitSpline.html">fitSpline</a></span><span class="op">(</span>inDat <span class="op">=</span> <span class="va">noCorrectedRootOut</span>,</span>
+<span>                               trait <span class="op">=</span> <span class="st">"tipPos_y"</span>,</span>
+<span>                               knots <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>                               genotypes <span class="op">=</span> <span class="va">subGenoRoot</span>,</span>
+<span>                               minNoTP <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>                               useTimeNumber <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                               timeNumber <span class="op">=</span> <span class="st">"thermalTime"</span><span class="op">)</span></span></code></pre></div>
+<p>We will then estimate the mean growth rate using <code>what = "mean"</code> for the subset of genotypes:</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">paramRoot1</span> <span class="op">&lt;-</span></span>
+<span>  <span class="fu"><a href="../../reference/estimateSplineParameters.html">estimateSplineParameters</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">fit.splineRootOut</span>,</span>
+<span>                           estimate <span class="op">=</span> <span class="st">"derivatives"</span>,</span>
+<span>                           what <span class="op">=</span> <span class="st">"mean"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">paramRoot1</span>, plotType <span class="op">=</span> <span class="st">"box"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ParameterEstimation_HTP_files/figure-html/paramRoot1-1.png" width="384"></p>
 <hr>
 </div>
-<div id="references" class="section level2 unnumbered">
-<h2 class="hasAnchor">
-<a href="#references" class="anchor"></a>References</h2>
+<div class="section level3">
+<h3 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h3>
 <div id="refs" class="references">
 <div id="ref-Brien2020">
-<p>Brien, Chris, Nathaniel Jewell, Stephanie J. Watts-Williams, Trevor Garnett, and Bettina Berger. 2020. “Smoothing and Extraction of Traits in the Growth Analysis of Noninvasive Phenotypic Data.” <em>Plant Methods</em> 16 (1): 36. <a href="https://doi.org/10.1186/s13007-020-00577-6">https://doi.org/10.1186/s13007-020-00577-6</a>.</p>
+<p>Brien, Chris, Nathaniel Jewell, Stephanie J. Watts-Williams, Trevor Garnett, and Bettina Berger. 2020. “Smoothing and Extraction of Traits in the Growth Analysis of Noninvasive Phenotypic Data.” <em>Plant Methods</em> 16 (1): 36. <a href="https://doi.org/10.1186/s13007-020-00577-6" class="external-link">https://doi.org/10.1186/s13007-020-00577-6</a>.</p>
+</div>
+<div id="ref-Perez2022">
+<p>Pérez-Valencia, Diana M, María Xosé Rodríguez-Álvarez, Martin P Boer, Lukas Kronenberg, Andreas Hund, Llorenç Cabrera-Bosquet, Emilie J Millet, and Fred A van Eeuwijk. 2022. “A Two-Stage Approach for the Spatio-Temporal Analysis of High-Throughput Phenotyping Data.” <em>Scientific Reports</em> 12 (1): 1–16. <a href="https://doi.org/10.1038/s41598-022-06935-9" class="external-link">https://doi.org/10.1038/s41598-022-06935-9</a>.</p>
 </div>
 </div>
 </div>
 </div>
-  </div>
-
-  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-
-        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
-    </nav>
-</div>
-
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 
 
-      <footer><div class="copyright">
-  <p>Developed by Emilie J Millet, Maria Xose Rodriguez Alvarez, Diana Marcela Perez Valencia, Isabelle Sanchez, Nadine Hilgert, Bart-Jan van Rossum, Fred van Eeuwijk, Martin Boer.</p>
+    <footer><div class="pkgdown-footer-left">
+  <p></p>
+<p>Developed by Emilie J Millet, Maria Xose Rodriguez Alvarez, Diana Marcela Perez Valencia, Isabelle Sanchez, Nadine Hilgert, Bart-Jan van Rossum, Fred van Eeuwijk, Martin Boer.</p>
 </div>
 
-<div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+<div class="pkgdown-footer-right">
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
-      </footer>
+    </footer>
 </div>
 
   
 
+  
 
   </body>
 </html>
