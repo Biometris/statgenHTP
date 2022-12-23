@@ -21,3 +21,4 @@ testScript*
 ^\.github$
 vignettesSite
 public
+^CRAN-SUBMISSION$

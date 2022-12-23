@@ -206,7 +206,8 @@ xyFacetPlot <- function(baseDat,
                         output = TRUE,
                         plotLine = FALSE) {
   ## Create plot.
-  p <- ggplot2::ggplot(baseDat, ggplot2::aes_string(x = xVal, y = yVal)) +
+  p <- ggplot2::ggplot(baseDat, ggplot2::aes(x = .data[[xVal]],
+                                             y = .data[[yVal]])) +
     ## Format the time scale to Month + day.
     ggplot2::theme(panel.background = ggplot2::element_blank(),
                    panel.spacing = ggplot2::unit(0, "cm"),
@@ -230,28 +231,29 @@ xyFacetPlot <- function(baseDat,
 
   if (!plotLine || length(unique(baseDat[[xVal]])) == 1) {
     ## Multiple time points in data. Display a line.
-    p <- p + ggplot2::geom_point(ggplot2::aes_string(group = groupVal,
-                                                     color = colVal),
+    p <- p + ggplot2::geom_point(ggplot2::aes(group = .data[[groupVal]],
+                                              color = .data[[colVal]]),
                                  show.legend = FALSE, na.rm = TRUE, size = 1)
   } else {
     ## Only one time point. Makes geom_line crash. Display as point.
-    p <- p + ggplot2::geom_line(ggplot2::aes_string(group = groupVal,
-                                                    color = colVal),
+    p <- p + ggplot2::geom_line(ggplot2::aes(group = .data[[groupVal]],
+                                             color = .data[[colVal]]),
                                 show.legend = FALSE, na.rm = TRUE)
   }
   if (!is.null(overlayDat)) {
     ## Add a second data set as overlay over the first plot.
     if (!plotLine || length(unique(baseDat[[xVal]])) == 1) {
       ## Multiple time points in data. Display a line.
-      p <- p + ggplot2::geom_point(ggplot2::aes_string(x = xVal,
-                                                       y = yValOverlay),
+      p <- p + ggplot2::geom_point(ggplot2::aes(x = .data[[xVal]],
+                                                y = .data[[yValOverlay]]),
                                    data = overlayDat, color = "black", size = 1,
                                    show.legend = FALSE, na.rm = TRUE)
     } else {
       ## Only one time point. Makes geom_line crash. Display as point.
       p <- p +
-        ggplot2::geom_line(ggplot2::aes_string(x = xVal, y = yValOverlay),
-                           data = overlayDat, color = "black", size = 1,
+        ggplot2::geom_line(ggplot2::aes(x = .data[[xVal]],
+                                        y = .data[[yValOverlay]]),
+                           data = overlayDat, color = "black", linewidth = 1,
                            show.legend = FALSE, na.rm = TRUE)
     }
   }

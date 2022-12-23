@@ -385,9 +385,10 @@ plot.HTPSpline <- function(x,
     }
   }
   timeVar <- if (useTimeNumber) "timeNumber" else "timePoint"
-  p <- ggplot2::ggplot(modDat, ggplot2::aes_string(x = timeVar, y = trait)) +
+  p <- ggplot2::ggplot(modDat, ggplot2::aes(x = .data[[timeVar]],
+                                            y = .data[[trait]])) +
     ggplot2::geom_line(data = predDat,
-                       ggplot2::aes_string(x = timeVar, y = plotVar),
+                       ggplot2::aes(x = .data[[timeVar]], y = .data[[plotVar]]),
                        col = "blue", na.rm = TRUE) +
     ggplot2::labs(title = title, y = trait, x = timeVar)
   if (plotType == "predictions") {

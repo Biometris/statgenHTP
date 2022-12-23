@@ -231,14 +231,15 @@ plot.singleOut <- function(x,
   plotDat <- droplevels(plotDat)
   trait <- attr(x = x, which = "trait")
   p <- ggplot2::ggplot(plotDat,
-                       ggplot2::aes_string(x = "timePoint", y = trait)) +
+                       ggplot2::aes(x = .data[["timePoint"]],
+                                    y = .data[[trait]])) +
     ggplot2::geom_point(na.rm = TRUE)  +
-    ggplot2::geom_line(mapping = ggplot2::aes_string(y = "lwr"),
-                       col = "green", size = .8) +
-    ggplot2::geom_line(mapping = ggplot2::aes_string(y = "upr"),
-                       col = "green", size = .8) +
-    ggplot2::geom_line(mapping = ggplot2::aes_string(y = "yPred"),
-                       col = "red", size = .8) +
+    ggplot2::geom_line(mapping = ggplot2::aes(y = .data[["lwr"]]),
+                       col = "green", linewidth = .8) +
+    ggplot2::geom_line(mapping = ggplot2::aes(y = .data[["upr"]]),
+                       col = "green", linewidth = .8) +
+    ggplot2::geom_line(mapping = ggplot2::aes(y = .data[["yPred"]]),
+                       col = "red", linewidth = .8) +
     ggplot2::geom_point(data = outliers, col = "blue", size = 2) +
     ggplot2::theme(legend.position = "none")
   nTp <- length(unique(plotDat[["timePoint"]]))

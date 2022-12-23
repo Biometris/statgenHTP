@@ -317,8 +317,8 @@ plot.splineEst <- function(x,
   if (plotType == "box") {
     pTot <- lapply(X = what, FUN = function(w) {
       estVar <- paste0(w, "_", estimate)
-      pWhat <- ggplot2::ggplot(x,
-                               ggplot2::aes_string(x = plotVar, y = estVar)) +
+      pWhat <- ggplot2::ggplot(x, ggplot2::aes(x = .data[[plotVar]],
+                                               y = .data[[estVar]])) +
         ggplot2::geom_boxplot(na.rm = TRUE) +
         ggplot2::labs(title = title, y = (paste(w, "of", trait))) +
         ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90,
@@ -333,7 +333,7 @@ plot.splineEst <- function(x,
   } else if (plotType == "hist") {
     pTot <- lapply(X = what, FUN = function(w) {
       estVar <- paste0(w, "_", estimate)
-      pWhat <- ggplot2::ggplot(x, ggplot2::aes_string(x = estVar)) +
+      pWhat <- ggplot2::ggplot(x, ggplot2::aes(x = .data[[estVar]])) +
         ggplot2::geom_histogram(na.rm = TRUE, bins = 10) +
         ggplot2::labs(title = title, y = (paste(w, "of", trait)))
       if (useGenoDecomp) {

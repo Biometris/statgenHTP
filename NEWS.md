@@ -1,3 +1,7 @@
+# statgenHTP 1.0.6.9000
+
+* Functions no longer rely on soft-deprecated ggplot2 functions.
+
 # statgenHTP 1.0.6
 
 * The package has been extended by functions for modelling evolution of the genetic signal. This extension consists of functions `fitSplineHDM()` for fitting a hierarchical data model, `predict.psHDM()` for making predictions based on this model, and `plot.psHDM()` for plotting the results. The methods used are described in a new vignette.

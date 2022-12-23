@@ -61,7 +61,7 @@ p1 <- plot(testTP, plotType = "layout", highlight = "check1", outFile = tmpFile)
 geoms1 <- sapply(p1[[1]]$layers, function(x) class(x$geom)[1])
 ## Two plots should be highlighted as defined in variable highlight..
 expect_equal(as.character(p1[[1]]$layers[geoms1 == "GeomTile"][[1]]$mapping),
-             "~highlight.")
+             "~.data[[\"highlight.\"]]")
 #expect_equal(sum(!is.na(p1[[1]]$data$highlight.)), 4)
 
 ### Check box plot.
@@ -83,7 +83,7 @@ expect_error(plot(testTP, plotType = "box", traits = "t1", groupBy = "grp"),
              "groupBy should be a column in TP")
 p <- plot(testTP, plotType = "box", traits = "t1", groupBy = "repId",
           outFile = tmpFile)
-expect_true("~repId" %in% as.character(p$t1$mapping))
+expect_true("~.data[[\"repId\"]]" %in% as.character(p$t1$mapping))
 
 ## Check option colorBy for box plot.
 
@@ -93,7 +93,8 @@ expect_error(plot(testTP, plotType = "box", traits = "t1", colorBy = "grp"),
              "colorBy should be a column in TP")
 p <- plot(testTP, plotType = "box", traits = "t1", colorBy = "repId",
           outFile = tmpFile)
-expect_true(all(c("~repId", "~timePoint") %in% as.character(p$t1$mapping)))
+expect_true(all(c("~.data[[\"repId\"]]", "~.data[[\"timePoint\"]]") %in%
+                  as.character(p$t1$mapping)))
 
 ## Check option orderBy for box plot.
 

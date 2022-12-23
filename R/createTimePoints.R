@@ -535,7 +535,8 @@ plot.TP <- function(x,
       }
       ## Create base plot.
       pTp <- ggplot2::ggplot(data = tpDat,
-                             ggplot2::aes_string(x = "colNum", y = "rowNum")) +
+                             ggplot2::aes(x = .data[["colNum"]],
+                                          y = .data[["rowNum"]])) +
         ggplot2::coord_fixed(ratio = aspect,
                              xlim = range(tpDat$colNum) + c(-0.5, 0.5),
                              ylim = range(tpDat$rowNum) + c(-0.5, 0.5),
@@ -551,24 +552,28 @@ plot.TP <- function(x,
       if (sum(!is.na(tpDat$highlight.)) > 0) {
         ## Genotypes to be highlighted get a color.
         ## Everything else the NA color.
-        pTp <- pTp + ggplot2::geom_tile(
-          ggplot2::aes_string(fill = "highlight."), color = "grey75") +
+        pTp <- pTp +
+          ggplot2::geom_tile(ggplot2::aes(fill = .data[["highlight."]]),
+                             color = "grey75") +
           ggplot2::labs(fill = "Highlighted") +
           ## Remove NA from scale.
           ggplot2::scale_fill_discrete(na.translate = FALSE)
       } else if (!is.null(traits)) {
-        pTp <- pTp + ggplot2::geom_tile(
-          ggplot2::aes_string(fill = traits), color = "grey75") +
+        pTp <- pTp +
+          ggplot2::geom_tile(ggplot2::aes(fill = .data[[traits]]),
+                             color = "grey75") +
           ## Adjust plot colors.
           ggplot2::scale_fill_gradientn(colors = topo.colors(100))
       } else {
         ## No hightlights so just a single fill color.
-        pTp <- pTp + ggplot2::geom_tile(fill = "white", color = "grey75")
+        pTp <- pTp +
+          ggplot2::geom_tile(fill = "white", color = "grey75")
       }
       if (showGeno) {
         ## Add names of genotypes to the center of the tiles.
-        pTp <- pTp + ggplot2::geom_text(ggplot2::aes_string(label = "genotype"),
-                                        size = 2, check_overlap = TRUE)
+        pTp <- pTp +
+          ggplot2::geom_text(ggplot2::aes(label = .data[["genotype"]]),
+                             size = 2, check_overlap = TRUE)
       }
       if (plotRep) {
         ## Add lines for replicates.
@@ -576,17 +581,17 @@ plot.TP <- function(x,
           ## Add vertical lines as segment.
           ## adding/subtracting 0.5 assures plotting at the borders of
           ## the tiles.
-          ggplot2::geom_segment(ggplot2::aes_string(x = "x - 0.5",
-                                                    xend = "x - 0.5",
-                                                    y = "y - 0.5",
-                                                    yend = "y + 0.5",
-                                                    linetype = "'replicates'"),
-                                data = repBord$vertW, size = 1) +
-          ggplot2::geom_segment(ggplot2::aes_string(x = "x - 0.5",
-                                                    xend = "x + 0.5",
-                                                    y = "y - 0.5",
-                                                    yend = "y - 0.5"),
-                                data = repBord$horW, size = 1)
+          ggplot2::geom_segment(ggplot2::aes(x = .data[["x"]] - 0.5,
+                                             xend = .data[["x"]] - 0.5,
+                                             y = .data[["y"]] - 0.5,
+                                             yend = .data[["y"]] + 0.5,
+                                             linetype = "replicates"),
+                                data = repBord$vertW, linewidth = 1) +
+          ggplot2::geom_segment(ggplot2::aes(x = .data[["x"]] - 0.5,
+                                             xend = .data[["x"]] + 0.5,
+                                             y = .data[["y"]] - 0.5,
+                                             yend = .data[["y"]] - 0.5),
+                                data = repBord$horW, linewidth = 1)
       }
       if (plotRep) {
         pTp <- pTp +
@@ -680,12 +685,16 @@ plot.TP <- function(x,
       }
       ## Create boxplot.
       ## Back ticks around variable names are needed to handle spaces in names.
+      if (is.null(colorBy)) {
+        colorBy <- ".colorBy"
+        plotDat[[".colorBy"]] <- factor(1)
+      }
       pTp <- ggplot2::ggplot(plotDat,
-                             ggplot2::aes_string(x = paste0("`", xVar, "`"),
-                                                 y = paste0("`", trait, "`"),
-                                                 fill = if (is.null(colorBy)) NULL else
-                                                   paste0("`", colorBy, "`"))) +
-        ggplot2::geom_boxplot(na.rm = TRUE) +
+                             ggplot2::aes(x = .data[[xVar]],
+                                          y = .data[[trait]],
+                                          fill = .data[[colorBy]])) +
+        ggplot2::geom_boxplot(na.rm = TRUE,
+                              show.legend = colorBy != ".colorBy") +
         ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5),
                        axis.text.x = ggplot2::element_text(angle = 90,
                                                            vjust = 0.5,
@@ -755,8 +764,9 @@ plot.TP <- function(x,
                                      as.numeric(meltedCorMat$Var2), ]
       ## Create plot.
       pTp <- ggplot2::ggplot(data = meltedCorMat,
-                             ggplot2::aes_string(x = "Var1", y = "Var2",
-                                                 fill = "value")) +
+                             ggplot2::aes(x = .data[["Var1"]],
+                                          y = .data[["Var2"]],
+                                          fill = .data[["value"]])) +
         ggplot2::geom_tile(color = "grey50") +
         ## Create a gradient scale.
         ggplot2::scale_fill_gradient2(low = "blue", high = "red", mid = "white",

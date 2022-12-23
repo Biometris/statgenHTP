@@ -59,6 +59,7 @@ Imports:
     LMMsolver,
     locfit,
     lubridate,
+    rlang,
     reshape2,
     scales,
     spam,

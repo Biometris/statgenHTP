@@ -574,14 +574,15 @@ plot.serieOut <- function(x,
     plotShapes <- na.omit(plotShapes[levels(genoDats[[genotype]]$plotId)])
     ## Plot of time course per genotype: corrected data + spline per plant.
     kinetic <- ggplot2::ggplot(genoDats[[genotype]],
-                               ggplot2::aes_string(x = timeVar2, y = trait,
-                                                   color = "plotId")) +
-      ggplot2::geom_point(ggplot2::aes_string(shape = "plotId"), size = 2,
+                               ggplot2::aes(x = .data[[timeVar2]],
+                                            y = .data[[trait]],
+                                            color = .data[["plotId"]])) +
+      ggplot2::geom_point(ggplot2::aes(shape = .data[["plotId"]]), size = 2,
                           na.rm = TRUE, fill = "red") +
       ggplot2::geom_line(data = genoPreds[[genotype]],
-                         ggplot2::aes_string(x = timeVar,
-                                             y = "pred.value"),
-                         size = 0.5, na.rm = TRUE) +
+                         ggplot2::aes(x = .data[[timeVar]],
+                                      y = .data[["pred.value"]]),
+                         linewidth = 0.5, na.rm = TRUE) +
       ggplot2::scale_shape_manual(values = plotShapes) +
       ggplot2::theme_light() +
       ggplot2::theme(axis.text = ggplot2::element_text(size = 12),
@@ -597,8 +598,9 @@ plot.serieOut <- function(x,
       thrCorGeno <- attr(cormats[[genotype]], which = "thrCor")
       thrSlopeGeno <- attr(slopemats[[genotype]], which = "thrSlope")
       correl <- ggplot2::ggplot(data = cormats[[genotype]],
-                                ggplot2::aes_string("Var2", "Var1",
-                                                    fill = "value")) +
+                                ggplot2::aes(x = .data[["Var2"]],
+                                             y = .data[["Var1"]],
+                                             fill = .data[["value"]])) +
         ## Move y-axis to the right.
         ggplot2::scale_y_discrete(position = "right") +
         ## Use coord fixed to create a square shaped output.
@@ -629,15 +631,16 @@ plot.serieOut <- function(x,
           ggnewscale::new_scale_fill() +
           ## Add slope to upper left.
           ggplot2::geom_tile(data = slopemats[[genotype]],
-                             ggplot2::aes_string("Var1", "Var2",
-                                                 fill = "value"),
+                             ggplot2::aes(x = .data[["Var1"]],
+                                          y = .data[["Var2"]],
+                                          fill = .data[["value"]]),
                              color = "white") +
           ggplot2::scale_fill_gradientn(colors = c("cyan", "white", "darkgreen"),
                                         values = scales::rescale(c(minSlope,
                                                                    thrSlopeGeno, 1)),
                                         limits = c(minSlope, 1),
                                         name = "Slope\nCorrelation")
-        }
+      }
     } else {
       correl <- grid::nullGrob()
     }

@@ -412,9 +412,10 @@ plot.fitMod <- function(x,
     yLim <- c(min(dotArgs$yLim[1], herit[["h2"]]),
               max(dotArgs$yLim[2], herit[["h2"]]))
     p <- ggplot2::ggplot(herit,
-                         ggplot2::aes_string(x = "timePoint", y = "h2",
-                                             group = "herit",
-                                             color = "herit")) +
+                         ggplot2::aes(x = .data[["timePoint"]],
+                                      y = .data[["h2"]],
+                                      group = .data[["herit"]],
+                                      color = .data[["herit"]])) +
       ggplot2::geom_point(size = 3, na.rm = TRUE) +
       plotTheme() +
       ggplot2::theme(axis.title.y = ggplot2::element_text(angle = 0,
@@ -434,7 +435,7 @@ plot.fitMod <- function(x,
                                          labels = scales::date_format("%B %d"))
     }
     if (nTp > 1) {
-      p <- p + ggplot2::geom_line(size = 0.5, na.rm = TRUE)
+      p <- p + ggplot2::geom_line(linewidth = 0.5, na.rm = TRUE)
     }
     if (output) {
       plot(p)
@@ -461,10 +462,10 @@ plot.fitMod <- function(x,
     ## Manually modify limit of y-axis.
     yLim <- c(min(dotArgs$yLim[1], effDim[["ED"]]),
               max(dotArgs$yLim[2], effDim[["ED"]]))
-    p <- ggplot2::ggplot(effDim,
-                         ggplot2::aes_string(x = "timePoint", y = "ED",
-                                             group = "effDim",
-                                             color = "effDim")) +
+    p <- ggplot2::ggplot(effDim, ggplot2::aes(x = .data[["timePoint"]],
+                                              y = .data[["ED"]],
+                                              group = .data[["effDim"]],
+                                              color = .data[["effDim"]])) +
       ggplot2::geom_point(size = 3, na.rm = TRUE) +
       plotTheme() +
       ggplot2::theme(axis.title.y = ggplot2::element_text(angle = 0,
@@ -484,7 +485,7 @@ plot.fitMod <- function(x,
                                          labels = scales::date_format("%B %d"))
     }
     if (nTp > 1) {
-      p <- p + ggplot2::geom_line(size = 0.5, na.rm = TRUE)
+      p <- p + ggplot2::geom_line(linewidth = 0.5, na.rm = TRUE)
     }
     if (output) {
       plot(p)
@@ -506,9 +507,10 @@ plot.fitMod <- function(x,
     ## Manually modify limit of y-axis.
     yLim <- c(min(dotArgs$yLim[1], variance[["value"]]),
               max(dotArgs$yLim[2], variance[["value"]]))
-    p <- ggplot2::ggplot(variance,
-                         ggplot2::aes_string(x = "timePoint", y = "value",
-                                             group = "var", color = "var")) +
+    p <- ggplot2::ggplot(variance, ggplot2::aes(x = .data[["timePoint"]],
+                                                y = .data[["value"]],
+                                                group = .data[["var"]],
+                                                color = .data[["var"]])) +
       ggplot2::geom_point(size = 3, na.rm = TRUE) +
       ggplot2::scale_color_discrete(labels = varLabs) +
       plotTheme() +
@@ -530,7 +532,7 @@ plot.fitMod <- function(x,
                                          labels = scales::date_format("%B %d"))
     }
     if (nTp > 1) {
-      p <- p + ggplot2::geom_line(size = 0.5, na.rm = TRUE)
+      p <- p + ggplot2::geom_line(linewidth = 0.5, na.rm = TRUE)
     }
     if (output) {
       plot(p)
@@ -689,8 +691,7 @@ spatPlot <- function(fitMod,
       zlim <- c(-1, 1) * max(c(abs(plotDatSpat[["value"]]), 0.1))
       plots$p4 <- fieldPlotPcts(plotDat = plotDatSpat, fillVar = "value",
                                 title = legends[4], zlim = zlim,
-                                colors = colorRampPalette(c("red", "yellow",
-                                                            "blue"),
+                                colors = colorRampPalette(c("red", "yellow", "blue"),
                                                           space = "Lab")(100),
                                 xTicks = xTicks)
     }
@@ -698,7 +699,7 @@ spatPlot <- function(fitMod,
   plots$p5 <- fieldPlot(plotDat = plotDat, fillVar = "predicted.values",
                         title = legends[5], colors = colors)
   plots$p6 <- ggplot2::ggplot(data = plotDat) +
-    ggplot2::geom_histogram(ggplot2::aes_string(x = "predicted.values"),
+    ggplot2::geom_histogram(ggplot2::aes(x = .data[["predicted.values"]]),
                             fill = "white", col = "black", bins = 10,
                             boundary = 0) +
     ## Remove empty space between ticks and actual plot.
@@ -729,9 +730,9 @@ fieldPlot <- function(plotDat,
                       zlim = range(plotDat[fillVar]),
                       xTicks = ggplot2::waiver(),
                       ...) {
-  p <- ggplot2::ggplot(data = plotDat,
-                       ggplot2::aes_string(x = "colNum", y = "rowNum",
-                                           fill = fillVar)) +
+  p <- ggplot2::ggplot(data = plotDat, ggplot2::aes(x = .data[["colNum"]],
+                                                    y = .data[["rowNum"]],
+                                                    fill = .data[[fillVar]])) +
     ggplot2::geom_tile() +
     ## Remove empty space between ticks and actual plot.
     ggplot2::scale_x_continuous(expand = c(0, 0), breaks = xTicks) +
@@ -765,9 +766,9 @@ fieldPlotPcts <- function(plotDat,
                           ...) {
   p <- ggplot2::ggplot(
     data = plotDat,
-    ggplot2::aes_string(x = "colNum", y = "rowNum",
-                        fill = fillVar,
-                        color = if (is.infinite(scaleLim)) NULL else "''")) +
+    ggplot2::aes(x = .data[["colNum"]], y = .data[["rowNum"]],
+                 fill = .data[[fillVar]],
+                 color = if (is.infinite(scaleLim)) NULL else "")) +
     ggplot2::geom_tile(na.rm = TRUE) +
     ## Remove empty space between ticks and actual plot.
     ggplot2::scale_x_continuous(expand = c(0, 0), breaks = xTicks) +
