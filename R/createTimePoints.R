@@ -686,15 +686,17 @@ plot.TP <- function(x,
       ## Create boxplot.
       ## Back ticks around variable names are needed to handle spaces in names.
       if (is.null(colorBy)) {
-        colorBy <- ".colorBy"
+        colorByTr <- ".colorBy"
         plotDat[[".colorBy"]] <- factor(1)
+      } else {
+        colorByTr <- colorBy
       }
       pTp <- ggplot2::ggplot(plotDat,
                              ggplot2::aes(x = .data[[xVar]],
                                           y = .data[[trait]],
-                                          fill = .data[[colorBy]])) +
+                                          fill = .data[[colorByTr]])) +
         ggplot2::geom_boxplot(na.rm = TRUE,
-                              show.legend = colorBy != ".colorBy") +
+                              show.legend = colorByTr != ".colorBy") +
         ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5),
                        axis.text.x = ggplot2::element_text(angle = 90,
                                                            vjust = 0.5,
