@@ -1,4 +1,4 @@
-# statgenHTP 1.0.6.9000
+# statgenHTP 1.0.6.1
 
 * Functions no longer rely on soft-deprecated ggplot2 functions.
 
