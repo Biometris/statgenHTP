@@ -142,7 +142,8 @@ hierarchy (population, genotype, and plant).
 These values correspond to the number of parameters to be estimated.
 \code{family}, an object of class family specifying the distribution
 and link function.
-\code{Vp}, the variance-covariance matrix for the coefficients.
+\code{cholHn}, the inverse of the variance-covariance matrix for the
+coefficients.
 \code{smooth}, a list with the information about number of segments
 (nseg), degree of the B-spline basis (bdeg) and penalty order (pord)
 used for the three levels of the hierarchy.

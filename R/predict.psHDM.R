@@ -426,10 +426,11 @@ standardErrors <- function(Tm,
       whatE <- "plot"
     }
   }
+  Vp <- spam::chol2inv(object$cholHn)
   lW <- length(object[[paste0(what, "Levs")]])
   seTheta <- Matrix::Matrix(Tm) %*%
-    Matrix::Matrix(object$Vp[npS[whatS]:npE[whatE],
-                             npS[whatS]:npE[whatE]]) %*% Matrix::t(Tm)
+    Matrix::Matrix(Vp[npS[whatS]:npE[whatE],
+                      npS[whatS]:npE[whatE]]) %*% Matrix::t(Tm)
   sef <- matrix(sqrt(Matrix::colSums(
     Matrix::t(B) * Matrix::tcrossprod(seTheta, B))), ncol = lW)
   sefd1 <- matrix(sqrt(Matrix::colSums(

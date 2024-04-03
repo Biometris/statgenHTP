@@ -50,7 +50,7 @@ expect_equal(length(splineRes), 22)
 expect_equal(names(splineRes),
              c("y", "time", "popLevs", "genoLevs", "plotLevs", "nPlotPop",
                "nGenoPop", "nPlotGeno", "MM", "ed", "vc", "phi", "coeff",
-               "deviance", "convergence", "dim", "family", "Vp", "smooth",
+               "deviance", "convergence", "dim", "family", "cholHn", "smooth",
                "popLevel", "genoLevel", "plotLevel"))
 
 ## Check structure of components.
@@ -89,8 +89,8 @@ expect_equal(length(splineRes[["dim"]]), 6)
 
 expect_inherits(splineRes[["family"]], "family")
 
-expect_inherits(splineRes[["Vp"]], "matrix")
-expect_equal(dim(splineRes[["Vp"]]), c(637, 637))
+expect_inherits(splineRes[["cholHn"]], "spam.chol.NgPeyton")
+expect_equal(dim(splineRes[["cholHn"]]), c(637, 637))
 
 expect_inherits(splineRes[["smooth"]], "list")
 expect_equal(length(splineRes[["smooth"]]), 3)
