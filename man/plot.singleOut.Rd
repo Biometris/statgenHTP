@@ -59,8 +59,8 @@ plot(resuVatorHTP, plotIds = plantSel, outOnly = FALSE)
 }
 \seealso{
 Other functions for detecting outliers for single observations: 
-\code{\link{detectSingleOutMaize}()},
 \code{\link{detectSingleOut}()},
+\code{\link{detectSingleOutMaize}()},
 \code{\link{removeSingleOut}()}
 }
 \concept{functions for detecting outliers for single observations}
