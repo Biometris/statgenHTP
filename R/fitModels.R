@@ -329,6 +329,8 @@ fitModels <- function(TP,
       ## number of segments for SpATS.
       nseg <- c(length(unique(modDat[["colNum"]])),
                 length(unique(modDat[["rowNum"]])))
+      ## Assure nSeg is divisible by nestDiv.
+      nseg <- ceiling(nseg / 2) * 2
       ## Fit and return the model.
       SpATS::SpATS(response = trait, fixed = fixedForm,
                    random = randForm,

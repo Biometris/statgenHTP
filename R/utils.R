@@ -409,7 +409,7 @@ checkAsreml <- function() {
     stop("No valid installation of asreml found.\n")
   }
   asremlVersion <- packageVersion("asreml")
-  if (asremlVersion[1] < 4) {
+  if (asremlVersion[1] < "4") {
     stop("asreml version 4.0 or higher is requiered.\n")
   }
   licenceStatus <- asreml::asreml.license.status(quiet = TRUE)

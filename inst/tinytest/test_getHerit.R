@@ -34,9 +34,9 @@ expect_equal(dim(herit2), c(5, 4))
 expect_equal(colnames(herit2), c("timeNumber", "timePoint", "1", "2"))
 
 # Compare results.
-expect_equal(herit1[["h2"]], c(0, 0.22, 0.03, 0.88, 0.44))
-expect_equal(herit2[["1"]], c(0, 0.69, 0.02, 0.45, 0))
-expect_equal(herit2[["2"]], c(0.3, 0.78, 0.59, 0.78, 0.73))
+expect_equal(herit1[["h2"]], c(0, 0.22, 0.02, 0.88, 0.43))
+expect_equal(herit2[["1"]], c(0, 0.69, 0.02, 0.42, 0))
+expect_equal(herit2[["2"]], c(0.3, 0.78, 0.59, 0.77, 0.73))
 
 ## Check that results can be written to a file.
 tmpFile <- tempfile(fileext = ".csv")
