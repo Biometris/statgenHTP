@@ -1,156 +1,54 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>/404.html</loc>
-  </url>
-  <url>
-    <loc>/articles/Overview_HTP.html</loc>
-  </url>
-  <url>
-    <loc>/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>/articles/vignettesSite/HierarchicalDataModel_HTP.html</loc>
-  </url>
-  <url>
-    <loc>/articles/vignettesSite/Intro_HTP.html</loc>
-  </url>
-  <url>
-    <loc>/articles/vignettesSite/OutlierSerieObs_HTP.html</loc>
-  </url>
-  <url>
-    <loc>/articles/vignettesSite/OutlierSingleObs_HTP.html</loc>
-  </url>
-  <url>
-    <loc>/articles/vignettesSite/ParameterEstimation_HTP.html</loc>
-  </url>
-  <url>
-    <loc>/articles/vignettesSite/SpatialModel_HTP.html</loc>
-  </url>
-  <url>
-    <loc>/authors.html</loc>
-  </url>
-  <url>
-    <loc>/index.html</loc>
-  </url>
-  <url>
-    <loc>/news/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/PhenoarchDat1.html</loc>
-  </url>
-  <url>
-    <loc>/reference/PhenovatorDat1.html</loc>
-  </url>
-  <url>
-    <loc>/reference/RootDat1.html</loc>
-  </url>
-  <url>
-    <loc>/reference/as.data.frame.TP.html</loc>
-  </url>
-  <url>
-    <loc>/reference/countValid.html</loc>
-  </url>
-  <url>
-    <loc>/reference/countValidPlot.html</loc>
-  </url>
-  <url>
-    <loc>/reference/createTimePoints.html</loc>
-  </url>
-  <url>
-    <loc>/reference/detectSerieOut.html</loc>
-  </url>
-  <url>
-    <loc>/reference/detectSingleOut.html</loc>
-  </url>
-  <url>
-    <loc>/reference/detectSingleOutMaize.html</loc>
-  </url>
-  <url>
-    <loc>/reference/estimateSplineParameters.html</loc>
-  </url>
-  <url>
-    <loc>/reference/fitModels.html</loc>
-  </url>
-  <url>
-    <loc>/reference/fitSpline.html</loc>
-  </url>
-  <url>
-    <loc>/reference/fitSplineHDM.html</loc>
-  </url>
-  <url>
-    <loc>/reference/getCorrected.html</loc>
-  </url>
-  <url>
-    <loc>/reference/getEffDims.html</loc>
-  </url>
-  <url>
-    <loc>/reference/getGenoPred.html</loc>
-  </url>
-  <url>
-    <loc>/reference/getHerit.html</loc>
-  </url>
-  <url>
-    <loc>/reference/getTimePoints.html</loc>
-  </url>
-  <url>
-    <loc>/reference/getVar.html</loc>
-  </url>
-  <url>
-    <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/noCorrectedRoot.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot.HTPSpline.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot.TP.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot.fitMod.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot.psHDM.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot.serieOut.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot.singleOut.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot.splineEst.html</loc>
-  </url>
-  <url>
-    <loc>/reference/predict.psHDM.html</loc>
-  </url>
-  <url>
-    <loc>/reference/removeSerieOut.html</loc>
-  </url>
-  <url>
-    <loc>/reference/removeSingleOut.html</loc>
-  </url>
-  <url>
-    <loc>/reference/removeTimePoints.html</loc>
-  </url>
-  <url>
-    <loc>/reference/spatCorrectedArch.html</loc>
-  </url>
-  <url>
-    <loc>/reference/spatCorrectedVator.html</loc>
-  </url>
-  <url>
-    <loc>/reference/spatPredArch.html</loc>
-  </url>
-  <url>
-    <loc>/reference/statgenHTP-package.html</loc>
-  </url>
-  <url>
-    <loc>/reference/summary.TP.html</loc>
-  </url>
-  <url>
-    <loc>/reference/summary.fitMod.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>/404.html</loc></url>
+<url><loc>/articles/Overview_HTP.html</loc></url>
+<url><loc>/articles/index.html</loc></url>
+<url><loc>/articles/vignettesSite/HierarchicalDataModel_HTP.html</loc></url>
+<url><loc>/articles/vignettesSite/Intro_HTP.html</loc></url>
+<url><loc>/articles/vignettesSite/OutlierSerieObs_HTP.html</loc></url>
+<url><loc>/articles/vignettesSite/OutlierSingleObs_HTP.html</loc></url>
+<url><loc>/articles/vignettesSite/ParameterEstimation_HTP.html</loc></url>
+<url><loc>/articles/vignettesSite/SpatialModel_HTP.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/news/index.html</loc></url>
+<url><loc>/reference/PhenoarchDat1.html</loc></url>
+<url><loc>/reference/PhenovatorDat1.html</loc></url>
+<url><loc>/reference/RootDat1.html</loc></url>
+<url><loc>/reference/as.data.frame.TP.html</loc></url>
+<url><loc>/reference/countValid.html</loc></url>
+<url><loc>/reference/countValidPlot.html</loc></url>
+<url><loc>/reference/createTimePoints.html</loc></url>
+<url><loc>/reference/detectSerieOut.html</loc></url>
+<url><loc>/reference/detectSingleOut.html</loc></url>
+<url><loc>/reference/detectSingleOutMaize.html</loc></url>
+<url><loc>/reference/estimateSplineParameters.html</loc></url>
+<url><loc>/reference/fitModels.html</loc></url>
+<url><loc>/reference/fitSpline.html</loc></url>
+<url><loc>/reference/fitSplineHDM.html</loc></url>
+<url><loc>/reference/getCorrected.html</loc></url>
+<url><loc>/reference/getEffDims.html</loc></url>
+<url><loc>/reference/getGenoPred.html</loc></url>
+<url><loc>/reference/getHerit.html</loc></url>
+<url><loc>/reference/getTimePoints.html</loc></url>
+<url><loc>/reference/getVar.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/noCorrectedRoot.html</loc></url>
+<url><loc>/reference/plot.HTPSpline.html</loc></url>
+<url><loc>/reference/plot.TP.html</loc></url>
+<url><loc>/reference/plot.fitMod.html</loc></url>
+<url><loc>/reference/plot.psHDM.html</loc></url>
+<url><loc>/reference/plot.serieOut.html</loc></url>
+<url><loc>/reference/plot.singleOut.html</loc></url>
+<url><loc>/reference/plot.splineEst.html</loc></url>
+<url><loc>/reference/predict.psHDM.html</loc></url>
+<url><loc>/reference/removeSerieOut.html</loc></url>
+<url><loc>/reference/removeSingleOut.html</loc></url>
+<url><loc>/reference/removeTimePoints.html</loc></url>
+<url><loc>/reference/spatCorrectedArch.html</loc></url>
+<url><loc>/reference/spatCorrectedVator.html</loc></url>
+<url><loc>/reference/spatPredArch.html</loc></url>
+<url><loc>/reference/statgenHTP-package.html</loc></url>
+<url><loc>/reference/summary.TP.html</loc></url>
+<url><loc>/reference/summary.fitMod.html</loc></url>
 </urlset>
+
