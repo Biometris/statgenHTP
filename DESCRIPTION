@@ -40,7 +40,7 @@ Description: Phenotypic analysis of data coming from high throughput
     within the EPPN2020 project (<https://eppn2020.plant-phenotyping.eu/>).
     Some functions have been created to be used in conjunction with the R 
     package 'asreml' for the 'ASReml' software, which can be obtained upon 
-    purchase from 'VSN' international (<https://vsni.co.uk/software/asreml/>).
+    purchase from 'VSN' international (<https://vsni.co.uk/software/asreml-r/>).
 License: GPL
 Encoding: UTF-8
 LazyData: true
