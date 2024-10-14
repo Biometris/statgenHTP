@@ -1,15 +1,14 @@
-## Patch release for upcoming LMMsolver release
+## Patch release for upcoming SpATS release
 
-- Minor change to tests to accomodate improved LMMsolver algorithm.
+- Minor change to accommodate fix in upcoming SpATS release.
 
 ----
 
 ## Test environments
 
-* local Windows 10 install, R 4.2.3
+* local Windows 11 install, R 4.4.1
 * Ubuntu (on github actions, devel and release)
 * macOS (on github actions, release)
-* R-hub (devel and release)
 
 ----
 

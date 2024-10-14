@@ -1,5 +1,6 @@
-# statgenHTP 1.0.6.1
+# statgenHTP 1.0.7
 
+* For spatial models fitted with SpATS it is now assured that the number of segments used for rows and columns is divisible by the value of nest.div used. This is done to accommodate a minor fix in an upcoming release of SpATS.
 * Functions no longer rely on soft-deprecated ggplot2 functions.
 
 # statgenHTP 1.0.6
