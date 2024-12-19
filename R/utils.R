@@ -312,7 +312,7 @@ chkFile <- function(outFile,
 #' @param x An R object.
 #' @param timePoints a character or numeric vector containing timePoints.
 #'
-#' @return A character vector containing timePoints.
+#' @returns A character vector containing timePoints.
 #'
 #' @noRd
 #' @keywords internal
@@ -500,7 +500,7 @@ angle <- function(M) {
 #' @param trait A character string indicating the trait for which valid
 #' observations should be counted.
 #'
-#' @return A named numerical vector with he number of valid observations per
+#' @returns A named numerical vector with he number of valid observations per
 #' time point .
 #'
 #' @examples
@@ -544,7 +544,7 @@ countValid <- function(TP,
 #' observations should be checked. If \code{NULL} valid observations are
 #' counted for all plotIds in TP.
 #'
-#' @return A named numerical vector with he number of valid observations per
+#' @returns A named numerical vector with he number of valid observations per
 #' plotId.
 #'
 #' @examples

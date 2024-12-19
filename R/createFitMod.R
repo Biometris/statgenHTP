@@ -28,7 +28,7 @@ createFitMod <- function(models,
 #' @param object An object of class fitMod.
 #' @param ... Ignored.
 #'
-#' @return No return value, a summary is printed.
+#' @returns No return value, a summary is printed.
 #'
 #' @examples
 #' \donttest{
@@ -168,7 +168,7 @@ summary.fitMod <- function(object,
 #' @param outFile A character string indicating the .pdf file or .gif file
 #' (for \code{plotType} = "timeLapse") to which the plots should be written.
 #'
-#' @return Depending on the plot type either a ggplot object or a list of
+#' @returns Depending on the plot type either a ggplot object or a list of
 #' ggplot objects is invisibly returned.
 #'
 #' @examples

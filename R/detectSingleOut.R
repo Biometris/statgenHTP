@@ -22,7 +22,7 @@
 #' @param nnLocfit A numeric value defining the constant component of the
 #' smoothing parameter nn (see Details).
 #'
-#' @return An object of class singleOut, a \code{data.frame} with the following
+#' @returns An object of class singleOut, a \code{data.frame} with the following
 #' columns.
 #' \describe{
 #'   \item{plotId}{plotId}
@@ -174,7 +174,7 @@ detectSingleOut <- function(TP,
 #' @param ... Ignored.
 #' @param outOnly Should only plots containing outliers be plotted?
 #'
-#' @return A list of ggplot objects is invisibly returned.
+#' @returns A list of ggplot objects is invisibly returned.
 #'
 #' @examples
 #' ## Create a TP object containing the data from the Phenovator.
@@ -301,7 +301,7 @@ plot.singleOut <- function(x,
 #' @param trait The trait that should be set to NA. Can be ignored when using
 #' the output of \code{detectSingleOut} as input.
 #'
-#' @return An object of class TP, the input with the outlier replaced by NA.
+#' @returns An object of class TP, the input with the outlier replaced by NA.
 #'
 #' @examples
 #' ## Create a TP object containing the data from the Phenovator.

@@ -20,7 +20,7 @@
 #' @param trace An optional value that controls the function trace.
 #' The default is \code{TRUE}.
 #'
-#' @return An object of class \code{psHDM}, a list with the following outputs:
+#' @returns An object of class \code{psHDM}, a list with the following outputs:
 #' predict.psHDM
 #' \code{newtimes} A numeric vector with the timepoints at which predictions
 #' and/or standard errors have been obtained.

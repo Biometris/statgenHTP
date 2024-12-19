@@ -16,7 +16,7 @@
 #' @param outFile A character string indicating the .csv file to which the
 #' results should be written. If \code{NULL} no file is written.
 #'
-#' @return A list of two data.frames with predicted genotypic values per time
+#' @returns A list of two data.frames with predicted genotypic values per time
 #' point. \code{genoPred} with the predicted values for the genotypes and
 #' \code{checkPred} with the predicted values for the checks. If
 #' \code{predictChecks = FALSE} the latter will be \code{NULL}.
@@ -130,7 +130,7 @@ getGenoPred <- function(fitMod,
 #' of the existing time points. When using a number it will be matched by its
 #' number ("timeNumber") in the timePoints attribute of the TP object.
 #'
-#' @return A data.frame with spatially corrected values per time point.
+#' @returns A data.frame with spatially corrected values per time point.
 #'
 #' @examples
 #' \donttest{
@@ -202,7 +202,7 @@ getCorrected <- function(fitMod,
 #' of the existing time points. When using a number it will be matched by its
 #' number ("timeNumber") in the timePoints attribute of the TP object.
 #'
-#' @return A data.frame with variances per time point.
+#' @returns A data.frame with variances per time point.
 #'
 #' @examples
 #' \donttest{
@@ -320,7 +320,7 @@ getVar <- function(fitMod,
 #' of the existing time points. When using a number it will be matched by its
 #' number ("timeNumber") in the timePoints attribute of the TP object.
 #'
-#' @return A data.frame with heritabilities per time point.
+#' @returns A data.frame with heritabilities per time point.
 #'
 #' @examples
 #' \donttest{
@@ -401,7 +401,7 @@ getHerit <- function(fitMod,
 #' ("dimension") or the ratio of effective dimensions ("ratio") should be
 #' returned.
 #'
-#' @return A data.frame with effective dimensions per time point.
+#' @returns A data.frame with effective dimensions per time point.
 #'
 #' @examples
 #' \donttest{

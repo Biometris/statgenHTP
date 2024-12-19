@@ -32,7 +32,7 @@
 #' the parameter estimates should be made. Only used for splines fitted using
 #' \code{\link{fitSplineHDM}}.
 #'
-#' @return An object of class splineEst, a data.frame containing the
+#' @returns An object of class splineEst, a data.frame containing the
 #' estimated parameters.
 #'
 #' @examples
@@ -282,7 +282,7 @@ estimateSplineParameters <- function(x,
 #' @param plotType A character string indicating the type of plot to be made.
 #' @param what The types of estimate that should be plotted.
 #'
-#' @return A list of objects of class ggplot is invisibly returned.
+#' @returns A list of objects of class ggplot is invisibly returned.
 #'
 #' @family functions for spline parameter estimation
 #'

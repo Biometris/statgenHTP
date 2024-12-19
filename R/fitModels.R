@@ -64,7 +64,7 @@
 #' @param spatial Should a spatial model be fitted for asreml?
 #' @param quiet Should printed progress messages be suppressed?
 #'
-#' @return An object of class \code{fitMod}, a list of fitted models.
+#' @returns An object of class \code{fitMod}, a list of fitted models.
 #'
 #' @examples
 #' ## Using the first example dataset (PhenovatorDat1):

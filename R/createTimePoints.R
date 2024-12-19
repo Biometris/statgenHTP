@@ -63,7 +63,7 @@
 #' @param checkGenotypes A character vector containing the genotypes used as
 #' checks in the experiment.
 #'
-#' @return An object of class \code{TP}. A list with, per time point in the
+#' @returns An object of class \code{TP}. A list with, per time point in the
 #' input, a data.frame containing the data for that time point. A data.frame
 #' with columns timeNumber and timePoint is added as attribute timePoints to
 #' the data. This data.frame can be used for referencing timePoints by their
@@ -262,7 +262,7 @@ createTimePoints <- function(dat,
 #' a number it will be matched by its number ("timeNumber") in the timePoints
 #' attribute of the TP object.
 #'
-#' @return An object of class TP, the input with the selected time points
+#' @returns An object of class TP, the input with the selected time points
 #' removed.
 #'
 #' @examples
@@ -307,7 +307,7 @@ removeTimePoints <- function(TP,
 #' @param object An object of class TP.
 #' @param ... Ignored.
 #'
-#' @return No return value, a summary is printed.
+#' @returns No return value, a summary is printed.
 #'
 #' @examples
 #' ## Create a TP object containing the data from the Phenovator.
@@ -431,7 +431,7 @@ summary.TP <- function(object,
 #' @param outFileOpts A named list of extra options for the pdf outfile, e.g.
 #' width and height. See \code{\link[grDevices]{pdf}} for all possible options.
 #'
-#' @return Depending on the plot type, either a ggplot object or a list of
+#' @returns Depending on the plot type, either a ggplot object or a list of
 #' ggplot objects is invisibly returned.
 #'
 #' @examples
@@ -902,7 +902,7 @@ plot.TP <- function(x,
 #' ## Convert phenoTP to data.frame.
 #' phenoDat <- as.data.frame(phenoTP)
 #'
-#' @return A data.frame containing the data.frames for all time points in the
+#' @returns A data.frame containing the data.frames for all time points in the
 #' TP object bound together.
 #'
 #' @family functions for data preparation

@@ -24,7 +24,7 @@
 #' TP object. No splines are fitted for plants with less than the minimum number
 #' of timepoints.
 #'
-#' @return An object of class \code{HTPSpline}, a list with two
+#' @returns An object of class \code{HTPSpline}, a list with two
 #' \code{data.frames}, \code{predDat} with predicted values and \code{coefDat}
 #' with P-Spline coefficients on a dense grid.
 #'
@@ -280,7 +280,7 @@ fitSpline <- function(inDat,
 #' @param plotIds A character vector indicating the plotIds for which spline
 #' components should be plotted.
 #'
-#' @return A list of object of class ggplot is invisibly returned.
+#' @returns A list of object of class ggplot is invisibly returned.
 #'
 #' @examples
 #' ## The data from the Phenovator platform have been corrected for spatial

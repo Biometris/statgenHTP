@@ -66,7 +66,7 @@
 #' TP object. No splines are fitted for plants with less than the minimum number
 #' of timepoints.
 #'
-#' @return An object of class \code{psHDM}, a list with the following outputs:
+#' @returns An object of class \code{psHDM}, a list with the following outputs:
 #' \code{time}, a numeric vector with the timepoints.
 #' \code{popLevs}, a data.frame with the names of the populations
 #' \code{genoLevs}, a factor with the names of the genotypes.

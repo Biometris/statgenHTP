@@ -5,7 +5,7 @@
 #'
 #' @param x An object of class TP or fitMod
 #'
-#' @return A data.frame with columns timeNumber and timePoint listing the
+#' @returns A data.frame with columns timeNumber and timePoint listing the
 #' time points in x
 #'
 #' @examples
