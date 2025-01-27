@@ -243,6 +243,8 @@ expect_error(removeSerieOut(dat = corr, serieOut = 1),
 expect_error(removeSerieOut(dat = corr,
                             serieOut = serieOut1[, colnames(serieOut1) != "plotId"]),
              "serieOut should at least contain the column plotId")
+expect_error(removeSerieOut(dat = corr, serieOut = serieOut1, traits = 1),
+             "All traits should be in dat. The following traits are missing")
 
 ## Check that outliers are removed from data.frame.
 corrOut1 <- removeSerieOut(dat = corr, serieOut = serieOut1)

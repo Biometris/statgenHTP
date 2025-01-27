@@ -778,6 +778,12 @@ removeSerieOut <- function(dat = NULL,
         serieOut <- serieOut[serieOut[["reason"]] %in% reason, ]
       }
     if (!is.null(dat)) {
+      ## Check if all traits are present in dat.
+      traitMiss <- traits[!traits %in% colnames(dat)]
+      if (length(traitMiss) > 0) {
+        stop("All traits should be in dat. The following traits are missing:\n",
+             paste(traitMiss, collapse = ", "))
+      }
       ## Remove plots that are in serieOut.
       for (trait in traits) {
         dat[dat[["plotId"]] %in% serieOut[["plotId"]], trait] <- NA
