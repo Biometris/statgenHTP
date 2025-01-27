@@ -459,16 +459,15 @@ plot(pred.psHDM,
 
 # Estimation of parameters from time courses
 
-The final step in the HTP data analysis is extracting interesting parameters from the modeled time courses. The parameters can then be further analyzed, for example in a GxE analysis (see [*statgenGxE*](https://biometris.github.io/statgenGxE/index.html)), or a genetic analysis (see [*statgenGWAS*](https://biometris.github.io/statgenGWAS/index.html)).
+The final step in the HTP data analysis is extracting interesting parameters from the modeled time courses. The parameters can then be further analyzed, for example in a GxE analysis (see [*statgenGxE*](https://biometris.github.io/statgenGxE/index.html)), or a genetic analysis (see [*statgenGWAS*](https://biometris.github.io/statgenGWAS/index.html)). Note that **timeMin** and **timeMax** should be specified at the time scale used when fitting the spline, in this case the time number scale. 
 
 ```{r paramVator, fig.height=2, fig.width=4, message=FALSE, warning=FALSE, fig.align='center'}
-paramVator1 <- 
-  estimateSplineParameters(x = fit.splineOut,
-                           estimate = "predictions",
-                           what = "AUC",
-                           timeMin = 330,
-                           timeMax = 432,
-                           genotypes = subGenoVator)
+paramVator1 <- estimateSplineParameters(x = fit.splineOut,
+                                        estimate = "predictions",
+                                        what = "AUC",
+                                        timeMin = 330,
+                                        timeMax = 432,
+                                        genotypes = subGenoVator)
 
 plot(paramVator1, plotType = "box")
 ```
