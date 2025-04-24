@@ -197,12 +197,11 @@ A1.form <- function(l,
   lRTen <- lapply(X = rev(l), FUN = Rten)
   tmp <- Reduce(Matrix::crossprod, x = lRTen, init = W)
   tmp <- array(tmp, dim = rep(c1, rep(2, d)))
-  Fast <- if (prod(c1)) {
-    bdiag_m(lapply(X = seq_len(dim(tmp)[3]), FUN = function(i) {
-      tmp[, , i, i]
-    }))
+  Fast1 <- aperm(tmp, c(2 * (1:d) - 1, 2 * (1:d)))
+  if (prod(c1)) {
+    Fast <- Matrix::Matrix(Fast1, nrow = prod(c1), sparse = TRUE)
   } else {
-    aperm(tmp, c(2 * (1:d) - 1, 2 * (1:d)))
+    Fast <- Fast1
   }
   return(Fast)
 }
