@@ -36,11 +36,15 @@ can be changed to either hours or days.}
 
 \item{timeMin}{The lower bound of the time interval from which the
 estimates should be extracted. If \code{NULL} the smallest time value for
-which the splines were fitted is used.}
+which the splines were fitted is used. \code{timeMin} should be given as a
+numerical value that corresponds to the time scale used for fitting the
+splines. See the examples.}
 
 \item{timeMax}{The upper bound of the time interval from which the
 estimates should be extracted. If \code{NULL} the largest time value for
-which the splines were fitted is used.}
+which the splines were fitted is used. \code{timeMin} should be given as a
+numerical value that corresponds to the time scale used for fitting the
+splines. See the examples.}
 
 \item{genotypes}{A character vector indicating the genotypes for which
 estimates should be extracted. If \code{NULL}, estimates will be extracted
@@ -73,6 +77,8 @@ fit.spline <- fitSpline(inDat = spatCorrectedVator,
                         knots = 50)
 
 ## Estimate the maximum value of the predictions at the beginning of the time course.
+## The spline was fitted at a timePoints scale, i.e. date-time so
+## timeMin and timeMax should be given at this scale as well.
 paramVator <- estimateSplineParameters(x = fit.spline,
                                        estimate = "predictions",
                                        what = "max",
@@ -123,6 +129,8 @@ fit.psHDM  <- fitSplineHDM(inDat = spatCorrectedArch,
                           trace = FALSE)
 
 ## Estimate minimum, maximum, and mean for predictions at the genotype level.
+## The spline was fitted at the timeNumber scale, so timeMax
+## should be given at that scale as well.
 paramArch <- estimateSplineParameters(x = fit.psHDM,
                                      what = c("min", "max", "mean"),
                                      fitLevel = "geno",

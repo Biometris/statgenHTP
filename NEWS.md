@@ -1,3 +1,8 @@
+# statgenHTP 1.0.8
+
+* A small bug in a helper function for `fitSplineHDM()` is fixed. Impact on the results is very minimal.
+* Several improvements of the documentation and examples.
+
 # statgenHTP 1.0.7
 
 * For spatial models fitted with SpATS it is now assured that the number of segments used for rows and columns is divisible by the value of nest.div used. This is done to accommodate a minor fix in an upcoming release of SpATS.
