@@ -1,4 +1,4 @@
-url: ~
+url: https://biometris.github.io/statgenHTP/index.html
 template:
   bootstrap: 5
 
@@ -10,6 +10,7 @@ navbar:
   left:
     - icon: fa-home
       href: index.html
+      aria-label: home
     - text: "Vignettes"
       href: articles/index.html
   right:
