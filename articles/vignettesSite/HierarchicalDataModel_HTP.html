@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../../index.html">statgenHTP</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.7.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,7 +66,7 @@
 Pérez-Valencia, María Xosé Rodríguez-Álvarez, Bart-Jan van Rossum,
 Emilie Millet, Martin Boer, Fred van Eeuwijk</h4>
             
-            <h4 data-toc-skip class="date">2024-12-19</h4>
+            <h4 data-toc-skip class="date">2025-04-28</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Biometris/statgenHTP/blob/main/vignettes/vignettesSite/HierarchicalDataModel_HTP.Rmd" class="external-link"><code>vignettes/vignettesSite/HierarchicalDataModel_HTP.Rmd</code></a></small>
       <div class="d-none name"><code>HierarchicalDataModel_HTP.Rmd</code></div>
@@ -235,9 +235,7 @@ days of the year</p>
 <span>                <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span> <span class="va">DOY</span>, y <span class="op">=</span> <span class="va">LeafArea_corr</span>, group <span class="op">=</span> <span class="va">plotId</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">facet_grid</a></span><span class="op">(</span><span class="op">~</span><span class="va">geno.decomp</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y <span class="op">=</span> <span class="st">"Spatially corrected leaf area"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in get(paste0(generic, ".", class), envir = get_method_env()) : </span></span>
-<span><span class="co">#&gt;   object 'type_sum.accel' not found</span></span></code></pre></div>
+<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y <span class="op">=</span> <span class="st">"Spatially corrected leaf area"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="HierarchicalDataModel_HTP_files/figure-html/visualiseData-1.png" width="672" style="display: block; margin: auto;"></p>
 <hr>
 </div>
@@ -345,7 +343,7 @@ well as to detect convergence problems.</p>
 <span><span class="co">#&gt;   4 -413841.057202     7.913     7.786     7.985     7.922   159.272   163.089   787.598  1286.468  1471.329  5195.497</span></span>
 <span><span class="co">#&gt;   5 -414152.439567     7.914     7.783     7.985     7.918   159.443   163.042   790.487  1315.662  1474.828  4806.468</span></span>
 <span><span class="co">#&gt;   6 -414237.155491     7.913     7.782     7.985     7.916   159.428   162.976   795.234  1328.862  1476.488  4604.336</span></span>
-<span><span class="co">#&gt;   7 -414258.638612     7.913     7.780     7.985     7.914   159.431   162.949   798.454  1334.470  1477.223  4503.289</span></span>
+<span><span class="co">#&gt;   7 -414258.638613     7.913     7.780     7.985     7.914   159.431   162.949   798.454  1334.470  1477.223  4503.289</span></span>
 <span><span class="co">#&gt;   8 -414263.887260     7.913     7.780     7.985     7.913   159.445   162.942   800.254  1336.873  1477.549  4453.660</span></span>
 <span><span class="co">#&gt;   9 -414265.145823     7.913     7.779     7.985     7.913   159.458   162.941   801.189  1337.934  1477.696  4429.464</span></span>
 <span><span class="co">#&gt;  10 -414265.444801     7.913     7.779     7.985     7.913   159.466   162.942   801.658  1338.419  1477.764  4417.702</span></span>

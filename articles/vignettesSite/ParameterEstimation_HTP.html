@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../../index.html">statgenHTP</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.7.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,7 +66,7 @@
 Bart-Jan van Rossum, Martin Boer, Fred van Eeuwijk, Diana M.
 Pérez-Valencia, María Xosé Rodríguez-Álvarez</h4>
             
-            <h4 data-toc-skip class="date">2024-12-19</h4>
+            <h4 data-toc-skip class="date">2025-04-28</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Biometris/statgenHTP/blob/main/vignettes/vignettesSite/ParameterEstimation_HTP.Rmd" class="external-link"><code>vignettes/vignettesSite/ParameterEstimation_HTP.Rmd</code></a></small>
       <div class="d-none name"><code>ParameterEstimation_HTP.Rmd</code></div>
@@ -116,7 +116,10 @@ derivative, during a given period or for the whole time course.</p>
 <a href="OutlierSerieObs_HTP.html"><strong>statgenHTP tutorial: 4.
 Outlier detection for series of observations</strong></a>). It contains
 the P-spline prediction on a subset of plants without the time course
-outliers. We will estimate the area under the curve of the trait:</p>
+outliers. We will estimate the area under the curve of the trait. Note
+that <strong>timeMin</strong> and <strong>timeMax</strong> should be
+specified at the time scale used when fitting the spline, in this case
+the time number scale.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">subGenoVator</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"G070"</span>, <span class="st">"G160"</span>, <span class="st">"G151"</span>, <span class="st">"G179"</span>, <span class="st">"G175"</span>, <span class="st">"G004"</span>, <span class="st">"G055"</span><span class="op">)</span></span>
 <span><span class="va">paramVator1</span> <span class="op">&lt;-</span> </span>

@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">statgenHTP</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.7.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,7 +65,7 @@
                         <h4 data-toc-skip class="author">Emilie Millet,
 Diana M. Pérez-Valencia, Bart-Jan van Rossum</h4>
             
-            <h4 data-toc-skip class="date">2024-12-19</h4>
+            <h4 data-toc-skip class="date">2025-04-28</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Biometris/statgenHTP/blob/main/vignettes/Overview_HTP.Rmd" class="external-link"><code>vignettes/Overview_HTP.Rmd</code></a></small>
       <div class="d-none name"><code>Overview_HTP.Rmd</code></div>
@@ -1045,15 +1045,17 @@ genotype-specific trajectories.</p>
 <p>The final step in the HTP data analysis is extracting interesting
 parameters from the modeled time courses. The parameters can then be
 further analyzed, for example in a GxE analysis (see <a href="https://biometris.github.io/statgenGxE/index.html" class="external-link"><em>statgenGxE</em></a>),
-or a genetic analysis (see <a href="https://biometris.github.io/statgenGWAS/index.html" class="external-link"><em>statgenGWAS</em></a>).</p>
+or a genetic analysis (see <a href="https://biometris.github.io/statgenGWAS/index.html" class="external-link"><em>statgenGWAS</em></a>).
+Note that <strong>timeMin</strong> and <strong>timeMax</strong> should
+be specified at the time scale used when fitting the spline, in this
+case the time number scale.</p>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">paramVator1</span> <span class="op">&lt;-</span> </span>
-<span>  <span class="fu"><a href="../reference/estimateSplineParameters.html">estimateSplineParameters</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">fit.splineOut</span>,</span>
-<span>                           estimate <span class="op">=</span> <span class="st">"predictions"</span>,</span>
-<span>                           what <span class="op">=</span> <span class="st">"AUC"</span>,</span>
-<span>                           timeMin <span class="op">=</span> <span class="fl">330</span>,</span>
-<span>                           timeMax <span class="op">=</span> <span class="fl">432</span>,</span>
-<span>                           genotypes <span class="op">=</span> <span class="va">subGenoVator</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">paramVator1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimateSplineParameters.html">estimateSplineParameters</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">fit.splineOut</span>,</span>
+<span>                                        estimate <span class="op">=</span> <span class="st">"predictions"</span>,</span>
+<span>                                        what <span class="op">=</span> <span class="st">"AUC"</span>,</span>
+<span>                                        timeMin <span class="op">=</span> <span class="fl">330</span>,</span>
+<span>                                        timeMax <span class="op">=</span> <span class="fl">432</span>,</span>
+<span>                                        genotypes <span class="op">=</span> <span class="va">subGenoVator</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">paramVator1</span>, plotType <span class="op">=</span> <span class="st">"box"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Overview_HTP_files/figure-html/paramVator-1.png" width="384" style="display: block; margin: auto;"></p>
