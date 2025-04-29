@@ -1,12 +1,12 @@
-## Patch release for upcoming SpATS release
+## Patch release
 
-- Minor change to accommodate fix in upcoming SpATS release.
+- Minor bugfix and documentation improvements.
 
 ----
 
 ## Test environments
 
-* local Windows 11 install, R 4.4.1
+* local Windows 11 install, R 4.5.0
 * Ubuntu (on github actions, devel and release)
 * macOS (on github actions, release)
 
@@ -16,7 +16,7 @@
 
 There were no ERRORs or WARNINGs.
 
-There were 2 NOTES:
+There wer 2 NOTES:
 
   * checking CRAN incoming feasibility ... NOTE    
 
