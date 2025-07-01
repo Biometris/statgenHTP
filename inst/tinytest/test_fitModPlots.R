@@ -52,13 +52,13 @@ expect_equal(length(p0), 1)
 expect_inherits(p0[[1]], "ggplot")
 
 geoms0 <- sapply(p0[[1]]$layers, function(x) class(x$geom)[1])
-expect_equal(geoms0, c("GeomPoint", "GeomPoint"))
+expect_equivalent(geoms0, c("GeomPoint", "GeomPoint"))
 
 ## Check that rawPred plots function correctly for single timePoints.
 expect_silent(p1 <- plot(testFitMod[1], plotType = "rawPred",
                          outFile = tmpFile))
 geoms1 <- sapply(p1[[1]]$layers, function(x) class(x$geom)[1])
-expect_equal(geoms1, c("GeomPoint", "GeomPoint"))
+expect_equivalent(geoms1, c("GeomPoint", "GeomPoint"))
 
 ## Check option genotypes in rawpred plots.
 expect_silent(p2 <- plot(testFitMod, plotType = "rawPred", genotypes = "G12",
@@ -98,13 +98,13 @@ expect_equal(length(p0), 1)
 expect_inherits(p0[[1]], "ggplot")
 
 geoms0 <- sapply(p0[[1]]$layers, function(x) class(x$geom)[1])
-expect_equal(geoms0, c("GeomPoint", "GeomPoint"))
+expect_equivalent(geoms0, c("GeomPoint", "GeomPoint"))
 
 ## Check that corrPred plots function correctly for single timePoints.
 expect_silent(p1 <- plot(testFitMod[1], plotType = "corrPred",
                          outFile = tmpFile))
 geoms1 <- sapply(p1[[1]]$layers, function(x) class(x$geom)[1])
-expect_equal(geoms1, c("GeomPoint", "GeomPoint"))
+expect_equivalent(geoms1, c("GeomPoint", "GeomPoint"))
 
 ## Check option genotypes in corrPred plots.
 expect_silent(p2 <- plot(testFitMod, plotType = "corrPred", genotypes = "G12",
@@ -138,12 +138,12 @@ expect_inherits(p0, "ggplot")
 
 ## Output should be a combination of points and lines.
 geoms0 <- sapply(p0$layers, function(x) class(x$geom)[1])
-expect_equal(geoms0, c("GeomPoint", "GeomLine"))
+expect_equivalent(geoms0, c("GeomPoint", "GeomLine"))
 
 ## If there is only one timepoint output should be only points.
 expect_silent(p1 <- plot(testFitMod[1], plotType = "herit", outFile = tmpFile))
 geoms1 <- sapply(p1$layers, function(x) class(x$geom)[1])
-expect_equal(geoms1, c("GeomPoint"))
+expect_equivalent(geoms1, "GeomPoint")
 
 ## Check option yLim in heritability plot.
 expect_silent(p2 <- plot(testFitMod, plotType = "herit", yLim = c(0, 1),
@@ -160,12 +160,12 @@ expect_inherits(p0, "ggplot")
 
 ## Output should be a combination of points and lines.
 geoms0 <- sapply(p0$layers, function(x) class(x$geom)[1])
-expect_equal(geoms0, c("GeomPoint", "GeomLine"))
+expect_equivalent(geoms0, c("GeomPoint", "GeomLine"))
 
 ## If there is only one timepoint output should be only points.
 expect_silent(p1 <- plot(testFitMod[1], plotType = "effDim", outFile = tmpFile))
 geoms1 <- sapply(p1$layers, function(x) class(x$geom)[1])
-expect_equal(geoms1, c("GeomPoint"))
+expect_equivalent(geoms1, "GeomPoint")
 
 ## Check option yLim in effDim plot.
 
@@ -202,13 +202,13 @@ expect_inherits(p0, "ggplot")
 
 ## Output should be a combination of points and lines.
 geoms0 <- sapply(p0$layers, function(x) class(x$geom)[1])
-expect_equal(geoms0, c("GeomPoint", "GeomLine"))
+expect_equivalent(geoms0, c("GeomPoint", "GeomLine"))
 
 ## If there is only one timepoint output should be only points.
 expect_silent(p1 <- plot(testFitMod[1], plotType = "variance",
                          outFile = tmpFile))
 geoms1 <- sapply(p1$layers, function(x) class(x$geom)[1])
-expect_equal(geoms1, c("GeomPoint"))
+expect_equivalent(geoms1, "GeomPoint")
 
 ## Check option yLim in variance plots.
 
@@ -235,11 +235,11 @@ expect_error(plot(testFitMod, plotType = "spatial", spaTrend = "sTr"),
 expect_silent(p1 <- plot(testFitMod, plotType = "spatial",
                          spaTrend = "percentage", outFile = tmpFile))
 
-  ## Check that spatial plot functions for model with check.
-  expect_silent(plot(testFitMod3, plotType = "spatial", outFile = tmpFile))
+## Check that spatial plot functions for model with check.
+expect_silent(plot(testFitMod3, plotType = "spatial", outFile = tmpFile))
 
-  ## Check that effDim plot functions for model with geno.decomp.
-  expect_silent(p2 <- plot(testFitMod2, plotType = "spatial", outFile = tmpFile))
+## Check that effDim plot functions for model with geno.decomp.
+expect_silent(p2 <- plot(testFitMod2, plotType = "spatial", outFile = tmpFile))
 
 if (at_home()) {
   ## Check that spatial plots cannot be made for asreml when spatial = FALSE.
@@ -265,4 +265,3 @@ expect_silent(p1 <- plot(testFitMod2, plotType = "timeLapse",
 ## Remove tmpFiles
 unlink(tmpFile)
 unlink(tmpFile2)
-
