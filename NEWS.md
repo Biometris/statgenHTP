@@ -3,6 +3,7 @@
 * A small bug in a helper function for `fitSplineHDM()` is fixed. Impact on the results is very minimal.
 * Several improvements of the documentation and examples.
 * Tests are modified for compatibility with the upcoming version of ggplot2.
+* `statgenHTP` no longer imports `reshape2` and `factoextra`.
 
 # statgenHTP 1.0.7
 

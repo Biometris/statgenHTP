@@ -1,12 +1,10 @@
-## Patch release
-
-- Minor bugfix and documentation improvements.
+## Release anticipating new version of ggplot2
 
 ----
 
 ## Test environments
 
-* local Windows 11 install, R 4.5.0
+* local Windows 11 install, R 4.5.1
 * Ubuntu (on github actions, devel and release)
 * macOS (on github actions, release)
 
