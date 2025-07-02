@@ -1,5 +1,5 @@
 pandoc: 3.1.11
-pkgdown: 2.1.1
+pkgdown: 2.1.3
 pkgdown_sha: ~
 articles:
   vignettesSite/HierarchicalDataModel_HTP: vignettesSite/HierarchicalDataModel_HTP.html
@@ -9,7 +9,7 @@ articles:
   Overview_HTP: Overview_HTP.html
   vignettesSite/ParameterEstimation_HTP: vignettesSite/ParameterEstimation_HTP.html
   vignettesSite/SpatialModel_HTP: vignettesSite/SpatialModel_HTP.html
-last_built: 2025-04-29T08:31Z
+last_built: 2025-07-02T10:56Z
 urls:
   reference: https://biometris.github.io/statgenHTP/index.html/reference
   article: https://biometris.github.io/statgenHTP/index.html/articles
