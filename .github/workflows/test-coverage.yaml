@@ -29,7 +29,7 @@ jobs:
         run: |
           cov <- covr::package_coverage(
             type = "none",
-            code = "tinytest::run_test_dir(at_home = TRUE)",
+            code = "tinytest::run_test_dir(at_home = FALSE)",
             quiet = FALSE,
             clean = FALSE,
             install_path = file.path(normalizePath(Sys.getenv("RUNNER_TEMP"), winslash = "/"), "package")
