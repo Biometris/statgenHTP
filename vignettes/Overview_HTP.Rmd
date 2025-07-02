@@ -25,7 +25,7 @@ library(ggplot2)
 
 # The statgenHTP Package
 
-The statgenHTP package is developed as an easy-to-use package for analyzing data coming from high throughput phenotyping (HTP) platform experiments. The package provides many options for plotting and exporting the results of the analyses. It was developed within the [EPPN^2020^project](https://eppn2020.plant-phenotyping.eu/) to meet the needs for automated analyses of HTP data.
+The statgenHTP package is developed as an easy-to-use package for analyzing data coming from high throughput phenotyping (HTP) platform experiments. The package provides many options for plotting and exporting the results of the analyses. It was developed within the [EPPN^2020^project](https://cordis.europa.eu/project/id/731013) to meet the needs for automated analyses of HTP data.
 
 New phenotyping techniques enable measuring traits at high throughput, with traits being measured at multiple time points for hundreds or thousands of plants. This requires automatic modeling of the data [@Tardieu2017] with a model that is robust, flexible and has easy selection steps.
 

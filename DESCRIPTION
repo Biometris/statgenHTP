@@ -37,7 +37,7 @@ Authors@R:
 Description: Phenotypic analysis of data coming from high throughput 
     phenotyping (HTP) platforms, including different types of outlier detection,
     spatial analysis, and parameter estimation. The package is being developed
-    within the EPPN2020 project (<https://cordis.europa.eu/project/id/731013/>).
+    within the EPPN2020 project (<https://cordis.europa.eu/project/id/731013>).
     Some functions have been created to be used in conjunction with the R 
     package 'asreml' for the 'ASReml' software, which can be obtained upon 
     purchase from 'VSN' international (<https://vsni.co.uk/software/asreml-r/>).

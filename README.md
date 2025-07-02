@@ -13,7 +13,7 @@ downloads](https://cranlogs.r-pkg.org/badges/statgenHTP)](https://www.r-pkg.org/
 coming from high throughput phenotyping (HTP) platform experiments. The
 package provides many options for plotting and exporting the results of
 the analyses. It was developed within the [EPPN<sup>2020</sup>
-project](https://cordis.europa.eu/project/id/731013/) to meet the needs for
+project](https://cordis.europa.eu/project/id/731013) to meet the needs for
 automated analyses of HTP data.
 
 ## Installation
