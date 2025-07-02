@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_CHECK_FORCE_SUGGESTS: false
 
     steps:
       - uses: actions/checkout@v4
