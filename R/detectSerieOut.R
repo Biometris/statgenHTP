@@ -348,8 +348,7 @@ detectSerieOut <- function(corrDat,
   annotatePlantsPcaAngle <- lapply(X = names(plantPcas), FUN = function(geno) {
     ## Calculate the pairwise difference of coordinates on the 2nd axis and
     ## annotate plant with average diff larger than threshold.
-    plantPcaPlot <- factoextra::fviz_pca_var(plantPcas[[geno]])
-    PcVecs <- as.matrix(plantPcaPlot$data[, 2:3])
+    PcVecs <- t(t(plantPcas[[geno]]$rotation) * plantPcas[[geno]]$sdev)[, 1:2]
     PcAngles <- matrix(nrow = nrow(PcVecs), ncol = nrow(PcVecs),
                        dimnames = list(rownames(PcVecs), rownames(PcVecs)))
     PcAngles[lower.tri(PcAngles)] <-
@@ -665,7 +664,38 @@ plot.serieOut <- function(x,
     }
     ## PCA biplot.
     if ("angle" %in% reason) {
-      pcaplot <- factoextra::fviz_pca_var(plantPcas[[genotype]])
+      pcaDat <- plantPcas[[genotype]]
+      importance <- round(100 * summary(pcaDat)$importance[2, ], 1)
+      pcVecs <- as.data.frame(t(t(pcaDat$rotation) * pcaDat$sdev))[, 1:2]
+      pcVecs[["plotId"]] <- rownames(pcaDat$rotation)
+      pcaplot <- ggplot2::ggplot(data = pcVecs) +
+        ggplot2::geom_segment(ggplot2::aes(x = 0, y = 0,
+                                           xend = .data[["PC1"]],
+                                           yend = .data[["PC2"]]),
+                              arrow = ggplot2::arrow(length = ggplot2::unit(0.2, "cm")),
+                              show.legend = FALSE) +
+        ## Needed for a square plot output.
+        ggplot2::coord_equal(xlim = c(-1, 1), ylim = c(-1, 1),
+                             clip = "off") +
+        ## Add reference axes.
+        ggplot2::geom_vline(ggplot2::aes(xintercept = 0),
+                            linetype = "dashed", show.legend = FALSE) +
+        ggplot2::geom_hline(ggplot2::aes(yintercept = 0),
+                            linetype = "dashed", show.legend = FALSE) +
+        ggplot2::annotate("path",
+                          x = cos(seq(0, 2 * pi, length.out = 100)),
+                          y = sin(seq(0, 2 * pi, length.out = 100)),
+                          color = "grey75") +
+        ggplot2::geom_text(ggplot2::aes(x = .data[["PC1"]],
+                                        y = .data[["PC2"]],
+                                        label = .data[["plotId"]]),
+                           show.legend = FALSE, vjust = 0) +
+        ## Add labeling.
+        ggplot2::labs(x = paste0("Dim1 (", importance[1], "%)"),
+                      y = paste0("Dim2 (", importance[2], "%)"),
+                      title = "Variables - PCA") +
+        ggplot2::theme(panel.grid = ggplot2::element_line(color = "grey90"),
+                       panel.background = ggplot2::element_rect(fill = "white"))
     } else {
       pcaplot <- grid::nullGrob()
     }

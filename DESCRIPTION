@@ -48,7 +48,6 @@ Depends:
     R (>= 3.6)
 Imports: 
     animation,
-    factoextra,
     ggforce,
     ggplot2 (>= 3.3.0),
     ggnewscale,
