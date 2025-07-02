@@ -404,10 +404,12 @@ plot.fitMod <- function(x,
     ## Get heritabilities.
     herit <- getHerit(fitMods)
     ## Convert to long format needed by ggplot.
-    herit <- reshape2::melt(herit, measure.vars = setdiff(colnames(herit),
-                                                          c("timeNumber",
-                                                            "timePoint")),
-                            variable.name = "herit", value.name = "h2")
+    heritCols <- setdiff(colnames(herit), c("timeNumber", "timePoint"))
+    herit <- reshape(herit, direction = "long",
+                     varying = heritCols,
+                     v.names = "h2", timevar = "herit",
+                     times = heritCols)
+    herit[["herit"]] <- factor(herit[["herit"]], levels = heritCols)
     ## Manually modify limit of y-axis.
     yLim <- c(min(dotArgs$yLim[1], herit[["h2"]]),
               max(dotArgs$yLim[2], herit[["h2"]]))
@@ -457,8 +459,11 @@ plot.fitMod <- function(x,
     ## Get effective dimensions.
     effDim <- getEffDims(fitMods, EDType = EDType)
     ## Convert to long format needed by ggplot.
-    effDim <- reshape2::melt(effDim, measure.vars = whichED,
-                             variable.name = "effDim", value.name = "ED")
+    effDim <- reshape(effDim, direction = "long",
+                      varying = whichED,
+                      v.names = "ED", timevar = "effDim",
+                      times = whichED)
+    effDim[["effDim"]] <- factor(effDim[["effDim"]], levels = whichED)
     ## Manually modify limit of y-axis.
     yLim <- c(min(dotArgs$yLim[1], effDim[["ED"]]),
               max(dotArgs$yLim[2], effDim[["ED"]]))
@@ -502,8 +507,11 @@ plot.fitMod <- function(x,
       substring(varCols[1:(length(varCols) - 3)], first = 17),
       "Residual", "Columns", "Rows")
     ## Convert to long format needed by ggplot.
-    variance <- reshape2::melt(variance, measure.vars = varCols,
-                               variable.name = "var")
+    variance <- reshape(variance, direction = "long",
+                        varying = varCols,
+                        v.names = "value", timevar = "var",
+                        times = varCols)
+    variance[["var"]] <- factor(variance[["var"]], levels = varCols)
     ## Manually modify limit of y-axis.
     yLim <- c(min(dotArgs$yLim[1], variance[["value"]]),
               max(dotArgs$yLim[2], variance[["value"]]))
@@ -642,13 +650,12 @@ spatPlot <- function(fitMod,
     }
     spatTrDat <- kronecker(M, matrix(data = 1, ncol = p1, nrow = p2)) *
       spatTr$fit
-    ## Melt to get the data in ggplot shape. Rows and columns in the
-    ## spatial trend coming from SpATS are swapped so therefore use t()
-    plotDatSpat <- reshape2::melt(t(spatTrDat),
-                                  varnames = c("colNum", "rowNum"))
-    ## Add true values for columns and rows for plotting.
-    plotDatSpat[["colNum"]] <- spatTr$col.p
-    plotDatSpat[["rowNum"]] <- rep(x = spatTr$row.p, each = p1 * nCol)
+    ## Convert the data to shape suitable for ggplot shape.
+    ## Rows and columns in the spatial trend coming from SpATS are swapped
+    ## so therefore use t()
+    plotDatSpat <- data.frame(colNum = spatTr$col.p,
+                      rowNum = rep(x = spatTr$row.p, each = p1 * nCol),
+                      value = as.numeric(t(spatTrDat)))
     ## Remove missings from data.
     plotDatSpat <- ggplot2::remove_missing(plotDatSpat, na.rm = TRUE)
   }
@@ -845,10 +852,12 @@ timeLapsePlot <- function(fitMods,
       }
       spatTrDat <- kronecker(M, matrix(data = 1, ncol = p1, nrow = p2)) *
         spatTr[["fit"]]
-      ## Melt to get the data in ggplot shape. Rows and columns in the
-      ## spatial trend coming from SpATS are swapped so therefore use t()
-      plotDatSpat <- reshape2::melt(t(spatTrDat),
-                                    varnames = c("colNum", "rowNum"))
+      ## Convert the data to shape suitable for ggplot shape.
+      ## Rows and columns in the spatial trend coming from SpATS are swapped
+      ## so therefore use t()
+      plotDatSpat <- data.frame(colNum = spatTr$col.p,
+                                rowNum = rep(x = spatTr$row.p, each = p1 * nCol),
+                                value = as.numeric(t(spatTrDat)))
       ## Add true values for columns and rows for plotting.
       plotDatSpat[["colNum"]] <- spatTr[["col.p"]]
       plotDatSpat[["rowNum"]] <- rep(x = spatTr[["row.p"]], each = p1 * nCol)

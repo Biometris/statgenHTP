@@ -60,7 +60,6 @@ Imports:
     locfit,
     lubridate,
     rlang,
-    reshape2,
     scales,
     spam,
     SpATS (>= 1.0-13)

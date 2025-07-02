@@ -198,11 +198,15 @@ detectSerieOut <- function(corrDat,
                                 f = coefDat[c("genotype", geno.decomp)],
                                 drop = TRUE),
                       FUN = function(dat) {
-                        plantDat <- reshape2::acast(dat,
-                                                    formula = type ~ plotId,
-                                                    value.var = "obj.coefficients")
-                        ## Remove intercept.
-                        #plantDat <- plantDat[-1, , drop = FALSE]
+                        plantDat <- reshape(dat,
+                                            direction = "wide",
+                                            idvar = "type",
+                                            timevar = "plotId",
+                                            drop = c("genotype", "geno.decomp"))
+                        rownames(plantDat) <- plantDat[["type"]]
+                        plantDat <- as.matrix(plantDat[, -1])
+                        colnames(plantDat) <-
+                          gsub("obj.coefficients.", "", colnames(plantDat))
                         ## Remove plants with only NA.
                         NAplants <- apply(X = plantDat, MARGIN = 2,
                                           FUN = function(plant) {
@@ -320,15 +324,23 @@ detectSerieOut <- function(corrDat,
   })
   ## Convert cormats to format used by ggplot.
   cormats <- lapply(X = cormats, FUN = function(cormat) {
-    ## Set lower part of cormat to NA for plotting.
-    cormat[lower.tri(cormat)] <- NA
-    ## Melt to format used by ggplot.
-    meltedCormat <- reshape2::melt(cormat, na.rm = TRUE)
-    ## Convert Var1 and Var2 to factor needed for plotting.
-    if (!is.factor(meltedCormat[["Var1"]])) {
-      meltedCormat[["Var1"]] <- as.factor(meltedCormat[["Var1"]])
-      meltedCormat[["Var2"]] <- as.factor(meltedCormat[["Var2"]])
-    }
+    cordat <- as.data.frame(cormat)
+    meltedCormat <- reshape(cordat, direction = "long",
+                            varying = colnames(cordat),
+                            times = colnames(cordat), timevar = "Var1",
+                            ids = rownames(cordat), idvar = "Var2",
+                            v.names = "value")
+    rownames(meltedCormat) <- NULL
+    ## Reshape converts variable columns to character.
+    ## This gives problems with plotting, so reconvert them to factor.
+    meltedCormat[["Var1"]] <- factor(meltedCormat[["Var1"]],
+                                     levels = colnames(cordat))
+    meltedCormat[["Var2"]] <- factor(meltedCormat[["Var2"]],
+                                     levels = colnames(cordat))
+    ## Select bottom left triangle for correlations and top for variances.
+    meltedCormat <- meltedCormat[as.numeric(meltedCormat[["Var1"]]) <
+                                   as.numeric(meltedCormat[["Var2"]]),
+                                 c("Var1", "Var2", "value")]
     attr(meltedCormat, which = "thrCor") <- attr(cormat, which = "thrCor")
     return(meltedCormat)
   })
@@ -386,17 +398,24 @@ detectSerieOut <- function(corrDat,
   })
   ## Convert slopemats to format used by ggplot.
   slopemats <- lapply(X = slopemats, FUN = function(slopemat) {
-    ## Set lower part of cormat to NA for plotting.
-    slopemat[lower.tri(slopemat)] <- NA
-    ## Melt to format used by ggplot.
-    meltedSlopemat <- reshape2::melt(slopemat, na.rm = TRUE)
-    ## Convert Var1 and Var2 to factor needed for plotting.
-    if (!is.factor(meltedSlopemat[["Var1"]])) {
-      meltedSlopemat[["Var1"]] <- as.factor(meltedSlopemat[["Var1"]])
-      meltedSlopemat[["Var2"]] <- as.factor(meltedSlopemat[["Var2"]])
-    }
-    attr(meltedSlopemat, which = "thrSlope") <-
-      attr(slopemat, which = "thrSlope")
+    slopedat <- as.data.frame(slopemat)
+    meltedSlopemat <- reshape(slopedat, direction = "long",
+                              varying = colnames(slopedat),
+                              times = colnames(slopedat), timevar = "Var1",
+                              ids = rownames(slopedat), idvar = "Var2",
+                              v.names = "value")
+    rownames(meltedSlopemat) <- NULL
+    ## Reshape converts variable columns to character.
+    ## This gives problems with plotting, so reconvert them to factor.
+    meltedSlopemat[["Var1"]] <- factor(meltedSlopemat[["Var1"]],
+                                       levels = colnames(slopedat))
+    meltedSlopemat[["Var2"]] <- factor(meltedSlopemat[["Var2"]],
+                                       levels = colnames(slopedat))
+    ## Select bottom left triangle for correlations and top for variances.
+    meltedSlopemat <- meltedSlopemat[as.numeric(meltedSlopemat[["Var1"]]) <
+                                       as.numeric(meltedSlopemat[["Var2"]]),
+                                     c("Var1", "Var2", "value")]
+    attr(meltedSlopemat, which = "thrSlope") <- attr(slopemat, which = "thrSlope")
     return(meltedSlopemat)
   })
   ## Create full data.frame with annotated plants.

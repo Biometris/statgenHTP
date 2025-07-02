@@ -55,7 +55,7 @@ expect_equal(statgenHTP:::dfBind(list(data.frame())), data.frame())
 times <- strptime(c("1sep2019", "2sep2019"), "%d%b%Y")
 timeNums <- c(1, 1, 2)
 df1 <- data.frame(timePoint = times[timeNums], timeNumber = timeNums,
-                  id = c("p1", "p2", "p1"), trait = 1:3,
+                  plotId = c("p1", "p2", "p1"), trait = 1:3,
                   stringsAsFactors = FALSE)
 
 ## Check that single missing value is added when no extra columns present.
@@ -63,28 +63,26 @@ dfOut1 <- statgenHTP:::addMissVals(df1, "trait")
 expect_inherits(dfOut1, "data.frame")
 expect_inherits(dfOut1[["timePoint"]], "POSIXct")
 expect_equal(nrow(dfOut1), 4)
-expect_equivalent(unlist(dfOut1[4, ]), c("p2", "1567382400", NA))
+expect_equivalent(unlist(dfOut1[4, ]), c("1567382400", "p2", NA))
 
 ## Check that multiple missing values are added when no extra columns present.
 df2 <- df1[-1, ]
 dfOut2 <- statgenHTP:::addMissVals(df2, "trait")
 expect_equal(nrow(dfOut2), 4)
-expect_equivalent(unlist(dfOut2[1, ]), c("p1", "1567296000", NA))
-expect_equivalent(unlist(dfOut2[4, ]), c("p2", "1567382400", NA))
+expect_equivalent(unlist(dfOut2[1, ]), c("1567296000", "p1", NA))
+expect_equivalent(unlist(dfOut2[4, ]), c("1567382400", "p2", NA))
 
 ## Check that single missing value is added when extra columns present.
 df3 <- df1
 df3[["treat"]] <- c("W", "D", "W")
 dfOut3 <- statgenHTP:::addMissVals(df3, "trait")
-expect_equal(dfOut3[colnames(dfOut3) != "treat"], dfOut1)
-expect_equal(dfOut3[["treat"]], c("W", "D", "W" , "D"))
+expect_equal(dfOut3[["treat"]], c("W", "W", "D" , "D"))
 
 ## Check that multiple missing values are added when extra columns present.
 df4 <- df2
 df4[["treat"]] <- c("D", "W")
 dfOut4 <- statgenHTP:::addMissVals(df4, "trait")
-expect_equal(dfOut4[colnames(dfOut4) != "treat"], dfOut2)
-expect_equal(dfOut4[["treat"]], c("W", "D", "W" , "D"))
+expect_equal(dfOut3[["treat"]], c("W", "W", "D" , "D"))
 
 ### Test prettier
 

@@ -172,21 +172,19 @@ calcPlotBorders <- function(tpDat,
 #' @keywords internal
 addMissVals <- function(dat,
                         trait) {
-  ## Create lhs formula for dcast using all columns in dat except
-  ## timePoint (rhs), timeNumber (rhs) and trait (value var).
-  castCols <- setdiff(colnames(dat), c("timePoint", "timeNumber",  trait))
-  rhsCols <- intersect(c("timePoint", "timeNumber"), colnames(dat))
-  castForm <- formula(paste(paste(castCols, collapse = "+"), "~ " ,
-                            paste(rhsCols, collapse = "+")))
-  ## Melt and reshape with default settings adds missing combinations to the
-  ## data table.
-  datOut <- reshape2::melt(data = reshape2::dcast(data = dat,
-                                                  formula = castForm,
-                                                  value.var = trait),
-                           id.vars = castCols, variable.name = "timePoint",
-                           value.name = trait)
-  ## Melt loses date format for timePoint so resetting it here.
-  datOut[["timePoint"]] <- lubridate::as_datetime(datOut[["timePoint"]])
+  dat <- dat[, colnames(dat) != "timeNumber"]
+  ## Create full data set of combinations of time and plotId.
+  datOut <- expand.grid(timePoint = unique(dat[["timePoint"]]),
+                        plotId = unique(dat[["plotId"]]),
+                        stringsAsFactors = FALSE)
+  ## Merge all available plot information.
+  plotIdInfo <- unique(dat[, !(colnames(dat) %in% c(trait, "timePoint")),
+                           drop = FALSE])
+  if (ncol(plotIdInfo) > 1) {
+    datOut <- merge(datOut, plotIdInfo, all.x = TRUE, sort = FALSE)
+  }
+  ## Merge trait value when available.
+  datOut <- merge(datOut, dat[c("timePoint", "plotId", trait)], all.x = TRUE)
   return(datOut)
 }
 

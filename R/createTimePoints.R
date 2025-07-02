@@ -598,7 +598,7 @@ plot.TP <- function(x,
           ## Add a legend entry for replicates and subBlocks.
           ggplot2::scale_linetype_manual("replicates",
                                          values = c("replicates" = "solid"),
-                                         name = ggplot2::element_blank()) +
+                                         name = NULL) +
           ggplot2::guides(linetype = ggplot2::guide_legend(override.aes =
                                                              list(size = 1)))
       }
@@ -751,21 +751,26 @@ plot.TP <- function(x,
       })
       corMat <- corMat[corKeep, corKeep, drop = FALSE]
       ## Melt to get the proper format for ggplot.
-      meltedCorMat <- reshape2::melt(corMat)
-      ## If timePoint names consist of only numbers melt converts them to numeric.
+      cordat <- as.data.frame(corMat)
+      meltedCormat <- reshape(cordat, direction = "long",
+                              varying = colnames(cordat),
+                              times = colnames(cordat), timevar = "Var1",
+                              ids = rownames(cordat), idvar = "Var2",
+                              v.names = "value")
+      rownames(meltedCormat) <- NULL
+      ## Reshape converts variable columns to character.
       ## This gives problems with plotting, so reconvert them to factor.
-      if (is.numeric(meltedCorMat[["Var1"]])) {
-        meltedCorMat[["Var1"]] <- factor(meltedCorMat[["Var1"]],
-                                         levels = rownames(corMat))
-        meltedCorMat[["Var2"]] <- factor(meltedCorMat[["Var2"]],
-                                         levels = rownames(corMat))
-      }
+      meltedCormat[["Var1"]] <- factor(meltedCormat[["Var1"]],
+                                       levels = colnames(cordat))
+      meltedCormat[["Var2"]] <- factor(meltedCormat[["Var2"]],
+                                       levels = colnames(cordat))
       ## Remove top left of the plot. Only plotting a bottom right triangle.
       ## Diagonal is removed as well.
-      meltedCorMat <- meltedCorMat[as.numeric(meltedCorMat$Var1) >
-                                     as.numeric(meltedCorMat$Var2), ]
+      meltedCormat <- meltedCormat[as.numeric(meltedCormat[["Var1"]]) >
+                                     as.numeric(meltedCormat[["Var2"]]),
+                                   c("Var1", "Var2", "value")]
       ## Create plot.
-      pTp <- ggplot2::ggplot(data = meltedCorMat,
+      pTp <- ggplot2::ggplot(data = meltedCormat,
                              ggplot2::aes(x = .data[["Var1"]],
                                           y = .data[["Var2"]],
                                           fill = .data[["value"]])) +
@@ -786,7 +791,7 @@ plot.TP <- function(x,
         ggplot2::theme(panel.grid.major = ggplot2::element_blank(),
                        panel.grid.minor = ggplot2::element_blank()) +
         ## No axis and legend titles.
-        ggplot2::labs(title = plotTitle, x = "", y = "", color = "") +
+        ggplot2::labs(title = plotTitle, x = "", y = "", fill = "") +
         ggplot2::guides(size = "none") +
         ## Fix coordinates to get a square sized plot.
         ggplot2::coord_fixed()
