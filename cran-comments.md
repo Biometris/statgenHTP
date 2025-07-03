@@ -14,7 +14,7 @@
 
 There were no ERRORs or WARNINGs.
 
-There wer 2 NOTES:
+There were 2 NOTES:
 
   * checking CRAN incoming feasibility ... NOTE    
 
