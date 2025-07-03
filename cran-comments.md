@@ -1,4 +1,4 @@
-## Release anticipating new version of ggplot2
+## Patch release fixing CRAN test errors
 
 ----
 

@@ -1,6 +1,6 @@
 Package: statgenHTP
 Title: High Throughput Phenotyping (HTP) Data Analysis
-Version: 1.0.9.9000
+Version: 1.0.9.1
 Date: 2025-07-03
 Authors@R: 
     c(person(given = "Emilie J",
