@@ -1,0 +1,137 @@
+# Changelog
+
+## statgenHTP 1.0.9.2
+
+- No user visual changes.
+
+## statgenHTP 1.0.9.1
+
+CRAN release: 2025-07-03
+
+- No user visual changes.
+
+## statgenHTP 1.0.9
+
+CRAN release: 2025-07-02
+
+- Tests are modified for compatibility with the upcoming version of
+  ggplot2.
+- `statgenHTP` no longer imports `reshape2` and `factoextra`.
+
+## statgenHTP 1.0.8
+
+CRAN release: 2025-04-29
+
+- A small bug in a helper function for
+  [`fitSplineHDM()`](https://biometris.github.io/statgenHTP/index.html/reference/fitSplineHDM.md)
+  is fixed. Impact on the results is very minimal.
+- Several improvements of the documentation and examples.
+
+## statgenHTP 1.0.7
+
+CRAN release: 2024-10-14
+
+- For spatial models fitted with SpATS it is now assured that the number
+  of segments used for rows and columns is divisible by the value of
+  nest.div used. This is done to accommodate a minor fix in an upcoming
+  release of SpATS.
+- Functions no longer rely on soft-deprecated ggplot2 functions.
+
+## statgenHTP 1.0.6
+
+CRAN release: 2022-12-13
+
+- The package has been extended by functions for modelling evolution of
+  the genetic signal. This extension consists of functions
+  [`fitSplineHDM()`](https://biometris.github.io/statgenHTP/index.html/reference/fitSplineHDM.md)
+  for fitting a hierarchical data model,
+  [`predict.psHDM()`](https://biometris.github.io/statgenHTP/index.html/reference/predict.psHDM.md)
+  for making predictions based on this model, and
+  [`plot.psHDM()`](https://biometris.github.io/statgenHTP/index.html/reference/plot.psHDM.md)
+  for plotting the results. The methods used are described in a new
+  vignette.
+- A small bug in
+  [`detectSingleOutMaize()`](https://biometris.github.io/statgenHTP/index.html/reference/detectSingleOutMaize.md)
+  is fixed. Observations with a missing value for one of the involved
+  traits are no longer tagged as outliers.
+
+## statgenHTP 1.0.5
+
+CRAN release: 2021-09-15
+
+- No user visible changes
+
+## statgenHTP 1.0.4
+
+CRAN release: 2021-08-20
+
+- The
+  [`removeSerieOut()`](https://biometris.github.io/statgenHTP/index.html/reference/removeSerieOut.md)
+  function now has an extra argument reason allowing for restricting
+  removal of outliers to one or more reason the outliers where tagged.
+- The `plot` function for `serieOut` objects now has an extra argument
+  reason allowing for restricting the plotting of outliers to one or
+  more reason the outliers where tagged.
+- The
+  [`detectSerieOut()`](https://biometris.github.io/statgenHTP/index.html/reference/detectSerieOut.md)
+  function is now able to handle plotIds with irregular naming,
+  i.e. plotIds starting with a number.
+- The results of
+  [`estimateSplineParameters()`](https://biometris.github.io/statgenHTP/index.html/reference/estimateSplineParameters.md)
+  can now be plotted in a box plot and histogram.
+- In the
+  [`estimateSplineParameters()`](https://biometris.github.io/statgenHTP/index.html/reference/estimateSplineParameters.md)
+  function multiple parameters can now be estimated at once.
+- A bug in
+  [`detectSerieOut()`](https://biometris.github.io/statgenHTP/index.html/reference/detectSerieOut.md)
+  that caused slope outliers to be never detected is fixed.
+- A bug causing predictions to be made in
+  [`fitSpline()`](https://biometris.github.io/statgenHTP/index.html/reference/fitSpline.md)
+  for missing values at the beginning or end of a time course is fixed.
+- The
+  [`detectSerieOut()`](https://biometris.github.io/statgenHTP/index.html/reference/detectSerieOut.md)
+  function now checks for number of plotIds per plant in the correct
+  location leading to a more user friendly error message.
+
+## statgenHTP 1.0.3
+
+CRAN release: 2021-06-18
+
+- No user visible changes
+
+## statgenHTP 1.0.2
+
+CRAN release: 2021-06-10
+
+- Plotting second derivatives of fitted splines, plotted first
+  derivatives. This is fixed now.
+- The
+  [`detectSerieOut()`](https://biometris.github.io/statgenHTP/index.html/reference/detectSerieOut.md)
+  function now uses an extra criterion for checking if time courses our
+  outlying. See the function documentation and vignettes for a full
+  explanation of this new criterion.
+- The parameter `trait` in the
+  [`removeSerieOut()`](https://biometris.github.io/statgenHTP/index.html/reference/removeSerieOut.md)
+  function is renamed to `traits` and now accepts a vector of traits
+  that for which outlier values can be replaced by `NA`.
+- Plotting the output of
+  [`detectSerieOut()`](https://biometris.github.io/statgenHTP/index.html/reference/detectSerieOut.md)
+  now has an extra parameter `geno.decomp` to restrict the output to
+  selected levels of the geno.decomp variable in the data.
+- Computing the area under the curve in
+  [`estimateSplineParameters()`](https://biometris.github.io/statgenHTP/index.html/reference/estimateSplineParameters.md)
+  now allows the specification of the time unit used on the x-axis.
+- Fitting models using SpATS is now done using the option
+  `centered = TRUE` by default.
+
+## statgenHTP 1.0.1
+
+CRAN release: 2021-03-09
+
+- No user visible changes
+
+## statgenHTP 1.0.0
+
+CRAN release: 2021-03-05
+
+- Initial CRAN Release

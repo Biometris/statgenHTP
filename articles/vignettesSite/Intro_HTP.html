@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>statgenHTP tutorial: 1. Introduction, data description and preparation • statgenHTP</title>
 <script src="../../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../../deps/headroom-0.11.0/headroom.min.js"></script><script src="../../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../../deps/search-1.0.0/fuse.min.js"></script><script src="../../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../../pkgdown.js"></script><meta property="og:title" content="statgenHTP tutorial: 1. Introduction, data description and preparation">
 </head>
@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../../index.html">statgenHTP</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.9.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.9.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,7 +65,7 @@
                         <h4 data-toc-skip class="author">Emilie Millet,
 Bart-Jan van Rossum</h4>
             
-            <h4 data-toc-skip class="date">2025-07-03</h4>
+            <h4 data-toc-skip class="date">2026-05-21</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Biometris/statgenHTP/blob/main/vignettes/vignettesSite/Intro_HTP.Rmd" class="external-link"><code>vignettes/vignettesSite/Intro_HTP.Rmd</code></a></small>
       <div class="d-none name"><code>Intro_HTP.Rmd</code></div>
@@ -134,7 +134,7 @@ experiment in the Phenovator platform (WUR, Netherlands, <span class="citation">
 with 1440 plants grown in a growth chamber with different light
 intensity. The data set called “PhenovatorDat1” is included in the
 package.</p>
-<p><img src="figures/phenovator_pf.png" width="70%"></p>
+<p><img src="figures/phenovator_pf.png" class="r-plt" alt="" width="70%"></p>
 <p>The number of tested genotypes (<code>Genotype</code>) is 192 with
 6-7 replicates per genotype (<code>Replicate</code>). Four reference
 genotypes were also tested with 15 or 30 replicates. The studied trait
@@ -257,7 +257,7 @@ platform</a> with maize plants (INRAE, France, <span class="citation">(<a href="
 2016</a>)</span>). It consists of a greenhouse containing a conveyor
 belt structure of 28 lanes carrying 60 carts with one pot each
 (i.e. 1680 pots).</p>
-<p><img src="figures/phenoarch_pf.png" width="70%"></p>
+<p><img src="figures/phenoarch_pf.png" class="r-plt" alt="" width="70%"></p>
 <p>In this dataset, there are two genotypic panels
 (<code>population</code>) and two water scenarios
 (<code>Scenario</code>), well-watered (WW) and water deficit (WD). The
@@ -380,7 +380,7 @@ passes in front of the camera. Plants are pictured every two hours. The
 root system is described in two dimensions, with the root tip position
 in depth and width (tipPos_y and tipPos_x respectively) deduced from
 image analysis.</p>
-<p><img src="figures/ucl_pf.png" width="90%"></p>
+<p><img src="figures/ucl_pf.png" class="r-plt" alt="" width="90%"></p>
 <p>For each genotype (<code>Genotype</code>), the tip position
 (<code>tipPos_x</code> and <code>tipPos_y</code>) of the main root was
 tracked over time (<code>Time</code>) for each plant
@@ -673,7 +673,7 @@ experiment.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">phenoTP</span>, </span>
 <span>     plotType <span class="op">=</span> <span class="st">"layout"</span>,</span>
 <span>     timePoints <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Intro_HTP_files/figure-html/layoutPlot-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="Intro_HTP_files/figure-html/layoutPlot-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>Here, the third time point is displayed which corresponds to the
 1<sup>st</sup> of June 2018 at 11:37. Note that the title can be
 manually changed using the <code>title</code> option. This plot can be
@@ -685,7 +685,7 @@ the check genotypes are highlighted:</p>
 <span>     plotType <span class="op">=</span> <span class="st">"layout"</span>,</span>
 <span>     timePoints <span class="op">=</span> <span class="fl">3</span>,  </span>
 <span>     highlight <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"check1"</span>, <span class="st">"check2"</span>, <span class="st">"check3"</span>, <span class="st">"check4"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Intro_HTP_files/figure-html/layoutPlotHL-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="Intro_HTP_files/figure-html/layoutPlotHL-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>It is possible to add the labels of the genotypes to the layout.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Plot the layout for the third time point.</span></span>
@@ -694,7 +694,7 @@ the check genotypes are highlighted:</p>
 <span>     timePoints <span class="op">=</span> <span class="fl">3</span>,  </span>
 <span>     highlight <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"check1"</span>, <span class="st">"check2"</span>, <span class="st">"check3"</span>, <span class="st">"check4"</span><span class="op">)</span>,</span>
 <span>     showGeno <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Intro_HTP_files/figure-html/layoutPlotSG-1.png" width="768" style="display: block; margin: auto;"></p>
+<p><img src="Intro_HTP_files/figure-html/layoutPlotSG-1.png" class="r-plt" alt="" width="768" style="display: block; margin: auto;"></p>
 <p>We can visualize the raw data of a given trait on the layout, as a
 heatmap. This type of plot gives a first indication of the spatial
 variability at a given time point. This can be further investigated with
@@ -706,7 +706,7 @@ tutorial: 3. Correction for spatial trends</em></a>).</p>
 <span>     plotType <span class="op">=</span> <span class="st">"layout"</span>,</span>
 <span>     timePoints <span class="op">=</span> <span class="fl">3</span>,  </span>
 <span>     traits <span class="op">=</span> <span class="st">"EffpsII"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Intro_HTP_files/figure-html/layoutPlotheatmap-1.png" width="768" style="display: block; margin: auto;"></p>
+<p><img src="Intro_HTP_files/figure-html/layoutPlotheatmap-1.png" class="r-plt" alt="" width="768" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="raw-data-plot">Raw data plot<a class="anchor" aria-label="anchor" href="#raw-data-plot"></a>
@@ -735,7 +735,7 @@ tutorial: 4. Outlier detection for series of observations</em></a>)</p>
 <span>     traits <span class="op">=</span> <span class="st">"EffpsII"</span>,</span>
 <span>     plotType <span class="op">=</span> <span class="st">"raw"</span>,</span>
 <span>     genotypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"G001"</span>, <span class="st">"G002"</span>, <span class="st">"check1"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Intro_HTP_files/figure-html/rawVator-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="Intro_HTP_files/figure-html/rawVator-1.png" class="r-plt" alt="" width="672" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="boxplot">Boxplot<a class="anchor" aria-label="anchor" href="#boxplot"></a>
@@ -751,7 +751,7 @@ the experiment (before the change in light) and is reduced at the end
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">phenoTP</span>, </span>
 <span>     plotType <span class="op">=</span> <span class="st">"box"</span>,</span>
 <span>     traits <span class="op">=</span> <span class="st">"EffpsII"</span><span class="op">)</span> </span></code></pre></div>
-<p><img src="Intro_HTP_files/figure-html/boxPlot-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="Intro_HTP_files/figure-html/boxPlot-1.png" class="r-plt" alt="" width="672" style="display: block; margin: auto;"></p>
 <p>Colors can be applied to further investigate the variability of a
 factor within time points using the option <code>colorBy</code>. For
 example here, we investigate the variability between replicates within
@@ -764,7 +764,7 @@ time point 1 to 5, with one box per replicate per time point.</p>
 <span>     traits <span class="op">=</span> <span class="st">"EffpsII"</span>, </span>
 <span>     timePoints <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,</span>
 <span>     colorBy <span class="op">=</span> <span class="st">"repId"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Intro_HTP_files/figure-html/boxPlotCL-1.png" width="576" style="display: block; margin: auto;"></p>
+<p><img src="Intro_HTP_files/figure-html/boxPlotCL-1.png" class="r-plt" alt="" width="576" style="display: block; margin: auto;"></p>
 <p>The option <code>groupBy</code> allows assessing the variability of a
 factor combining multiple time points. For example, we investigate the
 replicate variability of grouped time points 1 to 5, with one box per
@@ -776,7 +776,7 @@ replicate.</p>
 <span>     traits <span class="op">=</span> <span class="st">"EffpsII"</span>, </span>
 <span>     timePoints <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,</span>
 <span>     groupBy <span class="op">=</span> <span class="st">"repId"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Intro_HTP_files/figure-html/boxPlotGP-1.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="Intro_HTP_files/figure-html/boxPlotGP-1.png" class="r-plt" alt="" width="384" style="display: block; margin: auto;"></p>
 <p>The boxes for the can be ordered using <code>orderBy</code>. Boxes
 can be ordered alphabetically (“alphabetic”) or by the group mean
 (“ascending”, “descending”).</p>
@@ -793,7 +793,7 @@ chronological and by default all time points are used.</p>
 <span>     plotType <span class="op">=</span> <span class="st">"cor"</span>,</span>
 <span>     traits <span class="op">=</span> <span class="st">"EffpsII"</span>,</span>
 <span>     timePoints <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span>from <span class="op">=</span> <span class="fl">1</span>, to <span class="op">=</span> <span class="fl">73</span>, by <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Intro_HTP_files/figure-html/corPlot-1.png" width="576" style="display: block; margin: auto;"></p>
+<p><img src="Intro_HTP_files/figure-html/corPlot-1.png" class="r-plt" alt="" width="576" style="display: block; margin: auto;"></p>
 <blockquote>
 <p><em>NOTE: Each plot can be exported to a pdf document by using the
 <code>outFile</code> option containing the name of the
@@ -831,7 +831,7 @@ items, one for each time point in the original <code>data.frame</code>
 (called “PhenoarchDat1”, see section <a href="#ex2">3.2</a>). We can
 visualize the layout and the raw data the same way as for the Phenovator
 data.</p>
-<p><img src="Intro_HTP_files/figure-html/layoutArch-1.png" width="576" style="display: block; margin: auto;"></p>
+<p><img src="Intro_HTP_files/figure-html/layoutArch-1.png" class="r-plt" alt="" width="576" style="display: block; margin: auto;"></p>
 <p>Note that for the raw data, we can use the <code>geno.decomp</code>
 option to split the genotypes using the water scenario. Doing so, we can
 visualize the difference between the irrigation levels for two
@@ -843,7 +843,7 @@ leaf area progression also seems to be larger:</p>
 <span>     plotType <span class="op">=</span> <span class="st">"raw"</span>,</span>
 <span>     genotypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GenoA01"</span>, <span class="st">"GenoA02"</span><span class="op">)</span>,</span>
 <span>     geno.decomp <span class="op">=</span> <span class="st">"Scenario"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Intro_HTP_files/figure-html/rawArch-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="Intro_HTP_files/figure-html/rawArch-1.png" class="r-plt" alt="" width="672" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="example-3">Example 3<a class="anchor" aria-label="anchor" href="#example-3"></a>
@@ -878,19 +878,18 @@ point in the original <code>data.frame</code> (called “RootDat1”).</p>
 <span>     traits <span class="op">=</span> <span class="st">"tipPos_y"</span>,</span>
 <span>     plotType <span class="op">=</span> <span class="st">"raw"</span>,</span>
 <span>     genotypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2"</span>, <span class="st">"8"</span>, <span class="st">"252"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figures/tipPosRaw.png" width="90%"></p>
+<p><img src="figures/tipPosRaw.png" class="r-plt" alt="" width="90%"></p>
 <hr>
 </div>
 <div class="section level3">
 <h3 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h3>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-Brichet2017" class="csl-entry">
-Brichet, Nicolas, Christian Fournier, Olivier Turc, Olivier Strauss,
-Simon Artzet, Christophe Pradal, Claude Welcker, François Tardieu, and
-Llorenç Cabrera-Bosquet. 2017. <span>“A Robot-Assisted Imaging Pipeline
-for Tracking the Growths of Maize Ear and Silks in a High-Throughput
-Phenotyping Platform.”</span> <em>Plant Methods</em> 13 (1): 96. <a href="https://doi.org/10.1186/s13007-017-0246-7" class="external-link">https://doi.org/10.1186/s13007-017-0246-7</a>.
+Brichet, Nicolas, Christian Fournier, Olivier Turc, et al. 2017.
+<span>“A Robot-Assisted Imaging Pipeline for Tracking the Growths of
+Maize Ear and Silks in a High-Throughput Phenotyping Platform.”</span>
+<em>Plant Methods</em> 13 (1): 96. <a href="https://doi.org/10.1186/s13007-017-0246-7" class="external-link">https://doi.org/10.1186/s13007-017-0246-7</a>.
 </div>
 <div id="ref-Cabrera2016" class="csl-entry">
 Cabrera-Bosquet, Llorenç, Christian Fournier, Nicolas Brichet, Claude
@@ -900,17 +899,15 @@ and Radiation-Use Efficiency of Thousands of Plants in a Phenotyping
 Platform.”</span> <em>New Phytologist</em> 212 (1): 269–81. <a href="https://doi.org/10.1111/nph.14027" class="external-link">https://doi.org/10.1111/nph.14027</a>.
 </div>
 <div id="ref-vanEeuw2019" class="csl-entry">
-Eeuwijk, Fred A. van, Daniela Bustos-Korts, Emilie J. Millet, Martin P.
-Boer, Willem Kruijer, Addie Thompson, Marcos Malosetti, et al. 2019.
-<span>“Modelling Strategies for Assessing and Increasing the
+Eeuwijk, Fred A. van, Daniela Bustos-Korts, Emilie J. Millet, et al.
+2019. <span>“Modelling Strategies for Assessing and Increasing the
 Effectiveness of New Phenotyping Techniques in Plant Breeding.”</span>
 <em>Plant Science</em> 282 (May): 23–39. <a href="https://doi.org/10.1016/j.plantsci.2018.06.018" class="external-link">https://doi.org/10.1016/j.plantsci.2018.06.018</a>.
 </div>
 <div id="ref-Flood2016" class="csl-entry">
-Flood, Pádraic J., Willem Kruijer, Sabine K. Schnabel, Rob van der
-Schoor, Henk Jalink, Jan F. H. Snel, Jeremy Harbinson, and Mark G. M.
-Aarts. 2016. <span>“Phenomics for Photosynthesis, Growth and Reflectance
-in <span>Arabidopsis</span> Thaliana Reveals Circadian and Long-Term
+Flood, Pádraic J., Willem Kruijer, Sabine K. Schnabel, et al. 2016.
+<span>“Phenomics for Photosynthesis, Growth and Reflectance in
+<span>Arabidopsis</span> Thaliana Reveals Circadian and Long-Term
 Fluctuations in Heritability.”</span> <em>Plant Methods</em> 12 (1): 14.
 <a href="https://doi.org/10.1186/s13007-016-0113-y" class="external-link">https://doi.org/10.1186/s13007-016-0113-y</a>.
 </div>
@@ -947,7 +944,7 @@ Biology</em> 27 (15): R770–83. <a href="https://doi.org/10.1016/j.cub.2017.05.
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

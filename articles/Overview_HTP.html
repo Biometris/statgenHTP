@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>statgenHTP: A short overview • statgenHTP</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="statgenHTP: A short overview">
 </head>
@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">statgenHTP</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.9.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.9.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,7 +65,7 @@
                         <h4 data-toc-skip class="author">Emilie Millet,
 Diana M. Pérez-Valencia, Bart-Jan van Rossum</h4>
             
-            <h4 data-toc-skip class="date">2025-07-03</h4>
+            <h4 data-toc-skip class="date">2026-05-21</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Biometris/statgenHTP/blob/main/vignettes/Overview_HTP.Rmd" class="external-link"><code>vignettes/Overview_HTP.Rmd</code></a></small>
       <div class="d-none name"><code>Overview_HTP.Rmd</code></div>
@@ -344,7 +344,7 @@ experiment.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">phenoTP</span>, </span>
 <span>     plotType <span class="op">=</span> <span class="st">"layout"</span>,</span>
 <span>     timePoints <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Overview_HTP_files/figure-html/layoutPlot-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="Overview_HTP_files/figure-html/layoutPlot-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>Here, the third time point is displayed which corresponds to the
 1<sup>st</sup> of June 2018 at 11:37. Note that the title can be
 manually changed using the <code>title</code> option. This plot can be
@@ -356,7 +356,7 @@ the check genotypes are highlighted:</p>
 <span>     plotType <span class="op">=</span> <span class="st">"layout"</span>,</span>
 <span>     timePoints <span class="op">=</span> <span class="fl">3</span>,  </span>
 <span>     highlight <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"check1"</span>, <span class="st">"check2"</span>, <span class="st">"check3"</span>, <span class="st">"check4"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Overview_HTP_files/figure-html/layoutPlotHL-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="Overview_HTP_files/figure-html/layoutPlotHL-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>It is possible to add the labels of the genotypes to the layout.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Plot the layout for the third time point.</span></span>
@@ -365,7 +365,7 @@ the check genotypes are highlighted:</p>
 <span>     timePoints <span class="op">=</span> <span class="fl">3</span>,  </span>
 <span>     highlight <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"check1"</span>, <span class="st">"check2"</span>, <span class="st">"check3"</span>, <span class="st">"check4"</span><span class="op">)</span>,</span>
 <span>     showGeno <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Overview_HTP_files/figure-html/layoutPlotSG-1.png" width="768" style="display: block; margin: auto;"></p>
+<p><img src="Overview_HTP_files/figure-html/layoutPlotSG-1.png" class="r-plt" alt="" width="768" style="display: block; margin: auto;"></p>
 <p>We can visualize the raw data of a given trait on the layout, as a
 heatmap. This type of plot gives a first indication of the spatial
 variability at a given time point. This can be further investigated with
@@ -376,7 +376,7 @@ the spatial modeling.</p>
 <span>     plotType <span class="op">=</span> <span class="st">"layout"</span>,</span>
 <span>     timePoints <span class="op">=</span> <span class="fl">3</span>,  </span>
 <span>     traits <span class="op">=</span> <span class="st">"EffpsII"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Overview_HTP_files/figure-html/layoutPlotheatmap-1.png" width="768" style="display: block; margin: auto;"></p>
+<p><img src="Overview_HTP_files/figure-html/layoutPlotheatmap-1.png" class="r-plt" alt="" width="768" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="raw-data-plot">Raw data plot<a class="anchor" aria-label="anchor" href="#raw-data-plot"></a>
@@ -388,7 +388,7 @@ the spatial modeling.</p>
 <span>     traits <span class="op">=</span> <span class="st">"EffpsII"</span>,</span>
 <span>     plotType <span class="op">=</span> <span class="st">"raw"</span>,</span>
 <span>     genotypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"G001"</span>, <span class="st">"G002"</span>, <span class="st">"check1"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Overview_HTP_files/figure-html/rawVator-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="Overview_HTP_files/figure-html/rawVator-1.png" class="r-plt" alt="" width="672" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="boxplot">Boxplot<a class="anchor" aria-label="anchor" href="#boxplot"></a>
@@ -401,7 +401,7 @@ time point for the specified trait using all time points.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">phenoTP</span>, </span>
 <span>     plotType <span class="op">=</span> <span class="st">"box"</span>,</span>
 <span>     traits <span class="op">=</span> <span class="st">"EffpsII"</span><span class="op">)</span> </span></code></pre></div>
-<p><img src="Overview_HTP_files/figure-html/boxPlot-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="Overview_HTP_files/figure-html/boxPlot-1.png" class="r-plt" alt="" width="672" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="correlation-plot">Correlation plot<a class="anchor" aria-label="anchor" href="#correlation-plot"></a>
@@ -415,7 +415,7 @@ chronological and by default all time points are used.</p>
 <span>     plotType <span class="op">=</span> <span class="st">"cor"</span>,</span>
 <span>     traits <span class="op">=</span> <span class="st">"EffpsII"</span>,</span>
 <span>     timePoints <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span>from <span class="op">=</span> <span class="fl">1</span>, to <span class="op">=</span> <span class="fl">73</span>, by <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Overview_HTP_files/figure-html/corPlot-1.png" width="576" style="display: block; margin: auto;"></p>
+<p><img src="Overview_HTP_files/figure-html/corPlot-1.png" class="r-plt" alt="" width="576" style="display: block; margin: auto;"></p>
 </div>
 </div>
 <div class="section level2">
@@ -530,7 +530,7 @@ using the <code>plot</code> function.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">resuVatorHTP</span>,</span>
 <span>     outOnly <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Overview_HTP_files/figure-html/plotOutVatorFA1-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="Overview_HTP_files/figure-html/plotOutVatorFA1-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>The annotated points can be replaced by NA for the studied trait
 using the function <code><a href="../reference/removeSingleOut.html">removeSingleOut()</a></code>. It creates a new
 <code>TP</code> object.</p>
@@ -563,7 +563,8 @@ vignette</a>.</p>
 <p>When SpATS is used for modeling, an extra spatial term is included in
 the model. This spatial component is composed using the
 <code>PSANOVA</code> function in the SpATS package which uses
-2-dimensional smoothing with P-splines as described in <span class="citation">Lee, Durbán, and Eilers (<a href="#ref-Lee2013">2013</a>)</span> and in <span class="citation">Rodríguez-Álvarez et al. (<a href="#ref-RodAlv2018">2018</a>)</span>.</p>
+2-dimensional smoothing with P-splines as described in <span class="citation">Lee et al. (<a href="#ref-Lee2013">2013</a>)</span> and
+in <span class="citation">Rodríguez-Álvarez et al. (<a href="#ref-RodAlv2018">2018</a>)</span>.</p>
 <p>In the example below the model is fitted for a few points.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Fit a model for a few time points.</span></span>
@@ -589,7 +590,7 @@ the fitted spatial trend is included.</p>
 <span>     timePoints <span class="op">=</span> <span class="fl">36</span>,</span>
 <span>     plotType <span class="op">=</span> <span class="st">"spatial"</span>,</span>
 <span>     spaTrend <span class="op">=</span> <span class="st">"percentage"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Overview_HTP_files/figure-html/plotSpatPerc-1.png" width="700.8"></p>
+<p><img src="Overview_HTP_files/figure-html/plotSpatPerc-1.png" class="r-plt" alt="" width="700.8"></p>
 <p>It is also possible to create a time lapse of the ratio of spatial
 trends over time. The scale is the same as previously described. The
 time lapse is always written to an output file.</p>
@@ -609,7 +610,7 @@ vignette</a>.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">modPhenoSp</span>, </span>
 <span>     plotType <span class="op">=</span> <span class="st">"rawPred"</span>,</span>
 <span>     genotypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"G007"</span>, <span class="st">"G058"</span><span class="op">)</span><span class="op">)</span> </span></code></pre></div>
-<p><img src="Overview_HTP_files/figure-html/plotSpPred-1.png" width="576" style="display: block; margin: auto;"></p>
+<p><img src="Overview_HTP_files/figure-html/plotSpPred-1.png" class="r-plt" alt="" width="576" style="display: block; margin: auto;"></p>
 <p>In the <strong>corrPred</strong> plot the corrected data (colored
 dots, one color per plotId) is plotted overlaid with the predicted
 values (black dots) from the fitted model.</p>
@@ -617,7 +618,7 @@ values (black dots) from the fitted model.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">modPhenoSp</span>, </span>
 <span>     plotType <span class="op">=</span> <span class="st">"corrPred"</span>,</span>
 <span>     genotypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"G007"</span>, <span class="st">"G058"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Overview_HTP_files/figure-html/plotSpCorr-1.png" width="576" style="display: block; margin: auto;"></p>
+<p><img src="Overview_HTP_files/figure-html/plotSpCorr-1.png" class="r-plt" alt="" width="576" style="display: block; margin: auto;"></p>
 <p>The last three types of plot display different model parameters over
 time. Plot type <strong>herit</strong> plots the heritability over
 time.</p>
@@ -625,14 +626,14 @@ time.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">modPhenoSp</span>, </span>
 <span>     plotType <span class="op">=</span> <span class="st">"herit"</span>,</span>
 <span>     yLim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Overview_HTP_files/figure-html/plotSpHerit-1.png" width="336" style="display: block; margin: auto;"></p>
+<p><img src="Overview_HTP_files/figure-html/plotSpHerit-1.png" class="r-plt" alt="" width="336" style="display: block; margin: auto;"></p>
 <p>Plot type <strong>variance</strong> plots the residual, column and
 row variances over time. These plots can serve as diagnostics of the
 experiment.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">modPhenoSp</span>, </span>
 <span>     plotType <span class="op">=</span> <span class="st">"variance"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Overview_HTP_files/figure-html/plotSpVar-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="Overview_HTP_files/figure-html/plotSpVar-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>Plot type <strong>effDim</strong> plots the effective dimension from
 models fitted using SpATS over time.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
@@ -640,7 +641,7 @@ models fitted using SpATS over time.</p>
 <span>     plotType <span class="op">=</span> <span class="st">"effDim"</span>,</span>
 <span>     whichED <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"colId"</span>, <span class="st">"rowId"</span>, <span class="st">"fColRow"</span>,<span class="st">"colfRow"</span>, <span class="st">"surface"</span><span class="op">)</span>,</span>
 <span>     EDType <span class="op">=</span> <span class="st">"ratio"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Overview_HTP_files/figure-html/plotSpED-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="Overview_HTP_files/figure-html/plotSpED-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="extracting-model-results">Extracting model results<a class="anchor" aria-label="anchor" href="#extracting-model-results"></a>
@@ -780,7 +781,7 @@ for a subset of genotypes or for a subset of plots.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.spline</span>,</span>
 <span>     genotypes <span class="op">=</span> <span class="st">"G160"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Overview_HTP_files/figure-html/plotSplGeno-1.png" width="672"></p>
+<p><img src="Overview_HTP_files/figure-html/plotSplGeno-1.png" class="r-plt" alt="" width="672"></p>
 <p>The coefficients are then used to tag suspect time courses with the
 function <code><a href="../reference/detectSerieOut.html">detectSerieOut()</a></code>.</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
@@ -841,7 +842,7 @@ function <code><a href="../reference/detectSerieOut.html">detectSerieOut()</a></
 tagged as outlier:</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">outVator</span>, genotypes <span class="op">=</span> <span class="st">"G151"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Overview_HTP_files/figure-html/plotOutVator-1.png" width="576"></p>
+<p><img src="Overview_HTP_files/figure-html/plotOutVator-1.png" class="r-plt" alt="" width="576"></p>
 <p>We can then remove the outlying plants from the data set or fitted
 spline.</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
@@ -994,7 +995,7 @@ section.</p>
 <ul>
 <li>If <code>plotType = "popTra"</code>, the estimated population
 trajectory
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mi>p</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\hat{f}_p(t)</annotation></semantics></math>)
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mi>p</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\hat{f}_p(t)</annotation></semantics></math>)
 is depicted and its
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>95</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">95\%</annotation></semantics></math>
 pointwise confidence intervals. Additionally, the grey lines represent
@@ -1003,12 +1004,12 @@ the observed <code>trait</code> that is used in the
 </ul>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pred.psHDM</span>, plotType <span class="op">=</span> <span class="st">"popTra"</span>, themeSizeHDM <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Overview_HTP_files/figure-html/plotPredPopVator-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="Overview_HTP_files/figure-html/plotPredPopVator-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <ul>
 <li>If <code>plotType = "popGenoTra"</code>, estimated population
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mi>p</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\hat{f}_p(t)</annotation></semantics></math>)
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mi>p</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\hat{f}_p(t)</annotation></semantics></math>)
 and genotype-especific
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mi>p</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\hat{f}_p(t)+\hat{f}_{pg}(t)</annotation></semantics></math>)
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mi>p</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\hat{f}_p(t)+\hat{f}_{pg}(t)</annotation></semantics></math>)
 trajectories are depicted for all genotypes.
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>95</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">95\%</annotation></semantics></math>
 pointwise confidence intervals are depicted for the population
@@ -1018,21 +1019,21 @@ derivative of the estimated population and genotype trajectories
 </ul>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pred.psHDM</span>, plotType <span class="op">=</span> <span class="st">"popGenoTra"</span>, themeSizeHDM <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Overview_HTP_files/figure-html/plotPredGenoTraVator-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="Overview_HTP_files/figure-html/plotPredGenoTraVator-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <ul>
 <li>If <code>plotType = "GenoDev"</code>, estimated genotype-specific
 deviations
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\hat{f}_{pg}(t)</annotation></semantics></math>)
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\hat{f}_{pg}(t)</annotation></semantics></math>)
 are depicted for all genotypes.</li>
 </ul>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pred.psHDM</span>, plotType <span class="op">=</span> <span class="st">"genoDev"</span>, themeSizeHDM <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Overview_HTP_files/figure-html/plotPredGenoDevVator-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="Overview_HTP_files/figure-html/plotPredGenoDevVator-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>Finally, if we are interested in obtaining plots at the plot level,
 we use <code>plotType = "genoPlotTra"</code>. Here, estimated genotype
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mi>p</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\hat{f}_p(t)+\hat{f}_{pg}(t)</annotation></semantics></math>)
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mi>p</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\hat{f}_p(t)+\hat{f}_{pg}(t)</annotation></semantics></math>)
 and plot-specific
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mi>p</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi><mi>i</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\hat{f}_p(t)+\hat{f}_{pg}(t)+\hat{f}_{pgi}(t)</annotation></semantics></math>)
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mi>p</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi><mi>i</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\hat{f}_p(t)+\hat{f}_{pg}(t)+\hat{f}_{pgi}(t)</annotation></semantics></math>)
 trajectories are depicted for all plots separately for a selection of
 genotypes. Also,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>95</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">95\%</annotation></semantics></math>
@@ -1042,7 +1043,7 @@ genotype-specific trajectories.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pred.psHDM</span>, </span>
 <span>     plotType <span class="op">=</span> <span class="st">"genoPlotTra"</span>, </span>
 <span>     themeSizeHDM <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Overview_HTP_files/figure-html/plotPredPlotVator-1.png" width="576" style="display: block; margin: auto;"></p>
+<p><img src="Overview_HTP_files/figure-html/plotPredPlotVator-1.png" class="r-plt" alt="" width="576" style="display: block; margin: auto;"></p>
 </div>
 </div>
 <div class="section level2">
@@ -1064,7 +1065,7 @@ case the time number scale.</p>
 <span>                                        genotypes <span class="op">=</span> <span class="va">subGenoVator</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">paramVator1</span>, plotType <span class="op">=</span> <span class="st">"box"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Overview_HTP_files/figure-html/paramVator-1.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="Overview_HTP_files/figure-html/paramVator-1.png" class="r-plt" alt="" width="384" style="display: block; margin: auto;"></p>
 <p>These parameters can also be obtained from estimated time courses
 after the genetic signal is modeled with the <strong>psHDM</strong>
 model. For example, we can extract the minimum spatially corrected
@@ -1078,15 +1079,15 @@ for two genotypes (as illustration).</p>
 <span>                           estimate <span class="op">=</span> <span class="st">"predictions"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">paramVator2</span>, plotType <span class="op">=</span> <span class="st">"box"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Overview_HTP_files/figure-html/paramPhenoGenoPred-1.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="Overview_HTP_files/figure-html/paramPhenoGenoPred-1.png" class="r-plt" alt="" width="384" style="display: block; margin: auto;"></p>
 <hr>
 <div class="section level3">
 <h3 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h3>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-Gilmour2017" class="csl-entry">
 Butler, D. G., B. R. Cullis, A. R. Gilmour, B. G. Gogel, and R.
-Thompson. 2017. <span>“ASReml-r Reference Manual Version 4.”</span> <a href="https://vsni.co.uk/" class="external-link">https://vsni.co.uk/</a>.
+Thompson. 2017. <em>ASReml-r Reference Manual Version 4</em>. <a href="https://vsni.co.uk/" class="external-link">https://vsni.co.uk/</a>.
 </div>
 <div id="ref-Cabrera2016" class="csl-entry">
 Cabrera-Bosquet, Llorenç, Christian Fournier, Nicolas Brichet, Claude
@@ -1096,17 +1097,15 @@ and Radiation-Use Efficiency of Thousands of Plants in a Phenotyping
 Platform.”</span> <em>New Phytologist</em> 212 (1): 269–81. <a href="https://doi.org/10.1111/nph.14027" class="external-link">https://doi.org/10.1111/nph.14027</a>.
 </div>
 <div id="ref-vanEeuw2019" class="csl-entry">
-Eeuwijk, Fred A. van, Daniela Bustos-Korts, Emilie J. Millet, Martin P.
-Boer, Willem Kruijer, Addie Thompson, Marcos Malosetti, et al. 2019.
-<span>“Modelling Strategies for Assessing and Increasing the
+Eeuwijk, Fred A. van, Daniela Bustos-Korts, Emilie J. Millet, et al.
+2019. <span>“Modelling Strategies for Assessing and Increasing the
 Effectiveness of New Phenotyping Techniques in Plant Breeding.”</span>
 <em>Plant Science</em> 282 (May): 23–39. <a href="https://doi.org/10.1016/j.plantsci.2018.06.018" class="external-link">https://doi.org/10.1016/j.plantsci.2018.06.018</a>.
 </div>
 <div id="ref-Flood2016" class="csl-entry">
-Flood, Pádraic J., Willem Kruijer, Sabine K. Schnabel, Rob van der
-Schoor, Henk Jalink, Jan F. H. Snel, Jeremy Harbinson, and Mark G. M.
-Aarts. 2016. <span>“Phenomics for Photosynthesis, Growth and Reflectance
-in <span>Arabidopsis</span> Thaliana Reveals Circadian and Long-Term
+Flood, Pádraic J., Willem Kruijer, Sabine K. Schnabel, et al. 2016.
+<span>“Phenomics for Photosynthesis, Growth and Reflectance in
+<span>Arabidopsis</span> Thaliana Reveals Circadian and Long-Term
 Fluctuations in Heritability.”</span> <em>Plant Methods</em> 12 (1): 14.
 <a href="https://doi.org/10.1186/s13007-016-0113-y" class="external-link">https://doi.org/10.1186/s13007-016-0113-y</a>.
 </div>
@@ -1117,11 +1116,10 @@ Bases.”</span> <em>Computational Statistics <span>&amp;</span> Data
 Analysis</em> 61 (May): 22–37. <a href="https://doi.org/10.1016/j.csda.2012.11.013" class="external-link">https://doi.org/10.1016/j.csda.2012.11.013</a>.
 </div>
 <div id="ref-Perez2022" class="csl-entry">
-Pérez-Valencia, Diana M, María Xosé Rodríguez-Álvarez, Martin P Boer,
-Lukas Kronenberg, Andreas Hund, Llorenç Cabrera-Bosquet, Emilie J
-Millet, and Fred A van Eeuwijk. 2022. <span>“A Two-Stage Approach for
-the Spatio-Temporal Analysis of High-Throughput Phenotyping
-Data.”</span> <em>Scientific Reports</em> 12 (1): 1–16. <a href="https://doi.org/10.1038/s41598-022-06935-9" class="external-link">https://doi.org/10.1038/s41598-022-06935-9</a>.
+Pérez-Valencia, Diana M, María Xosé Rodríguez-Álvarez, Martin P Boer, et
+al. 2022. <span>“A Two-Stage Approach for the Spatio-Temporal Analysis
+of High-Throughput Phenotyping Data.”</span> <em>Scientific Reports</em>
+12 (1): 1–16. <a href="https://doi.org/10.1038/s41598-022-06935-9" class="external-link">https://doi.org/10.1038/s41598-022-06935-9</a>.
 </div>
 <div id="ref-RodAlv2018" class="csl-entry">
 Rodríguez-Álvarez, María, Martin P. Boer, Fred van Eeuwijk, and Paul H.
@@ -1156,7 +1154,7 @@ Biology</em> 27 (15): R770–83. <a href="https://doi.org/10.1016/j.cub.2017.05.
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

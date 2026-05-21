@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>statgenHTP tutorial: 4. Outlier detection for series of observations • statgenHTP</title>
 <script src="../../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../../deps/headroom-0.11.0/headroom.min.js"></script><script src="../../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../../deps/search-1.0.0/fuse.min.js"></script><script src="../../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../../pkgdown.js"></script><meta property="og:title" content="statgenHTP tutorial: 4. Outlier detection for series of observations">
 </head>
@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../../index.html">statgenHTP</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.9.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.9.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,7 +66,7 @@
 Bart-Jan van Rossum, Isabelle Sanchez, Nadine Hilgert, Fred van
 Eeuwijk</h4>
             
-            <h4 data-toc-skip class="date">2025-07-03</h4>
+            <h4 data-toc-skip class="date">2026-05-21</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Biometris/statgenHTP/blob/main/vignettes/vignettesSite/OutlierSerieObs_HTP.Rmd" class="external-link"><code>vignettes/vignettesSite/OutlierSerieObs_HTP.Rmd</code></a></small>
       <div class="d-none name"><code>OutlierSerieObs_HTP.Rmd</code></div>
@@ -89,13 +89,12 @@ for spatial trends</strong></a>) or on raw data.</p>
 </h3>
 <p>Each time course is modeled by a non-parametric smoothing spline with
 a fixed number of knots. This is a piecewise cubic polynomial (<span class="citation">(<a href="#ref-Eubank1999">Eubank 1999</a>)</span>,
-<span class="citation">(<a href="#ref-Eilers2015">Eilers, Marx, and
-Durbán 2015</a>)</span>) fitted as a mixed model (<span class="citation">(<a href="#ref-Currie2002">Currie and Durban
-2002</a>)</span>).</p>
+<span class="citation">(<a href="#ref-Eilers2015">Eilers et al.
+2015</a>)</span>) fitted as a mixed model (<span class="citation">(<a href="#ref-Currie2002">Currie and Durban 2002</a>)</span>).</p>
 <div class="figure">
-<img src="figures/pspline.png" alt="P-spline smoothing with 20 knots and a low penalty, from [@Hugelier2016]. The individual B-splines (with the correct coefficients) are shown (colored lines), as well as their sum representing the fit (thick black line)." width="40%"><p class="caption">
-P-spline smoothing with 20 knots and a low penalty, from <span class="citation">(<a href="#ref-Hugelier2016">Hugelier, Devos, and
-Ruckebusch 2016</a>)</span>. The individual B-splines (with the correct
+<img src="figures/pspline.png" class="r-plt" alt="P-spline smoothing with 20 knots and a low penalty, from [@Hugelier2016]. The individual B-splines (with the correct coefficients) are shown (colored lines), as well as their sum representing the fit (thick black line)." width="40%"><p class="caption">
+P-spline smoothing with 20 knots and a low penalty, from <span class="citation">(<a href="#ref-Hugelier2016">Hugelier et al.
+2016</a>)</span>. The individual B-splines (with the correct
 coefficients) are shown (colored lines), as well as their sum
 representing the fit (thick black line).
 </p>
@@ -257,17 +256,17 @@ for a subset of genotypes or for a subset of plots.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.spline</span>,</span>
 <span>     genotypes <span class="op">=</span> <span class="st">"G160"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="OutlierSerieObs_HTP_files/figure-html/plotSplGeno-1.png" width="672"></p>
+<p><img src="OutlierSerieObs_HTP_files/figure-html/plotSplGeno-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.spline</span>,</span>
 <span>     plotIds <span class="op">=</span> <span class="st">"c10r29"</span>,</span>
 <span>     plotType <span class="op">=</span> <span class="st">"predictions"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="OutlierSerieObs_HTP_files/figure-html/plotSplPlot-1.png" width="384"></p>
+<p><img src="OutlierSerieObs_HTP_files/figure-html/plotSplPlot-1.png" class="r-plt" alt="" width="384"></p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.spline</span>,</span>
 <span>     plotIds <span class="op">=</span> <span class="st">"c10r29"</span>,</span>
 <span>     plotType <span class="op">=</span> <span class="st">"derivatives"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="OutlierSerieObs_HTP_files/figure-html/plotSplPlot-2.png" width="384"></p>
+<p><img src="OutlierSerieObs_HTP_files/figure-html/plotSplPlot-2.png" class="r-plt" alt="" width="384"></p>
 <p>The object <code>fit.spline</code> also contains the values of the
 P-splines coefficients:</p>
 <table class="table">
@@ -386,7 +385,7 @@ high angles and a low average ratio for the slope.</li>
 Here genotype G160 which has plant c9r4 tagged as outlier:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">outVator</span>, genotypes <span class="op">=</span> <span class="st">"G160"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="OutlierSerieObs_HTP_files/figure-html/plotOutVator-1.png" width="768"></p>
+<p><img src="OutlierSerieObs_HTP_files/figure-html/plotOutVator-1.png" class="r-plt" alt="" width="768"></p>
 <p>The figure above contains:</p>
 <ul>
 <li>(top) A scatter plot of the trait value on the y-axis and time on
@@ -416,7 +415,7 @@ correlation plot and no PCA plot.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">outVator</span>, </span>
 <span>     genotypes <span class="op">=</span> <span class="st">"G160"</span>, </span>
 <span>     reason <span class="op">=</span> <span class="st">"slope"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="OutlierSerieObs_HTP_files/figure-html/plotOutVatorSlope-1.png" width="768"></p>
+<p><img src="OutlierSerieObs_HTP_files/figure-html/plotOutVatorSlope-1.png" class="r-plt" alt="" width="768"></p>
 <p>When numerical time was used to fit the splines, it can be used also
 to plot the outliers using the option <code>useTimeNumber = TRUE</code>
 and providing the column name in <code>timeNumber</code>.</p>
@@ -478,7 +477,7 @@ before running the function on all plants.</p>
 <span>                   plotIds <span class="op">=</span> <span class="st">"c10r29"</span>,</span>
 <span>                   knots <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sp10k</span><span class="op">)</span></span></code></pre></div>
-<p><img src="OutlierSerieObs_HTP_files/figure-html/fitSplineVatorKnots10-1.png" width="384"></p>
+<p><img src="OutlierSerieObs_HTP_files/figure-html/fitSplineVatorKnots10-1.png" class="r-plt" alt="" width="384"></p>
 <p>The predicted curve is very smooth and, in this case, it is not
 following precisely the real data curve shape. When comparing the plants
 of a same genotype with this curve shape we might not identify the
@@ -490,7 +489,7 @@ outlying plant.</p>
 <span>                   plotIds <span class="op">=</span> <span class="st">"c10r29"</span>,</span>
 <span>                   knots <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sp50k</span><span class="op">)</span></span></code></pre></div>
-<p><img src="OutlierSerieObs_HTP_files/figure-html/fitSplineVatorKnots50-1.png" width="384"></p>
+<p><img src="OutlierSerieObs_HTP_files/figure-html/fitSplineVatorKnots50-1.png" class="r-plt" alt="" width="384"></p>
 <p>The predicted curve is less smooth and follows the actual curve
 shape. This seems to be a good setting to detect strange curve shape
 among the replicates of a genotype.</p>
@@ -519,12 +518,12 @@ for spatial trends</strong></a>).</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.splineArch</span>,</span>
 <span>     plotIds <span class="op">=</span> <span class="st">"c11r9"</span>,</span>
 <span>     plotType <span class="op">=</span>  <span class="st">"predictions"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="OutlierSerieObs_HTP_files/figure-html/plotArch-1.png" width="384"></p>
+<p><img src="OutlierSerieObs_HTP_files/figure-html/plotArch-1.png" class="r-plt" alt="" width="384"></p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.splineArch</span>,</span>
 <span>     plotIds <span class="op">=</span> <span class="st">"c11r9"</span>,</span>
 <span>     plotType <span class="op">=</span>  <span class="st">"derivatives"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="OutlierSerieObs_HTP_files/figure-html/plotArch-2.png" width="384"></p>
+<p><img src="OutlierSerieObs_HTP_files/figure-html/plotArch-2.png" class="r-plt" alt="" width="384"></p>
 <p>Here, the <code>geno.decomp</code> option is also to split the plants
 of each genotype those under well watered and water deficit conditions.
 The outlier detection is run per treatment with a narrow angle
@@ -594,7 +593,7 @@ threshold</p>
 </table>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">outArch</span>, genotypes <span class="op">=</span> <span class="st">"GenoA01"</span>, geno.decomp <span class="op">=</span> <span class="st">"WD_Panel1"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="OutlierSerieObs_HTP_files/figure-html/plotOutArch-1.png" width="768"></p>
+<p><img src="OutlierSerieObs_HTP_files/figure-html/plotOutArch-1.png" class="r-plt" alt="" width="768"></p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">spatCorrectedArchOut</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/removeSerieOut.html">removeSerieOut</a></span><span class="op">(</span>dat <span class="op">=</span> <span class="va">spatCorrectedArch</span>,</span>
 <span>                                       serieOut <span class="op">=</span> <span class="va">outArch</span><span class="op">)</span></span>
@@ -643,7 +642,7 @@ Outlier detection for single observations</strong></a>).</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.splineRoot</span>,</span>
 <span>     genotypes <span class="op">=</span> <span class="st">"2"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="OutlierSerieObs_HTP_files/figure-html/plotRoot-1.png" width="672"></p>
+<p><img src="OutlierSerieObs_HTP_files/figure-html/plotRoot-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">outRoot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/detectSerieOut.html">detectSerieOut</a></span><span class="op">(</span>corrDat <span class="op">=</span> <span class="va">noCorrectedRoot</span>,</span>
 <span>                          predDat <span class="op">=</span> <span class="va">predDatRoot</span>,</span>
@@ -656,7 +655,7 @@ Outlier detection for single observations</strong></a>).</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">outRoot</span>,</span>
 <span>     genotypes <span class="op">=</span> <span class="st">"6"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="OutlierSerieObs_HTP_files/figure-html/plotRootOut-1.png" width="672"></p>
+<p><img src="OutlierSerieObs_HTP_files/figure-html/plotRootOut-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">noCorrectedRootOut</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/removeSerieOut.html">removeSerieOut</a></span><span class="op">(</span>dat <span class="op">=</span> <span class="va">noCorrectedRoot</span>,</span>
 <span>                                     serieOut <span class="op">=</span> <span class="va">outRoot</span><span class="op">)</span></span>
@@ -711,7 +710,7 @@ This allows to have more replicates per genotype. It also reduces the
 dimensionality of the time courses to only one point, which will
 simplify the statistical models to be implemented later.</p>
 <div class="figure">
-<img src="figures/multi_trait_approach.png" alt="Schematic representation of a multi-trait approach for detection of outlier plants (case of maize), from @AlvarezPrado2019." width="90%"><p class="caption">
+<img src="figures/multi_trait_approach.png" class="r-plt" alt="Schematic representation of a multi-trait approach for detection of outlier plants (case of maize), from @AlvarezPrado2019." width="90%"><p class="caption">
 Schematic representation of a multi-trait approach for detection of
 outlier plants (case of maize), from <span class="citation">Alvarez
 Prado et al. (<a href="#ref-AlvarezPrado2019">2019</a>)</span>.
@@ -830,12 +829,11 @@ outliers</li>
 <div class="section level3">
 <h3 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h3>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-AlvarezPrado2019" class="csl-entry">
-Alvarez Prado, Santiago, Isabelle Sanchez, Llorenç Cabrera-Bosquet,
-Antonin Grau, Claude Welcker, François Tardieu, and Nadine Hilgert.
-2019. <span>“To Clean or Not to Clean Phenotypic Datasets for Outlier
-Plants in Genetic Analyses?”</span> <em>Journal of Experimental
+Alvarez Prado, Santiago, Isabelle Sanchez, Llorenç Cabrera-Bosquet, et
+al. 2019. <span>“To Clean or Not to Clean Phenotypic Datasets for
+Outlier Plants in Genetic Analyses?”</span> <em>Journal of Experimental
 Botany</em> 70 (15): 3693–98. <a href="https://doi.org/10.1093/jxb/erz191" class="external-link">https://doi.org/10.1093/jxb/erz191</a>.
 </div>
 <div id="ref-Currie2002" class="csl-entry">
@@ -857,7 +855,7 @@ Press.
 Hugelier, S., O. Devos, and C. Ruckebusch. 2016. <span>“Chapter 14 - a
 Smoothness Constraint in Multivariate Curve Resolution-Alternating Least
 Squares of Spectroscopy Data.”</span> In <em>Resolving Spectral
-Mixtures</em>, edited by Cyril Ruckebusch, 30:453–76. Data Handling in
+Mixtures</em>, edited by Cyril Ruckebusch, vol. 30. Data Handling in
 Science and Technology. Elsevier. <a href="https://doi.org/10.1016/B978-0-444-63638-6.00014-0" class="external-link">https://doi.org/10.1016/B978-0-444-63638-6.00014-0</a>.
 </div>
 <div id="ref-RodAlv2018" class="csl-entry">
@@ -880,7 +878,7 @@ Breeding Experiments with p-Splines.”</span> <em>Spatial Statistics</em>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

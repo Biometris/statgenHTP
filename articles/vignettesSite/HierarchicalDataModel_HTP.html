@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>statgenHTP tutorial: 5. Modelling the temporal evolution of the genetic signal • statgenHTP</title>
 <script src="../../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../../deps/headroom-0.11.0/headroom.min.js"></script><script src="../../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../../deps/search-1.0.0/fuse.min.js"></script><script src="../../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../../pkgdown.js"></script><meta property="og:title" content="statgenHTP tutorial: 5. Modelling the temporal evolution of the genetic signal">
 </head>
@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../../index.html">statgenHTP</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.9.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.9.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,7 +66,7 @@
 Pérez-Valencia, María Xosé Rodríguez-Álvarez, Bart-Jan van Rossum,
 Emilie Millet, Martin Boer, Fred van Eeuwijk</h4>
             
-            <h4 data-toc-skip class="date">2025-07-03</h4>
+            <h4 data-toc-skip class="date">2026-05-21</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Biometris/statgenHTP/blob/main/vignettes/vignettesSite/HierarchicalDataModel_HTP.Rmd" class="external-link"><code>vignettes/vignettesSite/HierarchicalDataModel_HTP.Rmd</code></a></small>
       <div class="d-none name"><code>HierarchicalDataModel_HTP.Rmd</code></div>
@@ -86,7 +86,7 @@ for spatial trends</strong></a>).</p>
 corrected plant/plot phenotype. We assume that data present a
 hierarchical structure with plots nested in genotypes, and genotypes
 nested in “populations”. We denote as
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>y</mi><mo accent="true">̃</mo></mover><mrow><mi>p</mi><mi>g</mi><mi>i</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\tilde{y}_{pgi}(t)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>y</mi><mo accent="true">̃</mo></mover><mrow><mi>p</mi><mi>g</mi><mi>i</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\tilde{y}_{pgi}(t)</annotation></semantics></math>
 the spatially corrected phenotype for the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>th
 plant
@@ -94,7 +94,7 @@ plant
 of the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>g</mi><annotation encoding="application/x-tex">g</annotation></semantics></math>th
 genotype
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>g</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><msub><mo>ℓ</mo><mi>p</mi></msub></mrow><annotation encoding="application/x-tex">g=1,\ldots,\ell_p</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>g</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>ℓ</mi><mi>p</mi></msub></mrow><annotation encoding="application/x-tex">g=1,\ldots,\ell_p</annotation></semantics></math>
 in the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>th
 population
@@ -102,16 +102,16 @@ population
 at time
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>.
 As such, there is a total of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mo>=</mo><msubsup><mo>∑</mo><mrow><mi>p</mi><mo>=</mo><mn>1</mn></mrow><mi>k</mi></msubsup><mrow><msubsup><mo>∑</mo><mrow><mi>g</mi><mo>=</mo><mn>1</mn></mrow><msub><mo>ℓ</mo><mi>p</mi></msub></msubsup><msub><mi>m</mi><mrow><mi>p</mi><mi>g</mi></mrow></msub></mrow></mrow><annotation encoding="application/x-tex">M=\sum_{p=1}^k{\sum_{g=1}^{\ell_p}{m_{pg}}}</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mo>=</mo><msubsup><mo>∑</mo><mrow><mi>p</mi><mo>=</mo><mn>1</mn></mrow><mi>k</mi></msubsup><mrow><msubsup><mo>∑</mo><mrow><mi>g</mi><mo>=</mo><mn>1</mn></mrow><msub><mi>ℓ</mi><mi>p</mi></msub></msubsup><msub><mi>m</mi><mrow><mi>p</mi><mi>g</mi></mrow></msub></mrow></mrow><annotation encoding="application/x-tex">M=\sum_{p=1}^k{\sum_{g=1}^{\ell_p}{m_{pg}}}</annotation></semantics></math>
 plots/plants,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo>=</mo><msubsup><mo>∑</mo><mrow><mi>p</mi><mo>=</mo><mn>1</mn></mrow><mi>k</mi></msubsup><msub><mo>ℓ</mo><mi>p</mi></msub></mrow><annotation encoding="application/x-tex">L=\sum_{p=1}^k{\ell_p}</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo>=</mo><msubsup><mo>∑</mo><mrow><mi>p</mi><mo>=</mo><mn>1</mn></mrow><mi>k</mi></msubsup><msub><mi>ℓ</mi><mi>p</mi></msub></mrow><annotation encoding="application/x-tex">L=\sum_{p=1}^k{\ell_p}</annotation></semantics></math>
 genotypes, and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
 populations. To model this sample of curves the following additive
 decomposition of the phenotypic variation over time is considered, and a
 P-spline-based three-level nested hierarchical data model (hereafter
 refer as <strong>psHDM</strong>) is used</p>
-<p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>y</mi><mo accent="true">̃</mo></mover><mrow><mi>p</mi><mi>g</mi><mi>i</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>f</mi><mi>p</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mi>f</mi><mrow><mi>p</mi><mi>g</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mi>f</mi><mrow><mi>p</mi><mi>g</mi><mi>i</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mi>ε</mi><mrow><mi>p</mi><mi>g</mi><mi>i</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mspace width="0.278em"></mspace><mspace width="0.278em"></mspace><msub><mi>ε</mi><mrow><mi>p</mi><mi>g</mi><mi>i</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><msup><mi>σ</mi><mn>2</mn></msup><msub><mi>w</mi><mrow><mi>p</mi><mi>g</mi><mi>i</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">\tilde{y}_{pgi}(t) = f_{p}(t) + f_{pg}(t) + f_{pgi}(t) + \varepsilon_{pgi}(t),\;\;\varepsilon_{pgi}(t)\sim N\left(0, \sigma^{2}w_{pgi}(t)\right),</annotation></semantics></math></p>
+<p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>y</mi><mo accent="true">̃</mo></mover><mrow><mi>p</mi><mi>g</mi><mi>i</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>f</mi><mi>p</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msub><mi>f</mi><mrow><mi>p</mi><mi>g</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msub><mi>f</mi><mrow><mi>p</mi><mi>g</mi><mi>i</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msub><mi>ε</mi><mrow><mi>p</mi><mi>g</mi><mi>i</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mspace width="0.278em"></mspace><mspace width="0.278em"></mspace><msub><mi>ε</mi><mrow><mi>p</mi><mi>g</mi><mi>i</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><msup><mi>σ</mi><mn>2</mn></msup><msub><mi>w</mi><mrow><mi>p</mi><mi>g</mi><mi>i</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">\tilde{y}_{pgi}(t) = f_{p}(t) + f_{pg}(t) + f_{pgi}(t) + \varepsilon_{pgi}(t),\;\;\varepsilon_{pgi}(t)\sim N\left(0, \sigma^{2}w_{pgi}(t)\right),</annotation></semantics></math></p>
 <p>where</p>
 <ul>
 <li>
@@ -148,7 +148,7 @@ is the random noise curve, and
 is the weight obtained from, e.g., the spatial correction.</li>
 </ul>
 <p>An illustration of these curves follows</p>
-<p><img src="figures/curvesHDM.png" width="80%" style="display: block; margin: auto;"></p>
+<p><img src="figures/curvesHDM.png" class="r-plt" alt="" width="80%" style="display: block; margin: auto;"></p>
 <p>Before proceeding, we note that the functions described in this
 tutorial can be applied to both spatially corrected data (see <a href="SpatialModel_HTP.html"><strong>statgenHTP tutorial: 3. Correction
 for spatial trends</strong></a>) or raw data. These functions also allow
@@ -183,7 +183,7 @@ model, we combine the genotype and the water regime information as
 follows (i.e.,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>180</mn><annotation encoding="application/x-tex">180</annotation></semantics></math><code>genoTreat</code> =
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>90</mn><annotation encoding="application/x-tex">90</annotation></semantics></math><code>genotype</code>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>2</mn><annotation encoding="application/x-tex">2</annotation></semantics></math><code>treat</code>)</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>×</mi><annotation encoding="application/x-tex">\times</annotation></semantics></math><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>2</mn><annotation encoding="application/x-tex">2</annotation></semantics></math><code>treat</code>)</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">spatCorrectedArch</span><span class="op">[[</span><span class="st">"geno.decomp"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  Factor w/ 4 levels "WD_Panel1","WD_Panel2",..: 1 1 1 1 1 1 1 1 1 1 ...</span></span>
@@ -236,7 +236,7 @@ days of the year</p>
 <span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">facet_grid</a></span><span class="op">(</span><span class="op">~</span><span class="va">geno.decomp</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y <span class="op">=</span> <span class="st">"Spatially corrected leaf area"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="HierarchicalDataModel_HTP_files/figure-html/visualiseData-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="HierarchicalDataModel_HTP_files/figure-html/visualiseData-1.png" class="r-plt" alt="" width="672" style="display: block; margin: auto;"></p>
 <hr>
 </div>
 <div class="section level2">
@@ -292,9 +292,9 @@ genotypes or plots. The user only needs to specify the desired vector of
 <code>genotypes</code> and/or <code>plotIds</code>.</p>
 <blockquote>
 <p>Note: If the user prefers to use different penalty orders and/or
-B-spline degree values, the parameterisation proposed by <span class="citation">Wood, Scheipl, and Faraway (<a href="#ref-Wood2013">2013</a>)</span> is the one used by the
-<code>fitSplineHDM</code> function to obtain the design matrix for the
-fixed effects (i.e.,
+B-spline degree values, the parameterisation proposed by <span class="citation">Wood et al. (<a href="#ref-Wood2013">2013</a>)</span>
+is the one used by the <code>fitSplineHDM</code> function to obtain the
+design matrix for the fixed effects (i.e.,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐗</mi><annotation encoding="application/x-tex">\boldsymbol{X}</annotation></semantics></math>)
 in the mixed model formulation.</p>
 </blockquote>
@@ -370,9 +370,9 @@ values see <code><a href="../../reference/fitSplineHDM.html">help(fitSplineHDM)<
 the estimated population trajectories
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mi>p</mi></msub><annotation encoding="application/x-tex">\hat{f}_p</annotation></semantics></math>,
 <code>fPop</code>) as well as their first
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>f</mi><mo accent="true">̂</mo></mover><msub><mi>′</mi><mi>p</mi></msub></mrow><annotation encoding="application/x-tex">\hat{f}'_p</annotation></semantics></math>,
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mover><mi>f</mi><mo accent="true">̂</mo></mover><mi>p</mi><mo>′</mo></msubsup><annotation encoding="application/x-tex">\hat{f}'_p</annotation></semantics></math>,
 <code>fPopDeriv1</code>) and second-order
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>f</mi><mo accent="true">̂</mo></mover><msub><mi>″</mi><mi>p</mi></msub></mrow><annotation encoding="application/x-tex">\hat{f}''_p</annotation></semantics></math>,
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mover><mi>f</mi><mo accent="true">̂</mo></mover><mi>p</mi><mo>″</mo></msubsup><annotation encoding="application/x-tex">\hat{f}''_p</annotation></semantics></math>,
 <code>fPopDeriv2</code>) derivatives</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">fit.psHDM</span><span class="op">$</span><span class="va">popLevel</span><span class="op">)</span></span>
@@ -453,16 +453,16 @@ the estimated population trajectories
 <li><p>Estimated genotype deviations
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi></mrow></msub><annotation encoding="application/x-tex">\hat{f}_{pg}</annotation></semantics></math>,
 <code>fGeno</code>) as well as their first
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>f</mi><mo accent="true">̂</mo></mover><msub><mi>′</mi><mrow><mi>p</mi><mi>g</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\hat{f}'_{pg}</annotation></semantics></math>,
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi></mrow><mo>′</mo></msubsup><annotation encoding="application/x-tex">\hat{f}'_{pg}</annotation></semantics></math>,
 <code>fGenoDeriv1</code>) and second-order
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>f</mi><mo accent="true">̂</mo></mover><msub><mi>″</mi><mrow><mi>p</mi><mi>g</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\hat{f}''_{pg}</annotation></semantics></math>,
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi></mrow><mo>″</mo></msubsup><annotation encoding="application/x-tex">\hat{f}''_{pg}</annotation></semantics></math>,
 <code>fGenoDeriv2</code>) derivatives.</p></li>
 <li><p>Estimated genotype trajectories
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mi>p</mi></msub><mo>+</mo><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\hat{f}_{p} +\hat{f}_{pg}</annotation></semantics></math>,
 <code>fGenoDev</code>) as well as their first
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>f</mi><mo accent="true">̂</mo></mover><msub><mi>′</mi><mi>p</mi></msub><mo>+</mo><mover><mi>f</mi><mo accent="true">̂</mo></mover><msub><mi>′</mi><mrow><mi>p</mi><mi>g</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\hat{f}'_{p} +\hat{f}'_{pg}</annotation></semantics></math>,
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mover><mi>f</mi><mo accent="true">̂</mo></mover><mi>p</mi><mo>′</mo></msubsup><mo>+</mo><msubsup><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi></mrow><mo>′</mo></msubsup></mrow><annotation encoding="application/x-tex">\hat{f}'_{p} +\hat{f}'_{pg}</annotation></semantics></math>,
 <code>fGenoDevDeriv1</code>) and second-order
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>f</mi><mo accent="true">̂</mo></mover><msub><mi>″</mi><mi>p</mi></msub><mo>+</mo><mover><mi>f</mi><mo accent="true">̂</mo></mover><msub><mi>″</mi><mrow><mi>p</mi><mi>g</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\hat{f}''_{p} +\hat{f}''_{pg}</annotation></semantics></math>,
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mover><mi>f</mi><mo accent="true">̂</mo></mover><mi>p</mi><mo>″</mo></msubsup><mo>+</mo><msubsup><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi></mrow><mo>″</mo></msubsup></mrow><annotation encoding="application/x-tex">\hat{f}''_{p} +\hat{f}''_{pg}</annotation></semantics></math>,
 <code>fGenoDevDeriv2</code>) derivatives.</p></li>
 </ul>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
@@ -578,16 +578,16 @@ population (<code>pop</code>)</p>
 <li><p>Estimated plot deviations
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi><mi>i</mi></mrow></msub><annotation encoding="application/x-tex">\hat{f}_{pgi}</annotation></semantics></math>,
 <code>fPlot</code>) as well as their first
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>f</mi><mo accent="true">̂</mo></mover><msub><mi>′</mi><mrow><mi>p</mi><mi>g</mi><mi>i</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\hat{f}'_{pgi}</annotation></semantics></math>,
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi><mi>i</mi></mrow><mo>′</mo></msubsup><annotation encoding="application/x-tex">\hat{f}'_{pgi}</annotation></semantics></math>,
 <code>fPlotDeriv1</code>) and second-order
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>f</mi><mo accent="true">̂</mo></mover><msub><mi>″</mi><mrow><mi>p</mi><mi>g</mi><mi>i</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\hat{f}''_{pgi}</annotation></semantics></math>,
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi><mi>i</mi></mrow><mo>″</mo></msubsup><annotation encoding="application/x-tex">\hat{f}''_{pgi}</annotation></semantics></math>,
 <code>fPlotDeriv2</code>) derivatives.</p></li>
 <li><p>Estimated plot trajectories
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mi>p</mi></msub><mo>+</mo><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi></mrow></msub><mo>+</mo><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi><mi>i</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\hat{f}_{p} +\hat{f}_{pg}+\hat{f}_{pgi}</annotation></semantics></math>,
 <code>fPlotDev</code>) as well as their first
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>f</mi><mo accent="true">̂</mo></mover><msub><mi>′</mi><mi>p</mi></msub><mo>+</mo><mover><mi>f</mi><mo accent="true">̂</mo></mover><msub><mi>′</mi><mrow><mi>p</mi><mi>g</mi></mrow></msub><mo>+</mo><mover><mi>f</mi><mo accent="true">̂</mo></mover><msub><mi>′</mi><mrow><mi>p</mi><mi>g</mi><mi>i</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\hat{f}'_{p} +\hat{f}'_{pg}+\hat{f}'_{pgi}</annotation></semantics></math>,
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mover><mi>f</mi><mo accent="true">̂</mo></mover><mi>p</mi><mo>′</mo></msubsup><mo>+</mo><msubsup><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi></mrow><mo>′</mo></msubsup><mo>+</mo><msubsup><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi><mi>i</mi></mrow><mo>′</mo></msubsup></mrow><annotation encoding="application/x-tex">\hat{f}'_{p} +\hat{f}'_{pg}+\hat{f}'_{pgi}</annotation></semantics></math>,
 <code>fPlotDevDeriv1</code>) and second-order
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>f</mi><mo accent="true">̂</mo></mover><msub><mi>″</mi><mi>p</mi></msub><mo>+</mo><mover><mi>f</mi><mo accent="true">̂</mo></mover><msub><mi>″</mi><mrow><mi>p</mi><mi>g</mi></mrow></msub><mo>+</mo><mover><mi>f</mi><mo accent="true">̂</mo></mover><msub><mi>″</mi><mrow><mi>p</mi><mi>g</mi><mi>i</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\hat{f}''_{p} +\hat{f}''_{pg}+\hat{f}''_{pgi}</annotation></semantics></math>,
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mover><mi>f</mi><mo accent="true">̂</mo></mover><mi>p</mi><mo>″</mo></msubsup><mo>+</mo><msubsup><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi></mrow><mo>″</mo></msubsup><mo>+</mo><msubsup><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi><mi>i</mi></mrow><mo>″</mo></msubsup></mrow><annotation encoding="application/x-tex">\hat{f}''_{p} +\hat{f}''_{pg}+\hat{f}''_{pgi}</annotation></semantics></math>,
 <code>fPlotDevDeriv2</code>) derivatives.</p></li>
 <li><p>The original <code>trait</code> values
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>y</mi><mo accent="true">̃</mo></mover><mrow><mi>p</mi><mi>g</mi><mi>i</mi></mrow></msub><annotation encoding="application/x-tex">\tilde{y}_{pgi}</annotation></semantics></math>,
@@ -1168,7 +1168,7 @@ section.</p>
 </h3>
 <p>If <code>plotType = "popTra"</code>, estimated population-specific
 trajectories are depicted
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mi>p</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\hat{f}_p(t)</annotation></semantics></math>)
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mi>p</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\hat{f}_p(t)</annotation></semantics></math>)
 separately for each population, and their
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>95</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">95\%</annotation></semantics></math>
 pointwise confidence intervals. Additionally, the grey lines represent
@@ -1178,7 +1178,7 @@ the observed <code>trait</code> that is used in the
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Population-specific trajectories.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pred.psHDM</span>, plotType <span class="op">=</span> <span class="st">"popTra"</span>, themeSizeHDM <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-<p><img src="HierarchicalDataModel_HTP_files/figure-html/plotPredPopVator-1.png" width="576"></p>
+<p><img src="HierarchicalDataModel_HTP_files/figure-html/plotPredPopVator-1.png" class="r-plt" alt="" width="576"></p>
 </div>
 <div class="section level3">
 <h3 id="plots-at-genotype-level">Plots at genotype level<a class="anchor" aria-label="anchor" href="#plots-at-genotype-level"></a>
@@ -1186,9 +1186,9 @@ the observed <code>trait</code> that is used in the
 <p>At genotype level we can visualise three plots:</p>
 <ul>
 <li>If <code>plotType = "popGenoTra"</code>, estimated population
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mi>p</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\hat{f}_p(t)</annotation></semantics></math>)
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mi>p</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\hat{f}_p(t)</annotation></semantics></math>)
 and genotype-specific
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mi>p</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\hat{f}_p(t)+\hat{f}_{pg}(t)</annotation></semantics></math>)
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mi>p</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\hat{f}_p(t)+\hat{f}_{pg}(t)</annotation></semantics></math>)
 trajectories are depicted for all genotypes separately for each
 population.
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>95</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">95\%</annotation></semantics></math>
@@ -1198,13 +1198,13 @@ trajectories.</li>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="co">## Population and genotype-specific trajectories.</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pred.psHDM</span>, plotType <span class="op">=</span> <span class="st">"popGenoTra"</span>, themeSizeHDM <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-<p><img src="HierarchicalDataModel_HTP_files/figure-html/plotPredGenoTraVator-1.png" width="576" style="display: block; margin: auto;"></p>
+<p><img src="HierarchicalDataModel_HTP_files/figure-html/plotPredGenoTraVator-1.png" class="r-plt" alt="" width="576" style="display: block; margin: auto;"></p>
 <ul>
 <li>If <code>plotType = "popGenoDeriv"</code>, first-order derivative of
 the estimated population
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>f</mi><mo accent="true">̂</mo></mover><msub><mi>′</mi><mi>p</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\hat{f}'_p(t)</annotation></semantics></math>)
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mover><mi>f</mi><mo accent="true">̂</mo></mover><mi>p</mi><mo>′</mo></msubsup><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\hat{f}'_p(t)</annotation></semantics></math>)
 and genotype-specific
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>f</mi><mo accent="true">̂</mo></mover><msub><mi>′</mi><mi>p</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mover><mi>f</mi><mo accent="true">̂</mo></mover><msub><mi>′</mi><mrow><mi>p</mi><mi>g</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\hat{f}'_p(t)+\hat{f}'_{pg}(t)</annotation></semantics></math>)
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mover><mi>f</mi><mo accent="true">̂</mo></mover><mi>p</mi><mo>′</mo></msubsup><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msubsup><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi></mrow><mo>′</mo></msubsup><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\hat{f}'_p(t)+\hat{f}'_{pg}(t)</annotation></semantics></math>)
 trajectories are depicted for all genotypes separately for each
 population.
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>95</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">95\%</annotation></semantics></math>
@@ -1214,27 +1214,27 @@ at the population level.</li>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="co">## First-order derivative of the population- and genotype-specific trajectories.</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pred.psHDM</span>, plotType <span class="op">=</span> <span class="st">"popGenoDeriv"</span>, themeSizeHDM <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-<p><img src="HierarchicalDataModel_HTP_files/figure-html/plotPredGenoDerivVator-1.png" width="576" style="display: block; margin: auto;"></p>
+<p><img src="HierarchicalDataModel_HTP_files/figure-html/plotPredGenoDerivVator-1.png" class="r-plt" alt="" width="576" style="display: block; margin: auto;"></p>
 <ul>
 <li>Finally, if <code>plotType = "GenoDev"</code>, estimated
 genotype-specific deviations
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\hat{f}_{pg}(t)</annotation></semantics></math>)
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\hat{f}_{pg}(t)</annotation></semantics></math>)
 are depicted for all genotypes separately for each population.<br>
 </li>
 </ul>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="co">## Genotype-specific deviations.</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pred.psHDM</span>, plotType <span class="op">=</span> <span class="st">"genoDev"</span>, themeSizeHDM <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-<p><img src="HierarchicalDataModel_HTP_files/figure-html/plotPredGenoDevVator-1.png" width="576" style="display: block; margin: auto;"></p>
+<p><img src="HierarchicalDataModel_HTP_files/figure-html/plotPredGenoDevVator-1.png" class="r-plt" alt="" width="576" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="plots-at-plot-level">Plots at plot level<a class="anchor" aria-label="anchor" href="#plots-at-plot-level"></a>
 </h3>
 <p>Finally, if we are interested in obtaining plots at the plot level,
 we use <code>plotType = "genoPlotTra"</code>. Here, estimated genotype
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mi>p</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\hat{f}_p(t)+\hat{f}_{pg}(t)</annotation></semantics></math>)
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mi>p</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\hat{f}_p(t)+\hat{f}_{pg}(t)</annotation></semantics></math>)
 and plot-specific
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mi>p</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi><mi>i</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\hat{f}_p(t)+\hat{f}_{pg}(t)+\hat{f}_{pgi}(t)</annotation></semantics></math>)
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mi>p</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msub><mover><mi>f</mi><mo accent="true">̂</mo></mover><mrow><mi>p</mi><mi>g</mi><mi>i</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\hat{f}_p(t)+\hat{f}_{pg}(t)+\hat{f}_{pgi}(t)</annotation></semantics></math>)
 trajectories are depicted for all plots separately for a selection of
 genotypes. Also,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>95</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">95\%</annotation></semantics></math>
@@ -1256,19 +1256,18 @@ has the option to change names (<code>genotypeNames</code>) and/or order
 <span>     plotType <span class="op">=</span> <span class="st">"genoPlotTra"</span>, </span>
 <span>     genotypes <span class="op">=</span> <span class="va">plot.genos</span>, genotypeNames <span class="op">=</span> <span class="va">names.genos</span>,</span>
 <span>     themeSizeHDM <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-<p><img src="HierarchicalDataModel_HTP_files/figure-html/plotPredPlotVator-1.png" width="576"></p>
+<p><img src="HierarchicalDataModel_HTP_files/figure-html/plotPredPlotVator-1.png" class="r-plt" alt="" width="576"></p>
 <hr>
 </div>
 <div class="section level3">
 <h3 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h3>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-Perez2022" class="csl-entry">
-Pérez-Valencia, Diana M, María Xosé Rodríguez-Álvarez, Martin P Boer,
-Lukas Kronenberg, Andreas Hund, Llorenç Cabrera-Bosquet, Emilie J
-Millet, and Fred A van Eeuwijk. 2022. <span>“A Two-Stage Approach for
-the Spatio-Temporal Analysis of High-Throughput Phenotyping
-Data.”</span> <em>Scientific Reports</em> 12 (1): 1–16. <a href="https://doi.org/10.1038/s41598-022-06935-9" class="external-link">https://doi.org/10.1038/s41598-022-06935-9</a>.
+Pérez-Valencia, Diana M, María Xosé Rodríguez-Álvarez, Martin P Boer, et
+al. 2022. <span>“A Two-Stage Approach for the Spatio-Temporal Analysis
+of High-Throughput Phenotyping Data.”</span> <em>Scientific Reports</em>
+12 (1): 1–16. <a href="https://doi.org/10.1038/s41598-022-06935-9" class="external-link">https://doi.org/10.1038/s41598-022-06935-9</a>.
 </div>
 <div id="ref-RodAlv2018" class="csl-entry">
 Rodríguez-Álvarez, María, Martin P. Boer, Fred van Eeuwijk, and Paul H.
@@ -1296,7 +1295,7 @@ Mixed Models.”</span> <em>Statistics and Computing</em> 23 (3): 341–60.
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

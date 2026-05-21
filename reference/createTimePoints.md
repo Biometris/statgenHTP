@@ -1,0 +1,167 @@
+# Create an object of class TP
+
+Convert a data.frame to an object of class TP (Time Points). The
+function converts a data.frame to an object of class TP in the following
+steps:
+
+- Quality control on the input data. For example, warnings will be given
+  when more than 50% of observations are missing for a plant.
+
+- Rename columns to default column names used by the functions in the
+  statgenHTP package. For example, the column in the data containing
+  variety/accession/genotype is renamed to “genotype.” Original column
+  names are stored as an attribute of the individual data.frames in the
+  TP object.
+
+- Convert column types to the default column types. For example, the
+  column “genotype” is converted to a factor and “rowNum” to a numeric
+  column.
+
+- Convert the column containing time into time format. If needed, the
+  time format can be provided in `timeFormat`. For example, with a
+  date/time input of the form “day/month/year hour:minute”, use
+  "%d/%m/%Y %H:%M". For a full list of abbreviations see the R package
+  strptime. When the input time is a numeric value, the function will
+  convert it to time from 01-01-1970.
+
+- If `addCheck = TRUE`, the genotypes listed in `checkGenotypes` are
+  reference genotypes (or check). It will add a column check with a
+  value "noCheck" for the genotypes that are not in `checkGenotypes` and
+  the name of the genotypes for the `checkGenotypes`. A column genoCheck
+  is also added with the names of the genotypes that are not in
+  `checkGenotypes` and `NA` for the `checkGenotypes`. These columns are
+  necessary for fitting models on data that includes check genotypes,
+  e.g. reference genotypes that are highly replicated or in case of
+  augmented design.
+
+- Split the data into separate data.frames by time point. A TP object is
+  a list of data.frames where each data.frame contains the data for a
+  single time point. If there is only one time point the output will be
+  a list with only one item.
+
+- Add a data.frame with columns timeNumber and timePoint as attribute
+  “timePoints” to the TP object. This data.frame can be used for
+  referencing time points by a unique number.
+
+Note that `plotId` needs to be a unique identifier for a plot or a
+plant. It cannot occur more than once per time point.
+
+## Usage
+
+``` r
+createTimePoints(
+  dat,
+  experimentName,
+  genotype,
+  timePoint,
+  timeFormat = NULL,
+  plotId,
+  repId = NULL,
+  rowNum = NULL,
+  colNum = NULL,
+  addCheck = FALSE,
+  checkGenotypes = NULL
+)
+```
+
+## Arguments
+
+- dat:
+
+  A data.frame.
+
+- experimentName:
+
+  A character string, the name of the experiment. Stored with the data
+  and used in default plot titles.
+
+- genotype:
+
+  A character string indicating the column in dat containing the
+  genotypes.
+
+- timePoint:
+
+  A character string indicating the column in dat containing the time
+  points.
+
+- timeFormat:
+
+  A character string indicating the input format of the time points.
+  E.g. for a date/time input of the form day/month/year hour:minute, use
+  "%d/%m/%Y %H:%M". For a full list of abbreviations see
+  [`strptime`](https://rdrr.io/r/base/strptime.html). If `NULL`, a best
+  guess is done based on the input.
+
+- plotId:
+
+  A character string indicating the column in dat containing the plotId.
+  This has to be a unique identifier per plot/plant per time point.
+
+- repId:
+
+  A character string indicating the column in dat containing the
+  replicates.
+
+- rowNum:
+
+  A character string indicating the column in dat containing the row
+  number of the plot.
+
+- colNum:
+
+  A character string indicating the column in dat containing the column
+  number of the plot.
+
+- addCheck:
+
+  Should a column check be added to the output? If `TRUE`,
+  checkGenotypes cannot be `NULL`.
+
+- checkGenotypes:
+
+  A character vector containing the genotypes used as checks in the
+  experiment.
+
+## Value
+
+An object of class `TP`. A list with, per time point in the input, a
+data.frame containing the data for that time point. A data.frame with
+columns timeNumber and timePoint is added as attribute timePoints to the
+data. This data.frame can be used for referencing timePoints by their
+number.
+
+## See also
+
+Other functions for data preparation:
+[`as.data.frame.TP()`](https://biometris.github.io/statgenHTP/index.html/reference/as.data.frame.TP.md),
+[`getTimePoints()`](https://biometris.github.io/statgenHTP/index.html/reference/getTimePoints.md),
+[`plot.TP()`](https://biometris.github.io/statgenHTP/index.html/reference/plot.TP.md),
+[`removeTimePoints()`](https://biometris.github.io/statgenHTP/index.html/reference/removeTimePoints.md),
+[`summary.TP()`](https://biometris.github.io/statgenHTP/index.html/reference/summary.TP.md)
+
+## Examples
+
+``` r
+## Create a TP object containing the data from the Phenovator.
+phenoTP <- createTimePoints(dat = PhenovatorDat1,
+                            experimentName = "Phenovator",
+                            genotype = "Genotype",
+                            timePoint = "timepoints",
+                            repId = "Replicate",
+                            plotId = "pos",
+                            rowNum = "y", colNum = "x",
+                            addCheck = TRUE,
+                            checkGenotypes = c("check1", "check2",
+                                               "check3","check4"))
+#> Warning: The following plotIds have observations for less than 50% of the time points:
+#> c24r41, c7r18, c7r49
+summary(phenoTP)
+#> phenoTP contains data for experiment Phenovator.
+#> 
+#> It contains 73 time points.
+#> First time point: 2018-05-31 16:37:00 
+#> Last time point: 2018-06-18 16:37:00 
+#> 
+#> The following genotypes are defined as check genotypes: check1, check2, check3, check4.
+```

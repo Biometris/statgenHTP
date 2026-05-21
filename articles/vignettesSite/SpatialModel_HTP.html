@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>statgenHTP tutorial: 3. Correction for spatial trends • statgenHTP</title>
 <script src="../../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../../deps/headroom-0.11.0/headroom.min.js"></script><script src="../../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../../deps/search-1.0.0/fuse.min.js"></script><script src="../../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../../pkgdown.js"></script><meta property="og:title" content="statgenHTP tutorial: 3. Correction for spatial trends">
 </head>
@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../../index.html">statgenHTP</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.9.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.9.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,7 +66,7 @@
 Bart-Jan van Rossum, Diana Marcela Perez Valencia, Maria Xose Rodriguez
 Alvarez, Fred van Eeuwijk</h4>
             
-            <h4 data-toc-skip class="date">2025-07-03</h4>
+            <h4 data-toc-skip class="date">2026-05-21</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Biometris/statgenHTP/blob/main/vignettes/vignettesSite/SpatialModel_HTP.Rmd" class="external-link"><code>vignettes/vignettesSite/SpatialModel_HTP.Rmd</code></a></small>
       <div class="d-none name"><code>SpatialModel_HTP.Rmd</code></div>
@@ -86,7 +86,7 @@ trials, platform experiments should obey standard principles for
 experimental design and statistical modeling.</p>
 <p>Popular mixed models to separate spatial trends from treatment and
 genetic effects, rely on the use of autoregressive correlation functions
-defined on rows and columns (AR1×AR1) to model the local trends <span class="citation">(<a href="#ref-Cullis2006">Cullis, Smith, and Coombes
+defined on rows and columns (AR1×AR1) to model the local trends <span class="citation">(<a href="#ref-Cullis2006">Cullis et al.
 2006</a>)</span>. These models are sometimes difficult to fit and the
 selection of a best model is complicated, therefore preventing an
 automated phenotypic analysis of series of trials. An attractive
@@ -106,7 +106,7 @@ for further modeling. In brief, separately for each measurement time
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>,
 a spatial model is fitted for the trait
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>y</mi><mi>t</mi></msub><annotation encoding="application/x-tex">y_t</annotation></semantics></math>,</p>
-<p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>y</mi><mi>t</mi></msub><mo>=</mo><msub><mn>1</mn><mi>M</mi></msub><msub><mi>β</mi><mrow><mn>0</mn><mi>t</mi></mrow></msub><mo>+</mo><msub><mi>X</mi><mi>h</mi></msub><msub><mi>β</mi><mrow><mi>h</mi><mi>t</mi></mrow></msub><mo>+</mo><msub><mi>X</mi><mi>q</mi></msub><msub><mi>β</mi><mrow><mi>q</mi><mi>t</mi></mrow></msub><mo>+</mo><msub><mi>Z</mi><mi>g</mi></msub><msub><mi>c</mi><mrow><mi>g</mi><mi>t</mi></mrow></msub><mo>+</mo><msub><mi>f</mi><mi>t</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>u</mi><mo>,</mo><mi>v</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mi>Z</mi><mi>r</mi></msub><msub><mi>c</mi><mrow><mi>r</mi><mi>t</mi></mrow></msub><mo>+</mo><msub><mi>Z</mi><mi>c</mi></msub><msub><mi>c</mi><mrow><mi>c</mi><mi>t</mi></mrow></msub><mo>+</mo><msub><mi>ϵ</mi><mi>t</mi></msub></mrow><annotation encoding="application/x-tex">y_t = 1_M \beta_{0t} +  X_h \beta_{ht} + X_q \beta_{qt} + Z_g c_{gt} + f_t(u,v) + Z_r c_{rt} + Z_c c_{ct} + \epsilon_t</annotation></semantics></math></p>
+<p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>y</mi><mi>t</mi></msub><mo>=</mo><msub><mn>1</mn><mi>M</mi></msub><msub><mi>β</mi><mrow><mn>0</mn><mi>t</mi></mrow></msub><mo>+</mo><msub><mi>X</mi><mi>h</mi></msub><msub><mi>β</mi><mrow><mi>h</mi><mi>t</mi></mrow></msub><mo>+</mo><msub><mi>X</mi><mi>q</mi></msub><msub><mi>β</mi><mrow><mi>q</mi><mi>t</mi></mrow></msub><mo>+</mo><msub><mi>Z</mi><mi>g</mi></msub><msub><mi>c</mi><mrow><mi>g</mi><mi>t</mi></mrow></msub><mo>+</mo><msub><mi>f</mi><mi>t</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>u</mi><mo>,</mo><mi>v</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msub><mi>Z</mi><mi>r</mi></msub><msub><mi>c</mi><mrow><mi>r</mi><mi>t</mi></mrow></msub><mo>+</mo><msub><mi>Z</mi><mi>c</mi></msub><msub><mi>c</mi><mrow><mi>c</mi><mi>t</mi></mrow></msub><mo>+</mo><msub><mi>ϵ</mi><mi>t</mi></msub></mrow><annotation encoding="application/x-tex">y_t = 1_M \beta_{0t} +  X_h \beta_{ht} + X_q \beta_{qt} + Z_g c_{gt} + f_t(u,v) + Z_r c_{rt} + Z_c c_{ct} + \epsilon_t</annotation></semantics></math></p>
 <p>where briefly,</p>
 <ul>
 <li>
@@ -127,9 +127,9 @@ removing,<br>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Z</mi><mi>g</mi></msub><msub><mi>c</mi><mrow><mi>g</mi><mi>t</mi></mrow></msub></mrow><annotation encoding="application/x-tex">Z_g c_{gt}</annotation></semantics></math>,
 corresponds the genotypic effects,</li>
 <li>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>f</mi><mi>t</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>u</mi><mo>,</mo><mi>v</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mi>Z</mi><mi>r</mi></msub><msub><mi>c</mi><mrow><mi>r</mi><mi>t</mi></mrow></msub><mo>+</mo><msub><mi>Z</mi><mi>c</mi></msub><msub><mi>c</mi><mrow><mi>c</mi><mi>t</mi></mrow></msub></mrow><annotation encoding="application/x-tex">f_t(u,v) + Z_r c_{rt} + Z_c c_{ct}</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>f</mi><mi>t</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>u</mi><mo>,</mo><mi>v</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msub><mi>Z</mi><mi>r</mi></msub><msub><mi>c</mi><mrow><mi>r</mi><mi>t</mi></mrow></msub><mo>+</mo><msub><mi>Z</mi><mi>c</mi></msub><msub><mi>c</mi><mrow><mi>c</mi><mi>t</mi></mrow></msub></mrow><annotation encoding="application/x-tex">f_t(u,v) + Z_r c_{rt} + Z_c c_{ct}</annotation></semantics></math>,
 represents the spatial effects, with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>f</mi><mi>t</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>u</mi><mo>,</mo><mi>v</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">f_t(u,v)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>f</mi><mi>t</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>u</mi><mo>,</mo><mi>v</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">f_t(u,v)</annotation></semantics></math>
 corresponding to the spatial function, e.g. the <code>PSANOVA</code>
 function from the SpATS package,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Z</mi><mi>r</mi></msub><msub><mi>c</mi><mrow><mi>r</mi><mi>t</mi></mrow></msub></mrow><annotation encoding="application/x-tex">Z_r c_{rt}</annotation></semantics></math>
@@ -177,7 +177,8 @@ point the model was fitted for.</p>
 <p>When SpATS is used for modeling, an extra spatial term is included in
 the model. This spatial component is composed using the
 <code>PSANOVA</code> function in the SpATS package which uses
-2-dimensional smoothing with P-splines as described in <span class="citation">Lee, Durbán, and Eilers (<a href="#ref-Lee2013">2013</a>)</span> and in <span class="citation">Rodríguez-Álvarez et al. (<a href="#ref-RodAlv2018">2018</a>)</span>. See
+2-dimensional smoothing with P-splines as described in <span class="citation">Lee et al. (<a href="#ref-Lee2013">2013</a>)</span> and
+in <span class="citation">Rodríguez-Álvarez et al. (<a href="#ref-RodAlv2018">2018</a>)</span>. See
 <code><a href="https://rdrr.io/pkg/SpATS/man/PSANOVA.html" class="external-link">help(PSANOVA, SpATS)</a></code> for a detailed description. Extra
 fixed effects may be fitted using the option
 <code>extraFixedFactors</code>. The model can also be fitted following a
@@ -431,7 +432,7 @@ i.e. <code>rowNum</code> and <code>colNum</code>, is available in the
 <span>     timePoints <span class="op">=</span> <span class="fl">36</span>,</span>
 <span>     plotType <span class="op">=</span> <span class="st">"spatial"</span>,</span>
 <span>     spaTrend <span class="op">=</span> <span class="st">"raw"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="SpatialModel_HTP_files/figure-html/plotSpatRaw-1.png" width="700.8"></p>
+<p><img src="SpatialModel_HTP_files/figure-html/plotSpatRaw-1.png" class="r-plt" alt="" width="700.8"></p>
 <p>For assessing the importance of the fitted spatial trends at one
 glance, and for comparison between time points, the plot of the fitted
 spatial trend can be displayed as a ratio of the raw phenotypic mean:
@@ -445,7 +446,7 @@ relatively small to large importance.</p>
 <span>     timePoints <span class="op">=</span> <span class="fl">36</span>,</span>
 <span>     plotType <span class="op">=</span> <span class="st">"spatial"</span>,</span>
 <span>     spaTrend <span class="op">=</span> <span class="st">"percentage"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="SpatialModel_HTP_files/figure-html/plotSpatPerc-1.png" width="672"></p>
+<p><img src="SpatialModel_HTP_files/figure-html/plotSpatPerc-1.png" class="r-plt" alt="" width="672"></p>
 <p>It is also possible to create a time lapse of the ratio of spatial
 trends over time. The scale is the same as previously described. The
 time lapse is always written to an output file.</p>
@@ -454,7 +455,7 @@ time lapse is always written to an output file.</p>
 <span>     plotType <span class="op">=</span> <span class="st">"timeLapse"</span>,</span>
 <span>     outFile <span class="op">=</span> <span class="st">"TimeLapse_modPhenoSp.gif"</span><span class="op">)</span></span></code></pre></div>
 <p>Here is an illustration with three time points:
-<img src="figures/timelapse_nogif.png" width="80%" style="display: block; margin: auto;"></p>
+<img src="figures/timelapse_nogif.png" class="r-plt" alt="" width="80%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level4">
 <h4 id="extracting-model-results">Extracting model results<a class="anchor" aria-label="anchor" href="#extracting-model-results"></a>
@@ -710,7 +711,7 @@ by setting <code>plotLine = TRUE</code>.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">modPhenoSp</span>, </span>
 <span>     plotType <span class="op">=</span> <span class="st">"rawPred"</span>,</span>
 <span>     genotypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"check1"</span>, <span class="st">"check2"</span>, <span class="st">"G007"</span>, <span class="st">"G058"</span><span class="op">)</span><span class="op">)</span> </span></code></pre></div>
-<p><img src="SpatialModel_HTP_files/figure-html/plotSpPred-1.png" width="576" style="display: block; margin: auto;"></p>
+<p><img src="SpatialModel_HTP_files/figure-html/plotSpPred-1.png" class="r-plt" alt="" width="576" style="display: block; margin: auto;"></p>
 <p>The second one is <strong>corrPred</strong>, it plots the spatially
 corrected data (colored dots, one color per plotId) overlaid with the
 predicted values from the fitted model (black dots). One plot is made
@@ -723,7 +724,7 @@ by setting <code>plotLine = TRUE</code>.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">modPhenoSp</span>, </span>
 <span>     plotType <span class="op">=</span> <span class="st">"corrPred"</span>,</span>
 <span>     genotypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"check1"</span>, <span class="st">"check2"</span>, <span class="st">"G007"</span>, <span class="st">"G058"</span><span class="op">)</span> <span class="op">)</span></span></code></pre></div>
-<p><img src="SpatialModel_HTP_files/figure-html/plotSpCorr-1.png" width="576" style="display: block; margin: auto;"></p>
+<p><img src="SpatialModel_HTP_files/figure-html/plotSpCorr-1.png" class="r-plt" alt="" width="576" style="display: block; margin: auto;"></p>
 <p>Note that when check genotypes are used for modeling, for the two
 previous plot types (<code>rawPred</code> and <code>corrPred</code>),
 the parameter <code>plotChecks</code> should be set to <code>TRUE</code>
@@ -743,7 +744,7 @@ The scale of the plot can be adjusted using <code>yLim</code>.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">modPhenoSp</span>, </span>
 <span>     plotType <span class="op">=</span> <span class="st">"herit"</span>,</span>
 <span>     yLim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="SpatialModel_HTP_files/figure-html/plotSpHerit-1.png" width="336" style="display: block; margin: auto;"></p>
+<p><img src="SpatialModel_HTP_files/figure-html/plotSpHerit-1.png" class="r-plt" alt="" width="336" style="display: block; margin: auto;"></p>
 <p>Plot type <strong>variance</strong> plots the residual, column and
 row variances over time. These plots can serve as diagnostics of the
 experiment. The scale of the plot can be adjusted using
@@ -752,7 +753,7 @@ experiment. The scale of the plot can be adjusted using
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">modPhenoSp</span>, </span>
 <span>     plotType <span class="op">=</span> <span class="st">"variance"</span>,</span>
 <span>     yLim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.00125</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="SpatialModel_HTP_files/figure-html/plotSpVar-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="SpatialModel_HTP_files/figure-html/plotSpVar-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>Plot type <strong>effDim</strong> plots the effective dimension from
 models fitted using SpATS over time. By default, all the spatial
 components are plotted. This can be restricted using the option
@@ -763,7 +764,7 @@ components are plotted. This can be restricted using the option
 <span>     plotType <span class="op">=</span> <span class="st">"effDim"</span>,</span>
 <span>     whichED <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"colId"</span>, <span class="st">"rowId"</span>, <span class="st">"fColRow"</span>,<span class="st">"colfRow"</span>, <span class="st">"surface"</span><span class="op">)</span>,</span>
 <span>     EDType <span class="op">=</span> <span class="st">"ratio"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="SpatialModel_HTP_files/figure-html/plotSpED-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="SpatialModel_HTP_files/figure-html/plotSpED-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>The effective dimensions are also known as the effective degrees of
 freedom. They can be interpreted as a measure of the complexity of the
 corresponding component: if the effective dimension of one component is
@@ -962,7 +963,7 @@ SpATS. Below are a few examples.</p>
 <span>       yLim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 <p>Note that when the engine is ASReml, the heritability is calculated
-using the formula provided in <span class="citation">(<a href="#ref-Cullis2006">Cullis, Smith, and Coombes 2006</a>)</span>.</p>
+using the formula provided in <span class="citation">(<a href="#ref-Cullis2006">Cullis et al. 2006</a>)</span>.</p>
 </div>
 </div>
 <div class="section level2">
@@ -1139,7 +1140,7 @@ using the variables “Scenario” and “population”:</p>
 <p>Extracting results and plotting from the models work exactly the same
 as previously. For example, the spatial plot on this data set looks like
 the following for one time point:</p>
-<p><img src="SpatialModel_HTP_files/figure-html/plotSatASReml-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="SpatialModel_HTP_files/figure-html/plotSatASReml-1.png" class="r-plt" alt="" width="672" style="display: block; margin: auto;"></p>
 <p>There are some significant differences in the display of some results
 and plots. They are highlighted below.</p>
 <p>The predictions have two values per genotype, one for each level of
@@ -1293,19 +1294,19 @@ level.</p>
 </tr>
 </tbody>
 </table>
-<p><img src="SpatialModel_HTP_files/figure-html/plotSpHeritGD-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="SpatialModel_HTP_files/figure-html/plotSpHeritGD-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>The prediction and corrected data plots display one plot per
 combination genotype × geno.decomp.</p>
-<p><img src="SpatialModel_HTP_files/figure-html/plotSprawGD-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="SpatialModel_HTP_files/figure-html/plotSprawGD-1.png" class="r-plt" alt="" width="672" style="display: block; margin: auto;"></p>
 <hr>
 </div>
 <div class="section level3">
 <h3 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h3>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-Gilmour2017" class="csl-entry">
 Butler, D. G., B. R. Cullis, A. R. Gilmour, B. G. Gogel, and R.
-Thompson. 2017. <span>“ASReml-r Reference Manual Version 4.”</span> <a href="https://www.vsni.co.uk/" class="external-link">https://www.vsni.co.uk/</a>.
+Thompson. 2017. <em>ASReml-r Reference Manual Version 4</em>. <a href="https://www.vsni.co.uk/" class="external-link">https://www.vsni.co.uk/</a>.
 </div>
 <div id="ref-Cabrera2016" class="csl-entry">
 Cabrera-Bosquet, Llorenç, Christian Fournier, Nicolas Brichet, Claude
@@ -1327,11 +1328,10 @@ Bases.”</span> <em>Computational Statistics <span>&amp;</span> Data
 Analysis</em> 61 (May): 22–37. <a href="https://doi.org/10.1016/j.csda.2012.11.013" class="external-link">https://doi.org/10.1016/j.csda.2012.11.013</a>.
 </div>
 <div id="ref-Perez2022" class="csl-entry">
-Pérez-Valencia, Diana M, María Xosé Rodríguez-Álvarez, Martin P Boer,
-Lukas Kronenberg, Andreas Hund, Llorenç Cabrera-Bosquet, Emilie J
-Millet, and Fred A van Eeuwijk. 2022. <span>“A Two-Stage Approach for
-the Spatio-Temporal Analysis of High-Throughput Phenotyping
-Data.”</span> <em>Scientific Reports</em> 12 (1): 1–16. <a href="https://doi.org/10.1038/s41598-022-06935-9" class="external-link">https://doi.org/10.1038/s41598-022-06935-9</a>.
+Pérez-Valencia, Diana M, María Xosé Rodríguez-Álvarez, Martin P Boer, et
+al. 2022. <span>“A Two-Stage Approach for the Spatio-Temporal Analysis
+of High-Throughput Phenotyping Data.”</span> <em>Scientific Reports</em>
+12 (1): 1–16. <a href="https://doi.org/10.1038/s41598-022-06935-9" class="external-link">https://doi.org/10.1038/s41598-022-06935-9</a>.
 </div>
 <div id="ref-RodAlv2018" class="csl-entry">
 Rodríguez-Álvarez, María, Martin P. Boer, Fred van Eeuwijk, and Paul H.
@@ -1340,8 +1340,7 @@ Breeding Experiments with p-Splines.”</span> <em>Spatial Statistics</em>
 23 (October): 52–71. <a href="https://doi.org/10.1016/j.spasta.2017.10.003" class="external-link">https://doi.org/10.1016/j.spasta.2017.10.003</a>.
 </div>
 <div id="ref-Velazco2017" class="csl-entry">
-Velazco, Julio G., María Xosé Rodríguez-Álvarez, Martin P. Boer, David
-R. Jordan, Paul H. C. Eilers, Marcos Malosetti, and Fred A. van Eeuwijk.
+Velazco, Julio G., María Xosé Rodríguez-Álvarez, Martin P. Boer, et al.
 2017. <span>“Modelling Spatial Trends in Sorghum Breeding Field Trials
 Using a Two-Dimensional <span>P</span>-Spline Mixed Model.”</span>
 <em>Theoretical and Applied Genetics</em> 130 (7): 1375–92. <a href="https://doi.org/10.1007/s00122-017-2894-4" class="external-link">https://doi.org/10.1007/s00122-017-2894-4</a>.
@@ -1366,7 +1365,7 @@ Thompson. 2004. <span>“Prediction in Linear Mixed Models.”</span>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

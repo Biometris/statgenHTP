@@ -1,0 +1,79 @@
+# Greenhouse data for a maize experiment in the PhenoArch platform.
+
+A dataset containing data from a greenhouse experiment with maize in the
+Phenoarch platform (INRAE, France, Cabrera-Bosquet et al. 2016). It
+consists of one experiment with 1,671 plants grown in a greenhouse under
+two water scenarios, well-watered (WW) and water deficit (WD). There are
+two populations of genotypes, panel 1 and panel 2. Panel 1 contains 60
+genotypes with 14 replicates: 7 in WW and 7 in WD. Panel 2 contains 30
+genotypes with 8 replicates, 4 in WW and 4 in WD. The studied trait is
+the leaf area extracted from the pictures over time (LeafArea). Plants
+were pictured every day for 33 days. This dataset was kindly provided by
+Llorenç Cabrera-Bosquet and Claude Welcker.
+
+## Usage
+
+``` r
+PhenoarchDat1
+```
+
+## Format
+
+A data.frame with 42,536 rows and 14 columns:
+
+- Date:
+
+  Date of measurement
+
+- pos:
+
+  Unique pot using rowcol coordinate
+
+- Genotype:
+
+  Genotype
+
+- Scenario:
+
+  Water regime, WW or WD
+
+- population:
+
+  Panel 1 or 2
+
+- Row:
+
+  Pot position on the conveyor belt (i.e. row coordinate)
+
+- Col:
+
+  Line of conveyor belt (i.e. column coordinate)
+
+- Biomass:
+
+  Biomass from the picture
+
+- LeafArea:
+
+  Leaf area from the picture
+
+- PlantHeight:
+
+  Plant height from the picture
+
+- LeafCount:
+
+  Number of leaves manually scored
+
+- phyllocron:
+
+  Leaf emission rate
+
+## References
+
+Cabrera-Bosquet, Llorenç, Fournier Christian, Brichet Nicolas, Welcker
+Claude, Suard Benoît, and Tardieu François. 2016. “High-throughput
+estimation of incident light, light interception and radiation-use
+efficiency of thousands of plants in a phenotyping platform.” New
+Phytologist 212 (1): 269-81.
+[doi:10.1111/nph.14027](https://doi.org/10.1111/nph.14027)

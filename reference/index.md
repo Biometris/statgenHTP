@@ -1,0 +1,103 @@
+# Package index
+
+## Data preparation
+
+- [`createTimePoints()`](https://biometris.github.io/statgenHTP/index.html/reference/createTimePoints.md)
+  : Create an object of class TP
+- [`plot(`*`<TP>`*`)`](https://biometris.github.io/statgenHTP/index.html/reference/plot.TP.md)
+  : Plot function for class TP
+- [`summary(`*`<TP>`*`)`](https://biometris.github.io/statgenHTP/index.html/reference/summary.TP.md)
+  : Summary function for TP objects
+- [`getTimePoints()`](https://biometris.github.io/statgenHTP/index.html/reference/getTimePoints.md)
+  : Extract time points
+- [`removeTimePoints()`](https://biometris.github.io/statgenHTP/index.html/reference/removeTimePoints.md)
+  : Remove time points from an object of class TP
+- [`as.data.frame(`*`<TP>`*`)`](https://biometris.github.io/statgenHTP/index.html/reference/as.data.frame.TP.md)
+  : Coerce TP object to data.frame
+
+## Detect outliers for single observations
+
+- [`detectSingleOut()`](https://biometris.github.io/statgenHTP/index.html/reference/detectSingleOut.md)
+  : Detect outliers for single observations
+- [`removeSingleOut()`](https://biometris.github.io/statgenHTP/index.html/reference/removeSingleOut.md)
+  : Replace outliers for single observations by NA
+- [`plot(`*`<singleOut>`*`)`](https://biometris.github.io/statgenHTP/index.html/reference/plot.singleOut.md)
+  : Plot outliers for single observations
+- [`detectSingleOutMaize()`](https://biometris.github.io/statgenHTP/index.html/reference/detectSingleOutMaize.md)
+  : detectSingleOutMaize
+
+## Spatial modeling
+
+- [`fitModels()`](https://biometris.github.io/statgenHTP/index.html/reference/fitModels.md)
+  : Fit spatial models per time point
+- [`plot(`*`<fitMod>`*`)`](https://biometris.github.io/statgenHTP/index.html/reference/plot.fitMod.md)
+  : Plot function for class fitMod
+- [`summary(`*`<fitMod>`*`)`](https://biometris.github.io/statgenHTP/index.html/reference/summary.fitMod.md)
+  : Summary function for fitMod objects
+- [`getGenoPred()`](https://biometris.github.io/statgenHTP/index.html/reference/getGenoPred.md)
+  : Extract predicted genotypic values
+- [`getCorrected()`](https://biometris.github.io/statgenHTP/index.html/reference/getCorrected.md)
+  : Extract corrected phenotypic values
+- [`getHerit()`](https://biometris.github.io/statgenHTP/index.html/reference/getHerit.md)
+  : Extract heritabilities
+- [`getVar()`](https://biometris.github.io/statgenHTP/index.html/reference/getVar.md)
+  : Extract variances
+- [`getEffDims()`](https://biometris.github.io/statgenHTP/index.html/reference/getEffDims.md)
+  : Extract effective dimensions
+
+## Fit splines
+
+- [`fitSpline()`](https://biometris.github.io/statgenHTP/index.html/reference/fitSpline.md)
+  : Fit Splines
+- [`plot(`*`<HTPSpline>`*`)`](https://biometris.github.io/statgenHTP/index.html/reference/plot.HTPSpline.md)
+  : Plot the results of a fitted spline.
+
+## Estimate parameters
+
+- [`estimateSplineParameters()`](https://biometris.github.io/statgenHTP/index.html/reference/estimateSplineParameters.md)
+  : Extract estimates from fitted splines.
+- [`plot(`*`<splineEst>`*`)`](https://biometris.github.io/statgenHTP/index.html/reference/plot.splineEst.md)
+  : Plot the results of estimated spline parameters.
+
+## Fit HDM splines
+
+- [`fitSplineHDM()`](https://biometris.github.io/statgenHTP/index.html/reference/fitSplineHDM.md)
+  : Fit P-Spline Hierarchical Curve Data Models
+- [`predict(`*`<psHDM>`*`)`](https://biometris.github.io/statgenHTP/index.html/reference/predict.psHDM.md)
+  : Predict the P-Splines Hierarchical Curve Data Model
+- [`plot(`*`<psHDM>`*`)`](https://biometris.github.io/statgenHTP/index.html/reference/plot.psHDM.md)
+  : Plot function for class psHDM
+
+## Detect outliers for series of observations
+
+- [`detectSerieOut()`](https://biometris.github.io/statgenHTP/index.html/reference/detectSerieOut.md)
+  : Detect outliers for series of observations
+- [`removeSerieOut()`](https://biometris.github.io/statgenHTP/index.html/reference/removeSerieOut.md)
+  : Replace outliers for series of observations by NA
+- [`plot(`*`<serieOut>`*`)`](https://biometris.github.io/statgenHTP/index.html/reference/plot.serieOut.md)
+  : Plot outliers for series of observations
+
+## Example data
+
+- [`PhenoarchDat1`](https://biometris.github.io/statgenHTP/index.html/reference/PhenoarchDat1.md)
+  : Greenhouse data for a maize experiment in the PhenoArch platform.
+- [`PhenovatorDat1`](https://biometris.github.io/statgenHTP/index.html/reference/PhenovatorDat1.md)
+  : Growth chamber data for an Arabidopsis experiment in the Phenovator
+  platform.
+- [`RootDat1`](https://biometris.github.io/statgenHTP/index.html/reference/RootDat1.md)
+  : Greenhouse data for an experiment in the RootPhAir platform.
+- [`spatCorrectedArch`](https://biometris.github.io/statgenHTP/index.html/reference/spatCorrectedArch.md)
+  : Maize data corrected for spatial trends.
+- [`spatCorrectedVator`](https://biometris.github.io/statgenHTP/index.html/reference/spatCorrectedVator.md)
+  : Arabidopsis data corrected for spatial trends.
+- [`noCorrectedRoot`](https://biometris.github.io/statgenHTP/index.html/reference/noCorrectedRoot.md)
+  : Root data corrected for outliers for single observations.
+- [`spatPredArch`](https://biometris.github.io/statgenHTP/index.html/reference/spatPredArch.md)
+  : Maize data, genotypic predictions.
+
+## Utility functions
+
+- [`countValid()`](https://biometris.github.io/statgenHTP/index.html/reference/countValid.md)
+  : Count valid observations per time point for a given trait
+- [`countValidPlot()`](https://biometris.github.io/statgenHTP/index.html/reference/countValidPlot.md)
+  : Count valid observations per plotId for a given trait
