@@ -84,9 +84,9 @@ resuVatorHTP <- detectSingleOut(TP = phenoTP,
 
 }
 \seealso{
-Other functions for detecting outliers for single observations: 
-\code{\link{detectSingleOutMaize}()},
-\code{\link{plot.singleOut}()},
-\code{\link{removeSingleOut}()}
+Other functions for detecting outliers for single observations:
+\code{\link[=detectSingleOutMaize]{detectSingleOutMaize()}},
+\code{\link[=plot.singleOut]{plot.singleOut()}},
+\code{\link[=removeSingleOut]{removeSingleOut()}}
 }
 \concept{functions for detecting outliers for single observations}

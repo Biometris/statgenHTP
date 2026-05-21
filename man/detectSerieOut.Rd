@@ -91,8 +91,8 @@ plot(outVator, genotypes = "G151")
 
 }
 \seealso{
-Other functions for detecting outliers for series of observations: 
-\code{\link{plot.serieOut}()},
-\code{\link{removeSerieOut}()}
+Other functions for detecting outliers for series of observations:
+\code{\link[=plot.serieOut]{plot.serieOut()}},
+\code{\link[=removeSerieOut]{removeSerieOut()}}
 }
 \concept{functions for detecting outliers for series of observations}

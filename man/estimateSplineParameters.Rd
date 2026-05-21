@@ -150,7 +150,7 @@ head(paramArch2)
 
 }
 \seealso{
-Other functions for spline parameter estimation: 
-\code{\link{plot.splineEst}()}
+Other functions for spline parameter estimation:
+\code{\link[=plot.splineEst]{plot.splineEst()}}
 }
 \concept{functions for spline parameter estimation}

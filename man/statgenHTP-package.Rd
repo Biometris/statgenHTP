@@ -22,6 +22,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Bart-Jan van Rossum \email{bart-jan.vanrossum@wur.nl} (\href{https://orcid.org/0000-0002-8673-2514}{ORCID})
   \item Emilie J Millet \email{emilie.millet@wur.nl} (\href{https://orcid.org/0000-0002-2913-4892}{ORCID})
   \item Maria Xose Rodriguez Alvarez (\href{https://orcid.org/0000-0002-1329-9238}{ORCID})
   \item Diana Marcela Perez Valencia (\href{https://orcid.org/0000-0002-9053-2929}{ORCID})

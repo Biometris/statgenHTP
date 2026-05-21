@@ -125,8 +125,8 @@ A two-stage approach for the spatio-temporal analysis of high-throughput
 phenotyping data. Sci Rep 12, 3177 (2022). \doi{10.1038/s41598-022-06935-9}
 }
 \seealso{
-Other functions for fitting hierarchical curve data models: 
-\code{\link{fitSplineHDM}()},
-\code{\link{plot.psHDM}()}
+Other functions for fitting hierarchical curve data models:
+\code{\link[=fitSplineHDM]{fitSplineHDM()}},
+\code{\link[=plot.psHDM]{plot.psHDM()}}
 }
 \concept{functions for fitting hierarchical curve data models}

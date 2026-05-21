@@ -166,13 +166,13 @@ Butler, D. G., et al. (2018). ASReml-R Reference Manual Version 4. VSN
 International Ltd, http://asreml.org
 }
 \seealso{
-Other functions for spatial modeling: 
-\code{\link{getCorrected}()},
-\code{\link{getEffDims}()},
-\code{\link{getGenoPred}()},
-\code{\link{getHerit}()},
-\code{\link{getVar}()},
-\code{\link{plot.fitMod}()},
-\code{\link{summary.fitMod}()}
+Other functions for spatial modeling:
+\code{\link[=getCorrected]{getCorrected()}},
+\code{\link[=getEffDims]{getEffDims()}},
+\code{\link[=getGenoPred]{getGenoPred()}},
+\code{\link[=getHerit]{getHerit()}},
+\code{\link[=getVar]{getVar()}},
+\code{\link[=plot.fitMod]{plot.fitMod()}},
+\code{\link[=summary.fitMod]{summary.fitMod()}}
 }
 \concept{functions for spatial modeling}

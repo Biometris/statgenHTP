@@ -79,8 +79,8 @@ spatCorrectedVatorOut3 <-
 
 }
 \seealso{
-Other functions for detecting outliers for series of observations: 
-\code{\link{detectSerieOut}()},
-\code{\link{plot.serieOut}()}
+Other functions for detecting outliers for series of observations:
+\code{\link[=detectSerieOut]{detectSerieOut()}},
+\code{\link[=plot.serieOut]{plot.serieOut()}}
 }
 \concept{functions for detecting outliers for series of observations}

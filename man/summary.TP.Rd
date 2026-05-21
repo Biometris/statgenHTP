@@ -36,11 +36,11 @@ summary(phenoTP)
 
 }
 \seealso{
-Other functions for data preparation: 
-\code{\link{as.data.frame.TP}()},
-\code{\link{createTimePoints}()},
-\code{\link{getTimePoints}()},
-\code{\link{plot.TP}()},
-\code{\link{removeTimePoints}()}
+Other functions for data preparation:
+\code{\link[=as.data.frame.TP]{as.data.frame.TP()}},
+\code{\link[=createTimePoints]{createTimePoints()}},
+\code{\link[=getTimePoints]{getTimePoints()}},
+\code{\link[=plot.TP]{plot.TP()}},
+\code{\link[=removeTimePoints]{removeTimePoints()}}
 }
 \concept{functions for data preparation}

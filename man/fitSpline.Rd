@@ -80,7 +80,7 @@ plot(fit.spline, plotIds = "c10r29", plotType = "derivatives")
 
 }
 \seealso{
-Other functions for fitting splines: 
-\code{\link{plot.HTPSpline}()}
+Other functions for fitting splines:
+\code{\link[=plot.HTPSpline]{plot.HTPSpline()}}
 }
 \concept{functions for fitting splines}

@@ -49,13 +49,13 @@ getVar(modPhenoSp)
 
 }
 \seealso{
-Other functions for spatial modeling: 
-\code{\link{fitModels}()},
-\code{\link{getCorrected}()},
-\code{\link{getEffDims}()},
-\code{\link{getGenoPred}()},
-\code{\link{getHerit}()},
-\code{\link{plot.fitMod}()},
-\code{\link{summary.fitMod}()}
+Other functions for spatial modeling:
+\code{\link[=fitModels]{fitModels()}},
+\code{\link[=getCorrected]{getCorrected()}},
+\code{\link[=getEffDims]{getEffDims()}},
+\code{\link[=getGenoPred]{getGenoPred()}},
+\code{\link[=getHerit]{getHerit()}},
+\code{\link[=plot.fitMod]{plot.fitMod()}},
+\code{\link[=summary.fitMod]{summary.fitMod()}}
 }
 \concept{functions for spatial modeling}

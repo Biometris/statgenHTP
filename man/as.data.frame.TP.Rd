@@ -35,11 +35,11 @@ phenoDat <- as.data.frame(phenoTP)
 
 }
 \seealso{
-Other functions for data preparation: 
-\code{\link{createTimePoints}()},
-\code{\link{getTimePoints}()},
-\code{\link{plot.TP}()},
-\code{\link{removeTimePoints}()},
-\code{\link{summary.TP}()}
+Other functions for data preparation:
+\code{\link[=createTimePoints]{createTimePoints()}},
+\code{\link[=getTimePoints]{getTimePoints()}},
+\code{\link[=plot.TP]{plot.TP()}},
+\code{\link[=removeTimePoints]{removeTimePoints()}},
+\code{\link[=summary.TP]{summary.TP()}}
 }
 \concept{functions for data preparation}

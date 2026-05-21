@@ -44,7 +44,7 @@ A list of objects of class ggplot is invisibly returned.
 Plot the results of estimated spline parameters.
 }
 \seealso{
-Other functions for spline parameter estimation: 
-\code{\link{estimateSplineParameters}()}
+Other functions for spline parameter estimation:
+\code{\link[=estimateSplineParameters]{estimateSplineParameters()}}
 }
 \concept{functions for spline parameter estimation}
