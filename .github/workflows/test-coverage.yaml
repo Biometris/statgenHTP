@@ -35,8 +35,17 @@ jobs:
             quiet = FALSE
           )
           print(cov)
+          result <- covr::to_cobertura(cov)
+          print(result)
           covr::to_cobertura(cov)
         shell: Rscript {0}
+
+      - name: Check for cobertura.xml
+        run: |
+          pwd
+          ls -la
+          find . -name "cobertura.xml" -type f 2>/dev/null || echo "No cobertura.xml found"
+        shell: bash
 
       - uses: codecov/codecov-action@v5
         with:
