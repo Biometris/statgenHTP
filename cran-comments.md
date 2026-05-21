@@ -1,10 +1,12 @@
-## Patch release fixing CRAN test errors
+## Patch release anticipating upcoming lmmsolver release
+
+A few unit tests are relaxed and a few disabled. The small data size in the tests caused changes in optima using the upcoming version of lmmsolver. Full scale examples work fine.
 
 ----
 
 ## Test environments
 
-* local Windows 11 install, R 4.5.1
+* local Windows 11 install, R 4.6.0
 * Ubuntu (on github actions, devel and release)
 * macOS (on github actions, release)
 
