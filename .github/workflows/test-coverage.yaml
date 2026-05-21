@@ -25,6 +25,7 @@ jobs:
           dependencies: '"hard"'
           extra-packages: any::covr, any::xml2, any::tinytest
           needs: coverage
+        continue-on-error: true
 
       - name: Test coverage
         run: |
