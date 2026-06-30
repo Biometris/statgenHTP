@@ -55,7 +55,7 @@ Imports:
     gridExtra,
     Matrix,
     methods,
-    LMMsolver,
+    LMMsolver (>= 1.0.13),
     locfit,
     lubridate,
     rlang,
