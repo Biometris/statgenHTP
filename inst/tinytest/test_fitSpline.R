@@ -93,7 +93,7 @@ expect_error(fitSpline(inDat = corr, trait = "t1_corr", minNoTP = "a"),
              "minNoTP should be a numerical value")
 expect_error(fitSpline(inDat = corr, trait = "t1_corr", minNoTP = 50),
              "minNoTP should be a number bewtween 0 and 5")
-expect_silent(fitSpline(inDat = corr, trait = "t1_corr",
+expect_silent(fitSpline(inDat = corr, trait = "t1_corr", knots = 5,
                         genotypes = "G12", minNoTP = 5))
 
 # Add some extra NA to corr.
