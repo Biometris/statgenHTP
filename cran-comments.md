@@ -1,6 +1,6 @@
-## Patch release anticipating upcoming lmmsolver release
+## Patch release fixing OPENBLAS check error
 
-A few unit tests are relaxed and a few disabled. The small data size in the tests caused changes in optima using the upcoming version of lmmsolver. Full scale examples work fine.
+Also reenabled unit tests disabled in the previous release.
 
 ----
 
