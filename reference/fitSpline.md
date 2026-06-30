@@ -92,13 +92,13 @@ fit.spline <- fitSpline(inDat = spatCorrectedVator,
 ## Extract the data.frames with predicted values and P-Spline coefficients.
 predDat <- fit.spline$predDat
 head(predDat)
-#>   timeNumber           timePoint pred.value         deriv       deriv2 plotId
-#> 1          0 2018-05-31 16:37:00  0.6687993 -8.426473e-07 1.839623e-12 c10r29
-#> 2        800 2018-05-31 16:50:20  0.6681258 -8.410811e-07 2.076021e-12 c10r29
-#> 3       1600 2018-05-31 17:03:40  0.6674536 -8.393257e-07 2.312419e-12 c10r29
-#> 4       2400 2018-05-31 17:17:00  0.6667829 -8.373812e-07 2.548817e-12 c10r29
-#> 5       3200 2018-05-31 17:30:20  0.6661139 -8.352476e-07 2.785215e-12 c10r29
-#> 6       4000 2018-05-31 17:43:40  0.6654466 -8.329248e-07 3.021613e-12 c10r29
+#>   timeNumber           timePoint pred.value         deriv        deriv2 plotId
+#> 1          0 2018-05-31 16:37:00  0.6720805 -1.484420e-05 -3.911142e-10 c10r29
+#> 2        800 2018-05-31 16:50:20  0.6600850 -1.513838e-05 -3.443425e-10 c10r29
+#> 3       1600 2018-05-31 17:03:40  0.6478691 -1.539515e-05 -2.975708e-10 c10r29
+#> 4       2400 2018-05-31 17:17:00  0.6354627 -1.561450e-05 -2.507991e-10 c10r29
+#> 5       3200 2018-05-31 17:30:20  0.6228959 -1.579643e-05 -2.040274e-10 c10r29
+#> 6       4000 2018-05-31 17:43:40  0.6101984 -1.594094e-05 -1.572557e-10 c10r29
 #>   genotype
 #> 1     G160
 #> 2     G160
@@ -110,12 +110,12 @@ head(predDat)
 coefDat <- fit.spline$coefDat
 head(coefDat)
 #>   obj.coefficients plotId        type genotype
-#> 1        0.6965965 c10r29 timeNumber1     G160
-#> 2        0.6685027 c10r29 timeNumber2     G160
-#> 3        0.6421887 c10r29 timeNumber3     G160
-#> 4        0.6265465 c10r29 timeNumber4     G160
-#> 5        0.6263577 c10r29 timeNumber5     G160
-#> 6        0.6420706 c10r29 timeNumber6     G160
+#> 1       1.00854081 c10r29 timeNumber1     G160
+#> 2       0.73514502 c10r29 timeNumber2     G160
+#> 3       0.08336234 c10r29 timeNumber3     G160
+#> 4       0.81250112 c10r29 timeNumber4     G160
+#> 5       0.46663309 c10r29 timeNumber5     G160
+#> 6       0.96758139 c10r29 timeNumber6     G160
 
 ## Visualize the P-Spline predictions for one genotype.
 plot(fit.spline, genotypes = "G160")

@@ -17,7 +17,7 @@ the curve for further analysis (see estimateSplineParameters)."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">statgenHTP</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.9.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.9.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -147,13 +147,13 @@ with P-Spline coefficients on a dense grid.</p>
 <span class="r-in"><span><span class="co">## Extract the data.frames with predicted values and P-Spline coefficients.</span></span></span>
 <span class="r-in"><span><span class="va">predDat</span> <span class="op">&lt;-</span> <span class="va">fit.spline</span><span class="op">$</span><span class="va">predDat</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">predDat</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   timeNumber           timePoint pred.value         deriv       deriv2 plotId</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1          0 2018-05-31 16:37:00  0.6687993 -8.426473e-07 1.839623e-12 c10r29</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2        800 2018-05-31 16:50:20  0.6681258 -8.410811e-07 2.076021e-12 c10r29</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3       1600 2018-05-31 17:03:40  0.6674536 -8.393257e-07 2.312419e-12 c10r29</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4       2400 2018-05-31 17:17:00  0.6667829 -8.373812e-07 2.548817e-12 c10r29</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5       3200 2018-05-31 17:30:20  0.6661139 -8.352476e-07 2.785215e-12 c10r29</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6       4000 2018-05-31 17:43:40  0.6654466 -8.329248e-07 3.021613e-12 c10r29</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   timeNumber           timePoint pred.value         deriv        deriv2 plotId</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1          0 2018-05-31 16:37:00  0.6720805 -1.484420e-05 -3.911142e-10 c10r29</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2        800 2018-05-31 16:50:20  0.6600850 -1.513838e-05 -3.443425e-10 c10r29</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3       1600 2018-05-31 17:03:40  0.6478691 -1.539515e-05 -2.975708e-10 c10r29</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4       2400 2018-05-31 17:17:00  0.6354627 -1.561450e-05 -2.507991e-10 c10r29</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5       3200 2018-05-31 17:30:20  0.6228959 -1.579643e-05 -2.040274e-10 c10r29</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6       4000 2018-05-31 17:43:40  0.6101984 -1.594094e-05 -1.572557e-10 c10r29</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   genotype</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1     G160</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2     G160</span>
@@ -165,12 +165,12 @@ with P-Spline coefficients on a dense grid.</p>
 <span class="r-in"><span><span class="va">coefDat</span> <span class="op">&lt;-</span> <span class="va">fit.spline</span><span class="op">$</span><span class="va">coefDat</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">coefDat</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   obj.coefficients plotId        type genotype</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1        0.6965965 c10r29 timeNumber1     G160</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2        0.6685027 c10r29 timeNumber2     G160</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3        0.6421887 c10r29 timeNumber3     G160</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4        0.6265465 c10r29 timeNumber4     G160</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5        0.6263577 c10r29 timeNumber5     G160</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6        0.6420706 c10r29 timeNumber6     G160</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1       1.00854081 c10r29 timeNumber1     G160</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2       0.73514502 c10r29 timeNumber2     G160</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3       0.08336234 c10r29 timeNumber3     G160</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4       0.81250112 c10r29 timeNumber4     G160</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5       0.46663309 c10r29 timeNumber5     G160</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6       0.96758139 c10r29 timeNumber6     G160</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Visualize the P-Spline predictions for one genotype.</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit.spline</span>, genotypes <span class="op">=</span> <span class="st">"G160"</span><span class="op">)</span></span></span>

@@ -29,13 +29,13 @@ Source:
 
 Millet E, Rodriguez Alvarez M, Perez Valencia D, Sanchez I, Hilgert N,
 van Rossum B, van Eeuwijk F, Boer M (2026). *statgenHTP: High Throughput
-Phenotyping (HTP) Data Analysis*. R package version 1.0.9.2,
+Phenotyping (HTP) Data Analysis*. R package version 1.0.9.3,
 <https://biometris.github.io/statgenHTP/index.html>.
 
     @Manual{,
       title = {statgenHTP: High Throughput Phenotyping (HTP) Data Analysis},
       author = {Emilie J Millet and Maria Xose {Rodriguez Alvarez} and Diana Marcela {Perez Valencia} and Isabelle Sanchez and Nadine Hilgert and Bart-Jan {van Rossum} and Fred {van Eeuwijk} and Martin Boer},
       year = {2026},
-      note = {R package version 1.0.9.2},
+      note = {R package version 1.0.9.3},
       url = {https://biometris.github.io/statgenHTP/index.html},
     }

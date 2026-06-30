@@ -96,14 +96,14 @@ object `fit.spline` also contains the first and second derivatives
 tutorial: 6. Estimation of parameters from time
 courses**](https://biometris.github.io/statgenHTP/index.html/articles/vignettesSite/ParameterEstimation_HTP.md)).
 
-| timeNumber |      timePoint      | pred.value | deriv  | deriv2 | plotId | genotype |
-|:----------:|:-------------------:|:----------:|:------:|:------:|:------:|:--------:|
-|     0      | 2018-05-31 16:37:00 | 0.6687993  | -8e-07 |   0    | c10r29 |   G160   |
-|    800     | 2018-05-31 16:50:20 | 0.6681258  | -8e-07 |   0    | c10r29 |   G160   |
-|    1600    | 2018-05-31 17:03:40 | 0.6674536  | -8e-07 |   0    | c10r29 |   G160   |
-|    2400    | 2018-05-31 17:17:00 | 0.6667829  | -8e-07 |   0    | c10r29 |   G160   |
-|    3200    | 2018-05-31 17:30:20 | 0.6661139  | -8e-07 |   0    | c10r29 |   G160   |
-|    4000    | 2018-05-31 17:43:40 | 0.6654466  | -8e-07 |   0    | c10r29 |   G160   |
+| timeNumber |      timePoint      | pred.value |   deriv   | deriv2 | plotId | genotype |
+|:----------:|:-------------------:|:----------:|:---------:|:------:|:------:|:--------:|
+|     0      | 2018-05-31 16:37:00 | 0.6720805  | -1.48e-05 |   0    | c10r29 |   G160   |
+|    800     | 2018-05-31 16:50:20 | 0.6600850  | -1.51e-05 |   0    | c10r29 |   G160   |
+|    1600    | 2018-05-31 17:03:40 | 0.6478691  | -1.54e-05 |   0    | c10r29 |   G160   |
+|    2400    | 2018-05-31 17:17:00 | 0.6354627  | -1.56e-05 |   0    | c10r29 |   G160   |
+|    3200    | 2018-05-31 17:30:20 | 0.6228959  | -1.58e-05 |   0    | c10r29 |   G160   |
+|    4000    | 2018-05-31 17:43:40 | 0.6101984  | -1.59e-05 |   0    | c10r29 |   G160   |
 
 Conversion to numerical time is required to fit P-splines. To keep the
 same time scale as in the original `timePoint` column, a numerical
@@ -158,12 +158,12 @@ coefficients:
 
 | obj.coefficients | plotId |    type     | genotype |
 |:----------------:|:------:|:-----------:|:--------:|
-|    0.6965965     | c10r29 | timeNumber1 |   G160   |
-|    0.6685027     | c10r29 | timeNumber2 |   G160   |
-|    0.6421887     | c10r29 | timeNumber3 |   G160   |
-|    0.6265465     | c10r29 | timeNumber4 |   G160   |
-|    0.6263577     | c10r29 | timeNumber5 |   G160   |
-|    0.6420706     | c10r29 | timeNumber6 |   G160   |
+|    1.0085408     | c10r29 | timeNumber1 |   G160   |
+|    0.7351450     | c10r29 | timeNumber2 |   G160   |
+|    0.0833623     | c10r29 | timeNumber3 |   G160   |
+|    0.8125011     | c10r29 | timeNumber4 |   G160   |
+|    0.4666331     | c10r29 | timeNumber5 |   G160   |
+|    0.9675814     | c10r29 | timeNumber6 |   G160   |
 
 The coefficients are then used to tag suspect time courses with the
 function
@@ -199,10 +199,12 @@ outVator <- detectSerieOut(corrDat = spatCorrectedVator,
 
 | plotId | genotype |  reason   |   value    |
 |:------:|:--------:|:---------:|:----------:|
-|  c9r4  |   G160   | mean corr | 0.6775630  |
-|  c9r4  |   G160   |   angle   | 47.4954954 |
-|  c9r4  |   G160   |   slope   | 0.6058944  |
-| c3r43  |   G055   | mean corr | 0.8921578  |
+| c13r1  |   G151   |   angle   | 95.6950287 |
+| c13r1  |   G151   |   slope   | 0.1605591  |
+| c13r1  |   G151   | mean corr | 0.1187756  |
+| c15r48 |   G151   |   slope   | 0.0982827  |
+| c15r48 |   G151   |   angle   | 70.7932412 |
+| c15r48 |   G151   | mean corr | 0.1779557  |
 
 For this subset of genotypes, 2 plants were tagged as outliers:
 
@@ -418,14 +420,14 @@ outArch <- detectSerieOut(corrDat = spatCorrectedArch,
                           geno.decomp = "geno.decomp")
 ```
 
-| plotId | genotype | geno.decomp |  reason   |   value   |
-|:------:|:--------:|:-----------:|:---------:|:---------:|
-| c13r6  | GenoA01  |  WD_Panel1  | mean corr | 0.893585  |
-| c13r6  | GenoA01  |  WD_Panel1  |   angle   | 14.472282 |
-| c16r2  | GenoA01  |  WD_Panel1  |   angle   | 13.054901 |
-| c20r24 | GenoA01  |  WD_Panel1  |   angle   | 12.805672 |
-| c21r56 | GenoA01  |  WD_Panel1  |   angle   | 10.462828 |
-| c24r26 | GenoA01  |  WD_Panel1  |   angle   | 13.075548 |
+| plotId | genotype | geno.decomp | reason |   value    |
+|:------:|:--------:|:-----------:|:------:|:----------:|
+| c12r20 | GenoA01  |  WD_Panel1  | slope  | 0.7885030  |
+| c16r2  | GenoA01  |  WD_Panel1  | angle  | 11.8479199 |
+| c4r11  | GenoA01  |  WD_Panel1  | angle  | 11.3370635 |
+| c19r7  | GenoA01  |  WW_Panel1  | slope  | 0.7110142  |
+| c1r15  | GenoA02  |  WD_Panel1  | angle  | 12.2755544 |
+| c21r24 | GenoA02  |  WD_Panel1  | angle  | 12.1448300 |
 
 ``` r
 

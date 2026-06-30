@@ -555,7 +555,7 @@ outVator <- detectSerieOut(corrDat = spatCorrectedVator,
 | plotId | genotype |  reason   |   value    |
 |:------:|:--------:|:---------:|:----------:|
 | c21r25 |   G151   | mean corr | 0.7620638  |
-| c21r25 |   G151   |   angle   | 39.8776276 |
+| c21r25 |   G151   |   angle   | 39.8575177 |
 | c21r25 |   G151   |   slope   | 0.5055244  |
 |  c9r4  |   G160   | mean corr | 0.6778041  |
 |  c9r4  |   G160   |   angle   | 47.3176970 |
