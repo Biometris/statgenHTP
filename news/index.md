@@ -1,6 +1,12 @@
 # Changelog
 
+## statgenHTP 1.0.9.4
+
+- No user visual changes.
+
 ## statgenHTP 1.0.9.3
+
+CRAN release: 2026-07-01
 
 - No user visual changes.
 
