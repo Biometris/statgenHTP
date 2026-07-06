@@ -63,9 +63,9 @@ Imports:
     spam,
     SpATS (>= 1.0-13)
 Suggests: 
-    asreml (>= 4.0), 
-    knitr, 
-    rmarkdown, 
+    asreml (>= 4.0),
+    knitr,
+    rmarkdown,
     tinytest (>= 1.2.4)
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr

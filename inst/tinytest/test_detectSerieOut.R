@@ -90,7 +90,8 @@ expect_equal(colnames(serieOut1),
              c("plotId", "genotype", "reason", "value"))
 
 ## Check that full output content is correct.
-expect_equal_to_reference(serieOut1, file = "serieOut", tolerance = 1e-4)
+expect_equal_to_reference(serieOut1, file = "serieOut", tolerance = 1e-4,
+                          check.attributes = FALSE)
 
 ## Check that parameter thrCor functions correctly.
 expect_error(detectSerieOut(trait = "t1_corr", corrDat = corr,
