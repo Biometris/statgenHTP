@@ -1,14 +1,15 @@
-## Patch release fixing OPENBLAS check error
+## Patch release fixing MKL check error
 
-Also reenabled unit tests disabled in the previous release.
+Unable to produce locally or using rhub, but highly likely fixed
 
 ----
 
 ## Test environments
 
-* local Windows 11 install, R 4.6.0
-* Ubuntu (on github actions, devel and release)
+* local Windows 11 install, R 4.6.1
+* Ubuntu (on github actions, devel, release, and oldrelease)
 * macOS (on github actions, release)
+* mkl, intel, atlas (using rhub/github actions)
 
 ----
 

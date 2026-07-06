@@ -1,3 +1,7 @@
+# statgenHTP 1.0.9.4
+
+* No user visual changes.
+
 # statgenHTP 1.0.9.3
 
 * No user visual changes.
