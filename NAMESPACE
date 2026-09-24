@@ -35,16 +35,22 @@ export(removeTimePoints)
 import(stats)
 importFrom(LMMsolver,spl1D)
 importFrom(SpATS,predict.SpATS)
-importFrom(grDevices,colorRampPalette)
-importFrom(grDevices,dev.off)
-importFrom(grDevices,pdf)
-importFrom(grDevices,topo.colors)
+importFrom(grDevices,
+  colorRampPalette,
+  dev.off,
+  pdf,
+  topo.colors
+)
 importFrom(graphics,plot)
-importFrom(methods,as)
-importFrom(methods,new)
+importFrom(methods,
+  as,
+  new
+)
 importFrom(rlang,.data)
-importFrom(utils,capture.output)
-importFrom(utils,combn)
-importFrom(utils,hasName)
-importFrom(utils,packageVersion)
-importFrom(utils,write.csv)
+importFrom(utils,
+  capture.output,
+  combn,
+  hasName,
+  packageVersion,
+  write.csv
+)

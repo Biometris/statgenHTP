@@ -1,6 +1,4 @@
-## Patch release fixing MKL check error
-
-Unable to produce locally or using rhub, but highly likely fixed
+## Patch release to accommodate pending lmmsolver release
 
 ----
 
